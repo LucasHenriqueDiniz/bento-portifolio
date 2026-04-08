@@ -18,7 +18,7 @@ router.get("/portfolio/now-playing", async (req, res): Promise<void> => {
     artist: "The Weeknd",
     album: "After Hours",
     albumArt:
-      "https://is1-ssl.mzstatic.com/image/thumb/Music114/v4/3d/42/52/3d4252f3-5b6a-5bc4-5a7a-0d6fac2b5a5e/00602508827372.rgb.jpg/600x600bb.jpg",
+      "https://picsum.photos/seed/afterhours/300/300",
     trackUrl: "https://www.last.fm/music/The+Weeknd/_/Blinding+Lights",
   });
   res.json(data);
@@ -29,36 +29,31 @@ router.get("/portfolio/top-artists", async (req, res): Promise<void> => {
     {
       name: "The Weeknd",
       playcount: "1247",
-      imageUrl:
-        "https://lastfm.freetls.fastly.net/i/u/174s/2a96cbd8b46e442fc41c2b86b821562f.png",
+      imageUrl: "https://picsum.photos/seed/weeknd/100/100",
       url: "https://www.last.fm/music/The+Weeknd",
     },
     {
       name: "Daft Punk",
       playcount: "987",
-      imageUrl:
-        "https://lastfm.freetls.fastly.net/i/u/174s/2a96cbd8b46e442fc41c2b86b821562f.png",
+      imageUrl: "https://picsum.photos/seed/daftpunk/100/100",
       url: "https://www.last.fm/music/Daft+Punk",
     },
     {
       name: "BROCKHAMPTON",
       playcount: "854",
-      imageUrl:
-        "https://lastfm.freetls.fastly.net/i/u/174s/2a96cbd8b46e442fc41c2b86b821562f.png",
+      imageUrl: "https://picsum.photos/seed/brockh/100/100",
       url: "https://www.last.fm/music/BROCKHAMPTON",
     },
     {
       name: "Frank Ocean",
       playcount: "732",
-      imageUrl:
-        "https://lastfm.freetls.fastly.net/i/u/174s/2a96cbd8b46e442fc41c2b86b821562f.png",
+      imageUrl: "https://picsum.photos/seed/frankocean/100/100",
       url: "https://www.last.fm/music/Frank+Ocean",
     },
     {
       name: "Tyler, the Creator",
       playcount: "698",
-      imageUrl:
-        "https://lastfm.freetls.fastly.net/i/u/174s/2a96cbd8b46e442fc41c2b86b821562f.png",
+      imageUrl: "https://picsum.photos/seed/tyler/100/100",
       url: "https://www.last.fm/music/Tyler,+the+Creator",
     },
   ]);
