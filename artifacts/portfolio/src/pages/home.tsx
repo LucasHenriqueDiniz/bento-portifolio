@@ -148,55 +148,52 @@ const POLAROID_PHOTOS = [
   "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&auto=format&fit=crop&q=80",
   "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&auto=format&fit=crop&q=80",
 ];
-const POLAROID_ROTATIONS = [-3, 2, -1.5, 3.5, -2.5];
 const POLAROID_CAPTIONS = ["summer '23", "buenos aires", "coffee run", "studio day", "road trip"];
 
 function PolaroidStack() {
   const [current, setCurrent] = useState(0);
-  const [prev, setPrev] = useState<number | null>(null);
   useEffect(() => {
     const id = setInterval(() => {
-      setPrev(current);
       setCurrent(c => (c + 1) % POLAROID_PHOTOS.length);
-    }, 3200);
+    }, 3400);
     return () => clearInterval(id);
-  }, [current]);
+  }, []);
 
   return (
-    <div className="relative w-full h-full flex items-center justify-center" style={{ minHeight: 0 }}>
-      {POLAROID_PHOTOS.map((src, i) => {
-        const isTop = i === current;
-        const wasPrev = i === prev;
-        const z = isTop ? POLAROID_PHOTOS.length : wasPrev ? POLAROID_PHOTOS.length - 1 : i;
-        return (
-          <motion.div
-            key={i}
-            className="absolute"
-            initial={false}
-            animate={{
-              rotate: isTop ? POLAROID_ROTATIONS[i] : POLAROID_ROTATIONS[i] - 1,
-              scale: isTop ? 1 : 0.94,
-              y: isTop ? 0 : 6 * (POLAROID_PHOTOS.length - 1 - i),
-              opacity: isTop ? 1 : wasPrev ? 0 : 0.75 - (Math.abs(i - current) * 0.1),
-            }}
-            transition={{ type: "spring", stiffness: 260, damping: 28 }}
-            style={{ zIndex: z }}
-          >
-            <div
-              className="bg-white shadow-lg"
-              style={{ padding: "8px 8px 28px 8px", width: 120, borderRadius: 2 }}
-            >
-              <div style={{ width: 104, height: 104, overflow: "hidden" }}>
-                <img src={src} alt="" className="w-full h-full object-cover" draggable={false} />
-              </div>
-              <p className="text-center text-[9px] text-[#888] mt-2 font-medium tracking-wide" style={{ fontFamily: "Georgia, serif", fontStyle: "italic" }}>
-                {POLAROID_CAPTIONS[i]}
-              </p>
-            </div>
-          </motion.div>
-        );
-      })}
-    </div>
+    <>
+      {/* photo area — fills the container */}
+      <div className="relative w-full flex-1 overflow-hidden">
+        {POLAROID_PHOTOS.map((src, i) => (
+          <motion.img
+            key={src}
+            src={src}
+            alt=""
+            draggable={false}
+            className="absolute inset-0 w-full h-full object-cover"
+            initial={{ opacity: 0, scale: 1.04 }}
+            animate={i === current
+              ? { opacity: 1, scale: 1 }
+              : { opacity: 0, scale: 1.04 }
+            }
+            transition={{ duration: 0.7, ease: "easeInOut" }}
+          />
+        ))}
+      </div>
+      {/* caption area */}
+      <div className="shrink-0 flex items-center justify-center" style={{ height: 38 }}>
+        <motion.p
+          key={current}
+          initial={{ opacity: 0, y: 4 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -4 }}
+          transition={{ duration: 0.4 }}
+          className="text-[11px] text-[#999] tracking-wide"
+          style={{ fontFamily: "Georgia, serif", fontStyle: "italic" }}
+        >
+          {POLAROID_CAPTIONS[current]}
+        </motion.p>
+      </div>
+    </>
   );
 }
 
@@ -351,14 +348,14 @@ export default function Home() {
 
           {/* Polaroid Photos */}
           <motion.div custom={2} variants={fadeUp} initial="hidden" animate="show"
-            className="rounded-2xl border border-[#ebebeb] bg-[#f8f6f1] relative overflow-hidden"
-            style={{ height: 200 }}>
-            <div className="absolute top-3 left-0 right-0 flex justify-center">
-              <p className="text-[10px] font-semibold uppercase tracking-widest text-[#bbb]">Photos</p>
-            </div>
-            <div className="w-full h-full flex items-center justify-center pt-4">
-              <PolaroidStack />
-            </div>
+            className="bg-white flex flex-col overflow-hidden"
+            style={{
+              height: 220,
+              padding: "8px 8px 0 8px",
+              boxShadow: "0 4px 24px rgba(0,0,0,0.13), 0 1px 4px rgba(0,0,0,0.08)",
+              borderRadius: 3,
+            }}>
+            <PolaroidStack />
           </motion.div>
 
           {/* Contact */}
