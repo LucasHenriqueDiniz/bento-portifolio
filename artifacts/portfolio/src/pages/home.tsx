@@ -165,6 +165,7 @@ export default function Home() {
   const { data: stats } = useGetStats();
 
   const statusColor = STATUS_COLORS[discord?.status ?? "dnd"];
+  const [weatherFlipped, setWeatherFlipped] = useState(false);
 
   /* inView refs for scroll-triggered animations */
   const githubRef   = useRef<HTMLDivElement>(null);
@@ -308,7 +309,7 @@ export default function Home() {
 
         {/* ════ CENTER BENTO ════ */}
         <BentoSection className="flex-1 min-w-0">
-          <div className="grid gap-2.5" style={{ gridTemplateColumns: "repeat(4, 1fr)", gridAutoRows: "136px" }}>
+          <div className="grid gap-2.5" style={{ gridTemplateColumns: "repeat(4, 1fr)", gridAutoRows: "112px" }}>
 
             {/* STATUS */}
             <BentoCard className={`${CARD} p-4 flex flex-col justify-between col-span-1 row-span-1`}>
@@ -370,15 +371,39 @@ export default function Home() {
               </motion.div>
             </BentoCard>
 
-            {/* WEATHER — 1×1 */}
-            <BentoCard className={`${CARD} p-4 flex flex-col justify-between col-span-1 row-span-1`}>
-              <motion.div custom={5} variants={fadeUp} initial="hidden" animate="show" className="flex flex-col h-full justify-between">
-                <p className={`${LABEL} flex items-center gap-1`}>☁ Weather</p>
-                <div>
-                  <p className="text-[28px] font-black tracking-tight leading-none">27°C</p>
-                  <p className="text-[11px] text-[#aaa] mt-1">Sunny · Rio de Janeiro</p>
+            {/* WEATHER / CLOCK FLIP — 1×1 */}
+            <BentoCard
+              className="col-span-1 row-span-1 rounded-2xl border border-[#ebebeb] cursor-pointer overflow-hidden"
+              style={{ perspective: "800px" }}
+              onClick={() => setWeatherFlipped(f => !f)}
+            >
+              <div
+                className="relative w-full h-full transition-transform duration-500"
+                style={{ transformStyle: "preserve-3d", transform: weatherFlipped ? "rotateY(180deg)" : "rotateY(0deg)" }}
+              >
+                {/* FRONT — Weather */}
+                <div className="absolute inset-0 p-4 flex flex-col justify-between bg-white rounded-2xl" style={{ backfaceVisibility: "hidden" }}>
+                  <p className={`${LABEL} flex items-center gap-1`}>☁ Weather · <span className="normal-case text-[#ccc]">click to flip</span></p>
+                  <div>
+                    <p className="text-[28px] font-black tracking-tight leading-none">27°C</p>
+                    <p className="text-[11px] text-[#aaa] mt-1">Sunny · Rio de Janeiro</p>
+                  </div>
                 </div>
-              </motion.div>
+                {/* BACK — Clock */}
+                <div className="absolute inset-0 p-4 flex flex-col justify-between bg-white rounded-2xl" style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}>
+                  <p className={`${LABEL} flex items-center gap-1.5`}><FiClock size={9} />Rio de Janeiro</p>
+                  <div>
+                    <div className="flex items-end gap-0.5 font-black tabular-nums leading-none">
+                      <span className="text-[26px] text-[#111]">{clock.h}</span>
+                      <span className="text-[20px] text-[#ccc] mb-0.5">:</span>
+                      <span className="text-[26px] text-[#111]">{clock.m}</span>
+                      <span className="text-[20px] text-[#ccc] mb-0.5">:</span>
+                      <span className="text-[20px] text-[#aaa] mb-0.5">{clock.s}</span>
+                    </div>
+                    <p className="text-[11px] text-[#aaa] mt-1">UTC−3 · BRT</p>
+                  </div>
+                </div>
+              </div>
             </BentoCard>
 
             {/* FITNESS RINGS — 1×2 */}
@@ -466,31 +491,77 @@ export default function Home() {
               </motion.div>
             </BentoCard>
 
-            {/* WHAT I USE — 4×1 */}
-            <BentoCard className={`${CARD} p-4 col-span-4 row-span-1 flex flex-col justify-between`}>
+            {/* WAKATIME — 2×1 (fills gap below Last Workout) */}
+            <BentoCard className={`${CARD} p-4 col-span-2 row-span-1 flex flex-col justify-between`}>
               <motion.div custom={9} variants={fadeUp} initial="hidden" animate="show" className="flex flex-col h-full justify-between">
-                <p className={`${LABEL} mb-2`}>What I Use</p>
-                <div className="grid grid-cols-2 gap-x-8">
-                  <div>
-                    <p className="text-[10px] font-semibold text-[#aaa] mb-1.5">Hardware</p>
-                    <div className="grid grid-cols-2 gap-x-4 gap-y-1">
-                      {["MacBook Pro M3 Max","iPhone 15 Pro Max","Dell 27\" 4K","AirPods Pro 2"].map((item, i) => (
-                        <p key={item} className="text-[12px] text-[#555] flex items-center gap-1.5 slide-up" style={{ "--delay": `${i*0.06}s` } as React.CSSProperties}>
-                          <span className="w-1 h-1 rounded-full bg-[#ddd]" />{item}
-                        </p>
-                      ))}
+                <div className="flex items-center justify-between">
+                  <p className={`${LABEL} flex items-center gap-1.5`}><SiWakatime size={9} />Wakatime</p>
+                  <div className="flex gap-3 text-[11px] text-[#888]">
+                    <span><strong className="text-[#111] font-bold">{waka.today.h}h {waka.today.m}m</strong> today</span>
+                    <span><strong className="text-[#111] font-bold">{waka.week.h}h {waka.week.m}m</strong> this week</span>
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  {waka.langs.map((l, i) => (
+                    <div key={l.name} className="flex items-center gap-2">
+                      <span className="text-[10px] text-[#888] w-[72px] shrink-0 truncate">{l.name}</span>
+                      <div className="flex-1 h-1.5 bg-[#f0f0f0] rounded-full overflow-hidden">
+                        <motion.div
+                          initial={{ width: 0 }}
+                          animate={{ width: `${l.pct}%` }}
+                          transition={{ duration: 0.8, delay: i * 0.1, ease: "easeOut" }}
+                          style={{ backgroundColor: l.color }}
+                          className="h-full rounded-full"
+                        />
+                      </div>
+                      <span className="text-[10px] text-[#aaa] w-6 text-right shrink-0">{l.pct}%</span>
                     </div>
+                  ))}
+                </div>
+              </motion.div>
+            </BentoCard>
+
+            {/* CURRENTLY READING — 1×1 (fills gap below Last Workout) */}
+            <BentoCard className={`${CARD} p-4 col-span-1 row-span-1 flex flex-col justify-between overflow-hidden`}>
+              <motion.div custom={10} variants={fadeUp} initial="hidden" animate="show" className="flex gap-3 h-full">
+                <div className="w-10 shrink-0 rounded-md overflow-hidden shadow-sm self-start">
+                  <img src={reading.cover} alt={reading.title} className="w-full h-auto object-cover" />
+                </div>
+                <div className="flex flex-col justify-between flex-1 min-w-0">
+                  <div>
+                    <p className={`${LABEL} mb-1 flex items-center gap-1`}><FiBook size={9} />Reading</p>
+                    <p className="text-[12px] font-bold leading-tight text-[#111] line-clamp-2">{reading.title}</p>
                   </div>
                   <div>
-                    <p className="text-[10px] font-semibold text-[#aaa] mb-1.5">Software</p>
-                    <div className="grid grid-cols-3 gap-x-4 gap-y-1">
-                      {["VS Code","Figma","Warp","Raycast","Arc Browser","Linear"].map((item, i) => (
-                        <p key={item} className="text-[12px] text-[#555] flex items-center gap-1.5 slide-up" style={{ "--delay": `${(i+4)*0.06}s` } as React.CSSProperties}>
-                          <span className="w-1 h-1 rounded-full bg-[#ddd]" />{item}
-                        </p>
-                      ))}
+                    <div className="h-1 w-full bg-[#f0f0f0] rounded-full overflow-hidden mb-1">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: `${Math.round((reading.page / reading.total) * 100)}%` }}
+                        transition={{ duration: 1, ease: "easeOut", delay: 0.3 }}
+                        className="h-full bg-[#f97316] rounded-full"
+                      />
                     </div>
+                    <p className="text-[10px] text-[#aaa]">p. {reading.page} / {reading.total}</p>
                   </div>
+                </div>
+              </motion.div>
+            </BentoCard>
+
+            {/* TECH STACK — 4×1 */}
+            <BentoCard className={`${CARD} p-4 col-span-4 row-span-1 flex flex-col justify-between`}>
+              <motion.div custom={11} variants={fadeUp} initial="hidden" animate="show" className="flex flex-col h-full justify-between">
+                <p className={`${LABEL} mb-2`}>Tech Stack</p>
+                <div className="flex flex-wrap gap-2">
+                  {stack.map((tech, i) => (
+                    <div
+                      key={tech.label}
+                      className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-[#f8f8f8] border border-[#f0f0f0] hover:border-[#e0e0e0] hover:bg-white transition-all cursor-default slide-up"
+                      style={{ "--delay": `${i * 0.04}s` } as React.CSSProperties}
+                    >
+                      <span className="text-[13px]" style={{ color: tech.color }}>{tech.icon}</span>
+                      <span className="text-[11px] font-medium text-[#555]">{tech.label}</span>
+                    </div>
+                  ))}
                 </div>
               </motion.div>
             </BentoCard>
@@ -590,128 +661,11 @@ export default function Home() {
               </div>
             </BentoCard>
 
-            {/* CLOCK — 1×1 */}
-            <BentoCard className={`${CARD} p-4 col-span-1 row-span-1 flex flex-col justify-between overflow-hidden`}>
-              <motion.div custom={14} variants={fadeUp} initial="hidden" animate="show" className="flex flex-col h-full justify-between">
-                <p className={`${LABEL} flex items-center gap-1.5`}><FiClock size={9} />Rio de Janeiro</p>
-                <div>
-                  <div className="flex items-end gap-1 font-black tabular-nums leading-none">
-                    <span className="text-[32px] text-[#111]">{clock.h}</span>
-                    <span className="text-[24px] text-[#ccc] mb-0.5">:</span>
-                    <span className="text-[32px] text-[#111]">{clock.m}</span>
-                    <span className="text-[24px] text-[#ccc] mb-0.5">:</span>
-                    <span className="text-[24px] text-[#aaa] mb-0.5">{clock.s}</span>
-                  </div>
-                  <p className="text-[11px] text-[#aaa] mt-1">UTC−3 · BRT</p>
-                </div>
-              </motion.div>
-            </BentoCard>
-
-            {/* WAKATIME — 2×1 */}
-            <BentoCard className={`${CARD} p-4 col-span-2 row-span-1 flex flex-col justify-between`}>
-              <motion.div custom={15} variants={fadeUp} initial="hidden" animate="show" className="flex flex-col h-full justify-between">
-                <div className="flex items-center justify-between">
-                  <p className={`${LABEL} flex items-center gap-1.5`}><SiWakatime size={9} />Wakatime</p>
-                  <div className="flex gap-3 text-[11px] text-[#888]">
-                    <span><strong className="text-[#111] font-bold">{waka.today.h}h {waka.today.m}m</strong> today</span>
-                    <span><strong className="text-[#111] font-bold">{waka.week.h}h {waka.week.m}m</strong> this week</span>
-                  </div>
-                </div>
-                <div className="space-y-1.5">
-                  {waka.langs.map((l, i) => (
-                    <div key={l.name} className="flex items-center gap-2">
-                      <span className="text-[10px] text-[#888] w-[72px] shrink-0 truncate">{l.name}</span>
-                      <div className="flex-1 h-1.5 bg-[#f0f0f0] rounded-full overflow-hidden">
-                        <motion.div
-                          initial={{ width: 0 }}
-                          animate={{ width: `${l.pct}%` }}
-                          transition={{ duration: 0.8, delay: i * 0.1, ease: "easeOut" }}
-                          style={{ backgroundColor: l.color }}
-                          className="h-full rounded-full"
-                        />
-                      </div>
-                      <span className="text-[10px] text-[#aaa] w-6 text-right shrink-0">{l.pct}%</span>
-                    </div>
-                  ))}
-                </div>
-              </motion.div>
-            </BentoCard>
-
-            {/* CURRENTLY READING — 1×1 */}
-            <BentoCard className={`${CARD} p-4 col-span-1 row-span-1 flex flex-col justify-between overflow-hidden`}>
-              <motion.div custom={16} variants={fadeUp} initial="hidden" animate="show" className="flex gap-3 h-full">
-                <div className="w-12 shrink-0 rounded-md overflow-hidden shadow-sm self-start mt-0.5">
-                  <img src={reading.cover} alt={reading.title} className="w-full h-auto object-cover" />
-                </div>
-                <div className="flex flex-col justify-between flex-1 min-w-0">
-                  <div>
-                    <p className={`${LABEL} mb-1 flex items-center gap-1`}><FiBook size={9} />Reading</p>
-                    <p className="text-[12px] font-bold leading-tight text-[#111] line-clamp-2">{reading.title}</p>
-                    <p className="text-[10px] text-[#aaa] truncate mt-0.5">{reading.author}</p>
-                  </div>
-                  <div>
-                    <div className="h-1 w-full bg-[#f0f0f0] rounded-full overflow-hidden mb-1">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: `${Math.round((reading.page / reading.total) * 100)}%` }}
-                        transition={{ duration: 1, ease: "easeOut", delay: 0.3 }}
-                        className="h-full bg-[#f97316] rounded-full"
-                      />
-                    </div>
-                    <p className="text-[10px] text-[#aaa]">p. {reading.page} / {reading.total}</p>
-                  </div>
-                </div>
-              </motion.div>
-            </BentoCard>
-
-            {/* TECH STACK — 4×1 */}
-            <BentoCard className={`${CARD} p-4 col-span-4 row-span-1 flex flex-col justify-between`}>
-              <motion.div custom={17} variants={fadeUp} initial="hidden" animate="show" className="flex flex-col h-full justify-between">
-                <p className={`${LABEL} mb-3`}>Tech Stack</p>
-                <div className="flex flex-wrap gap-2">
-                  {stack.map((tech, i) => (
-                    <div
-                      key={tech.label}
-                      className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-[#f8f8f8] border border-[#f0f0f0] hover:border-[#e0e0e0] hover:bg-white transition-all cursor-default slide-up"
-                      style={{ "--delay": `${i * 0.04}s` } as React.CSSProperties}
-                    >
-                      <span className="text-[14px]" style={{ color: tech.color }}>{tech.icon}</span>
-                      <span className="text-[11px] font-medium text-[#555]">{tech.label}</span>
-                    </div>
-                  ))}
-                </div>
-              </motion.div>
-            </BentoCard>
-
           </div>
         </BentoSection>
 
         {/* ════ RIGHT SIDEBAR ════ */}
         <aside className="w-[210px] shrink-0 flex flex-col gap-2.5">
-
-          {/* Currently Listening */}
-          <motion.div custom={2} variants={fadeUp} initial="hidden" animate="show" className={`${CARD} p-4`}>
-            <p className={`${LABEL} mb-3 flex items-center gap-1.5`}>
-              <SiLastdotfm size={10} className="text-[#ef4444]" />Currently Listening
-            </p>
-            {nowPlaying?.albumArt && (
-              <div className="w-full aspect-square rounded-xl overflow-hidden mb-3 relative">
-                <img src={nowPlaying.albumArt} alt="album" className="w-full h-full object-cover" />
-                {nowPlaying.isPlaying && (
-                  <div className="absolute bottom-2 left-2">
-                    <EqBars />
-                  </div>
-                )}
-              </div>
-            )}
-            <div>
-              <div className="flex items-center gap-1.5 mb-0.5">
-                {nowPlaying?.isPlaying && !nowPlaying.albumArt && <EqBars />}
-                <p className="font-bold text-[13px] truncate leading-tight">{nowPlaying?.track ?? "Not playing"}</p>
-              </div>
-              <p className="text-[11px] text-[#aaa] truncate">{nowPlaying?.artist ?? "—"}</p>
-            </div>
-          </motion.div>
 
           {/* Top Artists */}
           <motion.div custom={3} variants={fadeUp} initial="hidden" animate="show" className={`${CARD} p-4`}>
