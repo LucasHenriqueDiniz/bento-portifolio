@@ -9,8 +9,13 @@ import {
 import { motion, useInView, animate } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "wouter";
-import { SiGithub, SiDiscord, SiLastdotfm, SiSteam, SiMyanimelist } from "react-icons/si";
-import { FiTwitter, FiMail, FiExternalLink } from "react-icons/fi";
+import {
+  SiGithub, SiDiscord, SiLastdotfm, SiSteam, SiMyanimelist,
+  SiWakatime, SiTypescript, SiReact, SiNodedotjs, SiGo,
+  SiPostgresql, SiDocker, SiNextdotjs, SiTailwindcss, SiFigma,
+  SiPython, SiRedis,
+} from "react-icons/si";
+import { FiTwitter, FiMail, FiExternalLink, FiBook, FiClock } from "react-icons/fi";
 import { Dumbbell } from "lucide-react";
 import { BentoCard, BentoSection } from "@/components/BentoCard";
 
@@ -33,6 +38,24 @@ const STATUS_COLORS: Record<string, string> = {
 
 const CARD  = "bg-white border border-[#ebebeb] rounded-2xl";
 const LABEL = "text-[10px] font-semibold uppercase tracking-widest text-[#aaa]";
+
+/* ─── live clock ──────────────────────────────────── */
+function useClock(timezone = "America/Sao_Paulo") {
+  const [time, setTime] = useState<Date>(new Date());
+  useEffect(() => {
+    const id = setInterval(() => setTime(new Date()), 1000);
+    return () => clearInterval(id);
+  }, []);
+  const fmt = new Intl.DateTimeFormat("pt-BR", {
+    timeZone: timezone,
+    hour: "2-digit", minute: "2-digit", second: "2-digit",
+    hour12: false,
+  });
+  const parts = fmt.formatToParts(time).reduce<Record<string, string>>((acc, p) => {
+    acc[p.type] = p.value; return acc;
+  }, {});
+  return { h: parts.hour, m: parts.minute, s: parts.second };
+}
 
 /* ─── animated counter hook ───────────────────────── */
 function useCounter(to: number, inView: boolean, duration = 1.2) {
@@ -170,6 +193,45 @@ export default function Home() {
     score: 7.8,
     favorites: ["Evangelion", "HxH", "Vinland Saga"],
   };
+
+  /* Wakatime mock data */
+  const waka = {
+    today: { h: 4, m: 32 },
+    week:  { h: 28, m: 15 },
+    langs: [
+      { name: "TypeScript", pct: 52, color: "#3178c6" },
+      { name: "Go",         pct: 24, color: "#00add8" },
+      { name: "Python",     pct: 14, color: "#3572a5" },
+      { name: "MDX",        pct: 10, color: "#f97316" },
+    ],
+  };
+
+  /* Currently reading mock */
+  const reading = {
+    title:    "The Pragmatic Programmer",
+    author:   "Andrew Hunt & David Thomas",
+    cover:    "https://covers.openlibrary.org/b/isbn/9780201616224-M.jpg",
+    page:     189,
+    total:    352,
+  };
+
+  /* Live clock — Rio de Janeiro */
+  const clock = useClock("America/Sao_Paulo");
+
+  /* Tech stack */
+  const stack = [
+    { icon: <SiReact />,       label: "React",      color: "#61dafb" },
+    { icon: <SiNextdotjs />,   label: "Next.js",    color: "#000" },
+    { icon: <SiTypescript />,  label: "TypeScript", color: "#3178c6" },
+    { icon: <SiNodedotjs />,   label: "Node.js",    color: "#339933" },
+    { icon: <SiGo />,          label: "Go",         color: "#00add8" },
+    { icon: <SiPython />,      label: "Python",     color: "#3572a5" },
+    { icon: <SiPostgresql />,  label: "Postgres",   color: "#4169e1" },
+    { icon: <SiRedis />,       label: "Redis",      color: "#dc382d" },
+    { icon: <SiDocker />,      label: "Docker",     color: "#2496ed" },
+    { icon: <SiTailwindcss />, label: "Tailwind",   color: "#38bdf8" },
+    { icon: <SiFigma />,       label: "Figma",      color: "#f24e1e" },
+  ];
 
   return (
     <div className="min-h-screen bg-[#f5f5f5] text-[#111] font-sans">
@@ -526,6 +588,99 @@ export default function Home() {
                   </div>
                 </motion.div>
               </div>
+            </BentoCard>
+
+            {/* CLOCK — 1×1 */}
+            <BentoCard className={`${CARD} p-4 col-span-1 row-span-1 flex flex-col justify-between overflow-hidden`}>
+              <motion.div custom={14} variants={fadeUp} initial="hidden" animate="show" className="flex flex-col h-full justify-between">
+                <p className={`${LABEL} flex items-center gap-1.5`}><FiClock size={9} />Rio de Janeiro</p>
+                <div>
+                  <div className="flex items-end gap-1 font-black tabular-nums leading-none">
+                    <span className="text-[32px] text-[#111]">{clock.h}</span>
+                    <span className="text-[24px] text-[#ccc] mb-0.5">:</span>
+                    <span className="text-[32px] text-[#111]">{clock.m}</span>
+                    <span className="text-[24px] text-[#ccc] mb-0.5">:</span>
+                    <span className="text-[24px] text-[#aaa] mb-0.5">{clock.s}</span>
+                  </div>
+                  <p className="text-[11px] text-[#aaa] mt-1">UTC−3 · BRT</p>
+                </div>
+              </motion.div>
+            </BentoCard>
+
+            {/* WAKATIME — 2×1 */}
+            <BentoCard className={`${CARD} p-4 col-span-2 row-span-1 flex flex-col justify-between`}>
+              <motion.div custom={15} variants={fadeUp} initial="hidden" animate="show" className="flex flex-col h-full justify-between">
+                <div className="flex items-center justify-between">
+                  <p className={`${LABEL} flex items-center gap-1.5`}><SiWakatime size={9} />Wakatime</p>
+                  <div className="flex gap-3 text-[11px] text-[#888]">
+                    <span><strong className="text-[#111] font-bold">{waka.today.h}h {waka.today.m}m</strong> today</span>
+                    <span><strong className="text-[#111] font-bold">{waka.week.h}h {waka.week.m}m</strong> this week</span>
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  {waka.langs.map((l, i) => (
+                    <div key={l.name} className="flex items-center gap-2">
+                      <span className="text-[10px] text-[#888] w-[72px] shrink-0 truncate">{l.name}</span>
+                      <div className="flex-1 h-1.5 bg-[#f0f0f0] rounded-full overflow-hidden">
+                        <motion.div
+                          initial={{ width: 0 }}
+                          animate={{ width: `${l.pct}%` }}
+                          transition={{ duration: 0.8, delay: i * 0.1, ease: "easeOut" }}
+                          style={{ backgroundColor: l.color }}
+                          className="h-full rounded-full"
+                        />
+                      </div>
+                      <span className="text-[10px] text-[#aaa] w-6 text-right shrink-0">{l.pct}%</span>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            </BentoCard>
+
+            {/* CURRENTLY READING — 1×1 */}
+            <BentoCard className={`${CARD} p-4 col-span-1 row-span-1 flex flex-col justify-between overflow-hidden`}>
+              <motion.div custom={16} variants={fadeUp} initial="hidden" animate="show" className="flex gap-3 h-full">
+                <div className="w-12 shrink-0 rounded-md overflow-hidden shadow-sm self-start mt-0.5">
+                  <img src={reading.cover} alt={reading.title} className="w-full h-auto object-cover" />
+                </div>
+                <div className="flex flex-col justify-between flex-1 min-w-0">
+                  <div>
+                    <p className={`${LABEL} mb-1 flex items-center gap-1`}><FiBook size={9} />Reading</p>
+                    <p className="text-[12px] font-bold leading-tight text-[#111] line-clamp-2">{reading.title}</p>
+                    <p className="text-[10px] text-[#aaa] truncate mt-0.5">{reading.author}</p>
+                  </div>
+                  <div>
+                    <div className="h-1 w-full bg-[#f0f0f0] rounded-full overflow-hidden mb-1">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: `${Math.round((reading.page / reading.total) * 100)}%` }}
+                        transition={{ duration: 1, ease: "easeOut", delay: 0.3 }}
+                        className="h-full bg-[#f97316] rounded-full"
+                      />
+                    </div>
+                    <p className="text-[10px] text-[#aaa]">p. {reading.page} / {reading.total}</p>
+                  </div>
+                </div>
+              </motion.div>
+            </BentoCard>
+
+            {/* TECH STACK — 4×1 */}
+            <BentoCard className={`${CARD} p-4 col-span-4 row-span-1 flex flex-col justify-between`}>
+              <motion.div custom={17} variants={fadeUp} initial="hidden" animate="show" className="flex flex-col h-full justify-between">
+                <p className={`${LABEL} mb-3`}>Tech Stack</p>
+                <div className="flex flex-wrap gap-2">
+                  {stack.map((tech, i) => (
+                    <div
+                      key={tech.label}
+                      className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-[#f8f8f8] border border-[#f0f0f0] hover:border-[#e0e0e0] hover:bg-white transition-all cursor-default slide-up"
+                      style={{ "--delay": `${i * 0.04}s` } as React.CSSProperties}
+                    >
+                      <span className="text-[14px]" style={{ color: tech.color }}>{tech.icon}</span>
+                      <span className="text-[11px] font-medium text-[#555]">{tech.label}</span>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
             </BentoCard>
 
           </div>
