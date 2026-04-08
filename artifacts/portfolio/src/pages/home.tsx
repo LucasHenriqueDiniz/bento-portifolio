@@ -140,6 +140,66 @@ function ActivityRings({ move = 75, exercise = 55, stand = 80, inView }: {
   );
 }
 
+/* ─── Polaroid Stack ──────────────────────────────── */
+const POLAROID_PHOTOS = [
+  "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&auto=format&fit=crop&q=80",
+  "https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?w=400&auto=format&fit=crop&q=80",
+  "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=400&auto=format&fit=crop&q=80",
+  "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&auto=format&fit=crop&q=80",
+  "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&auto=format&fit=crop&q=80",
+];
+const POLAROID_ROTATIONS = [-3, 2, -1.5, 3.5, -2.5];
+const POLAROID_CAPTIONS = ["summer '23", "buenos aires", "coffee run", "studio day", "road trip"];
+
+function PolaroidStack() {
+  const [current, setCurrent] = useState(0);
+  const [prev, setPrev] = useState<number | null>(null);
+  useEffect(() => {
+    const id = setInterval(() => {
+      setPrev(current);
+      setCurrent(c => (c + 1) % POLAROID_PHOTOS.length);
+    }, 3200);
+    return () => clearInterval(id);
+  }, [current]);
+
+  return (
+    <div className="relative w-full h-full flex items-center justify-center" style={{ minHeight: 0 }}>
+      {POLAROID_PHOTOS.map((src, i) => {
+        const isTop = i === current;
+        const wasPrev = i === prev;
+        const z = isTop ? POLAROID_PHOTOS.length : wasPrev ? POLAROID_PHOTOS.length - 1 : i;
+        return (
+          <motion.div
+            key={i}
+            className="absolute"
+            initial={false}
+            animate={{
+              rotate: isTop ? POLAROID_ROTATIONS[i] : POLAROID_ROTATIONS[i] - 1,
+              scale: isTop ? 1 : 0.94,
+              y: isTop ? 0 : 6 * (POLAROID_PHOTOS.length - 1 - i),
+              opacity: isTop ? 1 : wasPrev ? 0 : 0.75 - (Math.abs(i - current) * 0.1),
+            }}
+            transition={{ type: "spring", stiffness: 260, damping: 28 }}
+            style={{ zIndex: z }}
+          >
+            <div
+              className="bg-white shadow-lg"
+              style={{ padding: "8px 8px 28px 8px", width: 120, borderRadius: 2 }}
+            >
+              <div style={{ width: 104, height: 104, overflow: "hidden" }}>
+                <img src={src} alt="" className="w-full h-full object-cover" draggable={false} />
+              </div>
+              <p className="text-center text-[9px] text-[#888] mt-2 font-medium tracking-wide" style={{ fontFamily: "Georgia, serif", fontStyle: "italic" }}>
+                {POLAROID_CAPTIONS[i]}
+              </p>
+            </div>
+          </motion.div>
+        );
+      })}
+    </div>
+  );
+}
+
 /* ─── EQ bars ─────────────────────────────────────── */
 function EqBars() {
   return (
@@ -235,10 +295,10 @@ export default function Home() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#f5f5f5] text-[#111] font-sans">
+    <div className="h-screen flex flex-col bg-[#f5f5f5] text-[#111] font-sans overflow-hidden">
 
       {/* ── NAV ── */}
-      <header className="sticky top-0 z-50 h-11 flex items-center border-b border-[#ebebeb] bg-white/80 backdrop-blur px-4">
+      <header className="shrink-0 z-50 h-11 flex items-center border-b border-[#ebebeb] bg-white/80 backdrop-blur px-4">
         <div className="flex w-full max-w-[1480px] mx-auto items-center justify-between">
           <span className="font-bold text-[13px] tracking-tight">yourname.sh</span>
           <nav className="flex gap-5 text-[13px] text-[#888]">
@@ -249,6 +309,7 @@ export default function Home() {
       </header>
 
       {/* ── 3-COLUMN ── */}
+      <div className="flex-1 overflow-y-auto">
       <div className="max-w-[1480px] mx-auto flex gap-2.5 p-2.5 items-start">
 
         {/* ════ LEFT SIDEBAR ════ */}
@@ -288,12 +349,15 @@ export default function Home() {
             </ul>
           </motion.div>
 
-          {/* Photo */}
+          {/* Polaroid Photos */}
           <motion.div custom={2} variants={fadeUp} initial="hidden" animate="show"
-            className="rounded-2xl overflow-hidden border border-[#ebebeb] relative" style={{ aspectRatio: "3/4" }}>
-            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=350&auto=format&fit=crop&q=80" alt="photo" className="w-full h-full object-cover" />
-            <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/50 to-transparent">
-              <p className="text-white text-[10px] font-semibold uppercase tracking-wider">Photos</p>
+            className="rounded-2xl border border-[#ebebeb] bg-[#f8f6f1] relative overflow-hidden"
+            style={{ height: 200 }}>
+            <div className="absolute top-3 left-0 right-0 flex justify-center">
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-[#bbb]">Photos</p>
+            </div>
+            <div className="w-full h-full flex items-center justify-center pt-4">
+              <PolaroidStack />
             </div>
           </motion.div>
 
@@ -460,30 +524,37 @@ export default function Home() {
               </div>
             </BentoCard>
 
-            {/* DISCORD — improved with avatar ── 1×1 */}
-            <BentoCard className="col-span-1 row-span-1 rounded-2xl border border-[#7289da]/30 overflow-hidden" style={{ backgroundColor: "#5865f2" }}>
-              <motion.div custom={8} variants={fadeUp} initial="hidden" animate="show" className="p-4 h-full flex flex-col justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="relative shrink-0">
-                    <div className="w-8 h-8 rounded-full overflow-hidden bg-[#4752c4]">
-                      {discord?.avatarUrl
-                        ? <img src={discord.avatarUrl} alt="avatar" className="w-full h-full object-cover" />
-                        : <SiDiscord size={16} className="m-auto mt-2 text-white/60" />
-                      }
+            {/* DISCORD — 1×1 */}
+            <BentoCard className="col-span-1 row-span-1 rounded-2xl overflow-hidden" style={{ backgroundColor: "#5865f2" }}>
+              <motion.div custom={8} variants={fadeUp} initial="hidden" animate="show" className="p-3.5 h-full flex flex-col justify-between">
+                {/* header */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="relative shrink-0">
+                      <div className="w-9 h-9 rounded-full overflow-hidden bg-[#4752c4] ring-2 ring-white/20">
+                        {discord?.avatarUrl
+                          ? <img src={discord.avatarUrl} alt="avatar" className="w-full h-full object-cover" />
+                          : <SiDiscord size={18} className="m-auto mt-2.5 text-white/50" />
+                        }
+                      </div>
+                      <span
+                        className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-[#5865f2] status-dot"
+                        style={{ backgroundColor: statusColor, color: statusColor }}
+                      />
                     </div>
-                    <span
-                      className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-[#5865f2] status-dot"
-                      style={{ backgroundColor: statusColor, color: statusColor }}
-                    />
+                    <div className="min-w-0">
+                      <p className="text-white font-bold text-[13px] truncate leading-tight">{discord?.displayName ?? "Your Name"}</p>
+                      <p className="text-white/50 text-[10px] capitalize">{discord?.status ?? "dnd"}</p>
+                    </div>
                   </div>
-                  <div className="min-w-0">
-                    <p className="text-white font-semibold text-[12px] truncate leading-tight">{discord?.displayName ?? "Your Name"}</p>
-                    <p className="text-white/50 text-[10px] capitalize truncate">{discord?.status ?? "dnd"}</p>
-                  </div>
+                  <SiDiscord size={15} className="text-white/20 shrink-0" />
                 </div>
-                <div className="bg-white/10 rounded-lg p-2">
-                  <p className="text-white/50 text-[9px] uppercase tracking-wider mb-0.5">Playing</p>
-                  <p className="text-white font-semibold text-[12px] leading-tight truncate">{discord?.activity ?? "VS Code"}</p>
+                {/* activity */}
+                <div className="bg-black/20 rounded-xl p-2.5 space-y-0.5">
+                  <p className="text-white/40 text-[9px] uppercase tracking-widest font-semibold">
+                    {discord?.activity ? "Playing" : "Activity"}
+                  </p>
+                  <p className="text-white text-[12px] font-semibold leading-snug truncate">{discord?.activity ?? "VS Code"}</p>
                   {discord?.activityDetail && (
                     <p className="text-white/40 text-[10px] truncate">{discord.activityDetail}</p>
                   )}
@@ -566,31 +637,83 @@ export default function Home() {
               </motion.div>
             </BentoCard>
 
-            {/* GITHUB — 4×1 */}
-            <BentoCard className={`${CARD} p-4 col-span-4 row-span-1 flex flex-col justify-between`}>
-              <div ref={githubRef} className="flex flex-col h-full justify-between">
-                <motion.div custom={10} variants={fadeUp} initial="hidden" animate="show" className="flex flex-col h-full justify-between">
-                  <div className="flex items-center justify-between mb-2">
-                    <p className={`${LABEL} flex items-center gap-1.5`}><SiGithub size={10} />GitHub</p>
-                    <div className="flex gap-5 text-[11px] text-[#aaa]">
-                      <span><strong className="text-[#111] tabular-nums">{githubInView ? animCommits : 0}</strong> commits this year</span>
-                      <span><strong className="text-[#30a14e] tabular-nums">{githubInView ? animStreak : 0}</strong> day streak</span>
-                      <span><strong className="text-[#111] tabular-nums">{githubInView ? animRepos : 0}</strong> repos</span>
+            {/* GITHUB + LANGUAGES — 4×1 */}
+            <BentoCard className={`${CARD} p-4 col-span-4 row-span-1 flex`}>
+              <div ref={githubRef} className="flex w-full h-full gap-4">
+                <motion.div custom={10} variants={fadeUp} initial="hidden" animate="show" className="flex flex-col flex-1 min-w-0 h-full justify-between">
+                  {/* top row: label + stats */}
+                  <div className="flex items-center gap-4 mb-2">
+                    <p className={`${LABEL} flex items-center gap-1.5 shrink-0`}><SiGithub size={10} />GitHub</p>
+                    <div className="flex gap-4 text-[11px] text-[#aaa]">
+                      <span>
+                        <strong className="text-[#111] tabular-nums text-[13px] font-black">{githubInView ? animCommits : 0}</strong>
+                        <span className="ml-1">commits</span>
+                      </span>
+                      <span>
+                        <strong className="text-[#30a14e] tabular-nums text-[13px] font-black">{githubInView ? animStreak : 0}</strong>
+                        <span className="ml-1">day streak</span>
+                      </span>
+                      <span>
+                        <strong className="text-[#111] tabular-nums text-[13px] font-black">{githubInView ? animRepos : 0}</strong>
+                        <span className="ml-1">repos</span>
+                      </span>
                     </div>
                   </div>
-                  <div className="overflow-hidden">
+                  {/* contribution grid */}
+                  <div className="overflow-hidden flex-1 flex items-end">
                     <GitHubGrid seed={stats?.totalCommitsThisYear ?? 847} inView={githubInView} />
                   </div>
                 </motion.div>
+
+                {/* divider */}
+                <div className="w-px bg-[#f0f0f0] shrink-0 my-1" />
+
+                {/* TOP LANGUAGES side panel */}
+                <div ref={langsRef} className="w-[140px] shrink-0 flex flex-col justify-between">
+                  <motion.div custom={11} variants={fadeUp} initial="hidden" animate="show" className="flex flex-col h-full justify-between">
+                    <p className={`${LABEL} mb-2`}>Top Languages</p>
+                    <div className="space-y-1.5 flex-1">
+                      {(stats?.topLanguages ?? [
+                        { name: "TypeScript", percentage: 52, color: "#3178c6" },
+                        { name: "Go",         percentage: 24, color: "#00add8" },
+                        { name: "Python",     percentage: 14, color: "#3572a5" },
+                        { name: "Other",      percentage: 10, color: "#d1d5db" },
+                      ]).map((l, i) => (
+                        <div key={l.name} className="flex items-center gap-1.5 text-[10px]">
+                          <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: l.color }} />
+                          <span className="text-[#666] font-medium flex-1 truncate">{l.name}</span>
+                          <span className="text-[#bbb] tabular-nums">{l.percentage}%</span>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="h-2 w-full rounded-full overflow-hidden flex mt-2">
+                      {(stats?.topLanguages ?? [
+                        { name: "TypeScript", percentage: 52, color: "#3178c6" },
+                        { name: "Go",         percentage: 24, color: "#00add8" },
+                        { name: "Python",     percentage: 14, color: "#3572a5" },
+                        { name: "Other",      percentage: 10, color: "#d1d5db" },
+                      ]).map((l) => (
+                        <motion.div
+                          key={l.name}
+                          initial={{ width: 0 }}
+                          animate={githubInView ? { width: `${l.percentage}%` } : { width: 0 }}
+                          transition={{ duration: 0.8, ease: "easeOut", delay: 0.3 }}
+                          style={{ backgroundColor: l.color }}
+                          className="h-full"
+                        />
+                      ))}
+                    </div>
+                  </motion.div>
+                </div>
               </div>
             </BentoCard>
 
-            {/* STEAM — 2×1 */}
-            <BentoCard className={`${CARD} p-4 col-span-2 row-span-1 flex flex-col justify-between`}>
+            {/* STEAM — 3×1 */}
+            <BentoCard className={`${CARD} p-4 col-span-3 row-span-1 flex flex-col justify-between`}>
               <motion.div custom={11} variants={fadeUp} initial="hidden" animate="show" className="flex flex-col h-full justify-between">
                 <p className={`${LABEL} flex items-center gap-1.5`}><SiSteam size={10} />Steam · {steam?.totalGames ?? 142} games</p>
                 <div className="flex gap-3 mt-1">
-                  {steam?.recentGames?.slice(0, 3).map((game, i) => (
+                  {steam?.recentGames?.slice(0, 4).map((game, i) => (
                     <div key={game.appId} className="flex-1 min-w-0 flex flex-col gap-1 slide-up" style={{ "--delay": `${i*0.1}s` } as React.CSSProperties}>
                       <div className="w-full rounded-lg overflow-hidden bg-[#f0f0f0]" style={{ aspectRatio: "16/9" }}>
                         {game.imageUrl && <img src={game.imageUrl} alt={game.name} className="w-full h-full object-cover" />}
@@ -629,37 +752,6 @@ export default function Home() {
               </motion.div>
             </BentoCard>
 
-            {/* LANGUAGES — 1×1 */}
-            <BentoCard className={`${CARD} p-4 col-span-1 row-span-1 flex flex-col justify-between`}>
-              <div ref={langsRef} className="flex flex-col h-full justify-between">
-                <motion.div custom={13} variants={fadeUp} initial="hidden" animate="show" className="flex flex-col h-full justify-between">
-                  <p className={LABEL}>Top Languages</p>
-                  <div>
-                    <div className="h-2.5 w-full rounded-full overflow-hidden flex mb-2.5">
-                      {stats?.topLanguages?.map((l) => (
-                        <motion.div
-                          key={l.name}
-                          initial={{ width: 0 }}
-                          animate={langsInView ? { width: `${l.percentage}%` } : { width: 0 }}
-                          transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
-                          style={{ backgroundColor: l.color }}
-                          className="h-full"
-                        />
-                      ))}
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      {stats?.topLanguages?.slice(0, 3).map((l) => (
-                        <div key={l.name} className="flex items-center gap-1.5 text-[10px] text-[#666]">
-                          <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: l.color }} />
-                          <span className="font-medium">{l.name}</span>
-                          <span className="text-[#aaa] ml-auto">{l.percentage}%</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </motion.div>
-              </div>
-            </BentoCard>
 
           </div>
         </BentoSection>
@@ -714,6 +806,7 @@ export default function Home() {
           ))}
 
         </aside>
+      </div>
       </div>
     </div>
   );
