@@ -150,12 +150,18 @@ const POLAROID_PHOTOS = [
 ];
 const POLAROID_CAPTIONS = ["summer '23", "buenos aires", "coffee run", "studio day", "road trip"];
 
-/* stack positions: index 0 = top card, 1 = middle, 2 = bottom */
+/* stack resting positions for each card in the pile */
 const STACK_TRANSFORMS = [
-  { y: 0,  scale: 1,    rotate: 0,    zIndex: 30 },
-  { y: 7,  scale: 0.96, rotate: 1.5,  zIndex: 20 },
-  { y: 13, scale: 0.92, rotate: -1.5, zIndex: 10 },
+  { y: 0,   scale: 1,    rotate:  0,   zIndex: 30 },
+  { y: 6,   scale: 0.97, rotate:  3,   zIndex: 20 },
+  { y: 11,  scale: 0.94, rotate: -2.5, zIndex: 10 },
 ];
+
+/* Polaroid card dimensions */
+const PHOTO_W = 148;
+const PHOTO_H = 148;
+const POLAROID_PAD = 8;
+const POLAROID_BOTTOM = 32;
 
 function PolaroidStack() {
   const [current, setCurrent] = useState(0);
@@ -173,59 +179,57 @@ function PolaroidStack() {
     return () => clearInterval(id);
   }, [n]);
 
-  /* three visible photos: current, next, after-next */
   const cards = [0, 1, 2].map(offset => ({
-    src: POLAROID_PHOTOS[(current + offset) % n],
-    caption: POLAROID_CAPTIONS[(current + offset) % n],
-    /* while leaving, promote each card one step forward */
+    src:      POLAROID_PHOTOS[(current + offset) % n],
+    caption:  POLAROID_CAPTIONS[(current + offset) % n],
     stackIdx: leaving ? Math.max(offset - 1, 0) : offset,
-    key: (current + offset) % n,
+    key:      (current + offset) % n,
     isExiting: offset === 0 && leaving,
   }));
 
-  return (
-    <>
-      {/* photo area — NO overflow-hidden so slide is clipped by outer polaroid */}
-      <div className="relative w-full flex-1">
-        {[...cards].reverse().map(({ src, stackIdx, key, isExiting }) => {
-          const t = STACK_TRANSFORMS[stackIdx];
-          return (
-            <motion.div
-              key={key}
-              className="absolute inset-0 w-full h-full"
-              animate={isExiting
-                ? { x: "-115%", rotate: -14, zIndex: t.zIndex }
-                : { x: 0, y: t.y, scale: t.scale, rotate: t.rotate, zIndex: t.zIndex }
-              }
-              transition={isExiting
-                ? { duration: 0.38, ease: [0.4, 0.0, 0.6, 1] }
-                : { type: "spring", stiffness: 280, damping: 26 }
-              }
-              style={{ transformOrigin: "bottom center" }}
-            >
-              <img src={src} alt="" draggable={false} className="w-full h-full object-cover" />
-            </motion.div>
-          );
-        })}
-      </div>
+  const cardW = POLAROID_PAD * 2 + PHOTO_W;
+  const cardH = POLAROID_PAD + PHOTO_H + POLAROID_BOTTOM;
 
-      {/* caption */}
-      <div className="shrink-0 flex items-center justify-center" style={{ height: 38 }}>
-        <AnimatePresence mode="wait">
-          <motion.p
-            key={current}
-            initial={{ opacity: 0, y: 4 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -4 }}
-            transition={{ duration: 0.25 }}
-            className="text-[11px] text-[#999] tracking-wide"
-            style={{ fontFamily: "Georgia, serif", fontStyle: "italic" }}
+  return (
+    <div className="relative" style={{ width: cardW, height: cardH }}>
+      {[...cards].reverse().map(({ src, caption, stackIdx, key, isExiting }) => {
+        const t = STACK_TRANSFORMS[stackIdx];
+        return (
+          <motion.div
+            key={key}
+            className="absolute inset-0 bg-white"
+            style={{
+              width: cardW,
+              height: cardH,
+              boxShadow: "0 4px 16px rgba(0,0,0,0.18), 0 1px 4px rgba(0,0,0,0.10)",
+              transformOrigin: "bottom center",
+            }}
+            animate={isExiting
+              ? { x: "-130%", rotate: -16, zIndex: t.zIndex }
+              : { x: 0, y: t.y, scale: t.scale, rotate: t.rotate, zIndex: t.zIndex }
+            }
+            transition={isExiting
+              ? { duration: 0.38, ease: [0.4, 0.0, 0.6, 1] }
+              : { type: "spring", stiffness: 300, damping: 28 }
+            }
           >
-            {POLAROID_CAPTIONS[current]}
-          </motion.p>
-        </AnimatePresence>
-      </div>
-    </>
+            {/* photo */}
+            <div style={{ margin: POLAROID_PAD, width: PHOTO_W, height: PHOTO_H, overflow: "hidden" }}>
+              <img src={src} alt="" draggable={false} className="w-full h-full object-cover" />
+            </div>
+            {/* caption inside polaroid */}
+            <div className="flex items-center justify-center" style={{ height: POLAROID_BOTTOM }}>
+              <p
+                className="text-[10px] text-[#888] tracking-wide"
+                style={{ fontFamily: "Georgia, serif", fontStyle: "italic" }}
+              >
+                {caption}
+              </p>
+            </div>
+          </motion.div>
+        );
+      })}
+    </div>
   );
 }
 
@@ -380,14 +384,8 @@ export default function Home() {
 
           {/* Polaroid Photos */}
           <motion.div custom={2} variants={fadeUp} initial="hidden" animate="show"
-            className="bg-white flex flex-col"
-            style={{
-              height: 220,
-              padding: "8px 8px 0 8px",
-              boxShadow: "0 4px 24px rgba(0,0,0,0.13), 0 1px 4px rgba(0,0,0,0.08)",
-              borderRadius: 3,
-              overflow: "hidden",
-            }}>
+            className="rounded-2xl border border-[#ebebeb] flex items-center justify-center"
+            style={{ height: 220, background: "#f0ede8", overflow: "hidden" }}>
             <PolaroidStack />
           </motion.div>
 
