@@ -6,7 +6,7 @@ import {
   useGetLastWorkout,
   useGetStats,
 } from "@workspace/api-client-react";
-import { motion, useInView, animate } from "framer-motion";
+import { motion, useInView, animate, AnimatePresence } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "wouter";
 import {
@@ -152,46 +152,77 @@ const POLAROID_CAPTIONS = ["summer '23", "buenos aires", "coffee run", "studio d
 
 function PolaroidStack() {
   const [current, setCurrent] = useState(0);
+  const n = POLAROID_PHOTOS.length;
+
   useEffect(() => {
     const id = setInterval(() => {
-      setCurrent(c => (c + 1) % POLAROID_PHOTOS.length);
+      setCurrent(c => (c + 1) % n);
     }, 3400);
     return () => clearInterval(id);
-  }, []);
+  }, [n]);
+
+  /* Build the visible stack: top card + 2 cards peeking behind */
+  const indices = [0, 1, 2].map(offset => (current + offset) % n);
 
   return (
     <>
-      {/* photo area — fills the container */}
+      {/* photo area — stacked cards */}
       <div className="relative w-full flex-1 overflow-hidden">
-        {POLAROID_PHOTOS.map((src, i) => (
-          <motion.img
-            key={src}
-            src={src}
-            alt=""
-            draggable={false}
-            className="absolute inset-0 w-full h-full object-cover"
-            initial={{ opacity: 0, scale: 1.04 }}
-            animate={i === current
-              ? { opacity: 1, scale: 1 }
-              : { opacity: 0, scale: 1.04 }
-            }
-            transition={{ duration: 0.7, ease: "easeInOut" }}
-          />
+        {/* behind cards (static, peeking beneath) */}
+        {[2, 1].map((stackPos) => (
+          <div
+            key={`behind-${stackPos}`}
+            className="absolute inset-0 w-full h-full"
+            style={{
+              transform: `translateY(${stackPos * 5}px) scale(${1 - stackPos * 0.03})`,
+              zIndex: 3 - stackPos,
+              transformOrigin: "bottom center",
+            }}
+          >
+            <img
+              src={POLAROID_PHOTOS[indices[stackPos]]}
+              alt=""
+              draggable={false}
+              className="w-full h-full object-cover"
+            />
+          </div>
         ))}
+
+        {/* top card — slides out on exit */}
+        <AnimatePresence mode="popLayout">
+          <motion.div
+            key={current}
+            className="absolute inset-0 w-full h-full"
+            style={{ zIndex: 10 }}
+            initial={{ x: 0, rotate: 0 }}
+            animate={{ x: 0, rotate: 0 }}
+            exit={{ x: "-110%", rotate: -8, transition: { duration: 0.45, ease: [0.4, 0, 0.2, 1] } }}
+          >
+            <img
+              src={POLAROID_PHOTOS[current]}
+              alt=""
+              draggable={false}
+              className="w-full h-full object-cover"
+            />
+          </motion.div>
+        </AnimatePresence>
       </div>
+
       {/* caption area */}
       <div className="shrink-0 flex items-center justify-center" style={{ height: 38 }}>
-        <motion.p
-          key={current}
-          initial={{ opacity: 0, y: 4 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -4 }}
-          transition={{ duration: 0.4 }}
-          className="text-[11px] text-[#999] tracking-wide"
-          style={{ fontFamily: "Georgia, serif", fontStyle: "italic" }}
-        >
-          {POLAROID_CAPTIONS[current]}
-        </motion.p>
+        <AnimatePresence mode="wait">
+          <motion.p
+            key={current}
+            initial={{ opacity: 0, y: 5 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -5 }}
+            transition={{ duration: 0.3 }}
+            className="text-[11px] text-[#999] tracking-wide"
+            style={{ fontFamily: "Georgia, serif", fontStyle: "italic" }}
+          >
+            {POLAROID_CAPTIONS[current]}
+          </motion.p>
+        </AnimatePresence>
       </div>
     </>
   );
