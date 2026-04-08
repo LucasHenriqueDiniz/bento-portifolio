@@ -65,11 +65,11 @@ router.get("/portfolio/discord", async (req, res): Promise<void> => {
     status: "dnd",
     username: "youruser#0001",
     displayName: "Your Name",
-    avatarUrl: null,
+    avatarUrl: "https://api.dicebear.com/8.x/notionists/svg?seed=discorduser&backgroundColor=5865f2&radius=50",
     activity: "Visual Studio Code",
     activityDetail: "Editing portfolio.tsx",
-    activityImageUrl: null,
-    customStatus: "building stuff",
+    activityImageUrl: "https://cdn.discordapp.com/app-icons/383226320970055681/81b59e956512e6f91e72f61f0b75f686.png",
+    customStatus: "building stuff ✨",
   });
   res.json(data);
 });
