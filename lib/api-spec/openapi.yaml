@@ -1,22 +1,22 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Portfolio API specification
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: portfolio
+    description: Portfolio data
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +24,102 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /portfolio/now-playing:
+    get:
+      operationId: getNowPlaying
+      tags: [portfolio]
+      summary: Get currently playing track from Last.fm
+      responses:
+        "200":
+          description: Now playing data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NowPlaying"
+
+  /portfolio/top-artists:
+    get:
+      operationId: getTopArtists
+      tags: [portfolio]
+      summary: Get top artists from Last.fm
+      responses:
+        "200":
+          description: Top artists list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Artist"
+
+  /portfolio/discord:
+    get:
+      operationId: getDiscordPresence
+      tags: [portfolio]
+      summary: Get Discord presence/status
+      responses:
+        "200":
+          description: Discord presence data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DiscordPresence"
+
+  /portfolio/steam:
+    get:
+      operationId: getSteamData
+      tags: [portfolio]
+      summary: Get Steam profile and recent games
+      responses:
+        "200":
+          description: Steam data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SteamData"
+
+  /portfolio/workout:
+    get:
+      operationId: getLastWorkout
+      tags: [portfolio]
+      summary: Get last workout stats
+      responses:
+        "200":
+          description: Workout data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkoutData"
+
+  /portfolio/projects:
+    get:
+      operationId: getProjects
+      tags: [portfolio]
+      summary: Get portfolio projects
+      responses:
+        "200":
+          description: Projects list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Project"
+
+  /portfolio/stats:
+    get:
+      operationId: getStats
+      tags: [portfolio]
+      summary: Get general portfolio stats (GitHub, etc.)
+      responses:
+        "200":
+          description: Portfolio stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PortfolioStats"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +130,233 @@ components:
       required:
         - status
 
+    NowPlaying:
+      type: object
+      properties:
+        isPlaying:
+          type: boolean
+        track:
+          type: ["string", "null"]
+        artist:
+          type: ["string", "null"]
+        album:
+          type: ["string", "null"]
+        albumArt:
+          type: ["string", "null"]
+        trackUrl:
+          type: ["string", "null"]
+      required:
+        - isPlaying
+        - track
+        - artist
+        - album
+        - albumArt
+        - trackUrl
+
+    Artist:
+      type: object
+      properties:
+        name:
+          type: string
+        playcount:
+          type: string
+        imageUrl:
+          type: ["string", "null"]
+        url:
+          type: string
+      required:
+        - name
+        - playcount
+        - url
+
+    DiscordPresence:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [online, idle, dnd, offline]
+        username:
+          type: string
+        displayName:
+          type: string
+        avatarUrl:
+          type: ["string", "null"]
+        activity:
+          type: ["string", "null"]
+        activityDetail:
+          type: ["string", "null"]
+        activityImageUrl:
+          type: ["string", "null"]
+        customStatus:
+          type: ["string", "null"]
+      required:
+        - status
+        - username
+        - displayName
+
+    SteamData:
+      type: object
+      properties:
+        username:
+          type: string
+        avatarUrl:
+          type: ["string", "null"]
+        currentGame:
+          type: ["string", "null"]
+        recentGames:
+          type: array
+          items:
+            $ref: "#/components/schemas/SteamGame"
+        totalGames:
+          type: integer
+      required:
+        - username
+        - recentGames
+        - totalGames
+
+    SteamGame:
+      type: object
+      properties:
+        name:
+          type: string
+        hoursPlayed:
+          type: number
+        imageUrl:
+          type: ["string", "null"]
+        appId:
+          type: string
+      required:
+        - name
+        - hoursPlayed
+        - appId
+
+    WorkoutData:
+      type: object
+      properties:
+        date:
+          type: string
+        type:
+          type: string
+        duration:
+          type: integer
+          description: Duration in minutes
+        totalVolume:
+          type: number
+          description: Total weight lifted in kg
+        exercises:
+          type: array
+          items:
+            $ref: "#/components/schemas/WorkoutExercise"
+        weeklyStats:
+          $ref: "#/components/schemas/WeeklyWorkoutStats"
+      required:
+        - date
+        - type
+        - duration
+        - totalVolume
+        - exercises
+        - weeklyStats
+
+    WorkoutExercise:
+      type: object
+      properties:
+        name:
+          type: string
+        sets:
+          type: integer
+        reps:
+          type: integer
+        weight:
+          type: number
+      required:
+        - name
+        - sets
+        - reps
+        - weight
+
+    WeeklyWorkoutStats:
+      type: object
+      properties:
+        workoutsThisWeek:
+          type: integer
+        totalVolumeThisWeek:
+          type: number
+        avgDuration:
+          type: integer
+        streak:
+          type: integer
+      required:
+        - workoutsThisWeek
+        - totalVolumeThisWeek
+        - avgDuration
+        - streak
+
+    Project:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        imageUrl:
+          type: ["string", "null"]
+        githubUrl:
+          type: ["string", "null"]
+        liveUrl:
+          type: ["string", "null"]
+        featured:
+          type: boolean
+        year:
+          type: integer
+      required:
+        - id
+        - title
+        - description
+        - tags
+        - featured
+        - year
+
+    PortfolioStats:
+      type: object
+      properties:
+        githubContributions:
+          type: integer
+        githubRepos:
+          type: integer
+        totalCommitsThisYear:
+          type: integer
+        currentStreak:
+          type: integer
+        longestStreak:
+          type: integer
+        topLanguages:
+          type: array
+          items:
+            $ref: "#/components/schemas/Language"
+      required:
+        - githubContributions
+        - githubRepos
+        - totalCommitsThisYear
+        - currentStreak
+        - longestStreak
+        - topLanguages
+
+    Language:
+      type: object
+      properties:
+        name:
+          type: string
+        percentage:
+          type: number
+        color:
+          type: string
+      required:
+        - name
+        - percentage
+        - color
