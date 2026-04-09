@@ -16,7 +16,7 @@ import {
   SiPython, SiRedis,
 } from "react-icons/si";
 import { FiTwitter, FiMail, FiExternalLink, FiBook, FiClock } from "react-icons/fi";
-import { Dumbbell } from "lucide-react";
+import { Dumbbell, Moon, Sun } from "lucide-react";
 import { BentoCard, BentoSection } from "@/components/BentoCard";
 
 /* ─── helpers ─────────────────────────────────────── */
@@ -36,8 +36,8 @@ const STATUS_COLORS: Record<string, string> = {
   offline:"#9ca3af",
 };
 
-const CARD  = "bg-white border border-[#ebebeb] rounded-2xl";
-const LABEL = "text-[10px] font-semibold uppercase tracking-widest text-[#aaa]";
+const CARD  = "bg-white dark:bg-[#181818] border border-[#ebebeb] dark:border-[#282828] rounded-2xl";
+const LABEL = "text-[10px] font-semibold uppercase tracking-widest text-[#aaa] dark:text-[#555]";
 
 /* ─── live clock ──────────────────────────────────── */
 function useClock(timezone = "America/Sao_Paulo") {
@@ -121,7 +121,7 @@ const slideVariants = {
   exit: (dir: number) => ({ x: dir > 0 ? "-100%" : "100%" }),
 };
 
-function PolaroidStack() {
+function PolaroidStack({ isDark }: { isDark?: boolean }) {
   const [current, setCurrent] = useState(0);
   const [dir, setDir] = useState(1);
   const n = POLAROID_PHOTOS.length;
@@ -140,7 +140,7 @@ function PolaroidStack() {
   }, [n]);
 
   return (
-    <div className="w-full h-full flex flex-col" style={{ padding: 10, background: "white" }}>
+    <div className="w-full h-full flex flex-col" style={{ padding: 10, background: isDark ? "#181818" : "white" }}>
       {/* photo area fills available space */}
       <div className="flex-1 relative overflow-hidden">
         <AnimatePresence mode="popLayout" custom={dir}>
@@ -164,8 +164,8 @@ function PolaroidStack() {
         <AnimatePresence mode="wait">
           <motion.p
             key={current}
-            className="text-[11px] text-[#888] tracking-wide"
-            style={{ fontFamily: "Georgia, serif", fontStyle: "italic" }}
+            className="text-[11px] tracking-wide"
+            style={{ fontFamily: "Georgia, serif", fontStyle: "italic", color: isDark ? "#666" : "#888" }}
             initial={{ opacity: 0, y: 4 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -4 }}
@@ -185,7 +185,7 @@ function PolaroidStack() {
             style={{
               width: i === current ? 14 : 5,
               height: 5,
-              backgroundColor: i === current ? "#aaa" : "#ddd",
+              backgroundColor: i === current ? (isDark ? "#666" : "#aaa") : (isDark ? "#333" : "#ddd"),
             }}
           />
         ))}
@@ -220,6 +220,11 @@ export default function Home() {
 
   const statusColor = STATUS_COLORS[discord?.status ?? "dnd"];
   const [weatherFlipped, setWeatherFlipped] = useState(false);
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", isDark);
+  }, [isDark]);
 
   /* inView refs for scroll-triggered animations */
   const githubRef  = useRef<HTMLDivElement>(null);
@@ -243,11 +248,12 @@ export default function Home() {
       episodes: 3842,
       score: 7.8,
       favorites: [
-        { title: "Neon Genesis Evangelion", year: 1995 },
-        { title: "Hunter x Hunter",        year: 2011 },
-        { title: "Vinland Saga",           year: 2019 },
-        { title: "Steins;Gate",            year: 2011 },
-        { title: "Attack on Titan",        year: 2013 },
+        { title: "Evangelion",    year: 1995, img: "https://picsum.photos/seed/eva26nge/80/120" },
+        { title: "Hunter×Hunter", year: 2011, img: "https://picsum.photos/seed/hxh2011z/80/120" },
+        { title: "Vinland Saga",  year: 2019, img: "https://picsum.photos/seed/vinlandd/80/120" },
+        { title: "Steins;Gate",   year: 2011, img: "https://picsum.photos/seed/steinsgt/80/120" },
+        { title: "Attack on Titan", year: 2013, img: "https://picsum.photos/seed/aot2013x/80/120" },
+        { title: "Mushishi",      year: 2005, img: "https://picsum.photos/seed/mushishi/80/120" },
       ],
     },
     manga: {
@@ -256,11 +262,12 @@ export default function Home() {
       chapters: 2180,
       score: 8.1,
       favorites: [
-        { title: "Berserk",           year: 1989 },
-        { title: "Vagabond",          year: 1998 },
-        { title: "Oyasumi Punpun",    year: 2007 },
-        { title: "Chainsaw Man",      year: 2018 },
-        { title: "Jujutsu Kaisen",    year: 2018 },
+        { title: "Berserk",        year: 1989, img: "https://picsum.photos/seed/berserk9/80/120" },
+        { title: "Vagabond",       year: 1998, img: "https://picsum.photos/seed/vagabond/80/120" },
+        { title: "Punpun",         year: 2007, img: "https://picsum.photos/seed/punpun77/80/120" },
+        { title: "Chainsaw Man",   year: 2018, img: "https://picsum.photos/seed/chainsawm/80/120" },
+        { title: "JJK",            year: 2018, img: "https://picsum.photos/seed/jjk2018x/80/120" },
+        { title: "One Piece",      year: 1997, img: "https://picsum.photos/seed/onepiece/80/120" },
       ],
     },
   };
@@ -306,15 +313,22 @@ export default function Home() {
   ];
 
   return (
-    <div className="h-screen flex flex-col bg-[#f5f5f5] text-[#111] font-sans overflow-hidden">
+    <div className={`h-screen flex flex-col font-sans overflow-hidden transition-colors duration-300 bg-[#f5f5f5] dark:bg-[#0d0d0d] text-[#111] dark:text-[#eee]${isDark ? " dark" : ""}`}>
 
       {/* ── NAV ── */}
-      <header className="shrink-0 z-50 h-11 flex items-center border-b border-[#ebebeb] bg-white/80 backdrop-blur px-4">
+      <header className="shrink-0 z-50 h-11 flex items-center border-b border-[#ebebeb] dark:border-[#282828] bg-white/80 dark:bg-[#181818]/80 backdrop-blur px-4">
         <div className="flex w-full max-w-[1480px] mx-auto items-center justify-between">
           <span className="font-bold text-[13px] tracking-tight">yourname.sh</span>
-          <nav className="flex gap-5 text-[13px] text-[#888]">
-            <Link href="/" className="hover:text-[#111] transition-colors">Home</Link>
-            <Link href="/projects" className="hover:text-[#111] transition-colors">Projects</Link>
+          <nav className="flex items-center gap-5 text-[13px] text-[#888] dark:text-[#666]">
+            <Link href="/" className="hover:text-[#111] dark:hover:text-[#eee] transition-colors">Home</Link>
+            <Link href="/projects" className="hover:text-[#111] dark:hover:text-[#eee] transition-colors">Projects</Link>
+            <button
+              onClick={() => setIsDark(d => !d)}
+              className="w-7 h-7 rounded-lg flex items-center justify-center border border-[#ebebeb] dark:border-[#282828] bg-white dark:bg-[#222] hover:bg-[#f0f0f0] dark:hover:bg-[#2a2a2a] transition-colors text-[#888] dark:text-[#666]"
+              title={isDark ? "Switch to light mode" : "Switch to dark mode"}
+            >
+              {isDark ? <Sun size={13} /> : <Moon size={13} />}
+            </button>
           </nav>
         </div>
       </header>
@@ -330,22 +344,22 @@ export default function Home() {
           <motion.div custom={0} variants={fadeUp} initial="hidden" animate="show" className={`${CARD} p-4`}>
             <div className="flex items-start justify-between mb-3">
               <p className={LABEL}>About Me</p>
-              <div className="flex gap-2 text-[#ccc]">
+              <div className="flex gap-2 text-[#ccc] dark:text-[#444]">
                 <a href="https://twitter.com" target="_blank" rel="noreferrer" className="hover:text-[#1da1f2] transition-colors"><FiTwitter size={12} /></a>
                 <a href="https://discord.com" target="_blank" rel="noreferrer" className="hover:text-[#5865f2] transition-colors"><SiDiscord size={12} /></a>
-                <a href="https://github.com" target="_blank" rel="noreferrer" className="hover:text-[#111] transition-colors"><SiGithub size={12} /></a>
+                <a href="https://github.com" target="_blank" rel="noreferrer" className="hover:text-[#111] dark:hover:text-[#eee] transition-colors"><SiGithub size={12} /></a>
               </div>
             </div>
             <div className="flex gap-3 items-center mb-3">
-              <div className="w-11 h-11 rounded-xl bg-[#f0f0f0] overflow-hidden shrink-0">
+              <div className="w-11 h-11 rounded-xl bg-[#f0f0f0] dark:bg-[#252525] overflow-hidden shrink-0">
                 <img src="https://api.dicebear.com/8.x/notionists/svg?seed=portfolio123&backgroundColor=c0aede" alt="avatar" className="w-full h-full object-cover" />
               </div>
               <div>
                 <p className="text-[13px] font-semibold leading-tight">Hey, I'm <span className="text-[#ef4444]">You</span></p>
-                <p className="text-[11px] text-[#aaa] mt-0.5">Developer & Designer</p>
+                <p className="text-[11px] text-[#aaa] dark:text-[#555] mt-0.5">Developer & Designer</p>
               </div>
             </div>
-            <p className="text-[12px] text-[#777] leading-relaxed">Building things on the web. Crafting digital experiences one pixel at a time.</p>
+            <p className="text-[12px] text-[#777] dark:text-[#888] leading-relaxed">Building things on the web. Crafting digital experiences one pixel at a time.</p>
           </motion.div>
 
           {/* Fun Facts */}
@@ -353,8 +367,8 @@ export default function Home() {
             <p className={`${LABEL} mb-3`}>Fun Facts</p>
             <ul className="space-y-2">
               {["Full-stack developer","Gym rat (4x/week)","Last.fm scrobbler since 2018","Dark mode everything","127 anime completed"].map((f,i) => (
-                <li key={i} className="flex gap-2 text-[12px] text-[#666] slide-up" style={{ "--delay": `${i*0.08}s` } as React.CSSProperties}>
-                  <span className="text-[#ccc] mt-px">•</span>{f}
+                <li key={i} className="flex gap-2 text-[12px] text-[#666] dark:text-[#888] slide-up" style={{ "--delay": `${i*0.08}s` } as React.CSSProperties}>
+                  <span className="text-[#ccc] dark:text-[#444] mt-px">•</span>{f}
                 </li>
               ))}
             </ul>
@@ -362,14 +376,14 @@ export default function Home() {
 
           {/* Photos */}
           <motion.div custom={2} variants={fadeUp} initial="hidden" animate="show"
-            className="rounded-2xl border border-[#ebebeb] flex-1 min-h-[200px] overflow-hidden">
-            <PolaroidStack />
+            className="rounded-2xl border border-[#ebebeb] dark:border-[#282828] flex-1 min-h-[200px] overflow-hidden">
+            <PolaroidStack isDark={isDark} />
           </motion.div>
 
           {/* Contact */}
           <motion.div custom={3} variants={fadeUp} initial="hidden" animate="show" className={`${CARD} p-4`}>
             <p className={`${LABEL} mb-2 flex items-center gap-1`}><FiMail size={9} />Contact</p>
-            <p className="text-[12px] text-[#777] leading-relaxed">
+            <p className="text-[12px] text-[#777] dark:text-[#888] leading-relaxed">
               Hit me up on{" "}<a href="https://twitter.com" className="text-[#1da1f2] hover:underline">Twitter</a>{" "}or email{" "}
               <a href="mailto:you@example.com" className="text-[#ef4444] hover:underline">you@example.com</a>
             </p>
@@ -451,25 +465,25 @@ export default function Home() {
                 style={{ transformStyle: "preserve-3d", transform: weatherFlipped ? "rotateY(180deg)" : "rotateY(0deg)" }}
               >
                 {/* FRONT — Weather */}
-                <div className="absolute inset-0 p-4 flex flex-col justify-between bg-white rounded-2xl" style={{ backfaceVisibility: "hidden" }}>
-                  <p className={`${LABEL} flex items-center gap-1`}>☁ Weather · <span className="normal-case text-[#ccc]">click to flip</span></p>
+                <div className="absolute inset-0 p-4 flex flex-col justify-between bg-white dark:bg-[#181818] rounded-2xl" style={{ backfaceVisibility: "hidden" }}>
+                  <p className={`${LABEL} flex items-center gap-1`}>☁ Weather · <span className="normal-case text-[#ccc] dark:text-[#444]">click to flip</span></p>
                   <div>
-                    <p className="text-[28px] font-black tracking-tight leading-none">27°C</p>
-                    <p className="text-[11px] text-[#aaa] mt-1">Sunny · Rio de Janeiro</p>
+                    <p className="text-[28px] font-black tracking-tight leading-none text-[#111] dark:text-[#eee]">27°C</p>
+                    <p className="text-[11px] text-[#aaa] dark:text-[#555] mt-1">Sunny · Rio de Janeiro</p>
                   </div>
                 </div>
                 {/* BACK — Clock */}
-                <div className="absolute inset-0 p-4 flex flex-col justify-between bg-white rounded-2xl" style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}>
+                <div className="absolute inset-0 p-4 flex flex-col justify-between bg-white dark:bg-[#181818] rounded-2xl" style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}>
                   <p className={`${LABEL} flex items-center gap-1.5`}><FiClock size={9} />Rio de Janeiro</p>
                   <div>
                     <div className="flex items-end gap-0.5 font-black tabular-nums leading-none">
-                      <span className="text-[26px] text-[#111]">{clock.h}</span>
-                      <span className="text-[20px] text-[#ccc] mb-0.5">:</span>
-                      <span className="text-[26px] text-[#111]">{clock.m}</span>
-                      <span className="text-[20px] text-[#ccc] mb-0.5">:</span>
-                      <span className="text-[20px] text-[#aaa] mb-0.5">{clock.s}</span>
+                      <span className="text-[26px] text-[#111] dark:text-[#eee]">{clock.h}</span>
+                      <span className="text-[20px] text-[#ccc] dark:text-[#444] mb-0.5">:</span>
+                      <span className="text-[26px] text-[#111] dark:text-[#eee]">{clock.m}</span>
+                      <span className="text-[20px] text-[#ccc] dark:text-[#444] mb-0.5">:</span>
+                      <span className="text-[20px] text-[#aaa] dark:text-[#555] mb-0.5">{clock.s}</span>
                     </div>
-                    <p className="text-[11px] text-[#aaa] mt-1">UTC−3 · BRT</p>
+                    <p className="text-[11px] text-[#aaa] dark:text-[#555] mt-1">UTC−3 · BRT</p>
                   </div>
                 </div>
               </div>
@@ -564,12 +578,12 @@ export default function Home() {
                   <p className={`${LABEL} flex items-center gap-1.5`}><SiWakatime size={9} />Wakatime</p>
                   <div className="flex gap-3 text-[10px] text-[#888] text-right">
                     <div>
-                      <p className="font-black text-[#111] text-[16px] leading-none">{waka.today.h}h<span className="text-[12px]">{waka.today.m}m</span></p>
+                      <p className="font-black text-[#111] dark:text-[#eee] text-[16px] leading-none">{waka.today.h}h<span className="text-[12px]">{waka.today.m}m</span></p>
                       <p className="text-[9px] text-[#bbb] mt-0.5">today</p>
                     </div>
-                    <div className="w-px bg-[#f0f0f0]" />
+                    <div className="w-px bg-[#f0f0f0] dark:bg-[#282828]" />
                     <div>
-                      <p className="font-black text-[#111] text-[16px] leading-none">{waka.week.h}h<span className="text-[12px]">{waka.week.m}m</span></p>
+                      <p className="font-black text-[#111] dark:text-[#eee] text-[16px] leading-none">{waka.week.h}h<span className="text-[12px]">{waka.week.m}m</span></p>
                       <p className="text-[9px] text-[#bbb] mt-0.5">this week</p>
                     </div>
                   </div>
@@ -586,7 +600,7 @@ export default function Home() {
                         </div>
                         <span className="text-[11px] text-[#bbb] tabular-nums font-semibold">{l.pct}%</span>
                       </div>
-                      <div className="h-2 bg-[#f0f0f0] rounded-full overflow-hidden">
+                      <div className="h-2 bg-[#f0f0f0] dark:bg-[#282828] rounded-full overflow-hidden">
                         <motion.div
                           initial={{ width: 0 }}
                           animate={{ width: `${l.pct}%` }}
@@ -656,11 +670,11 @@ export default function Home() {
                   {stack.map((tech, i) => (
                     <div
                       key={tech.label}
-                      className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-[#f8f8f8] border border-[#f0f0f0] hover:border-[#e0e0e0] hover:bg-white transition-all cursor-default slide-up"
+                      className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-[#f8f8f8] dark:bg-[#222] border border-[#f0f0f0] dark:border-[#2a2a2a] hover:border-[#e0e0e0] dark:hover:border-[#333] hover:bg-white dark:hover:bg-[#2a2a2a] transition-all cursor-default slide-up"
                       style={{ "--delay": `${i * 0.04}s` } as React.CSSProperties}
                     >
                       <span className="text-[13px]" style={{ color: tech.color }}>{tech.icon}</span>
-                      <span className="text-[11px] font-medium text-[#555]">{tech.label}</span>
+                      <span className="text-[11px] font-medium text-[#555] dark:text-[#999]">{tech.label}</span>
                     </div>
                   ))}
                 </div>
@@ -674,9 +688,9 @@ export default function Home() {
                   {/* header: label + stats */}
                   <div className="flex items-center gap-4 mb-3">
                     <p className={`${LABEL} flex items-center gap-1.5 shrink-0`}><SiGithub size={10} />GitHub</p>
-                    <div className="flex gap-4 text-[11px] text-[#aaa]">
+                    <div className="flex gap-4 text-[11px] text-[#aaa] dark:text-[#555]">
                       <span>
-                        <strong className="text-[#111] tabular-nums text-[13px] font-black">{githubInView ? animCommits : 0}</strong>
+                        <strong className="text-[#111] dark:text-[#eee] tabular-nums text-[13px] font-black">{githubInView ? animCommits : 0}</strong>
                         <span className="ml-1">commits</span>
                       </span>
                       <span>
@@ -684,7 +698,7 @@ export default function Home() {
                         <span className="ml-1">day streak</span>
                       </span>
                       <span>
-                        <strong className="text-[#111] tabular-nums text-[13px] font-black">{githubInView ? animRepos : 0}</strong>
+                        <strong className="text-[#111] dark:text-[#eee] tabular-nums text-[13px] font-black">{githubInView ? animRepos : 0}</strong>
                         <span className="ml-1">repos</span>
                       </span>
                     </div>
@@ -699,7 +713,7 @@ export default function Home() {
 
             {/* MYANIME LIST — 2×2 flip card */}
             <BentoCard
-              className="col-span-2 row-span-2 rounded-2xl overflow-visible cursor-pointer"
+              className={`${CARD} col-span-2 row-span-2 cursor-pointer overflow-visible`}
               style={{ perspective: "1200px" }}
               onClick={() => setMalFlipped(f => !f)}
             >
@@ -710,46 +724,52 @@ export default function Home() {
                 >
                   {/* ── FRONT — Anime ── */}
                   <div
-                    className="absolute inset-0 rounded-2xl overflow-hidden p-4 flex flex-col justify-between"
-                    style={{
-                      backfaceVisibility: "hidden",
-                      background: "linear-gradient(160deg, #1a1a2e 0%, #16213e 55%, #0f3460 100%)",
-                    }}
+                    className="absolute inset-0 rounded-2xl overflow-hidden p-4 flex flex-col gap-3 bg-white dark:bg-[#181818]"
+                    style={{ backfaceVisibility: "hidden" }}
                   >
                     {/* header */}
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between shrink-0">
                       <div className="flex items-center gap-2">
-                        <span className="text-[9px] font-bold uppercase tracking-widest text-white/30">MyAnimeList</span>
-                        <span className="text-[8px] text-white/20 bg-white/5 px-1.5 py-0.5 rounded-full border border-white/8">Anime · click to flip</span>
+                        <SiMyanimelist size={13} style={{ color: "#2e51a2" }} />
+                        <span className={LABEL}>MyAnimeList</span>
+                        <span className="text-[8px] text-[#aaa] dark:text-[#555] bg-[#f5f5f5] dark:bg-[#252525] px-1.5 py-0.5 rounded-full">
+                          Anime · tap to flip
+                        </span>
                       </div>
-                      <SiMyanimelist size={14} style={{ color: "#6699ff" }} />
                     </div>
-                    {/* stats */}
-                    <div className="flex gap-5">
+                    {/* stats row */}
+                    <div className="flex gap-6 shrink-0">
                       <div>
-                        <p className="text-white text-[30px] font-black leading-none tabular-nums">{malData.anime.completed}</p>
-                        <p className="text-white/40 text-[9px] mt-1 uppercase tracking-wider">completed</p>
+                        <p className="text-[28px] font-black leading-none tabular-nums text-[#111] dark:text-[#eee]">{malData.anime.completed}</p>
+                        <p className={`${LABEL} mt-1`}>completed</p>
                       </div>
-                      <div className="border-l border-white/10 pl-5">
-                        <p className="text-white/70 text-[30px] font-black leading-none tabular-nums">{malData.anime.watching}</p>
-                        <p className="text-white/40 text-[9px] mt-1 uppercase tracking-wider">watching</p>
+                      <div className="border-l border-[#ebebeb] dark:border-[#282828] pl-6">
+                        <p className="text-[28px] font-black leading-none tabular-nums text-[#111] dark:text-[#eee]">{malData.anime.watching}</p>
+                        <p className={`${LABEL} mt-1`}>watching</p>
                       </div>
-                      <div className="border-l border-white/10 pl-5">
-                        <p className="text-white/50 text-[30px] font-black leading-none tabular-nums">{malData.anime.episodes.toLocaleString()}</p>
-                        <p className="text-white/40 text-[9px] mt-1 uppercase tracking-wider">episodes</p>
+                      <div className="border-l border-[#ebebeb] dark:border-[#282828] pl-6">
+                        <p className="text-[28px] font-black leading-none tabular-nums text-[#111] dark:text-[#eee]">{malData.anime.episodes.toLocaleString()}</p>
+                        <p className={`${LABEL} mt-1`}>episodes</p>
                       </div>
                     </div>
                     {/* divider */}
-                    <div className="border-t border-white/8" />
-                    {/* anime favorites */}
-                    <div>
-                      <p className="text-white/25 text-[8px] uppercase tracking-widest mb-2">Anime Favorites</p>
-                      <div className="flex flex-col gap-1.5">
+                    <div className="border-t border-[#ebebeb] dark:border-[#282828] shrink-0" />
+                    {/* cover images */}
+                    <div className="flex-1 min-h-0 flex flex-col gap-2">
+                      <p className={`${LABEL} shrink-0`}>Top Anime</p>
+                      <div className="flex gap-3 overflow-x-auto" style={{ scrollbarWidth: "none" }}>
                         {malData.anime.favorites.map((f, i) => (
-                          <div key={f.title} className="flex items-center gap-2">
-                            <span className="text-[9px] text-white/20 w-3 tabular-nums">{i + 1}</span>
-                            <span className="text-[11px] text-white/65 font-medium flex-1 truncate">{f.title}</span>
-                            <span className="text-[9px] text-white/20">{f.year}</span>
+                          <div key={f.title} className="shrink-0 flex flex-col gap-1.5" style={{ width: 72 }}>
+                            <div className="rounded-xl overflow-hidden bg-[#f0f0f0] dark:bg-[#252525]" style={{ width: 72, height: 104 }}>
+                              <img
+                                src={f.img}
+                                alt={f.title}
+                                className="w-full h-full object-cover"
+                                style={{ animationDelay: `${i * 0.06}s` }}
+                              />
+                            </div>
+                            <p className="text-[9px] font-medium text-[#555] dark:text-[#999] leading-tight truncate text-center">{f.title}</p>
+                            <p className="text-[8px] text-[#bbb] dark:text-[#555] text-center tabular-nums leading-none">{f.year}</p>
                           </div>
                         ))}
                       </div>
@@ -758,47 +778,51 @@ export default function Home() {
 
                   {/* ── BACK — Manga ── */}
                   <div
-                    className="absolute inset-0 rounded-2xl overflow-hidden p-4 flex flex-col justify-between"
-                    style={{
-                      backfaceVisibility: "hidden",
-                      transform: "rotateY(180deg)",
-                      background: "linear-gradient(160deg, #1e0a24 0%, #2a1030 55%, #3d0f54 100%)",
-                    }}
+                    className="absolute inset-0 rounded-2xl overflow-hidden p-4 flex flex-col gap-3 bg-white dark:bg-[#181818]"
+                    style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
                   >
                     {/* header */}
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between shrink-0">
                       <div className="flex items-center gap-2">
-                        <span className="text-[9px] font-bold uppercase tracking-widest text-white/30">MyAnimeList</span>
-                        <span className="text-[8px] text-white/20 bg-white/5 px-1.5 py-0.5 rounded-full border border-white/8">Manga · click to flip</span>
+                        <SiMyanimelist size={13} style={{ color: "#2e51a2" }} />
+                        <span className={LABEL}>MyAnimeList</span>
+                        <span className="text-[8px] text-[#aaa] dark:text-[#555] bg-[#f5f5f5] dark:bg-[#252525] px-1.5 py-0.5 rounded-full">
+                          Manga · tap to flip
+                        </span>
                       </div>
-                      <SiMyanimelist size={14} style={{ color: "#c084fc" }} />
                     </div>
-                    {/* stats */}
-                    <div className="flex gap-5">
+                    {/* stats row */}
+                    <div className="flex gap-6 shrink-0">
                       <div>
-                        <p className="text-white text-[30px] font-black leading-none tabular-nums">{malData.manga.completed}</p>
-                        <p className="text-white/40 text-[9px] mt-1 uppercase tracking-wider">completed</p>
+                        <p className="text-[28px] font-black leading-none tabular-nums text-[#111] dark:text-[#eee]">{malData.manga.completed}</p>
+                        <p className={`${LABEL} mt-1`}>completed</p>
                       </div>
-                      <div className="border-l border-white/10 pl-5">
-                        <p className="text-white/70 text-[30px] font-black leading-none tabular-nums">{malData.manga.reading}</p>
-                        <p className="text-white/40 text-[9px] mt-1 uppercase tracking-wider">reading</p>
+                      <div className="border-l border-[#ebebeb] dark:border-[#282828] pl-6">
+                        <p className="text-[28px] font-black leading-none tabular-nums text-[#111] dark:text-[#eee]">{malData.manga.reading}</p>
+                        <p className={`${LABEL} mt-1`}>reading</p>
                       </div>
-                      <div className="border-l border-white/10 pl-5">
-                        <p className="text-white/50 text-[30px] font-black leading-none tabular-nums">{malData.manga.chapters.toLocaleString()}</p>
-                        <p className="text-white/40 text-[9px] mt-1 uppercase tracking-wider">chapters</p>
+                      <div className="border-l border-[#ebebeb] dark:border-[#282828] pl-6">
+                        <p className="text-[28px] font-black leading-none tabular-nums text-[#111] dark:text-[#eee]">{malData.manga.chapters.toLocaleString()}</p>
+                        <p className={`${LABEL} mt-1`}>chapters</p>
                       </div>
                     </div>
                     {/* divider */}
-                    <div className="border-t border-white/8" />
-                    {/* manga favorites */}
-                    <div>
-                      <p className="text-white/25 text-[8px] uppercase tracking-widest mb-2">Manga Favorites</p>
-                      <div className="flex flex-col gap-1.5">
+                    <div className="border-t border-[#ebebeb] dark:border-[#282828] shrink-0" />
+                    {/* cover images */}
+                    <div className="flex-1 min-h-0 flex flex-col gap-2">
+                      <p className={`${LABEL} shrink-0`}>Top Manga</p>
+                      <div className="flex gap-3 overflow-x-auto" style={{ scrollbarWidth: "none" }}>
                         {malData.manga.favorites.map((f, i) => (
-                          <div key={f.title} className="flex items-center gap-2">
-                            <span className="text-[9px] text-white/20 w-3 tabular-nums">{i + 1}</span>
-                            <span className="text-[11px] text-white/65 font-medium flex-1 truncate">{f.title}</span>
-                            <span className="text-[9px] text-white/20">{f.year}</span>
+                          <div key={f.title} className="shrink-0 flex flex-col gap-1.5" style={{ width: 72 }}>
+                            <div className="rounded-xl overflow-hidden bg-[#f0f0f0] dark:bg-[#252525]" style={{ width: 72, height: 104 }}>
+                              <img
+                                src={f.img}
+                                alt={f.title}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                            <p className="text-[9px] font-medium text-[#555] dark:text-[#999] leading-tight truncate text-center">{f.title}</p>
+                            <p className="text-[8px] text-[#bbb] dark:text-[#555] text-center tabular-nums leading-none">{f.year}</p>
                           </div>
                         ))}
                       </div>
@@ -847,12 +871,12 @@ export default function Home() {
               {(Array.isArray(topArtists) ? topArtists : []).slice(0, 4).map((artist, i) => (
                 <a key={i} href={artist.url} target="_blank" rel="noreferrer"
                   className="flex items-center gap-2 group slide-up" style={{ "--delay": `${i*0.07}s` } as React.CSSProperties}>
-                  <span className="text-[10px] text-[#ccc] w-3 shrink-0">{i + 1}</span>
-                  <div className="w-6 h-6 rounded-full bg-[#f0f0f0] overflow-hidden shrink-0">
+                  <span className="text-[10px] text-[#ccc] dark:text-[#444] w-3 shrink-0">{i + 1}</span>
+                  <div className="w-6 h-6 rounded-full bg-[#f0f0f0] dark:bg-[#252525] overflow-hidden shrink-0">
                     {artist.imageUrl && <img src={artist.imageUrl} alt={artist.name} className="w-full h-full object-cover" />}
                   </div>
                   <span className="text-[12px] font-medium truncate flex-1 group-hover:text-[#ef4444] transition-colors">{artist.name}</span>
-                  <span className="text-[10px] text-[#ccc] shrink-0">{Number(artist.playcount).toLocaleString()}</span>
+                  <span className="text-[10px] text-[#ccc] dark:text-[#444] shrink-0">{Number(artist.playcount).toLocaleString()}</span>
                 </a>
               ))}
             </div>
@@ -873,16 +897,16 @@ export default function Home() {
               href="#"
               target="_blank"
               rel="noreferrer"
-              className={`${CARD} p-3 flex items-center gap-3 hover:border-[#d5d5d5] transition-colors group`}
+              className={`${CARD} p-3 flex items-center gap-3 hover:border-[#d5d5d5] dark:hover:border-[#333] transition-colors group`}
             >
-              <div className="w-8 h-8 rounded-xl flex items-center justify-center bg-[#f5f5f5] shrink-0" style={{ color: s.color }}>
+              <div className="w-8 h-8 rounded-xl flex items-center justify-center bg-[#f5f5f5] dark:bg-[#252525] shrink-0" style={{ color: s.color === "#111" ? (isDark ? "#eee" : "#111") : s.color }}>
                 {s.icon}
               </div>
               <div className="min-w-0 flex-1">
                 <p className="text-[12px] font-semibold truncate">{s.label}</p>
-                <p className="text-[10px] text-[#aaa] truncate">{s.sub}</p>
+                <p className="text-[10px] text-[#aaa] dark:text-[#555] truncate">{s.sub}</p>
               </div>
-              <FiExternalLink size={11} className="text-[#ddd] group-hover:text-[#aaa] transition-colors shrink-0" />
+              <FiExternalLink size={11} className="text-[#ddd] dark:text-[#333] group-hover:text-[#aaa] dark:group-hover:text-[#666] transition-colors shrink-0" />
             </motion.a>
           ))}
 
