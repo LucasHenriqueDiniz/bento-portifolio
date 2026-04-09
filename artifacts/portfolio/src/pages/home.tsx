@@ -63,32 +63,43 @@ function useClock(timezone = "America/Sao_Paulo") {
 
 /* ─── GitHub grid ─────────────────────────────────── */
 function GitHubGrid({ seed, inView }: { seed: number; inView: boolean }) {
-  const WEEKS = 26, DAYS = 7;
+  const WEEKS = 52, DAYS = 7;
   const cells = Array.from({ length: WEEKS * DAYS }, (_, i) => {
     const v = Math.abs(Math.sin(i * 9.1 + seed * 0.3) * 4) | 0;
     return Math.min(Math.abs(Math.cos(i * 3.7)) > 0.5 ? v : 0, 4);
   });
   const shades = ["#ebedf0", "#9be9a8", "#40c463", "#30a14e", "#216e39"];
+  const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   return (
-    <div className="flex gap-[3px]" style={{ lineHeight: 0 }}>
-      {Array.from({ length: WEEKS }).map((_, w) => (
-        <div key={w} className="flex flex-col gap-[3px]">
-          {Array.from({ length: DAYS }).map((_, d) => {
-            const idx = w * DAYS + d;
-            return (
-              <div
-                key={d}
-                className={inView ? "gh-dot" : ""}
-                style={{
-                  width: 10, height: 10, borderRadius: 2,
-                  backgroundColor: shades[cells[idx]],
-                  "--dot-delay": `${idx * 3}ms`,
-                } as React.CSSProperties}
-              />
-            );
-          })}
-        </div>
-      ))}
+    <div className="w-full flex flex-col gap-1.5">
+      {/* month labels */}
+      <div className="flex w-full">
+        {MONTHS.map((m) => (
+          <span key={m} className="text-[8px] text-[#ccc] dark:text-[#444] flex-1 min-w-0 leading-none">{m}</span>
+        ))}
+      </div>
+      {/* grid — fills full width */}
+      <div className="w-full flex gap-[3px]">
+        {Array.from({ length: WEEKS }).map((_, w) => (
+          <div key={w} className="flex flex-col gap-[3px] flex-1 min-w-0">
+            {Array.from({ length: DAYS }).map((_, d) => {
+              const idx = w * DAYS + d;
+              return (
+                <div
+                  key={d}
+                  className={inView ? "gh-dot" : ""}
+                  style={{
+                    aspectRatio: "1",
+                    borderRadius: 2,
+                    backgroundColor: shades[cells[idx]],
+                    "--dot-delay": `${idx * 2}ms`,
+                  } as React.CSSProperties}
+                />
+              );
+            })}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -255,6 +266,7 @@ export default function Home() {
   const [malHover,   setMalHover]   = useState<string | null>(null);
   const [steamIdx,   setSteamIdx]   = useState(0);
   const [projIdx,    setProjIdx]    = useState(0);
+  const [buildIdx,   setBuildIdx]   = useState(0);
 
   useEffect(() => {
     const t = setInterval(() => setMalPage(p => (p + 1) % 2), 4500);
@@ -270,6 +282,11 @@ export default function Home() {
 
   useEffect(() => {
     const t = setInterval(() => setProjIdx(i => (i + 1) % 4), 4000);
+    return () => clearInterval(t);
+  }, []);
+
+  useEffect(() => {
+    const t = setInterval(() => setBuildIdx(i => (i + 1) % 3), 2500);
     return () => clearInterval(t);
   }, []);
 
@@ -498,21 +515,40 @@ export default function Home() {
                     </p>
                   </div>
 
-                  {/* bullets */}
-                  <div className={`flex flex-col gap-1.5 py-3 border-t border-b ${isDark ? "border-white/[0.06]" : "border-[#ebebeb]"}`}>
-                    {[
+                  {/* cycling bullet */}
+                  {(() => {
+                    const bullets = [
                       { text: "question system", done: true },
                       { text: "Supabase + Expo", done: true },
                       { text: "offline sync", done: false },
-                    ].map((item, i) => (
-                      <div key={i} className="flex items-start gap-1.5">
-                        <span className="text-[11px] font-bold shrink-0 leading-snug" style={{ color: item.done ? ACCENT : "#ccc" }}>→</span>
-                        <p className={`text-[10px] leading-snug ${item.done ? "text-[#555] dark:text-[#888]" : "text-[#bbb] dark:text-[#444]"}`}>
-                          {item.text}
-                        </p>
+                    ];
+                    const item = bullets[buildIdx];
+                    return (
+                      <div className={`py-3 border-t border-b ${isDark ? "border-white/[0.06]" : "border-[#ebebeb]"}`}>
+                        <AnimatePresence mode="wait">
+                          <motion.div
+                            key={buildIdx}
+                            initial={{ opacity: 0, y: 6 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -6 }}
+                            transition={{ duration: 0.25 }}
+                            className="flex items-center gap-1.5"
+                          >
+                            <span className="text-[11px] font-bold shrink-0" style={{ color: item.done ? ACCENT : "#ccc" }}>→</span>
+                            <p className={`text-[10px] leading-snug ${item.done ? "text-[#555] dark:text-[#888]" : "text-[#bbb] dark:text-[#444]"}`}>
+                              {item.text}
+                            </p>
+                          </motion.div>
+                        </AnimatePresence>
+                        {/* step dots */}
+                        <div className="flex gap-1 mt-2">
+                          {bullets.map((_, i) => (
+                            <span key={i} className="rounded-full transition-all duration-300" style={{ width: i === buildIdx ? 12 : 4, height: 4, backgroundColor: i === buildIdx ? ACCENT : (isDark ? "#333" : "#ddd") }} />
+                          ))}
+                        </div>
                       </div>
-                    ))}
-                  </div>
+                    );
+                  })()}
 
                   {/* tech icons — icon only */}
                   <div className="flex items-center gap-2.5 pt-2.5">
@@ -713,10 +749,10 @@ export default function Home() {
               </motion.div>
             </BentoCard>
 
-            {/* DISCORD — col4, rows3-6 */}
+            {/* DISCORD — col4, rows3-5 */}
             <BentoCard
               className="rounded-2xl overflow-hidden"
-              style={{ backgroundColor: isDark ? "#1e1f22" : "#f5f6ff", border: isDark ? "1px solid #2b2d31" : "1px solid #e3e4f0", gridColumn: "4", gridRow: "3 / 6" }}
+              style={{ backgroundColor: isDark ? "#1e1f22" : "#f5f6ff", border: isDark ? "1px solid #2b2d31" : "1px solid #e3e4f0", gridColumn: "4", gridRow: "3 / 5" }}
             >
               <motion.div custom={8} variants={fadeUp} initial="hidden" animate="show" className="p-3.5 h-full flex flex-col gap-3">
 
@@ -773,10 +809,10 @@ export default function Home() {
               </motion.div>
             </BentoCard>
 
-            {/* CV CTA — col4, row6 */}
+            {/* CV CTA — col4, rows5-7 */}
             <BentoCard
-              className="rounded-2xl overflow-hidden cursor-pointer group"
-              style={{ gridColumn: "4", gridRow: "6 / 7" }}
+              className={`${CARD} overflow-hidden cursor-pointer group`}
+              style={{ gridColumn: "4", gridRow: "5 / 7" }}
               onClick={() => navigate("/cv")}
             >
               <motion.div
@@ -784,31 +820,30 @@ export default function Home() {
                 variants={fadeUp}
                 initial="hidden"
                 animate="show"
-                className="relative h-full flex items-center justify-between px-4 overflow-hidden"
-                style={{
-                  background: isDark
-                    ? `linear-gradient(135deg, ${ACCENT}22 0%, transparent 70%), #111`
-                    : `linear-gradient(135deg, ${ACCENT}14 0%, transparent 70%), #f8f9fb`,
-                  border: `1px solid ${ACCENT}28`,
-                  borderRadius: 16,
-                }}
+                className="p-4 h-full flex flex-col justify-between"
               >
-                {/* decorative blob */}
-                <div
-                  className="absolute -right-6 -top-6 w-20 h-20 rounded-full blur-2xl pointer-events-none"
-                  style={{ backgroundColor: ACCENT, opacity: 0.15 }}
-                />
+                <p className={LABEL}>Résumé</p>
 
-                <div className="relative z-10">
-                  <p className="text-[10px] font-bold uppercase tracking-widest mb-0.5" style={{ color: ACCENT, opacity: 0.7 }}>Résumé</p>
-                  <p className="text-[14px] font-black text-[#111] dark:text-[#eee] leading-none">View CV</p>
+                <div className="flex flex-col gap-1">
+                  <div
+                    className="w-10 h-10 rounded-xl flex items-center justify-center mb-1"
+                    style={{ backgroundColor: `${ACCENT}12` }}
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={ACCENT} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                      <polyline points="14,2 14,8 20,8"/>
+                      <line x1="16" y1="13" x2="8" y2="13"/>
+                      <line x1="16" y1="17" x2="8" y2="17"/>
+                      <polyline points="10,9 9,9 8,9"/>
+                    </svg>
+                  </div>
+                  <p className="text-[15px] font-black text-[#111] dark:text-[#eee] leading-tight">View CV</p>
+                  <p className="text-[10px] text-[#bbb] dark:text-[#444] leading-snug">Experience, skills & projects</p>
                 </div>
 
-                <div
-                  className="relative z-10 w-8 h-8 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform shrink-0"
-                  style={{ backgroundColor: ACCENT }}
-                >
-                  <FiArrowUpRight size={14} className="text-white" />
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[11px] font-semibold" style={{ color: ACCENT }}>Open résumé</span>
+                  <FiArrowUpRight size={11} style={{ color: ACCENT }} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                 </div>
               </motion.div>
             </BentoCard>
@@ -1002,67 +1037,50 @@ export default function Home() {
                 </div>
 
                 {/* cycling project card */}
-                <div className="flex-1 min-h-0 relative overflow-hidden rounded-xl">
+                <div className={`flex-1 min-h-0 relative overflow-hidden rounded-xl border ${isDark ? "border-white/[0.07]" : "border-[#ebebeb]"}`}>
                   <AnimatePresence mode="wait">
                     {(() => {
                       const p = projects[projIdx];
                       return (
                         <motion.div
                           key={projIdx}
-                          initial={{ opacity: 0, x: 18 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          exit={{ opacity: 0, x: -18 }}
-                          transition={{ duration: 0.3, ease: "easeOut" }}
-                          className="absolute inset-0 flex flex-col justify-between p-4 overflow-hidden"
-                          style={{
-                            background: isDark
-                              ? `linear-gradient(135deg, ${p.color}1a 0%, transparent 55%), #111`
-                              : `linear-gradient(135deg, ${p.color}12 0%, transparent 55%), #f8f9fb`,
-                            border: `1px solid ${p.color}28`,
-                            borderRadius: 12,
-                          }}
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -10 }}
+                          transition={{ duration: 0.25, ease: "easeOut" }}
+                          className="absolute inset-0 flex"
                         >
-                          {/* decorative blurred circle */}
-                          <div
-                            className="absolute -right-8 -top-8 w-32 h-32 rounded-full blur-2xl pointer-events-none"
-                            style={{ backgroundColor: p.color, opacity: 0.12 }}
-                          />
+                          {/* left color accent bar */}
+                          <div className="w-1 shrink-0 rounded-l-xl" style={{ backgroundColor: p.color }} />
 
-                          {/* top: icon + name + desc */}
-                          <div className="relative z-10 flex items-start justify-between gap-2">
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2 mb-2.5">
-                                <span
-                                  className="w-7 h-7 rounded-lg flex items-center justify-center text-white text-[11px] font-black shrink-0 shadow-sm"
-                                  style={{ backgroundColor: p.color }}
-                                >
-                                  {p.name[0].toUpperCase()}
-                                </span>
-                                {p.wip && (
-                                  <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full border" style={{ borderColor: `${ACCENT}40`, color: ACCENT, backgroundColor: `${ACCENT}10` }}>WIP</span>
-                                )}
+                          <div className="flex-1 flex flex-col justify-between p-4">
+                            {/* top */}
+                            <div className="flex items-start justify-between gap-2">
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-1.5 mb-2">
+                                  <SiGithub size={11} className="text-[#999] dark:text-[#555] shrink-0" />
+                                  <h3 className="text-[13px] font-bold truncate text-[#111] dark:text-[#eee]">{p.name}</h3>
+                                  {p.wip && (
+                                    <span className="text-[8px] font-bold px-1.5 py-0.5 rounded-full shrink-0" style={{ color: ACCENT, backgroundColor: `${ACCENT}12` }}>WIP</span>
+                                  )}
+                                </div>
+                                <p className="text-[11px] text-[#888] dark:text-[#555] leading-snug">{p.description}</p>
                               </div>
-                              <h3 className="text-[18px] font-black leading-tight" style={{ color: isDark ? "#f0f0f0" : "#111" }}>
-                                {p.name}
-                              </h3>
-                              <p className="text-[11px] leading-snug mt-1.5" style={{ color: isDark ? "#666" : "#999" }}>
-                                {p.description}
-                              </p>
+                              <a href={p.url} onClick={e => e.stopPropagation()} className="shrink-0 text-[#ccc] dark:text-[#444] hover:text-[#888] transition-colors">
+                                <FiArrowUpRight size={12} />
+                              </a>
                             </div>
-                            <a href={p.url} onClick={e => e.stopPropagation()} className="shrink-0 rounded-lg p-1" style={{ color: "#bbb" }}>
-                              <FiArrowUpRight size={13} />
-                            </a>
-                          </div>
 
-                          {/* bottom: language + stars */}
-                          <div className="relative z-10 flex items-center justify-between">
-                            <div className="flex items-center gap-1.5">
-                              <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: p.color }} />
-                              <span className="text-[11px] font-medium" style={{ color: isDark ? "#666" : "#999" }}>{p.language}</span>
-                            </div>
-                            <div className="flex items-center gap-1.5" style={{ color: isDark ? "#555" : "#bbb" }}>
-                              <svg width="11" height="11" viewBox="0 0 16 16" fill="currentColor"><path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.75.75 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z"/></svg>
-                              <span className="text-[11px] font-medium tabular-nums">{p.stars}</span>
+                            {/* bottom */}
+                            <div className="flex items-center gap-4">
+                              <div className="flex items-center gap-1.5">
+                                <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: p.color }} />
+                                <span className="text-[10px] text-[#999] dark:text-[#555]">{p.language}</span>
+                              </div>
+                              <div className="flex items-center gap-1 text-[#bbb] dark:text-[#444]">
+                                <svg width="10" height="10" viewBox="0 0 16 16" fill="currentColor"><path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.75.75 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z"/></svg>
+                                <span className="text-[10px] tabular-nums">{p.stars}</span>
+                              </div>
                             </div>
                           </div>
                         </motion.div>
@@ -1070,16 +1088,16 @@ export default function Home() {
                     })()}
                   </AnimatePresence>
 
-                  {/* pagination dots — above content */}
-                  <div className="absolute bottom-3.5 left-1/2 -translate-x-1/2 flex gap-1 z-20">
+                  {/* pagination dots */}
+                  <div className="absolute bottom-3 right-3 flex gap-1 z-20">
                     {projects.map((_, i) => (
                       <button
                         key={i}
                         onClick={e => { e.stopPropagation(); setProjIdx(i); }}
                         className="rounded-full transition-all duration-300"
                         style={{
-                          width: i === projIdx ? 16 : 5,
-                          height: 5,
+                          width: i === projIdx ? 14 : 4,
+                          height: 4,
                           backgroundColor: i === projIdx ? projects[projIdx].color : (isDark ? "#333" : "#ddd"),
                         }}
                       />
