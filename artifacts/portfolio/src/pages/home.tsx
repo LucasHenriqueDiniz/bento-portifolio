@@ -587,8 +587,8 @@ export default function Home() {
               </motion.div>
             </BentoCard>
 
-            {/* WAKATIME — 2×1 (fills gap below Last Workout) */}
-            <BentoCard className={`${CARD} p-4 col-span-2 row-span-1 flex flex-col justify-between`}>
+            {/* WAKATIME — 3×1 */}
+            <BentoCard className={`${CARD} p-4 col-span-3 row-span-1 flex flex-col justify-between`}>
               <motion.div custom={9} variants={fadeUp} initial="hidden" animate="show" className="flex flex-col h-full justify-between">
                 <div className="flex items-center justify-between">
                   <p className={`${LABEL} flex items-center gap-1.5`}><SiWakatime size={9} />Wakatime</p>
@@ -617,32 +617,6 @@ export default function Home() {
               </motion.div>
             </BentoCard>
 
-            {/* CURRENTLY READING — 1×1 (fills gap below Last Workout) */}
-            <BentoCard className={`${CARD} p-4 col-span-1 row-span-1 flex flex-col justify-between overflow-hidden`}>
-              <motion.div custom={10} variants={fadeUp} initial="hidden" animate="show" className="flex gap-3 h-full">
-                <div className="w-10 shrink-0 rounded-md overflow-hidden shadow-sm self-start">
-                  <img src={reading.cover} alt={reading.title} className="w-full h-auto object-cover" />
-                </div>
-                <div className="flex flex-col justify-between flex-1 min-w-0">
-                  <div>
-                    <p className={`${LABEL} mb-1 flex items-center gap-1`}><FiBook size={9} />Reading</p>
-                    <p className="text-[12px] font-bold leading-tight text-[#111] line-clamp-2">{reading.title}</p>
-                  </div>
-                  <div>
-                    <div className="h-1 w-full bg-[#f0f0f0] rounded-full overflow-hidden mb-1">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: `${Math.round((reading.page / reading.total) * 100)}%` }}
-                        transition={{ duration: 1, ease: "easeOut", delay: 0.3 }}
-                        className="h-full bg-[#f97316] rounded-full"
-                      />
-                    </div>
-                    <p className="text-[10px] text-[#aaa]">p. {reading.page} / {reading.total}</p>
-                  </div>
-                </div>
-              </motion.div>
-            </BentoCard>
-
             {/* TECH STACK — 4×1 */}
             <BentoCard className={`${CARD} p-4 col-span-4 row-span-1 flex flex-col justify-between`}>
               <motion.div custom={11} variants={fadeUp} initial="hidden" animate="show" className="flex flex-col h-full justify-between">
@@ -662,8 +636,8 @@ export default function Home() {
               </motion.div>
             </BentoCard>
 
-            {/* GITHUB + LANGUAGES — 4×1 */}
-            <BentoCard className={`${CARD} p-4 col-span-4 row-span-1 flex`}>
+            {/* GITHUB + LANGUAGES — 3×1 */}
+            <BentoCard className={`${CARD} p-4 col-span-3 row-span-1 flex`}>
               <div ref={githubRef} className="flex w-full h-full gap-4">
                 <motion.div custom={10} variants={fadeUp} initial="hidden" animate="show" className="flex flex-col flex-1 min-w-0 h-full justify-between">
                   {/* top row: label + stats */}
@@ -758,8 +732,8 @@ export default function Home() {
               </motion.div>
             </BentoCard>
 
-            {/* MYANIME LIST — 1×1 */}
-            <BentoCard className="col-span-1 row-span-1 rounded-2xl overflow-hidden" style={{ background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%)" }}>
+            {/* MYANIME LIST — 1×2 */}
+            <BentoCard className="col-span-1 row-span-2 rounded-2xl overflow-hidden" style={{ background: "linear-gradient(160deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)" }}>
               <motion.div custom={12} variants={fadeUp} initial="hidden" animate="show" className="p-3 h-full flex flex-col justify-between">
                 <div className="flex items-center justify-between">
                   <span className="text-[9px] font-bold uppercase tracking-widest text-white/30">MyAnimeList</span>
