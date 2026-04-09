@@ -1,86 +1,97 @@
-import { useEffect, useRef, useState } from "react";
+import { useInView, useMotionValue, useSpring } from "framer-motion";
+import { useCallback, useEffect, useRef } from "react";
 
 interface CountUpProps {
-  from?: number;
   to: number;
-  separator?: string;
+  from?: number;
   direction?: "up" | "down";
+  delay?: number;
   duration?: number;
   className?: string;
-  startCounting?: boolean;
-}
-
-function Digit({ value, duration, direction }: { value: string; duration: number; direction: "up" | "down" }) {
-  const isNum = /\d/.test(value);
-  if (!isNum) return <span>{value}</span>;
-
-  const num = parseInt(value, 10);
-  const digits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-
-  return (
-    <span
-      className="inline-block overflow-hidden"
-      style={{ height: "1.1em", verticalAlign: "text-bottom", lineHeight: "1.1em" }}
-    >
-      <span
-        className="flex flex-col"
-        style={{
-          transform: `translateY(${direction === "up" ? -num * 1.1 : -(9 - num) * 1.1}em)`,
-          transition: `transform ${duration}s cubic-bezier(0.25, 1, 0.5, 1)`,
-          willChange: "transform",
-        }}
-      >
-        {(direction === "up" ? digits : [...digits].reverse()).map((d) => (
-          <span
-            key={d}
-            style={{ display: "block", height: "1.1em", lineHeight: "1.1em", textAlign: "center" }}
-          >
-            {d}
-          </span>
-        ))}
-      </span>
-    </span>
-  );
+  startWhen?: boolean;
+  separator?: string;
+  onStart?: () => void;
+  onEnd?: () => void;
 }
 
 export default function CountUp({
-  from = 0,
   to,
-  separator = "",
+  from = 0,
   direction = "up",
-  duration = 1,
+  delay = 0,
+  duration = 2,
   className = "",
-  startCounting = true,
+  startWhen = true,
+  separator = "",
+  onStart,
+  onEnd,
 }: CountUpProps) {
-  const [display, setDisplay] = useState(from);
-  const triggered = useRef(false);
+  const ref = useRef<HTMLSpanElement>(null);
+  const motionValue = useMotionValue(direction === "down" ? to : from);
+
+  const damping = 20 + 40 * (1 / duration);
+  const stiffness = 100 * (1 / duration);
+
+  const springValue = useSpring(motionValue, { damping, stiffness });
+
+  const isInView = useInView(ref, { once: true, margin: "0px" });
+
+  const getDecimalPlaces = (num: number): number => {
+    const str = num.toString();
+    if (str.includes(".")) {
+      const decimals = str.split(".")[1];
+      if (parseInt(decimals) !== 0) return decimals.length;
+    }
+    return 0;
+  };
+
+  const maxDecimals = Math.max(getDecimalPlaces(from), getDecimalPlaces(to));
+
+  const formatValue = useCallback(
+    (latest: number) => {
+      const hasDecimals = maxDecimals > 0;
+      const options: Intl.NumberFormatOptions = {
+        useGrouping: !!separator,
+        minimumFractionDigits: hasDecimals ? maxDecimals : 0,
+        maximumFractionDigits: hasDecimals ? maxDecimals : 0,
+      };
+      const formattedNumber = Intl.NumberFormat("en-US", options).format(latest);
+      return separator ? formattedNumber.replace(/,/g, separator) : formattedNumber;
+    },
+    [maxDecimals, separator],
+  );
 
   useEffect(() => {
-    if (!startCounting || triggered.current) return;
-    triggered.current = true;
+    if (ref.current) {
+      ref.current.textContent = formatValue(direction === "down" ? to : from);
+    }
+  }, [from, to, direction, formatValue]);
 
-    const start = performance.now();
-    const diff = to - from;
+  useEffect(() => {
+    if (isInView && startWhen) {
+      if (typeof onStart === "function") onStart();
 
-    const tick = (now: number) => {
-      const t = Math.min((now - start) / (duration * 1000), 1);
-      const eased = 1 - Math.pow(1 - t, 3);
-      setDisplay(Math.round(from + diff * eased));
-      if (t < 1) requestAnimationFrame(tick);
-    };
+      const timeoutId = setTimeout(() => {
+        motionValue.set(direction === "down" ? from : to);
+      }, delay * 1000);
 
-    requestAnimationFrame(tick);
-  }, [startCounting, from, to, duration]);
+      const durationTimeoutId = setTimeout(() => {
+        if (typeof onEnd === "function") onEnd();
+      }, delay * 1000 + duration * 1000);
 
-  const formatted = separator
-    ? display.toString().replace(/\B(?=(\d{3})+(?!\d))/g, separator)
-    : display.toString();
+      return () => {
+        clearTimeout(timeoutId);
+        clearTimeout(durationTimeoutId);
+      };
+    }
+  }, [isInView, startWhen, motionValue, direction, from, to, delay, onStart, onEnd, duration]);
 
-  return (
-    <span className={`inline-flex items-baseline tabular-nums ${className}`}>
-      {formatted.split("").map((ch, i) => (
-        <Digit key={i} value={ch} duration={duration} direction={direction} />
-      ))}
-    </span>
-  );
+  useEffect(() => {
+    const unsubscribe = springValue.on("change", (latest: number) => {
+      if (ref.current) ref.current.textContent = formatValue(latest);
+    });
+    return () => unsubscribe();
+  }, [springValue, formatValue]);
+
+  return <span className={className} ref={ref} />;
 }

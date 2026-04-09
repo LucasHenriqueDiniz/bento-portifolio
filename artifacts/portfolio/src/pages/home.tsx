@@ -217,10 +217,7 @@ export default function Home() {
 
   /* inView refs for scroll-triggered animations */
   const githubRef  = useRef<HTMLDivElement>(null);
-  const workoutRef = useRef<HTMLDivElement>(null);
-
-  const githubInView  = useInView(githubRef,  { once: true, margin: "-50px" });
-  const workoutInView = useInView(workoutRef, { once: true, margin: "-50px" });
+  const githubInView = useInView(githubRef, { once: true, margin: "-50px" });
 
 
   /* MAL mock data */
@@ -253,10 +250,8 @@ export default function Home() {
     },
   };
   const [malFlipped, setMalFlipped] = useState(false);
-  const [malPage,    setMalPage]    = useState(0);   // 0 = items[0..4], 1 = items[1..5]
+  const [malPage,    setMalPage]    = useState(0);
   const [malHover,   setMalHover]   = useState<string | null>(null);
-  const malRef    = useRef<HTMLDivElement>(null);
-  const malInView = useInView(malRef, { once: true, margin: "-50px" });
 
   useEffect(() => {
     const t = setInterval(() => setMalPage(p => (p + 1) % 2), 4500);
@@ -275,6 +270,36 @@ export default function Home() {
       { name: "MDX",        pct: 10, color: "#f97316" },
     ],
   };
+
+  /* Projects mock data */
+  const projects = [
+    {
+      name: "lucashdo.com",
+      description: "Personal bento portfolio with live API integrations",
+      stars: 42,
+      language: "TypeScript",
+      color: "#3d72cc",
+      url: "#",
+      wip: true,
+    },
+    {
+      name: "animelist-tracker",
+      description: "MAL API wrapper with caching & webhooks",
+      stars: 18,
+      language: "Go",
+      color: "#00add8",
+      url: "#",
+    },
+    {
+      name: "workout-logger",
+      description: "Lyfta integration & progression analytics",
+      stars: 7,
+      language: "TypeScript",
+      color: "#3178c6",
+      url: "#",
+    },
+  ];
+  const totalStars = projects.reduce((a, p) => a + p.stars, 0);
 
   /* Currently reading mock */
   const reading = {
@@ -385,7 +410,7 @@ export default function Home() {
 
         {/* ════ CENTER BENTO ════ */}
         <BentoSection className="flex-1 min-w-0 h-full overflow-hidden">
-          <div className="grid gap-2.5 h-full" style={{ gridTemplateColumns: "repeat(4, 1fr)", gridAutoRows: "calc((100dvh - 124px) / 7)" }}>
+          <div className="grid gap-2.5 h-full" style={{ gridTemplateColumns: "repeat(4, 1fr)", gridAutoRows: "calc((100dvh - 124px) / 8)" }}>
 
             {/* WEATHER / CLOCK FLIP — 1×1 (moved to col1 row1 after removing STATUS) */}
             <BentoCard
@@ -422,23 +447,62 @@ export default function Home() {
               </div>
             </BentoCard>
 
-            {/* MAP — 2×2 (explicitly positioned so it stays at col2-3) */}
+            {/* PROJECTS — 2×2 */}
             <BentoCard
-              className="rounded-2xl border border-[#ebebeb] dark:border-[#282828] overflow-hidden relative"
+              className={`${CARD} overflow-hidden`}
               style={{ gridColumn: "2 / 4", gridRow: "1 / 3" }}
             >
-              <motion.div custom={3} variants={fadeUp} initial="hidden" animate="show" className="w-full h-full">
-                <iframe
-                  src="https://www.openstreetmap.org/export/embed.html?bbox=-43.35%2C-23.05%2C-43.05%2C-22.75&layer=mapnik"
-                  className="w-full h-full grayscale opacity-80"
-                  style={{ border: 0, pointerEvents: "none" }}
-                  title="map"
-                />
-                <div className="absolute bottom-0 left-0 right-0 p-3">
-                  <div className="bg-white/90 dark:bg-[#181818]/90 backdrop-blur rounded-xl px-3 py-2 inline-flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-[#ef4444] status-dot" style={{ color: "#ef4444" }} />
-                    <span className="text-[12px] font-semibold text-[#111] dark:text-[#eee]">Rio de Janeiro, Brazil</span>
-                  </div>
+              <motion.div custom={3} variants={fadeUp} initial="hidden" animate="show" className="p-4 h-full flex flex-col gap-3">
+                {/* header */}
+                <div className="flex items-center justify-between">
+                  <p className={`${LABEL} flex items-center gap-1.5`}><SiGithub size={9} />Projects</p>
+                  <span className="flex items-center gap-1 text-[10px] text-[#aaa] dark:text-[#555]">
+                    ★ <CountUp to={totalStars} duration={1.2} /> total stars
+                  </span>
+                </div>
+
+                {/* currently working on */}
+                {(() => {
+                  const wip = projects.find(p => p.wip);
+                  if (!wip) return null;
+                  return (
+                    <a href={wip.url} target="_blank" rel="noreferrer" className="rounded-xl border border-[#ebebeb] dark:border-[#282828] p-3 bg-[#f9f9f9] dark:bg-[#1e1e1e] hover:border-[#d5d5d5] dark:hover:border-[#333] transition-colors group flex flex-col gap-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[9px] px-2 py-0.5 rounded-full font-semibold" style={{ backgroundColor: `${ACCENT}18`, color: ACCENT }}>
+                          currently working on
+                        </span>
+                        <FiExternalLink size={10} className="text-[#ccc] dark:text-[#444] group-hover:text-[#aaa] transition-colors" />
+                      </div>
+                      <div>
+                        <p className="text-[13px] font-bold text-[#111] dark:text-[#eee] leading-tight">{wip.name}</p>
+                        <p className="text-[11px] text-[#888] dark:text-[#666] mt-0.5 leading-snug">{wip.description}</p>
+                      </div>
+                      <div className="flex items-center gap-3 text-[10px] text-[#aaa] dark:text-[#555]">
+                        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full inline-block" style={{ backgroundColor: wip.color }} />{wip.language}</span>
+                        <span>★ {wip.stars}</span>
+                      </div>
+                    </a>
+                  );
+                })()}
+
+                {/* other projects */}
+                <div className="flex flex-col gap-1.5 flex-1">
+                  {projects.filter(p => !p.wip).map((proj, i) => (
+                    <a key={i} href={proj.url} target="_blank" rel="noreferrer"
+                      className="flex items-center gap-3 px-3 py-2 rounded-xl border border-transparent hover:border-[#ebebeb] dark:hover:border-[#282828] hover:bg-[#f9f9f9] dark:hover:bg-[#1e1e1e] transition-all group slide-up"
+                      style={{ "--delay": `${i * 0.07}s` } as React.CSSProperties}
+                    >
+                      <div className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: proj.color }} />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[12px] font-semibold text-[#333] dark:text-[#ccc] truncate">{proj.name}</p>
+                        <p className="text-[10px] text-[#aaa] dark:text-[#555] truncate">{proj.description}</p>
+                      </div>
+                      <div className="flex items-center gap-2 text-[10px] text-[#bbb] dark:text-[#444] shrink-0">
+                        <span>★ {proj.stars}</span>
+                        <FiExternalLink size={9} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </div>
+                    </a>
+                  ))}
                 </div>
               </motion.div>
             </BentoCard>
@@ -476,7 +540,7 @@ export default function Home() {
                 gridRow: "2 / 5",
               }}
             >
-              <div ref={workoutRef} className="p-3.5 h-full flex flex-col gap-2.5">
+              <div className="p-3.5 h-full flex flex-col gap-2.5">
                 <motion.div custom={6} variants={fadeUp} initial="hidden" animate="show" className="flex flex-col h-full gap-2.5">
 
                   {/* header */}
@@ -493,14 +557,14 @@ export default function Home() {
                   <div className="grid grid-cols-2 gap-1.5">
                     <div className={`rounded-xl p-2 border ${isDark ? "bg-white/5 border-white/5" : "bg-[#f8f8f8] border-[#ebebeb]"}`}>
                       <p className={`font-black text-[18px] leading-none ${isDark ? "text-white" : "text-[#111]"}`}>
-                        <CountUp to={workout?.totalVolume ?? 8420} separator="," duration={1.4} startCounting={workoutInView} />
+                        <CountUp to={workout?.totalVolume ?? 8420} separator="," duration={1.4} />
                         <span className={`text-[9px] font-normal ml-0.5 ${isDark ? "text-white/30" : "text-[#bbb]"}`}>kg</span>
                       </p>
                       <p className={`text-[8px] uppercase tracking-wider mt-1 ${isDark ? "text-white/25" : "text-[#bbb]"}`}>total volume</p>
                     </div>
                     <div className={`rounded-xl p-2 border ${isDark ? "bg-white/5 border-white/5" : "bg-[#f8f8f8] border-[#ebebeb]"}`}>
                       <p className={`font-black text-[18px] leading-none ${isDark ? "text-white" : "text-[#111]"}`}>
-                        <CountUp to={workout?.weeklyStats?.streak ?? 12} duration={0.8} startCounting={workoutInView} />
+                        <CountUp to={workout?.weeklyStats?.streak ?? 12} duration={0.8} />
                         <span className={`text-[9px] font-normal ml-0.5 ${isDark ? "text-white/30" : "text-[#bbb]"}`}>days</span>
                       </p>
                       <p className={`text-[8px] uppercase tracking-wider mt-1 ${isDark ? "text-white/25" : "text-[#bbb]"}`}>streak 🔥</p>
@@ -510,11 +574,11 @@ export default function Home() {
                   {/* sub stats */}
                   <div className="flex gap-3 px-0.5">
                     <span className={`text-[10px] ${isDark ? "text-white/30" : "text-[#bbb]"}`}>
-                      <span className={`font-semibold ${isDark ? "text-white/60" : "text-[#666]"}`}><CountUp to={workout?.duration ?? 68} duration={1.0} startCounting={workoutInView} /></span> min
+                      <span className={`font-semibold ${isDark ? "text-white/60" : "text-[#666]"}`}><CountUp to={workout?.duration ?? 68} duration={1.0} /></span> min
                     </span>
                     <span className={isDark ? "text-white/15" : "text-[#ddd]"}>·</span>
                     <span className={`text-[10px] ${isDark ? "text-white/30" : "text-[#bbb]"}`}>
-                      <span className={`font-semibold ${isDark ? "text-white/60" : "text-[#666]"}`}><CountUp to={workout?.weeklyStats?.workoutsThisWeek ?? 4} duration={0.7} startCounting={workoutInView} />×</span> this week
+                      <span className={`font-semibold ${isDark ? "text-white/60" : "text-[#666]"}`}><CountUp to={workout?.weeklyStats?.workoutsThisWeek ?? 4} duration={0.7} />×</span> this week
                     </span>
                   </div>
 
@@ -533,7 +597,7 @@ export default function Home() {
                       <motion.div
                         key={ex.name}
                         initial={{ opacity: 0, x: -8 }}
-                        animate={workoutInView ? { opacity: 1, x: 0 } : {}}
+                        animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 0.15 + i * 0.06, duration: 0.32 }}
                         className="flex items-center justify-between gap-2 py-0.5"
                       >
@@ -552,8 +616,8 @@ export default function Home() {
               </div>
             </BentoCard>
 
-            {/* WAKATIME — 2×2 (expanded) */}
-            <BentoCard className={`${CARD} p-4 col-span-2 row-span-2 flex flex-col`}>
+            {/* WAKATIME — col3-4, rows5-6, next to GitHub */}
+            <BentoCard className={`${CARD} p-4 flex flex-col`} style={{ gridColumn: "3 / 5", gridRow: "5 / 7" }}>
               <motion.div custom={9} variants={fadeUp} initial="hidden" animate="show" className="flex flex-col h-full">
                 {/* header row */}
                 <div className="flex items-start justify-between mb-3">
@@ -597,10 +661,10 @@ export default function Home() {
               </motion.div>
             </BentoCard>
 
-            {/* DISCORD — 1×2 */}
+            {/* DISCORD — col4 rows3-4 */}
             <BentoCard
-              className="col-span-1 row-span-2 rounded-2xl overflow-hidden"
-              style={{ backgroundColor: isDark ? "#23272a" : "#ffffff", border: isDark ? "none" : "1px solid #ebebeb" }}
+              className="rounded-2xl overflow-hidden"
+              style={{ backgroundColor: isDark ? "#23272a" : "#ffffff", border: isDark ? "none" : "1px solid #ebebeb", gridColumn: "4", gridRow: "3 / 5" }}
             >
               <motion.div custom={8} variants={fadeUp} initial="hidden" animate="show" className="p-3 h-full flex flex-col">
                 {/* header */}
@@ -647,8 +711,8 @@ export default function Home() {
               </motion.div>
             </BentoCard>
 
-            {/* TECH STACK — 2×1 */}
-            <BentoCard className={`${CARD} p-4 col-span-2 row-span-1 flex flex-col justify-between`}>
+            {/* TECH STACK — col2-3, rows3-4 */}
+            <BentoCard className={`${CARD} p-4 flex flex-col justify-between`} style={{ gridColumn: "2 / 4", gridRow: "3 / 5" }}>
               <motion.div custom={11} variants={fadeUp} initial="hidden" animate="show" className="flex flex-col h-full justify-between">
                 <p className={`${LABEL} mb-2`}>Tech Stack</p>
                 <div className="flex flex-wrap gap-2">
@@ -666,8 +730,8 @@ export default function Home() {
               </motion.div>
             </BentoCard>
 
-            {/* GITHUB — 2×2 */}
-            <BentoCard className={`${CARD} p-4 col-span-2 row-span-2 flex flex-col`}>
+            {/* GITHUB — col1-2, rows5-6 */}
+            <BentoCard className={`${CARD} p-4 flex flex-col`} style={{ gridColumn: "1 / 3", gridRow: "5 / 7" }}>
               <div ref={githubRef} className="flex flex-col w-full h-full">
                 <motion.div custom={10} variants={fadeUp} initial="hidden" animate="show" className="flex flex-col h-full">
                   {/* header: label + stats */}
@@ -675,15 +739,15 @@ export default function Home() {
                     <p className={`${LABEL} flex items-center gap-1.5 shrink-0`}><SiGithub size={10} />GitHub</p>
                     <div className="flex gap-4 text-[11px] text-[#aaa] dark:text-[#555]">
                       <span>
-                        <strong className="text-[#111] dark:text-[#eee] text-[13px] font-black"><CountUp to={stats?.totalCommitsThisYear ?? 847} separator="," duration={1.2} startCounting={githubInView} /></strong>
+                        <strong className="text-[#111] dark:text-[#eee] text-[13px] font-black"><CountUp to={stats?.totalCommitsThisYear ?? 847} separator="," duration={1.2} /></strong>
                         <span className="ml-1">commits</span>
                       </span>
                       <span>
-                        <strong className="text-[13px] font-black" style={{ color: ACCENT }}><CountUp to={stats?.currentStreak ?? 12} duration={0.9} startCounting={githubInView} /></strong>
+                        <strong className="text-[13px] font-black" style={{ color: ACCENT }}><CountUp to={stats?.currentStreak ?? 12} duration={0.9} /></strong>
                         <span className="ml-1">day streak</span>
                       </span>
                       <span>
-                        <strong className="text-[#111] dark:text-[#eee] text-[13px] font-black"><CountUp to={stats?.githubRepos ?? 42} duration={1.0} startCounting={githubInView} /></strong>
+                        <strong className="text-[#111] dark:text-[#eee] text-[13px] font-black"><CountUp to={stats?.githubRepos ?? 42} duration={1.0} /></strong>
                         <span className="ml-1">repos</span>
                       </span>
                     </div>
@@ -696,13 +760,13 @@ export default function Home() {
               </div>
             </BentoCard>
 
-            {/* MYANIME LIST — 2×2 flip card */}
+            {/* MYANIME LIST — col1-2, rows7-8 flip card */}
             <BentoCard
-              className={`${CARD} col-span-2 row-span-2 cursor-pointer`}
-              style={{ perspective: "1200px" }}
+              className={`${CARD} cursor-pointer`}
+              style={{ perspective: "1200px", gridColumn: "1 / 3", gridRow: "7 / 9" }}
               onClick={() => { setMalFlipped(f => !f); setMalHover(null); }}
             >
-              <motion.div ref={malRef} custom={12} variants={fadeUp} initial="hidden" animate="show" className="w-full h-full">
+              <motion.div custom={12} variants={fadeUp} initial="hidden" animate="show" className="w-full h-full">
                 <div
                   className="relative w-full h-full transition-transform duration-700"
                   style={{ transformStyle: "preserve-3d", transform: malFlipped ? "rotateY(180deg)" : "rotateY(0deg)" }}
@@ -749,7 +813,7 @@ export default function Home() {
                           {stats.map((s, i) => (
                             <div key={s.label} className={i > 0 ? "border-l border-[#ebebeb] dark:border-[#282828] pl-5" : ""}>
                               <p className="text-[26px] font-black leading-none text-[#111] dark:text-[#eee]">
-                                <CountUp to={s.to} separator={s.sep ?? ""} duration={s.dur} startCounting={malInView} />
+                                <CountUp to={s.to} separator={s.sep ?? ""} duration={s.dur} />
                               </p>
                               <p className={`${LABEL} mt-1`}>{s.label}</p>
                             </div>
@@ -829,10 +893,10 @@ export default function Home() {
               </motion.div>
             </BentoCard>
 
-            {/* STEAM — 2×1 */}
+            {/* STEAM — col3-4, rows7-8 */}
             <BentoCard
-              className="col-span-2 row-span-1 rounded-2xl overflow-hidden"
-              style={{ backgroundColor: isDark ? "#1b2838" : "#ffffff", border: isDark ? "none" : "1px solid #ebebeb" }}
+              className="rounded-2xl overflow-hidden"
+              style={{ backgroundColor: isDark ? "#1b2838" : "#ffffff", border: isDark ? "none" : "1px solid #ebebeb", gridColumn: "3 / 5", gridRow: "7 / 9" }}
             >
               <motion.div custom={11} variants={fadeUp} initial="hidden" animate="show" className="p-3.5 h-full flex flex-col justify-between">
                 <div className="flex items-center justify-between">
