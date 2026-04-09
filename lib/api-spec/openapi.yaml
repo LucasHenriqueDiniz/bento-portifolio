@@ -120,6 +120,19 @@ paths:
               schema:
                 $ref: "#/components/schemas/PortfolioStats"
 
+  /portfolio/mal:
+    get:
+      operationId: getMalData
+      tags: [portfolio]
+      summary: Get MyAnimeList stats and favorites via Jikan
+      responses:
+        "200":
+          description: MAL data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MalData"
+
 components:
   schemas:
     HealthStatus:
@@ -360,3 +373,58 @@ components:
         - name
         - percentage
         - color
+
+    MalMediaItem:
+      type: object
+      properties:
+        malId:
+          type: integer
+        title:
+          type: string
+        year:
+          type: ["integer", "null"]
+        imageUrl:
+          type: ["string", "null"]
+        url:
+          type: string
+      required:
+        - malId
+        - title
+        - url
+
+    MalData:
+      type: object
+      properties:
+        animeStats:
+          type: object
+          properties:
+            completed:
+              type: integer
+            watching:
+              type: integer
+            episodesWatched:
+              type: integer
+          required: [completed, watching, episodesWatched]
+        mangaStats:
+          type: object
+          properties:
+            completed:
+              type: integer
+            reading:
+              type: integer
+            chaptersRead:
+              type: integer
+          required: [completed, reading, chaptersRead]
+        animeFavorites:
+          type: array
+          items:
+            $ref: "#/components/schemas/MalMediaItem"
+        mangaFavorites:
+          type: array
+          items:
+            $ref: "#/components/schemas/MalMediaItem"
+      required:
+        - animeStats
+        - mangaStats
+        - animeFavorites
+        - mangaFavorites

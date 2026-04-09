@@ -129,3 +129,32 @@ export interface PortfolioStats {
   longestStreak: number;
   topLanguages: Language[];
 }
+
+export interface MalMediaItem {
+  malId: number;
+  title: string;
+  /** @nullable */
+  year?: number | null;
+  /** @nullable */
+  imageUrl?: string | null;
+  url: string;
+}
+
+export type MalDataAnimeStats = {
+  completed: number;
+  watching: number;
+  episodesWatched: number;
+};
+
+export type MalDataMangaStats = {
+  completed: number;
+  reading: number;
+  chaptersRead: number;
+};
+
+export interface MalData {
+  animeStats: MalDataAnimeStats;
+  mangaStats: MalDataMangaStats;
+  animeFavorites: MalMediaItem[];
+  mangaFavorites: MalMediaItem[];
+}
