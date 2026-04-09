@@ -6,7 +6,7 @@ import {
   useGetLastWorkout,
   useGetStats,
 } from "@workspace/api-client-react";
-import { motion, useInView, animate, AnimatePresence } from "framer-motion";
+import { motion, useInView, AnimatePresence } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "wouter";
 import {
@@ -18,6 +18,7 @@ import {
 import { FiTwitter, FiMail, FiExternalLink, FiBook, FiClock } from "react-icons/fi";
 import { Dumbbell, Moon, Sun } from "lucide-react";
 import { BentoCard, BentoSection } from "@/components/BentoCard";
+import CountUp from "@/components/CountUp";
 
 /* ─── helpers ─────────────────────────────────────── */
 
@@ -59,20 +60,6 @@ function useClock(timezone = "America/Sao_Paulo") {
   return { h: parts.hour, m: parts.minute, s: parts.second };
 }
 
-/* ─── animated counter hook ───────────────────────── */
-function useCounter(to: number, inView: boolean, duration = 1.2) {
-  const [val, setVal] = useState(0);
-  useEffect(() => {
-    if (!inView) return;
-    const ctrl = animate(0, to, {
-      duration,
-      ease: "easeOut",
-      onUpdate: (v) => setVal(Math.round(v)),
-    });
-    return () => ctrl.stop();
-  }, [to, inView, duration]);
-  return val;
-}
 
 /* ─── GitHub grid ─────────────────────────────────── */
 function GitHubGrid({ seed, inView }: { seed: number; inView: boolean }) {
@@ -235,12 +222,6 @@ export default function Home() {
   const githubInView  = useInView(githubRef,  { once: true, margin: "-50px" });
   const workoutInView = useInView(workoutRef, { once: true, margin: "-50px" });
 
-  /* Animated counters */
-  const animDuration = useCounter(workout?.duration    ?? 68,   workoutInView);
-  const animVolume   = useCounter(workout?.totalVolume  ?? 8420, workoutInView, 1.4);
-  const animCommits  = useCounter(stats?.totalCommitsThisYear ?? 847, githubInView);
-  const animStreak    = useCounter(stats?.currentStreak ?? 12, githubInView, 0.9);
-  const animRepos     = useCounter(stats?.githubRepos ?? 42, githubInView, 1.0);
 
   /* MAL mock data */
   const malData = {
@@ -282,12 +263,6 @@ export default function Home() {
     return () => clearInterval(t);
   }, []);
 
-  const animMalAnimeCompleted = useCounter(malData.anime.completed,  malInView, 1.0);
-  const animMalAnimeWatching  = useCounter(malData.anime.watching,   malInView, 0.6);
-  const animMalAnimeEpisodes  = useCounter(malData.anime.episodes,   malInView, 1.4);
-  const animMalMangaCompleted = useCounter(malData.manga.completed,  malInView, 1.0);
-  const animMalMangaReading   = useCounter(malData.manga.reading,    malInView, 0.5);
-  const animMalMangaChapters  = useCounter(malData.manga.chapters,   malInView, 1.4);
 
   /* Wakatime mock data */
   const waka = {
@@ -517,15 +492,15 @@ export default function Home() {
                   {/* top stats row */}
                   <div className="grid grid-cols-2 gap-1.5">
                     <div className={`rounded-xl p-2 border ${isDark ? "bg-white/5 border-white/5" : "bg-[#f8f8f8] border-[#ebebeb]"}`}>
-                      <p className={`font-black tabular-nums text-[18px] leading-none ${isDark ? "text-white" : "text-[#111]"}`}>
-                        {workoutInView ? animVolume.toLocaleString() : "0"}
+                      <p className={`font-black text-[18px] leading-none ${isDark ? "text-white" : "text-[#111]"}`}>
+                        <CountUp to={workout?.totalVolume ?? 8420} separator="," duration={1.4} startCounting={workoutInView} />
                         <span className={`text-[9px] font-normal ml-0.5 ${isDark ? "text-white/30" : "text-[#bbb]"}`}>kg</span>
                       </p>
                       <p className={`text-[8px] uppercase tracking-wider mt-1 ${isDark ? "text-white/25" : "text-[#bbb]"}`}>total volume</p>
                     </div>
                     <div className={`rounded-xl p-2 border ${isDark ? "bg-white/5 border-white/5" : "bg-[#f8f8f8] border-[#ebebeb]"}`}>
-                      <p className={`font-black tabular-nums text-[18px] leading-none ${isDark ? "text-white" : "text-[#111]"}`}>
-                        {workout?.weeklyStats?.streak ?? 12}
+                      <p className={`font-black text-[18px] leading-none ${isDark ? "text-white" : "text-[#111]"}`}>
+                        <CountUp to={workout?.weeklyStats?.streak ?? 12} duration={0.8} startCounting={workoutInView} />
                         <span className={`text-[9px] font-normal ml-0.5 ${isDark ? "text-white/30" : "text-[#bbb]"}`}>days</span>
                       </p>
                       <p className={`text-[8px] uppercase tracking-wider mt-1 ${isDark ? "text-white/25" : "text-[#bbb]"}`}>streak 🔥</p>
@@ -535,11 +510,11 @@ export default function Home() {
                   {/* sub stats */}
                   <div className="flex gap-3 px-0.5">
                     <span className={`text-[10px] ${isDark ? "text-white/30" : "text-[#bbb]"}`}>
-                      <span className={`font-semibold ${isDark ? "text-white/60" : "text-[#666]"}`}>{workoutInView ? animDuration : 0}</span> min
+                      <span className={`font-semibold ${isDark ? "text-white/60" : "text-[#666]"}`}><CountUp to={workout?.duration ?? 68} duration={1.0} startCounting={workoutInView} /></span> min
                     </span>
                     <span className={isDark ? "text-white/15" : "text-[#ddd]"}>·</span>
                     <span className={`text-[10px] ${isDark ? "text-white/30" : "text-[#bbb]"}`}>
-                      <span className={`font-semibold ${isDark ? "text-white/60" : "text-[#666]"}`}>{workout?.weeklyStats?.workoutsThisWeek ?? 4}×</span> this week
+                      <span className={`font-semibold ${isDark ? "text-white/60" : "text-[#666]"}`}><CountUp to={workout?.weeklyStats?.workoutsThisWeek ?? 4} duration={0.7} startCounting={workoutInView} />×</span> this week
                     </span>
                   </div>
 
@@ -700,15 +675,15 @@ export default function Home() {
                     <p className={`${LABEL} flex items-center gap-1.5 shrink-0`}><SiGithub size={10} />GitHub</p>
                     <div className="flex gap-4 text-[11px] text-[#aaa] dark:text-[#555]">
                       <span>
-                        <strong className="text-[#111] dark:text-[#eee] tabular-nums text-[13px] font-black">{githubInView ? animCommits : 0}</strong>
+                        <strong className="text-[#111] dark:text-[#eee] text-[13px] font-black"><CountUp to={stats?.totalCommitsThisYear ?? 847} separator="," duration={1.2} startCounting={githubInView} /></strong>
                         <span className="ml-1">commits</span>
                       </span>
                       <span>
-                        <strong className="tabular-nums text-[13px] font-black" style={{ color: ACCENT }}>{githubInView ? animStreak : 0}</strong>
+                        <strong className="text-[13px] font-black" style={{ color: ACCENT }}><CountUp to={stats?.currentStreak ?? 12} duration={0.9} startCounting={githubInView} /></strong>
                         <span className="ml-1">day streak</span>
                       </span>
                       <span>
-                        <strong className="text-[#111] dark:text-[#eee] tabular-nums text-[13px] font-black">{githubInView ? animRepos : 0}</strong>
+                        <strong className="text-[#111] dark:text-[#eee] text-[13px] font-black"><CountUp to={stats?.githubRepos ?? 42} duration={1.0} startCounting={githubInView} /></strong>
                         <span className="ml-1">repos</span>
                       </span>
                     </div>
@@ -742,14 +717,14 @@ export default function Home() {
                     const hovered = visible.find(f => f.title === malHover) ?? null;
                     const stats = side === "anime"
                       ? [
-                          { val: animMalAnimeCompleted, label: "completed" },
-                          { val: animMalAnimeWatching,  label: "watching"  },
-                          { val: animMalAnimeEpisodes,  label: "episodes", fmt: true },
+                          { to: malData.anime.completed, label: "completed", dur: 1.0 },
+                          { to: malData.anime.watching,  label: "watching",  dur: 0.6 },
+                          { to: malData.anime.episodes,  label: "episodes",  dur: 1.4, sep: "," },
                         ]
                       : [
-                          { val: animMalMangaCompleted, label: "completed" },
-                          { val: animMalMangaReading,   label: "reading"   },
-                          { val: animMalMangaChapters,  label: "chapters",  fmt: true },
+                          { to: malData.manga.completed, label: "completed", dur: 1.0 },
+                          { to: malData.manga.reading,   label: "reading",   dur: 0.5 },
+                          { to: malData.manga.chapters,  label: "chapters",  dur: 1.4, sep: "," },
                         ];
                     const hint = side === "anime" ? "tap for manga →" : "← tap for anime";
 
@@ -773,8 +748,8 @@ export default function Home() {
                         <div className="flex gap-5 shrink-0" onClick={() => { setMalFlipped(f => !f); setMalHover(null); }}>
                           {stats.map((s, i) => (
                             <div key={s.label} className={i > 0 ? "border-l border-[#ebebeb] dark:border-[#282828] pl-5" : ""}>
-                              <p className="text-[26px] font-black leading-none tabular-nums text-[#111] dark:text-[#eee]">
-                                {s.fmt ? s.val.toLocaleString() : s.val}
+                              <p className="text-[26px] font-black leading-none text-[#111] dark:text-[#eee]">
+                                <CountUp to={s.to} separator={s.sep ?? ""} duration={s.dur} startCounting={malInView} />
                               </p>
                               <p className={`${LABEL} mt-1`}>{s.label}</p>
                             </div>
