@@ -7,6 +7,7 @@ import {
   GetLastWorkoutResponse,
   GetProjectsResponse,
   GetStatsResponse,
+  GetMalDataResponse,
 } from "@workspace/api-zod";
 
 const router: IRouter = Router();
@@ -463,6 +464,72 @@ router.get("/portfolio/projects", async (_req, res): Promise<void> => {
     },
   ]);
   res.json(data);
+});
+
+/* ═══════════════════════════════════════════════════════
+   MAL — Jikan API (no auth required)
+   ═══════════════════════════════════════════════════════ */
+const MAL_USER = process.env.MAL_USERNAME ?? "Amayacrab";
+const JIKAN_BASE = "https://api.jikan.moe/v4";
+
+router.get("/portfolio/mal", async (_req, res): Promise<void> => {
+  const cached = fromCache<ReturnType<typeof GetMalDataResponse.parse>>("mal");
+  if (cached) { res.json(cached); return; }
+
+  try {
+    const [statsRes, favsRes] = await Promise.all([
+      fetch(`${JIKAN_BASE}/users/${MAL_USER}/statistics`),
+      fetch(`${JIKAN_BASE}/users/${MAL_USER}/favorites`),
+    ]);
+
+    const [statsJson, favsJson] = await Promise.all([
+      statsRes.json() as Promise<{ data?: { anime?: { completed?: number; watching?: number; episodes_watched?: number }; manga?: { completed?: number; reading?: number; chapters_read?: number } } }>,
+      favsRes.json() as Promise<{ data?: { anime?: Array<{ mal_id: number; title: string; start_year?: number | null; images?: { jpg?: { image_url?: string } } }>; manga?: Array<{ mal_id: number; title: string; start_year?: number | null; images?: { jpg?: { image_url?: string } } }> } }>,
+    ]);
+
+    const anime = statsJson.data?.anime;
+    const manga = statsJson.data?.manga;
+    const favAnime = favsJson.data?.anime ?? [];
+    const favManga = favsJson.data?.manga ?? [];
+
+    const data = GetMalDataResponse.parse({
+      animeStats: {
+        completed: anime?.completed ?? 0,
+        watching: anime?.watching ?? 0,
+        episodesWatched: anime?.episodes_watched ?? 0,
+      },
+      mangaStats: {
+        completed: manga?.completed ?? 0,
+        reading: manga?.reading ?? 0,
+        chaptersRead: manga?.chapters_read ?? 0,
+      },
+      animeFavorites: favAnime.map((a) => ({
+        malId: a.mal_id,
+        title: a.title,
+        year: a.start_year ?? null,
+        imageUrl: a.images?.jpg?.image_url ?? null,
+        url: `https://myanimelist.net/anime/${a.mal_id}`,
+      })),
+      mangaFavorites: favManga.map((m) => ({
+        malId: m.mal_id,
+        title: m.title,
+        year: m.start_year ?? null,
+        imageUrl: m.images?.jpg?.image_url ?? null,
+        url: `https://myanimelist.net/manga/${m.mal_id}`,
+      })),
+    });
+
+    toCache("mal", data, 900_000);
+    res.json(data);
+  } catch (err) {
+    console.error("MAL/Jikan error:", err);
+    res.json(GetMalDataResponse.parse({
+      animeStats: { completed: 0, watching: 0, episodesWatched: 0 },
+      mangaStats: { completed: 0, reading: 0, chaptersRead: 0 },
+      animeFavorites: [],
+      mangaFavorites: [],
+    }));
+  }
 });
 
 export default router;

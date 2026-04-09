@@ -5,6 +5,7 @@ import {
   useGetSteamData,
   useGetLastWorkout,
   useGetStats,
+  useGetMalData,
 } from "@workspace/api-client-react";
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
@@ -217,6 +218,7 @@ export default function Home() {
   const { data: steam,      isLoading: loadingSteam      } = useGetSteamData();
   const { data: workout,    isLoading: loadingWorkout     } = useGetLastWorkout();
   const { data: stats,      isLoading: loadingStats       } = useGetStats();
+  const { data: malApi,     isLoading: loadingMal         } = useGetMalData();
 
   const statusColor = STATUS_COLORS[discord?.status ?? "dnd"];
   const [weatherFlipped, setWeatherFlipped] = useState(false);
@@ -232,36 +234,30 @@ export default function Home() {
   const githubInView = useInView(githubRef, { once: true, margin: "-50px" });
 
 
-  /* MAL mock data */
+  /* MAL data — from Jikan API */
   const malData = {
     anime: {
-      watching: 8,
-      completed: 127,
-      episodes: 3842,
-      favorites: [
-        { title: "Evangelion",      year: 1995, img: "https://picsum.photos/seed/eva26nge/80/120",  synopsis: "A traumatized teen pilots a giant biomech to defend humanity from catastrophic beings called Angels." },
-        { title: "Hunter×Hunter",   year: 2011, img: "https://picsum.photos/seed/hxh2011z/80/120",  synopsis: "Young Gon ventures into a dangerous world to become a Hunter and find his missing father." },
-        { title: "Vinland Saga",    year: 2019, img: "https://picsum.photos/seed/vinlandd/80/120",  synopsis: "A Viking warrior obsessed with revenge transforms into a man seeking a true warrior's purpose." },
-        { title: "Steins;Gate",     year: 2011, img: "https://picsum.photos/seed/steinsgt/80/120",  synopsis: "A self-proclaimed mad scientist accidentally discovers time travel and faces its catastrophic consequences." },
-        { title: "Attack on Titan", year: 2013, img: "https://picsum.photos/seed/aot2013x/80/120",  synopsis: "Soldiers fight titans besieging humanity while uncovering the dark truths about their world." },
-        { title: "Mushishi",        year: 2005, img: "https://picsum.photos/seed/mushishi/80/120",  synopsis: "A wanderer solves the strange phenomena caused by mysterious life forms called Mushi." },
-      ],
+      watching:  malApi?.animeStats?.watching  ?? 0,
+      completed: malApi?.animeStats?.completed ?? 0,
+      episodes:  malApi?.animeStats?.episodesWatched ?? 0,
+      favorites: (malApi?.animeFavorites ?? []).map(f => ({
+        title: f.title,
+        year:  f.year ?? null,
+        img:   f.imageUrl ?? `https://picsum.photos/seed/${encodeURIComponent(f.title)}/80/120`,
+      })),
     },
     manga: {
-      reading: 5,
-      completed: 43,
-      chapters: 2180,
-      favorites: [
-        { title: "Berserk",       year: 1989, img: "https://picsum.photos/seed/berserk9/80/120",  synopsis: "A lone swordsman with a tragic past fights through a brutal dark-fantasy world filled with demons." },
-        { title: "Vagabond",      year: 1998, img: "https://picsum.photos/seed/vagabond/80/120",  synopsis: "A fictionalized journey of Miyamoto Musashi as he pursues becoming the greatest swordsman in Japan." },
-        { title: "Punpun",        year: 2007, img: "https://picsum.photos/seed/punpun77/80/120",  synopsis: "A brutally honest coming-of-age story following a boy navigating trauma and the cruelty of growing up." },
-        { title: "Chainsaw Man",  year: 2018, img: "https://picsum.photos/seed/chainsawm/80/120", synopsis: "A boy merged with a chainsaw devil hunts fiends for a shadowy government organization." },
-        { title: "Jujutsu Kaisen",year: 2018, img: "https://picsum.photos/seed/jjk2018x/80/120",  synopsis: "A boy swallows a cursed relic and enters a world of sorcerers fighting monstrous cursed spirits." },
-        { title: "One Piece",     year: 1997, img: "https://picsum.photos/seed/onepiece/80/120",  synopsis: "A rubber-powered pirate leads his crew across the seas in search of the legendary One Piece treasure." },
-      ],
+      reading:   malApi?.mangaStats?.reading   ?? 0,
+      completed: malApi?.mangaStats?.completed ?? 0,
+      chapters:  malApi?.mangaStats?.chaptersRead ?? 0,
+      favorites: (malApi?.mangaFavorites ?? []).map(f => ({
+        title: f.title,
+        year:  f.year ?? null,
+        img:   f.imageUrl ?? `https://picsum.photos/seed/${encodeURIComponent(f.title)}/80/120`,
+      })),
     },
   };
-  const [malFlipped, setMalFlipped] = useState(false);
+    const [malFlipped, setMalFlipped] = useState(false);
   const [malPage,    setMalPage]    = useState(0);
   const [malHover,   setMalHover]   = useState<string | null>(null);
   const [steamIdx,   setSteamIdx]   = useState(0);
@@ -425,7 +421,7 @@ export default function Home() {
           <motion.div custom={1} variants={fadeUp} initial="hidden" animate="show" className={`${CARD} p-4`}>
             <p className={`${LABEL} mb-3`}>Fun Facts</p>
             <ul className="space-y-2">
-              {["Full-stack developer","Gym rat (4x/week)","Last.fm scrobbler since 2018","Dark mode everything","127 anime completed"].map((f,i) => (
+              {["Full-stack developer","Gym rat (4x/week)","Last.fm scrobbler since 2018","Dark mode everything",`${malData.anime.completed || "…"} anime completed`].map((f,i) => (
                 <li key={i} className="flex gap-2 text-[12px] text-[#666] dark:text-[#888] slide-up" style={{ "--delay": `${i*0.08}s` } as React.CSSProperties}>
                   <span className="text-[#ccc] dark:text-[#444] mt-px">•</span>{f}
                 </li>
@@ -1055,8 +1051,7 @@ export default function Home() {
                               >
                                 <div className="bg-[#f5f5f5] dark:bg-[#222] rounded-xl px-3 py-2 flex items-start gap-2">
                                   <div className="flex-1 min-w-0">
-                                    <p className="text-[10px] font-bold text-[#111] dark:text-[#eee] leading-tight truncate">{hovered.title} <span className="text-[9px] font-normal text-[#bbb] dark:text-[#555]">({hovered.year})</span></p>
-                                    <p className="text-[9px] text-[#777] dark:text-[#888] leading-snug mt-0.5 line-clamp-2">{hovered.synopsis}</p>
+                                    <p className="text-[10px] font-bold text-[#111] dark:text-[#eee] leading-tight truncate">{hovered.title} <span className="text-[9px] font-normal text-[#bbb] dark:text-[#555]">({hovered.year ?? "—"})</span></p>
                                   </div>
                                 </div>
                               </motion.div>
@@ -1478,9 +1473,9 @@ export default function Home() {
 
           {/* Social Cards */}
           {[
-            { icon: <FiTwitter size={13} />, label: "@yourhandle", sub: "twitter.com/yourhandle", color: "#1da1f2" },
-            { icon: <SiDiscord size={13} />, label: discord?.displayName ?? "Your Name", sub: `${discord?.status ?? "dnd"} on Discord`, color: "#5865f2" },
-            { icon: <SiGithub size={13} />, label: "youruser", sub: `${stats?.githubRepos ?? 42} public repos`, color: "#111" },
+            { icon: <FiTwitter size={13} />, label: "@lucashdo", sub: "twitter.com/lucashdo", color: "#1da1f2", href: "https://twitter.com/lucashdo" },
+            { icon: <SiDiscord size={13} />, label: discord?.displayName ?? "Lucas Diniz", sub: `${discord?.status ?? "offline"} on Discord`, color: "#5865f2", href: undefined },
+            { icon: <SiGithub size={13} />, label: "LucasHenriqueDiniz", sub: `${stats?.githubRepos ?? "…"} public repos`, color: "#111", href: "https://github.com/LucasHenriqueDiniz" },
           ].map((s, i) => (
             <motion.a
               key={i}
@@ -1488,7 +1483,7 @@ export default function Home() {
               variants={fadeUp}
               initial="hidden"
               animate="show"
-              href="#"
+              href={s.href ?? "#"}
               target="_blank"
               rel="noreferrer"
               className={`${CARD} p-3 flex items-center gap-3 hover:border-[#d5d5d5] dark:hover:border-[#333] transition-colors group`}

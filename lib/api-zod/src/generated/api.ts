@@ -126,3 +126,37 @@ export const GetStatsResponse = zod.object({
     }),
   ),
 });
+
+/**
+ * @summary Get MyAnimeList stats and favorites via Jikan
+ */
+export const GetMalDataResponse = zod.object({
+  animeStats: zod.object({
+    completed: zod.number(),
+    watching: zod.number(),
+    episodesWatched: zod.number(),
+  }),
+  mangaStats: zod.object({
+    completed: zod.number(),
+    reading: zod.number(),
+    chaptersRead: zod.number(),
+  }),
+  animeFavorites: zod.array(
+    zod.object({
+      malId: zod.number(),
+      title: zod.string(),
+      year: zod.number().nullish(),
+      imageUrl: zod.string().nullish(),
+      url: zod.string(),
+    }),
+  ),
+  mangaFavorites: zod.array(
+    zod.object({
+      malId: zod.number(),
+      title: zod.string(),
+      year: zod.number().nullish(),
+      imageUrl: zod.string().nullish(),
+      url: zod.string(),
+    }),
+  ),
+});

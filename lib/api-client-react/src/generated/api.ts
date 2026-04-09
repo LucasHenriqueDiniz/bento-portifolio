@@ -17,6 +17,7 @@ import type {
   Artist,
   DiscordPresence,
   HealthStatus,
+  MalData,
   NowPlaying,
   PortfolioStats,
   Project,
@@ -617,6 +618,79 @@ export function useGetStats<
   request?: SecondParameter<typeof customFetch>;
 }): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
   const queryOptions = getGetStatsQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Get MyAnimeList stats and favorites via Jikan
+ */
+export const getGetMalDataUrl = () => {
+  return `/api/portfolio/mal`;
+};
+
+export const getMalData = async (options?: RequestInit): Promise<MalData> => {
+  return customFetch<MalData>(getGetMalDataUrl(), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetMalDataQueryKey = () => {
+  return [`/api/portfolio/mal`] as const;
+};
+
+export const getGetMalDataQueryOptions = <
+  TData = Awaited<ReturnType<typeof getMalData>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getMalData>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetMalDataQueryKey();
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getMalData>>> = ({
+    signal,
+  }) => getMalData({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getMalData>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetMalDataQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getMalData>>
+>;
+export type GetMalDataQueryError = ErrorType<unknown>;
+
+/**
+ * @summary Get MyAnimeList stats and favorites via Jikan
+ */
+
+export function useGetMalData<
+  TData = Awaited<ReturnType<typeof getMalData>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getMalData>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetMalDataQueryOptions(options);
 
   const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
     queryKey: QueryKey;
