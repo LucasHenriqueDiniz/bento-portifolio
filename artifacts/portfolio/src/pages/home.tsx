@@ -552,43 +552,53 @@ export default function Home() {
               </div>
             </BentoCard>
 
-            {/* DISCORD — 1×1 */}
-            <BentoCard className="col-span-1 row-span-1 rounded-2xl overflow-hidden" style={{ backgroundColor: "#23272a" }}>
-              <motion.div custom={8} variants={fadeUp} initial="hidden" animate="show" className="p-3 h-full flex flex-col justify-between">
-                {/* top row */}
+            {/* DISCORD — 1×2 */}
+            <BentoCard className="col-span-1 row-span-2 rounded-2xl overflow-hidden" style={{ backgroundColor: "#23272a" }}>
+              <motion.div custom={8} variants={fadeUp} initial="hidden" animate="show" className="p-3 h-full flex flex-col gap-3">
+                {/* header */}
                 <div className="flex items-center justify-between">
                   <span className="text-[9px] font-bold uppercase tracking-widest text-white/30">Discord</span>
                   <SiDiscord size={13} className="text-[#5865f2]" />
                 </div>
-                {/* avatar + name */}
-                <div className="flex items-center gap-2.5">
-                  <div className="relative shrink-0">
-                    <div className="w-10 h-10 rounded-full overflow-hidden bg-[#36393f]">
+                {/* avatar */}
+                <div className="flex flex-col items-center gap-2 pt-1">
+                  <div className="relative">
+                    <div className="w-14 h-14 rounded-full overflow-hidden bg-[#36393f] ring-2 ring-white/10">
                       {discord?.avatarUrl
                         ? <img src={discord.avatarUrl} alt="avatar" className="w-full h-full object-cover" />
-                        : <SiDiscord size={18} className="m-auto mt-2.5 text-[#5865f2]/60" />
+                        : <SiDiscord size={24} className="m-auto mt-4 text-[#5865f2]/60" />
                       }
                     </div>
                     <span
-                      className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-[#23272a] status-dot"
+                      className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full border-2 border-[#23272a] status-dot"
                       style={{ backgroundColor: statusColor, color: statusColor }}
                     />
                   </div>
-                  <div className="min-w-0">
+                  <div className="text-center min-w-0 w-full">
                     <p className="text-white font-bold text-[13px] truncate leading-tight">{discord?.displayName ?? "Your Name"}</p>
-                    <p className="text-white/40 text-[10px] capitalize">{discord?.status ?? "dnd"}</p>
+                    <p className="text-white/40 text-[10px] capitalize mt-0.5">{discord?.status ?? "dnd"}</p>
                   </div>
                 </div>
+                {/* divider */}
+                <div className="border-t border-white/5" />
                 {/* activity */}
-                <div className="bg-white/5 rounded-lg px-2.5 py-2 border border-white/5">
-                  <p className="text-white/30 text-[8px] uppercase tracking-widest mb-0.5">Playing</p>
-                  <p className="text-white/80 text-[11px] font-semibold truncate">{discord?.activity ?? "VS Code"}</p>
+                <div className="flex-1 flex flex-col justify-center gap-2">
+                  <div className="bg-white/5 rounded-lg px-2.5 py-2.5 border border-white/5 space-y-1">
+                    <p className="text-white/30 text-[8px] uppercase tracking-widest">Playing</p>
+                    <p className="text-white/80 text-[11px] font-semibold truncate">{discord?.activity ?? "VS Code"}</p>
+                    {discord?.activityDetail && (
+                      <p className="text-white/30 text-[10px] truncate">{discord.activityDetail}</p>
+                    )}
+                  </div>
+                  {discord?.customStatus && (
+                    <p className="text-white/25 text-[10px] text-center italic truncate">"{discord.customStatus}"</p>
+                  )}
                 </div>
               </motion.div>
             </BentoCard>
 
-            {/* WAKATIME — 3×1 */}
-            <BentoCard className={`${CARD} p-4 col-span-3 row-span-1 flex flex-col justify-between`}>
+            {/* WAKATIME — 2×1 */}
+            <BentoCard className={`${CARD} p-4 col-span-2 row-span-1 flex flex-col justify-between`}>
               <motion.div custom={9} variants={fadeUp} initial="hidden" animate="show" className="flex flex-col h-full justify-between">
                 <div className="flex items-center justify-between">
                   <p className={`${LABEL} flex items-center gap-1.5`}><SiWakatime size={9} />Wakatime</p>
@@ -617,8 +627,8 @@ export default function Home() {
               </motion.div>
             </BentoCard>
 
-            {/* TECH STACK — 4×1 */}
-            <BentoCard className={`${CARD} p-4 col-span-4 row-span-1 flex flex-col justify-between`}>
+            {/* TECH STACK — 2×1 */}
+            <BentoCard className={`${CARD} p-4 col-span-2 row-span-1 flex flex-col justify-between`}>
               <motion.div custom={11} variants={fadeUp} initial="hidden" animate="show" className="flex flex-col h-full justify-between">
                 <p className={`${LABEL} mb-2`}>Tech Stack</p>
                 <div className="flex flex-wrap gap-2">
@@ -636,8 +646,8 @@ export default function Home() {
               </motion.div>
             </BentoCard>
 
-            {/* GITHUB + LANGUAGES — 3×1 */}
-            <BentoCard className={`${CARD} p-4 col-span-3 row-span-1 flex`}>
+            {/* GITHUB + LANGUAGES — 2×2 */}
+            <BentoCard className={`${CARD} p-4 col-span-2 row-span-2 flex`}>
               <div ref={githubRef} className="flex w-full h-full gap-4">
                 <motion.div custom={10} variants={fadeUp} initial="hidden" animate="show" className="flex flex-col flex-1 min-w-0 h-full justify-between">
                   {/* top row: label + stats */}
@@ -707,8 +717,41 @@ export default function Home() {
               </div>
             </BentoCard>
 
-            {/* STEAM — 3×1 */}
-            <BentoCard className="col-span-3 row-span-1 rounded-2xl overflow-hidden" style={{ backgroundColor: "#1b2838" }}>
+            {/* MYANIME LIST — 2×2 */}
+            <BentoCard className="col-span-2 row-span-2 rounded-2xl overflow-hidden" style={{ background: "linear-gradient(160deg, #1a1a2e 0%, #16213e 55%, #0f3460 100%)" }}>
+              <motion.div custom={12} variants={fadeUp} initial="hidden" animate="show" className="p-4 h-full flex flex-col justify-between">
+                {/* header */}
+                <div className="flex items-center justify-between">
+                  <span className="text-[9px] font-bold uppercase tracking-widest text-white/30">MyAnimeList</span>
+                  <SiMyanimelist size={14} style={{ color: "#6699ff" }} />
+                </div>
+                {/* big stats */}
+                <div className="flex gap-5">
+                  <div>
+                    <p className="text-white text-[32px] font-black leading-none tabular-nums">{malData.completed}</p>
+                    <p className="text-white/40 text-[9px] mt-1 uppercase tracking-wider">completed</p>
+                  </div>
+                  <div className="border-l border-white/10 pl-5">
+                    <p className="text-white/70 text-[32px] font-black leading-none tabular-nums">{malData.watching}</p>
+                    <p className="text-white/40 text-[9px] mt-1 uppercase tracking-wider">watching</p>
+                  </div>
+                </div>
+                {/* divider */}
+                <div className="border-t border-white/8" />
+                {/* favorites */}
+                <div>
+                  <p className="text-white/25 text-[8px] uppercase tracking-widest mb-2">Favorites</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {malData.favorites.map((f) => (
+                      <span key={f} className="text-[10px] px-2 py-1 rounded-lg bg-white/8 text-white/60 border border-white/10">{f}</span>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            </BentoCard>
+
+            {/* STEAM — 2×1 */}
+            <BentoCard className="col-span-2 row-span-1 rounded-2xl overflow-hidden" style={{ backgroundColor: "#1b2838" }}>
               <motion.div custom={11} variants={fadeUp} initial="hidden" animate="show" className="p-3.5 h-full flex flex-col justify-between">
                 <div className="flex items-center justify-between">
                   <p className="text-[9px] font-bold uppercase tracking-widest text-[#c7d5e0]/50 flex items-center gap-1.5">
@@ -716,42 +759,17 @@ export default function Home() {
                   </p>
                   <span className="text-[9px] text-[#c7d5e0]/30">Recently played</span>
                 </div>
-                <div className="flex gap-2.5 flex-1 items-end mt-2">
-                  {(steam?.recentGames ?? []).slice(0, 4).map((game, i) => (
-                    <div key={game.appId} className="flex-1 min-w-0 flex flex-col gap-1.5 slide-up" style={{ "--delay": `${i*0.07}s` } as React.CSSProperties}>
+                <div className="flex gap-2.5 flex-1 items-end mt-1.5 overflow-hidden">
+                  {(steam?.recentGames ?? []).slice(0, 3).map((game, i) => (
+                    <div key={game.appId} className="flex-1 min-w-0 flex flex-col gap-1 slide-up overflow-hidden" style={{ "--delay": `${i*0.07}s` } as React.CSSProperties}>
                       <div className="w-full rounded-lg overflow-hidden bg-[#2a475e]" style={{ aspectRatio: "16/9" }}>
                         {game.imageUrl && <img src={game.imageUrl} alt={game.name} className="w-full h-full object-cover opacity-90 hover:opacity-100 transition-opacity" />}
                       </div>
-                      <div>
+                      <div className="overflow-hidden">
                         <p className="text-[10px] font-semibold truncate text-[#c7d5e0]">{game.name}</p>
-                        <p className="text-[9px] text-[#c7d5e0]/40">{game.hoursPlayed}h played</p>
+                        <p className="text-[9px] text-[#c7d5e0]/40">{game.hoursPlayed}h</p>
                       </div>
                     </div>
-                  ))}
-                </div>
-              </motion.div>
-            </BentoCard>
-
-            {/* MYANIME LIST — 1×2 */}
-            <BentoCard className="col-span-1 row-span-2 rounded-2xl overflow-hidden" style={{ background: "linear-gradient(160deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)" }}>
-              <motion.div custom={12} variants={fadeUp} initial="hidden" animate="show" className="p-3 h-full flex flex-col justify-between">
-                <div className="flex items-center justify-between">
-                  <span className="text-[9px] font-bold uppercase tracking-widest text-white/30">MyAnimeList</span>
-                  <SiMyanimelist size={14} className="text-[#2e51a2]" style={{ filter: "brightness(2)" }} />
-                </div>
-                <div className="flex gap-3">
-                  <div>
-                    <p className="text-white text-[22px] font-black leading-none tabular-nums">{malData.completed}</p>
-                    <p className="text-white/40 text-[9px] mt-0.5">completed</p>
-                  </div>
-                  <div className="border-l border-white/10 pl-3">
-                    <p className="text-white/80 text-[22px] font-black leading-none tabular-nums">{malData.watching}</p>
-                    <p className="text-white/40 text-[9px] mt-0.5">watching</p>
-                  </div>
-                </div>
-                <div className="flex gap-1 flex-wrap">
-                  {malData.favorites.map((f) => (
-                    <span key={f} className="text-[9px] px-1.5 py-0.5 rounded-md bg-white/8 text-white/50 border border-white/10">{f}</span>
                   ))}
                 </div>
               </motion.div>
