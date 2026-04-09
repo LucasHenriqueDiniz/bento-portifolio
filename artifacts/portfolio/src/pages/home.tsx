@@ -634,55 +634,88 @@ export default function Home() {
               </div>
             </BentoCard>
 
-            {/* WAKATIME — col3-4, rows5-6, next to GitHub */}
-            <BentoCard className={`${CARD} p-4 flex flex-col`} style={{ gridColumn: "3 / 5", gridRow: "5 / 7" }}>
-              <motion.div custom={9} variants={fadeUp} initial="hidden" animate="show" className="flex flex-col h-full">
-                {/* header row */}
-                <div className="flex items-start justify-between mb-3">
-                  <p className={`${LABEL} flex items-center gap-1.5`}><SiWakatime size={9} />Wakatime</p>
-                  <div className="flex gap-3 text-[10px] text-[#888] text-right">
-                    <div>
-                      <p className="font-black text-[#111] dark:text-[#eee] text-[16px] leading-none">{waka.today.h}h<span className="text-[12px]">{waka.today.m}m</span></p>
-                      <p className="text-[9px] text-[#bbb] mt-0.5">today</p>
+            {/* GITHUB + WAKATIME combined — col1-3, rows5-6 */}
+            <BentoCard className={`${CARD} overflow-hidden`} style={{ gridColumn: "1 / 4", gridRow: "5 / 7" }}>
+              <motion.div custom={9} variants={fadeUp} initial="hidden" animate="show" className="flex h-full">
+
+                {/* ── LEFT: GitHub ── */}
+                <div ref={githubRef} className="flex flex-col flex-[3] min-w-0 p-4">
+                  {/* header + stats */}
+                  <div className="flex items-center gap-4 mb-3 shrink-0">
+                    <p className={`${LABEL} flex items-center gap-1.5 shrink-0`}><SiGithub size={10} />GitHub</p>
+                    <div className="flex gap-4 text-[11px] text-[#aaa] dark:text-[#555]">
+                      <span>
+                        <strong className="text-[#111] dark:text-[#eee] text-[13px] font-black"><CountUp to={stats?.totalCommitsThisYear ?? 539} separator="," duration={1.2} /></strong>
+                        <span className="ml-1">commits</span>
+                      </span>
+                      <span>
+                        <strong className="text-[13px] font-black" style={{ color: ACCENT }}><CountUp to={stats?.currentStreak ?? 8} duration={0.9} /></strong>
+                        <span className="ml-1">day streak</span>
+                      </span>
+                      <span>
+                        <strong className="text-[#111] dark:text-[#eee] text-[13px] font-black"><CountUp to={stats?.githubRepos ?? 28} duration={1.0} /></strong>
+                        <span className="ml-1">repos</span>
+                      </span>
                     </div>
-                    <div className="w-px bg-[#f0f0f0] dark:bg-[#282828]" />
-                    <div>
-                      <p className="font-black text-[#111] dark:text-[#eee] text-[16px] leading-none">{waka.week.h}h<span className="text-[12px]">{waka.week.m}m</span></p>
-                      <p className="text-[9px] text-[#bbb] mt-0.5">this week</p>
-                    </div>
+                  </div>
+                  {/* contribution grid */}
+                  <div className="overflow-hidden flex-1 flex items-end">
+                    <GitHubGrid seed={stats?.totalCommitsThisYear ?? 539} inView={githubInView} />
                   </div>
                 </div>
 
-                {/* language bars — bigger with more breathing room */}
-                <div className="flex flex-col justify-between flex-1">
-                  {waka.langs.map((l, i) => (
-                    <div key={l.name} className="flex flex-col gap-1">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-1.5">
-                          <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: l.color }} />
-                          <span className="text-[11px] font-medium text-[#555]">{l.name}</span>
-                        </div>
-                        <span className="text-[11px] text-[#bbb] tabular-nums font-semibold">{l.pct}%</span>
+                {/* divider */}
+                <div className={`w-px self-stretch my-4 shrink-0 ${isDark ? "bg-white/[0.06]" : "bg-[#ebebeb]"}`} />
+
+                {/* ── RIGHT: Wakatime ── */}
+                <div className="flex flex-col flex-[2] min-w-0 p-4">
+                  {/* header + time stats */}
+                  <div className="flex items-start justify-between mb-3 shrink-0">
+                    <p className={`${LABEL} flex items-center gap-1.5`}><SiWakatime size={9} />Wakatime</p>
+                    <div className="flex gap-3 text-right">
+                      <div>
+                        <p className="font-black text-[#111] dark:text-[#eee] text-[14px] leading-none tabular-nums">{waka.today.h}h<span className="text-[11px]">{waka.today.m}m</span></p>
+                        <p className="text-[9px] text-[#bbb] dark:text-[#555] mt-0.5">today</p>
                       </div>
-                      <div className="h-2 bg-[#f0f0f0] dark:bg-[#282828] rounded-full overflow-hidden">
-                        <motion.div
-                          initial={{ width: 0 }}
-                          animate={{ width: `${l.pct}%` }}
-                          transition={{ duration: 0.9, delay: i * 0.12, ease: "easeOut" }}
-                          style={{ backgroundColor: l.color }}
-                          className="h-full rounded-full"
-                        />
+                      <div className={`w-px self-stretch ${isDark ? "bg-white/[0.06]" : "bg-[#f0f0f0]"}`} />
+                      <div>
+                        <p className="font-black text-[#111] dark:text-[#eee] text-[14px] leading-none tabular-nums">{waka.week.h}h<span className="text-[11px]">{waka.week.m}m</span></p>
+                        <p className="text-[9px] text-[#bbb] dark:text-[#555] mt-0.5">this week</p>
                       </div>
                     </div>
-                  ))}
+                  </div>
+                  {/* language bars */}
+                  <div className="flex flex-col justify-between flex-1">
+                    {waka.langs.map((l, i) => (
+                      <div key={l.name} className="flex flex-col gap-1">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-1.5">
+                            <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: l.color }} />
+                            <span className="text-[11px] font-medium text-[#555] dark:text-[#888]">{l.name}</span>
+                          </div>
+                          <span className="text-[11px] text-[#bbb] dark:text-[#555] tabular-nums font-semibold">{l.pct}%</span>
+                        </div>
+                        <div className="h-1.5 bg-[#f0f0f0] dark:bg-[#282828] rounded-full overflow-hidden">
+                          <motion.div
+                            initial={{ width: 0 }}
+                            animate={{ width: `${l.pct}%` }}
+                            transition={{ duration: 0.9, delay: i * 0.12, ease: "easeOut" }}
+                            style={{ backgroundColor: l.color }}
+                            className="h-full rounded-full"
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
+
               </motion.div>
             </BentoCard>
 
-            {/* DISCORD — col4 rows3-4 */}
+            {/* DISCORD — col4, rows3-7 (extended) */}
             <BentoCard
               className="rounded-2xl overflow-hidden"
-              style={{ backgroundColor: isDark ? "#1e1f22" : "#f5f6ff", border: isDark ? "1px solid #2b2d31" : "1px solid #e3e4f0", gridColumn: "4", gridRow: "3 / 5" }}
+              style={{ backgroundColor: isDark ? "#1e1f22" : "#f5f6ff", border: isDark ? "1px solid #2b2d31" : "1px solid #e3e4f0", gridColumn: "4", gridRow: "3 / 7" }}
             >
               <motion.div custom={8} variants={fadeUp} initial="hidden" animate="show" className="p-3.5 h-full flex flex-col gap-3">
 
@@ -778,36 +811,6 @@ export default function Home() {
                   ))}
                 </div>
               </motion.div>
-            </BentoCard>
-
-            {/* GITHUB — col1-2, rows5-6 */}
-            <BentoCard className={`${CARD} p-4 flex flex-col`} style={{ gridColumn: "1 / 3", gridRow: "5 / 7" }}>
-              <div ref={githubRef} className="flex flex-col w-full h-full">
-                <motion.div custom={10} variants={fadeUp} initial="hidden" animate="show" className="flex flex-col h-full">
-                  {/* header: label + stats */}
-                  <div className="flex items-center gap-4 mb-3">
-                    <p className={`${LABEL} flex items-center gap-1.5 shrink-0`}><SiGithub size={10} />GitHub</p>
-                    <div className="flex gap-4 text-[11px] text-[#aaa] dark:text-[#555]">
-                      <span>
-                        <strong className="text-[#111] dark:text-[#eee] text-[13px] font-black"><CountUp to={stats?.totalCommitsThisYear ?? 847} separator="," duration={1.2} /></strong>
-                        <span className="ml-1">commits</span>
-                      </span>
-                      <span>
-                        <strong className="text-[13px] font-black" style={{ color: ACCENT }}><CountUp to={stats?.currentStreak ?? 12} duration={0.9} /></strong>
-                        <span className="ml-1">day streak</span>
-                      </span>
-                      <span>
-                        <strong className="text-[#111] dark:text-[#eee] text-[13px] font-black"><CountUp to={stats?.githubRepos ?? 42} duration={1.0} /></strong>
-                        <span className="ml-1">repos</span>
-                      </span>
-                    </div>
-                  </div>
-                  {/* contribution grid — fills remaining space */}
-                  <div className="overflow-hidden flex-1 flex items-end">
-                    <GitHubGrid seed={stats?.totalCommitsThisYear ?? 847} inView={githubInView} />
-                  </div>
-                </motion.div>
-              </div>
             </BentoCard>
 
             {/* MYANIME LIST — col1-2, rows7-8 flip card */}
@@ -958,47 +961,67 @@ export default function Home() {
                 </div>
 
                 {/* cycling project card */}
-                <div className={`flex-1 min-h-0 relative rounded-xl border overflow-hidden ${isDark ? "border-white/[0.07] bg-white/[0.03]" : "border-[#ebebeb] bg-[#fafafa]"}`}>
+                <div className="flex-1 min-h-0 relative overflow-hidden rounded-xl">
                   <AnimatePresence mode="wait">
                     {(() => {
                       const p = projects[projIdx];
                       return (
                         <motion.div
                           key={projIdx}
-                          initial={{ opacity: 0, y: 8 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -8 }}
-                          transition={{ duration: 0.35, ease: "easeInOut" }}
-                          className="absolute inset-0 p-4 flex flex-col justify-between"
+                          initial={{ opacity: 0, x: 18 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, x: -18 }}
+                          transition={{ duration: 0.3, ease: "easeOut" }}
+                          className="absolute inset-0 flex flex-col justify-between p-4 overflow-hidden"
+                          style={{
+                            background: isDark
+                              ? `linear-gradient(135deg, ${p.color}1a 0%, transparent 55%), #111`
+                              : `linear-gradient(135deg, ${p.color}12 0%, transparent 55%), #f8f9fb`,
+                            border: `1px solid ${p.color}28`,
+                            borderRadius: 12,
+                          }}
                         >
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1 min-w-0 pr-3">
-                              <div className="flex items-center gap-2 mb-1.5">
+                          {/* decorative blurred circle */}
+                          <div
+                            className="absolute -right-8 -top-8 w-32 h-32 rounded-full blur-2xl pointer-events-none"
+                            style={{ backgroundColor: p.color, opacity: 0.12 }}
+                          />
+
+                          {/* top: icon + name + desc */}
+                          <div className="relative z-10 flex items-start justify-between gap-2">
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-2.5">
+                                <span
+                                  className="w-7 h-7 rounded-lg flex items-center justify-center text-white text-[11px] font-black shrink-0 shadow-sm"
+                                  style={{ backgroundColor: p.color }}
+                                >
+                                  {p.name[0].toUpperCase()}
+                                </span>
                                 {p.wip && (
-                                  <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full" style={{ backgroundColor: `${ACCENT}18`, color: ACCENT }}>WIP</span>
+                                  <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full border" style={{ borderColor: `${ACCENT}40`, color: ACCENT, backgroundColor: `${ACCENT}10` }}>WIP</span>
                                 )}
-                                <h3 className="text-[15px] font-bold text-[#111] dark:text-[#eee] truncate">{p.name}</h3>
                               </div>
-                              <p className="text-[11px] text-[#999] dark:text-[#555] leading-snug">{p.description}</p>
+                              <h3 className="text-[18px] font-black leading-tight" style={{ color: isDark ? "#f0f0f0" : "#111" }}>
+                                {p.name}
+                              </h3>
+                              <p className="text-[11px] leading-snug mt-1.5" style={{ color: isDark ? "#666" : "#999" }}>
+                                {p.description}
+                              </p>
                             </div>
-                            <a
-                              href={p.url}
-                              onClick={e => e.stopPropagation()}
-                              className="shrink-0 p-1.5 rounded-lg transition-colors"
-                              style={{ color: "#bbb" }}
-                            >
-                              <FiArrowUpRight size={12} />
+                            <a href={p.url} onClick={e => e.stopPropagation()} className="shrink-0 rounded-lg p-1" style={{ color: "#bbb" }}>
+                              <FiArrowUpRight size={13} />
                             </a>
                           </div>
 
-                          <div className="flex items-center justify-between">
+                          {/* bottom: language + stars */}
+                          <div className="relative z-10 flex items-center justify-between">
                             <div className="flex items-center gap-1.5">
-                              <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: p.color }} />
-                              <span className="text-[10px] text-[#999] dark:text-[#555]">{p.language}</span>
+                              <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: p.color }} />
+                              <span className="text-[11px] font-medium" style={{ color: isDark ? "#666" : "#999" }}>{p.language}</span>
                             </div>
-                            <div className="flex items-center gap-1 text-[#bbb] dark:text-[#444]">
-                              <svg width="10" height="10" viewBox="0 0 16 16" fill="currentColor"><path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.75.75 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z"/></svg>
-                              <span className="text-[10px]">{p.stars}</span>
+                            <div className="flex items-center gap-1.5" style={{ color: isDark ? "#555" : "#bbb" }}>
+                              <svg width="11" height="11" viewBox="0 0 16 16" fill="currentColor"><path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.75.75 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z"/></svg>
+                              <span className="text-[11px] font-medium tabular-nums">{p.stars}</span>
                             </div>
                           </div>
                         </motion.div>
@@ -1006,17 +1029,17 @@ export default function Home() {
                     })()}
                   </AnimatePresence>
 
-                  {/* pagination dots */}
-                  <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1">
+                  {/* pagination dots — above content */}
+                  <div className="absolute bottom-3.5 left-1/2 -translate-x-1/2 flex gap-1 z-20">
                     {projects.map((_, i) => (
                       <button
                         key={i}
                         onClick={e => { e.stopPropagation(); setProjIdx(i); }}
                         className="rounded-full transition-all duration-300"
                         style={{
-                          width: i === projIdx ? 14 : 5,
+                          width: i === projIdx ? 16 : 5,
                           height: 5,
-                          backgroundColor: i === projIdx ? ACCENT : (isDark ? "#333" : "#ddd"),
+                          backgroundColor: i === projIdx ? projects[projIdx].color : (isDark ? "#333" : "#ddd"),
                         }}
                       />
                     ))}
