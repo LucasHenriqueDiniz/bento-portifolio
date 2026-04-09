@@ -20,9 +20,10 @@ interface BentoCardProps {
   className?: string;
   style?: React.CSSProperties;
   glowColor?: string;
+  onClick?: React.MouseEventHandler<HTMLDivElement>;
 }
 
-export function BentoCard({ children, className = "", style, glowColor = GLOW_COLOR }: BentoCardProps) {
+export function BentoCard({ children, className = "", style, glowColor = GLOW_COLOR, onClick }: BentoCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const particlesRef = useRef<HTMLDivElement[]>([]);
   const timeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([]);
@@ -115,6 +116,7 @@ export function BentoCard({ children, className = "", style, glowColor = GLOW_CO
     <div
       ref={cardRef}
       className={`bento-card ${className}`}
+      onClick={onClick}
       style={{
         "--glow-x": "50%",
         "--glow-y": "50%",
