@@ -248,32 +248,46 @@ export default function Home() {
       watching: 8,
       completed: 127,
       episodes: 3842,
-      score: 7.8,
       favorites: [
-        { title: "Evangelion",    year: 1995, img: "https://picsum.photos/seed/eva26nge/80/120" },
-        { title: "Hunter×Hunter", year: 2011, img: "https://picsum.photos/seed/hxh2011z/80/120" },
-        { title: "Vinland Saga",  year: 2019, img: "https://picsum.photos/seed/vinlandd/80/120" },
-        { title: "Steins;Gate",   year: 2011, img: "https://picsum.photos/seed/steinsgt/80/120" },
-        { title: "Attack on Titan", year: 2013, img: "https://picsum.photos/seed/aot2013x/80/120" },
-        { title: "Mushishi",      year: 2005, img: "https://picsum.photos/seed/mushishi/80/120" },
+        { title: "Evangelion",      year: 1995, img: "https://picsum.photos/seed/eva26nge/80/120",  synopsis: "A traumatized teen pilots a giant biomech to defend humanity from catastrophic beings called Angels." },
+        { title: "Hunter×Hunter",   year: 2011, img: "https://picsum.photos/seed/hxh2011z/80/120",  synopsis: "Young Gon ventures into a dangerous world to become a Hunter and find his missing father." },
+        { title: "Vinland Saga",    year: 2019, img: "https://picsum.photos/seed/vinlandd/80/120",  synopsis: "A Viking warrior obsessed with revenge transforms into a man seeking a true warrior's purpose." },
+        { title: "Steins;Gate",     year: 2011, img: "https://picsum.photos/seed/steinsgt/80/120",  synopsis: "A self-proclaimed mad scientist accidentally discovers time travel and faces its catastrophic consequences." },
+        { title: "Attack on Titan", year: 2013, img: "https://picsum.photos/seed/aot2013x/80/120",  synopsis: "Soldiers fight titans besieging humanity while uncovering the dark truths about their world." },
+        { title: "Mushishi",        year: 2005, img: "https://picsum.photos/seed/mushishi/80/120",  synopsis: "A wanderer solves the strange phenomena caused by mysterious life forms called Mushi." },
       ],
     },
     manga: {
       reading: 5,
       completed: 43,
       chapters: 2180,
-      score: 8.1,
       favorites: [
-        { title: "Berserk",        year: 1989, img: "https://picsum.photos/seed/berserk9/80/120" },
-        { title: "Vagabond",       year: 1998, img: "https://picsum.photos/seed/vagabond/80/120" },
-        { title: "Punpun",         year: 2007, img: "https://picsum.photos/seed/punpun77/80/120" },
-        { title: "Chainsaw Man",   year: 2018, img: "https://picsum.photos/seed/chainsawm/80/120" },
-        { title: "JJK",            year: 2018, img: "https://picsum.photos/seed/jjk2018x/80/120" },
-        { title: "One Piece",      year: 1997, img: "https://picsum.photos/seed/onepiece/80/120" },
+        { title: "Berserk",       year: 1989, img: "https://picsum.photos/seed/berserk9/80/120",  synopsis: "A lone swordsman with a tragic past fights through a brutal dark-fantasy world filled with demons." },
+        { title: "Vagabond",      year: 1998, img: "https://picsum.photos/seed/vagabond/80/120",  synopsis: "A fictionalized journey of Miyamoto Musashi as he pursues becoming the greatest swordsman in Japan." },
+        { title: "Punpun",        year: 2007, img: "https://picsum.photos/seed/punpun77/80/120",  synopsis: "A brutally honest coming-of-age story following a boy navigating trauma and the cruelty of growing up." },
+        { title: "Chainsaw Man",  year: 2018, img: "https://picsum.photos/seed/chainsawm/80/120", synopsis: "A boy merged with a chainsaw devil hunts fiends for a shadowy government organization." },
+        { title: "Jujutsu Kaisen",year: 2018, img: "https://picsum.photos/seed/jjk2018x/80/120",  synopsis: "A boy swallows a cursed relic and enters a world of sorcerers fighting monstrous cursed spirits." },
+        { title: "One Piece",     year: 1997, img: "https://picsum.photos/seed/onepiece/80/120",  synopsis: "A rubber-powered pirate leads his crew across the seas in search of the legendary One Piece treasure." },
       ],
     },
   };
   const [malFlipped, setMalFlipped] = useState(false);
+  const [malPage,    setMalPage]    = useState(0);   // 0 = items[0..4], 1 = items[1..5]
+  const [malHover,   setMalHover]   = useState<string | null>(null);
+  const malRef    = useRef<HTMLDivElement>(null);
+  const malInView = useInView(malRef, { once: true, margin: "-50px" });
+
+  useEffect(() => {
+    const t = setInterval(() => setMalPage(p => (p + 1) % 2), 4500);
+    return () => clearInterval(t);
+  }, []);
+
+  const animMalAnimeCompleted = useCounter(malData.anime.completed,  malInView, 1.0);
+  const animMalAnimeWatching  = useCounter(malData.anime.watching,   malInView, 0.6);
+  const animMalAnimeEpisodes  = useCounter(malData.anime.episodes,   malInView, 1.4);
+  const animMalMangaCompleted = useCounter(malData.manga.completed,  malInView, 1.0);
+  const animMalMangaReading   = useCounter(malData.manga.reading,    malInView, 0.5);
+  const animMalMangaChapters  = useCounter(malData.manga.chapters,   malInView, 1.4);
 
   /* Wakatime mock data */
   const waka = {
@@ -709,108 +723,133 @@ export default function Home() {
 
             {/* MYANIME LIST — 2×2 flip card */}
             <BentoCard
-              className={`${CARD} col-span-2 row-span-2 cursor-pointer overflow-visible`}
+              className={`${CARD} col-span-2 row-span-2 cursor-pointer`}
               style={{ perspective: "1200px" }}
-              onClick={() => setMalFlipped(f => !f)}
+              onClick={() => { setMalFlipped(f => !f); setMalHover(null); }}
             >
-              <motion.div custom={12} variants={fadeUp} initial="hidden" animate="show" className="w-full h-full">
+              <motion.div ref={malRef} custom={12} variants={fadeUp} initial="hidden" animate="show" className="w-full h-full">
                 <div
                   className="relative w-full h-full transition-transform duration-700"
                   style={{ transformStyle: "preserve-3d", transform: malFlipped ? "rotateY(180deg)" : "rotateY(0deg)" }}
                 >
-                  {/* ── FRONT — Anime ── */}
-                  <div
-                    className="absolute inset-0 rounded-2xl overflow-hidden p-4 flex flex-col gap-3 bg-white dark:bg-[#181818]"
-                    style={{ backfaceVisibility: "hidden" }}
-                  >
-                    {/* header */}
-                    <div className="flex items-center justify-between shrink-0">
-                      <div className="flex items-center gap-2">
-                        <SiMyanimelist size={15} style={{ color: "#2e51a2" }} />
-                        <span className="text-[14px] font-bold text-[#111] dark:text-[#eee]">Anime</span>
-                      </div>
-                      <span className="text-[9px] text-[#bbb] dark:text-[#555]">tap for manga →</span>
-                    </div>
-                    {/* stats row */}
-                    <div className="flex gap-5 shrink-0">
-                      <div>
-                        <p className="text-[28px] font-black leading-none tabular-nums text-[#111] dark:text-[#eee]">{malData.anime.completed}</p>
-                        <p className={`${LABEL} mt-1`}>completed</p>
-                      </div>
-                      <div className="border-l border-[#ebebeb] dark:border-[#282828] pl-5">
-                        <p className="text-[28px] font-black leading-none tabular-nums text-[#111] dark:text-[#eee]">{malData.anime.watching}</p>
-                        <p className={`${LABEL} mt-1`}>watching</p>
-                      </div>
-                      <div className="border-l border-[#ebebeb] dark:border-[#282828] pl-5">
-                        <p className="text-[28px] font-black leading-none tabular-nums text-[#111] dark:text-[#eee]">{malData.anime.episodes.toLocaleString()}</p>
-                        <p className={`${LABEL} mt-1`}>episodes</p>
-                      </div>
-                    </div>
-                    {/* divider */}
-                    <div className="border-t border-[#ebebeb] dark:border-[#282828] shrink-0" />
-                    {/* cover grid */}
-                    <div className="flex-1 min-h-0 overflow-hidden">
-                      <div className="flex gap-2 h-full">
-                        {malData.anime.favorites.map((f) => (
-                          <div key={f.title} className="flex-1 relative rounded-xl overflow-hidden bg-[#f0f0f0] dark:bg-[#252525] min-w-0">
-                            <img src={f.img} alt={f.title} className="w-full h-full object-cover" />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
-                            <div className="absolute bottom-0 left-0 right-0 p-2">
-                              <p className="text-white text-[8px] font-semibold leading-tight line-clamp-2">{f.title}</p>
-                              <p className="text-white/50 text-[7px] mt-0.5 tabular-nums">{f.year}</p>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
 
-                  {/* ── BACK — Manga ── */}
-                  <div
-                    className="absolute inset-0 rounded-2xl overflow-hidden p-4 flex flex-col gap-3 bg-white dark:bg-[#181818]"
-                    style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
-                  >
-                    {/* header */}
-                    <div className="flex items-center justify-between shrink-0">
-                      <div className="flex items-center gap-2">
-                        <SiMyanimelist size={15} style={{ color: "#2e51a2" }} />
-                        <span className="text-[14px] font-bold text-[#111] dark:text-[#eee]">Manga</span>
-                      </div>
-                      <span className="text-[9px] text-[#bbb] dark:text-[#555]">← tap for anime</span>
-                    </div>
-                    {/* stats row */}
-                    <div className="flex gap-5 shrink-0">
-                      <div>
-                        <p className="text-[28px] font-black leading-none tabular-nums text-[#111] dark:text-[#eee]">{malData.manga.completed}</p>
-                        <p className={`${LABEL} mt-1`}>completed</p>
-                      </div>
-                      <div className="border-l border-[#ebebeb] dark:border-[#282828] pl-5">
-                        <p className="text-[28px] font-black leading-none tabular-nums text-[#111] dark:text-[#eee]">{malData.manga.reading}</p>
-                        <p className={`${LABEL} mt-1`}>reading</p>
-                      </div>
-                      <div className="border-l border-[#ebebeb] dark:border-[#282828] pl-5">
-                        <p className="text-[28px] font-black leading-none tabular-nums text-[#111] dark:text-[#eee]">{malData.manga.chapters.toLocaleString()}</p>
-                        <p className={`${LABEL} mt-1`}>chapters</p>
-                      </div>
-                    </div>
-                    {/* divider */}
-                    <div className="border-t border-[#ebebeb] dark:border-[#282828] shrink-0" />
-                    {/* cover images */}
-                    <div className="flex-1 min-h-0">
-                      <div className="flex gap-2 h-full">
-                        {malData.manga.favorites.map((f) => (
-                          <div key={f.title} className="flex-1 relative rounded-xl overflow-hidden bg-[#f0f0f0] dark:bg-[#252525] min-w-0">
-                            <img src={f.img} alt={f.title} className="w-full h-full object-cover" />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
-                            <div className="absolute bottom-0 left-0 right-0 p-2">
-                              <p className="text-white text-[8px] font-semibold leading-tight line-clamp-2">{f.title}</p>
-                              <p className="text-white/50 text-[7px] mt-0.5 tabular-nums">{f.year}</p>
-                            </div>
+                  {/* ── helper: cover strip ── renders 5 covers with rotation + tooltip */}
+                  {([
+                    { side: "anime", favs: malData.anime.favorites, faceTransform: undefined },
+                    { side: "manga", favs: malData.manga.favorites, faceTransform: "rotateY(180deg)" },
+                  ] as const).map(({ side, favs, faceTransform }) => {
+                    const visible = [...favs, ...favs].slice(malPage, malPage + 5);
+                    const hovered = visible.find(f => f.title === malHover) ?? null;
+                    const stats = side === "anime"
+                      ? [
+                          { val: animMalAnimeCompleted, label: "completed" },
+                          { val: animMalAnimeWatching,  label: "watching"  },
+                          { val: animMalAnimeEpisodes,  label: "episodes", fmt: true },
+                        ]
+                      : [
+                          { val: animMalMangaCompleted, label: "completed" },
+                          { val: animMalMangaReading,   label: "reading"   },
+                          { val: animMalMangaChapters,  label: "chapters",  fmt: true },
+                        ];
+                    const hint = side === "anime" ? "tap for manga →" : "← tap for anime";
+
+                    return (
+                      <div
+                        key={side}
+                        className="absolute inset-0 rounded-2xl overflow-hidden p-4 flex flex-col gap-2.5 bg-white dark:bg-[#181818]"
+                        style={{ backfaceVisibility: "hidden", transform: faceTransform }}
+                        onClick={e => e.stopPropagation()}
+                      >
+                        {/* header */}
+                        <div className="flex items-center justify-between shrink-0" onClick={() => { setMalFlipped(f => !f); setMalHover(null); }}>
+                          <div className="flex items-center gap-2 leading-none">
+                            <SiMyanimelist size={14} style={{ color: "#2e51a2" }} />
+                            <span className="text-[13px] font-bold text-[#111] dark:text-[#eee] leading-none capitalize">{side}</span>
                           </div>
-                        ))}
+                          <span className="text-[9px] leading-none text-[#bbb] dark:text-[#555]">{hint}</span>
+                        </div>
+
+                        {/* stats row — animated counters */}
+                        <div className="flex gap-5 shrink-0" onClick={() => { setMalFlipped(f => !f); setMalHover(null); }}>
+                          {stats.map((s, i) => (
+                            <div key={s.label} className={i > 0 ? "border-l border-[#ebebeb] dark:border-[#282828] pl-5" : ""}>
+                              <p className="text-[26px] font-black leading-none tabular-nums text-[#111] dark:text-[#eee]">
+                                {s.fmt ? s.val.toLocaleString() : s.val}
+                              </p>
+                              <p className={`${LABEL} mt-1`}>{s.label}</p>
+                            </div>
+                          ))}
+                        </div>
+
+                        {/* divider */}
+                        <div className="border-t border-[#ebebeb] dark:border-[#282828] shrink-0" />
+
+                        {/* cover strip */}
+                        <div className="flex-1 min-h-0 flex flex-col gap-2 overflow-hidden">
+                          <AnimatePresence mode="wait">
+                            <motion.div
+                              key={`${side}-page-${malPage}`}
+                              initial={{ opacity: 0, x: 12 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              exit={{ opacity: 0, x: -12 }}
+                              transition={{ duration: 0.35, ease: "easeOut" }}
+                              className="flex gap-2 flex-1"
+                            >
+                              {visible.map((f) => (
+                                <div
+                                  key={f.title}
+                                  className="flex-1 relative rounded-xl overflow-hidden bg-[#f0f0f0] dark:bg-[#252525] min-w-0 cursor-pointer"
+                                  onMouseEnter={() => setMalHover(f.title)}
+                                  onMouseLeave={() => setMalHover(null)}
+                                  onClick={e => e.stopPropagation()}
+                                >
+                                  <img src={f.img} alt={f.title} className="w-full h-full object-cover" />
+                                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
+                                  <div className="absolute bottom-0 left-0 right-0 p-1.5">
+                                    <p className="text-white text-[7px] font-semibold leading-tight line-clamp-2">{f.title}</p>
+                                    <p className="text-white/50 text-[6px] mt-0.5 tabular-nums">{f.year}</p>
+                                  </div>
+                                </div>
+                              ))}
+                            </motion.div>
+                          </AnimatePresence>
+
+                          {/* description strip — slides in on hover */}
+                          <AnimatePresence>
+                            {hovered ? (
+                              <motion.div
+                                key={hovered.title}
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: "auto" }}
+                                exit={{ opacity: 0, height: 0 }}
+                                transition={{ duration: 0.22 }}
+                                className="overflow-hidden shrink-0"
+                              >
+                                <div className="bg-[#f5f5f5] dark:bg-[#222] rounded-xl px-3 py-2 flex items-start gap-2">
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-[10px] font-bold text-[#111] dark:text-[#eee] leading-tight truncate">{hovered.title} <span className="text-[9px] font-normal text-[#bbb] dark:text-[#555]">({hovered.year})</span></p>
+                                    <p className="text-[9px] text-[#777] dark:text-[#888] leading-snug mt-0.5 line-clamp-2">{hovered.synopsis}</p>
+                                  </div>
+                                </div>
+                              </motion.div>
+                            ) : null}
+                          </AnimatePresence>
+
+                          {/* page dots */}
+                          <div className="flex items-center justify-center gap-1.5 shrink-0 pb-0.5" onClick={e => e.stopPropagation()}>
+                            {[0, 1].map(i => (
+                              <button
+                                key={i}
+                                onClick={() => setMalPage(i)}
+                                className={`w-1.5 h-1.5 rounded-full transition-all ${i === malPage ? "scale-125" : "opacity-30 hover:opacity-60"}`}
+                                style={{ backgroundColor: i === malPage ? ACCENT : undefined, background: i !== malPage ? "#ccc" : undefined }}
+                              />
+                            ))}
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
+                    );
+                  })}
                 </div>
               </motion.div>
             </BentoCard>
