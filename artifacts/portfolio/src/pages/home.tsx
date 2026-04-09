@@ -115,12 +115,27 @@ const POLAROID_PHOTOS = [
 ];
 const POLAROID_CAPTIONS = ["summer '23", "buenos aires", "coffee run", "studio day", "road trip"];
 
+const slideVariants = {
+  enter: (dir: number) => ({ x: dir > 0 ? "100%" : "-100%" }),
+  center: { x: 0 },
+  exit: (dir: number) => ({ x: dir > 0 ? "-100%" : "100%" }),
+};
+
 function PolaroidStack() {
   const [current, setCurrent] = useState(0);
+  const [dir, setDir] = useState(1);
   const n = POLAROID_PHOTOS.length;
 
+  const goTo = (idx: number) => {
+    setDir(idx >= current ? 1 : -1);
+    setCurrent(idx);
+  };
+
   useEffect(() => {
-    const id = setInterval(() => setCurrent(c => (c + 1) % n), 3600);
+    const id = setInterval(() => {
+      setDir(1);
+      setCurrent(c => (c + 1) % n);
+    }, 3800);
     return () => clearInterval(id);
   }, [n]);
 
@@ -128,17 +143,19 @@ function PolaroidStack() {
     <div className="w-full h-full flex flex-col" style={{ padding: 10, background: "white" }}>
       {/* photo area fills available space */}
       <div className="flex-1 relative overflow-hidden">
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode="popLayout" custom={dir}>
           <motion.img
             key={current}
+            custom={dir}
             src={POLAROID_PHOTOS[current]}
             alt={POLAROID_CAPTIONS[current]}
             draggable={false}
             className="absolute inset-0 w-full h-full object-cover"
-            initial={{ opacity: 0, scale: 1.04 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.97 }}
-            transition={{ duration: 0.5, ease: "easeInOut" }}
+            variants={slideVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{ duration: 0.42, ease: [0.32, 0.72, 0, 1] }}
           />
         </AnimatePresence>
       </div>
@@ -152,7 +169,7 @@ function PolaroidStack() {
             initial={{ opacity: 0, y: 4 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -4 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.25 }}
           >
             {POLAROID_CAPTIONS[current]}
           </motion.p>
@@ -163,12 +180,12 @@ function PolaroidStack() {
         {Array.from({ length: n }).map((_, i) => (
           <button
             key={i}
-            onClick={() => setCurrent(i)}
-            className="rounded-full transition-all"
+            onClick={() => goTo(i)}
+            className="rounded-full transition-all duration-300"
             style={{
               width: i === current ? 14 : 5,
               height: 5,
-              backgroundColor: i === current ? "#bbb" : "#ddd",
+              backgroundColor: i === current ? "#aaa" : "#ddd",
             }}
           />
         ))}
@@ -220,12 +237,34 @@ export default function Home() {
 
   /* MAL mock data */
   const malData = {
-    watching: 8,
-    completed: 127,
-    episodes: 3842,
-    score: 7.8,
-    favorites: ["Evangelion", "HxH", "Vinland Saga"],
+    anime: {
+      watching: 8,
+      completed: 127,
+      episodes: 3842,
+      score: 7.8,
+      favorites: [
+        { title: "Neon Genesis Evangelion", year: 1995 },
+        { title: "Hunter x Hunter",        year: 2011 },
+        { title: "Vinland Saga",           year: 2019 },
+        { title: "Steins;Gate",            year: 2011 },
+        { title: "Attack on Titan",        year: 2013 },
+      ],
+    },
+    manga: {
+      reading: 5,
+      completed: 43,
+      chapters: 2180,
+      score: 8.1,
+      favorites: [
+        { title: "Berserk",           year: 1989 },
+        { title: "Vagabond",          year: 1998 },
+        { title: "Oyasumi Punpun",    year: 2007 },
+        { title: "Chainsaw Man",      year: 2018 },
+        { title: "Jujutsu Kaisen",    year: 2018 },
+      ],
+    },
   };
+  const [malFlipped, setMalFlipped] = useState(false);
 
   /* Wakatime mock data */
   const waka = {
@@ -658,34 +697,112 @@ export default function Home() {
               </div>
             </BentoCard>
 
-            {/* MYANIME LIST — 2×2 */}
-            <BentoCard className="col-span-2 row-span-2 rounded-2xl overflow-hidden" style={{ background: "linear-gradient(160deg, #1a1a2e 0%, #16213e 55%, #0f3460 100%)" }}>
-              <motion.div custom={12} variants={fadeUp} initial="hidden" animate="show" className="p-4 h-full flex flex-col justify-between">
-                {/* header */}
-                <div className="flex items-center justify-between">
-                  <span className="text-[9px] font-bold uppercase tracking-widest text-white/30">MyAnimeList</span>
-                  <SiMyanimelist size={14} style={{ color: "#6699ff" }} />
-                </div>
-                {/* big stats */}
-                <div className="flex gap-5">
-                  <div>
-                    <p className="text-white text-[32px] font-black leading-none tabular-nums">{malData.completed}</p>
-                    <p className="text-white/40 text-[9px] mt-1 uppercase tracking-wider">completed</p>
+            {/* MYANIME LIST — 2×2 flip card */}
+            <BentoCard
+              className="col-span-2 row-span-2 rounded-2xl overflow-visible cursor-pointer"
+              style={{ perspective: "1200px" }}
+              onClick={() => setMalFlipped(f => !f)}
+            >
+              <motion.div custom={12} variants={fadeUp} initial="hidden" animate="show" className="w-full h-full">
+                <div
+                  className="relative w-full h-full transition-transform duration-700"
+                  style={{ transformStyle: "preserve-3d", transform: malFlipped ? "rotateY(180deg)" : "rotateY(0deg)" }}
+                >
+                  {/* ── FRONT — Anime ── */}
+                  <div
+                    className="absolute inset-0 rounded-2xl overflow-hidden p-4 flex flex-col justify-between"
+                    style={{
+                      backfaceVisibility: "hidden",
+                      background: "linear-gradient(160deg, #1a1a2e 0%, #16213e 55%, #0f3460 100%)",
+                    }}
+                  >
+                    {/* header */}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[9px] font-bold uppercase tracking-widest text-white/30">MyAnimeList</span>
+                        <span className="text-[8px] text-white/20 bg-white/5 px-1.5 py-0.5 rounded-full border border-white/8">Anime · click to flip</span>
+                      </div>
+                      <SiMyanimelist size={14} style={{ color: "#6699ff" }} />
+                    </div>
+                    {/* stats */}
+                    <div className="flex gap-5">
+                      <div>
+                        <p className="text-white text-[30px] font-black leading-none tabular-nums">{malData.anime.completed}</p>
+                        <p className="text-white/40 text-[9px] mt-1 uppercase tracking-wider">completed</p>
+                      </div>
+                      <div className="border-l border-white/10 pl-5">
+                        <p className="text-white/70 text-[30px] font-black leading-none tabular-nums">{malData.anime.watching}</p>
+                        <p className="text-white/40 text-[9px] mt-1 uppercase tracking-wider">watching</p>
+                      </div>
+                      <div className="border-l border-white/10 pl-5">
+                        <p className="text-white/50 text-[30px] font-black leading-none tabular-nums">{malData.anime.episodes.toLocaleString()}</p>
+                        <p className="text-white/40 text-[9px] mt-1 uppercase tracking-wider">episodes</p>
+                      </div>
+                    </div>
+                    {/* divider */}
+                    <div className="border-t border-white/8" />
+                    {/* anime favorites */}
+                    <div>
+                      <p className="text-white/25 text-[8px] uppercase tracking-widest mb-2">Anime Favorites</p>
+                      <div className="flex flex-col gap-1.5">
+                        {malData.anime.favorites.map((f, i) => (
+                          <div key={f.title} className="flex items-center gap-2">
+                            <span className="text-[9px] text-white/20 w-3 tabular-nums">{i + 1}</span>
+                            <span className="text-[11px] text-white/65 font-medium flex-1 truncate">{f.title}</span>
+                            <span className="text-[9px] text-white/20">{f.year}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   </div>
-                  <div className="border-l border-white/10 pl-5">
-                    <p className="text-white/70 text-[32px] font-black leading-none tabular-nums">{malData.watching}</p>
-                    <p className="text-white/40 text-[9px] mt-1 uppercase tracking-wider">watching</p>
-                  </div>
-                </div>
-                {/* divider */}
-                <div className="border-t border-white/8" />
-                {/* favorites */}
-                <div>
-                  <p className="text-white/25 text-[8px] uppercase tracking-widest mb-2">Favorites</p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {malData.favorites.map((f) => (
-                      <span key={f} className="text-[10px] px-2 py-1 rounded-lg bg-white/8 text-white/60 border border-white/10">{f}</span>
-                    ))}
+
+                  {/* ── BACK — Manga ── */}
+                  <div
+                    className="absolute inset-0 rounded-2xl overflow-hidden p-4 flex flex-col justify-between"
+                    style={{
+                      backfaceVisibility: "hidden",
+                      transform: "rotateY(180deg)",
+                      background: "linear-gradient(160deg, #1e0a24 0%, #2a1030 55%, #3d0f54 100%)",
+                    }}
+                  >
+                    {/* header */}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[9px] font-bold uppercase tracking-widest text-white/30">MyAnimeList</span>
+                        <span className="text-[8px] text-white/20 bg-white/5 px-1.5 py-0.5 rounded-full border border-white/8">Manga · click to flip</span>
+                      </div>
+                      <SiMyanimelist size={14} style={{ color: "#c084fc" }} />
+                    </div>
+                    {/* stats */}
+                    <div className="flex gap-5">
+                      <div>
+                        <p className="text-white text-[30px] font-black leading-none tabular-nums">{malData.manga.completed}</p>
+                        <p className="text-white/40 text-[9px] mt-1 uppercase tracking-wider">completed</p>
+                      </div>
+                      <div className="border-l border-white/10 pl-5">
+                        <p className="text-white/70 text-[30px] font-black leading-none tabular-nums">{malData.manga.reading}</p>
+                        <p className="text-white/40 text-[9px] mt-1 uppercase tracking-wider">reading</p>
+                      </div>
+                      <div className="border-l border-white/10 pl-5">
+                        <p className="text-white/50 text-[30px] font-black leading-none tabular-nums">{malData.manga.chapters.toLocaleString()}</p>
+                        <p className="text-white/40 text-[9px] mt-1 uppercase tracking-wider">chapters</p>
+                      </div>
+                    </div>
+                    {/* divider */}
+                    <div className="border-t border-white/8" />
+                    {/* manga favorites */}
+                    <div>
+                      <p className="text-white/25 text-[8px] uppercase tracking-widest mb-2">Manga Favorites</p>
+                      <div className="flex flex-col gap-1.5">
+                        {malData.manga.favorites.map((f, i) => (
+                          <div key={f.title} className="flex items-center gap-2">
+                            <span className="text-[9px] text-white/20 w-3 tabular-nums">{i + 1}</span>
+                            <span className="text-[11px] text-white/65 font-medium flex-1 truncate">{f.title}</span>
+                            <span className="text-[9px] text-white/20">{f.year}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </motion.div>
