@@ -211,12 +211,12 @@ function EqBars() {
 
 /* ─── Main component ─────────────────────────────── */
 export default function Home() {
-  const { data: discord } = useGetDiscordPresence();
-  const { data: nowPlaying } = useGetNowPlaying();
-  const { data: topArtists } = useGetTopArtists();
-  const { data: steam } = useGetSteamData();
-  const { data: workout } = useGetLastWorkout();
-  const { data: stats } = useGetStats();
+  const { data: discord,    isLoading: loadingDiscord    } = useGetDiscordPresence();
+  const { data: nowPlaying, isLoading: loadingNowPlaying } = useGetNowPlaying();
+  const { data: topArtists, isLoading: loadingArtists    } = useGetTopArtists();
+  const { data: steam,      isLoading: loadingSteam      } = useGetSteamData();
+  const { data: workout,    isLoading: loadingWorkout     } = useGetLastWorkout();
+  const { data: stats,      isLoading: loadingStats       } = useGetStats();
 
   const statusColor = STATUS_COLORS[discord?.status ?? "dnd"];
   const [weatherFlipped, setWeatherFlipped] = useState(false);
@@ -568,7 +568,16 @@ export default function Home() {
               style={{ gridColumn: "4", gridRow: "1 / 3" }}
             >
               <motion.div custom={4} variants={fadeUp} initial="hidden" animate="show" className="w-full h-full">
-                {nowPlaying?.albumArt ? (
+                {loadingNowPlaying ? (
+                  <div className="w-full h-full flex flex-col relative overflow-hidden">
+                    <div className="sk absolute inset-0 rounded-none" />
+                    <div className="absolute bottom-3 left-3 right-3 flex flex-col gap-2">
+                      <div className="sk h-2 w-16 rounded-full" style={{ opacity: 0.6 }} />
+                      <div className="sk h-3 w-28 rounded-full" style={{ opacity: 0.5 }} />
+                      <div className="sk h-2 w-20 rounded-full" style={{ opacity: 0.4 }} />
+                    </div>
+                  </div>
+                ) : nowPlaying?.albumArt ? (
                   <>
                     <img src={nowPlaying.albumArt} alt="album" className="w-full h-full object-cover" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
@@ -580,7 +589,7 @@ export default function Home() {
                   </>
                 ) : (
                   <div className="w-full h-full bg-[#f0f0f0] dark:bg-[#252525] flex items-center justify-center">
-                    <SiLastdotfm size={28} className="text-[#ccc] dark:text-[#444]" />
+                    <span className="icon-pulse"><SiLastdotfm size={28} className="text-[#ccc] dark:text-[#444]" /></span>
                   </div>
                 )}
               </motion.div>
@@ -601,40 +610,58 @@ export default function Home() {
                   {/* header */}
                   <div className="flex items-center justify-between">
                     <p className={`text-[9px] font-bold uppercase tracking-widest flex items-center gap-1.5 ${isDark ? "text-white/30" : "text-[#aaa]"}`}>
-                      <Dumbbell size={9} className={isDark ? "text-white/40" : "text-[#ccc]"} />Last Workout
+                      <span className="icon-pulse"><Dumbbell size={9} className={isDark ? "text-white/40" : "text-[#ccc]"} /></span>Last Workout
                     </p>
-                    <span className={`text-[8px] px-1.5 py-0.5 rounded-full border ${isDark ? "text-white/30 bg-white/5 border-white/[0.08]" : "text-[#888] bg-[#f5f5f5] border-[#e8e8e8]"}`}>
-                      {workout?.type?.split("(")[0]?.trim() ?? "Push"}
-                    </span>
+                    {loadingWorkout
+                      ? <div className="sk h-4 w-10 rounded-full" />
+                      : <span className={`text-[8px] px-1.5 py-0.5 rounded-full border ${isDark ? "text-white/30 bg-white/5 border-white/[0.08]" : "text-[#888] bg-[#f5f5f5] border-[#e8e8e8]"}`}>
+                          {workout?.type?.split("(")[0]?.trim() ?? "Push"}
+                        </span>
+                    }
                   </div>
 
                   {/* top stats row */}
                   <div className="grid grid-cols-2 gap-1.5">
                     <div className={`rounded-xl p-2 border ${isDark ? "bg-white/5 border-white/5" : "bg-[#f8f8f8] border-[#ebebeb]"}`}>
-                      <p className={`font-black text-[18px] leading-none ${isDark ? "text-white" : "text-[#111]"}`}>
-                        <CountUp to={workout?.totalVolume ?? 8420} separator="," duration={1.4} />
-                        <span className={`text-[9px] font-normal ml-0.5 ${isDark ? "text-white/30" : "text-[#bbb]"}`}>kg</span>
-                      </p>
-                      <p className={`text-[8px] uppercase tracking-wider mt-1 ${isDark ? "text-white/25" : "text-[#bbb]"}`}>total volume</p>
+                      {loadingWorkout
+                        ? <div className="flex flex-col gap-1.5"><div className="sk h-5 w-16 rounded" /><div className="sk h-2 w-12 rounded-full mt-1" /></div>
+                        : <>
+                            <p className={`font-black text-[18px] leading-none ${isDark ? "text-white" : "text-[#111]"}`}>
+                              <CountUp to={workout?.totalVolume ?? 0} separator="," duration={1.4} />
+                              <span className={`text-[9px] font-normal ml-0.5 ${isDark ? "text-white/30" : "text-[#bbb]"}`}>kg</span>
+                            </p>
+                            <p className={`text-[8px] uppercase tracking-wider mt-1 ${isDark ? "text-white/25" : "text-[#bbb]"}`}>total volume</p>
+                          </>
+                      }
                     </div>
                     <div className={`rounded-xl p-2 border ${isDark ? "bg-white/5 border-white/5" : "bg-[#f8f8f8] border-[#ebebeb]"}`}>
-                      <p className={`font-black text-[18px] leading-none ${isDark ? "text-white" : "text-[#111]"}`}>
-                        <CountUp to={workout?.weeklyStats?.streak ?? 12} duration={0.8} />
-                        <span className={`text-[9px] font-normal ml-0.5 ${isDark ? "text-white/30" : "text-[#bbb]"}`}>days</span>
-                      </p>
-                      <p className={`text-[8px] uppercase tracking-wider mt-1 ${isDark ? "text-white/25" : "text-[#bbb]"}`}>streak 🔥</p>
+                      {loadingWorkout
+                        ? <div className="flex flex-col gap-1.5"><div className="sk h-5 w-10 rounded" /><div className="sk h-2 w-10 rounded-full mt-1" /></div>
+                        : <>
+                            <p className={`font-black text-[18px] leading-none ${isDark ? "text-white" : "text-[#111]"}`}>
+                              <CountUp to={workout?.weeklyStats?.streak ?? 0} duration={0.8} />
+                              <span className={`text-[9px] font-normal ml-0.5 ${isDark ? "text-white/30" : "text-[#bbb]"}`}>days</span>
+                            </p>
+                            <p className={`text-[8px] uppercase tracking-wider mt-1 ${isDark ? "text-white/25" : "text-[#bbb]"}`}>streak 🔥</p>
+                          </>
+                      }
                     </div>
                   </div>
 
                   {/* sub stats */}
                   <div className="flex gap-3 px-0.5">
-                    <span className={`text-[10px] ${isDark ? "text-white/30" : "text-[#bbb]"}`}>
-                      <span className={`font-semibold ${isDark ? "text-white/60" : "text-[#666]"}`}><CountUp to={workout?.duration ?? 68} duration={1.0} /></span> min
-                    </span>
-                    <span className={isDark ? "text-white/15" : "text-[#ddd]"}>·</span>
-                    <span className={`text-[10px] ${isDark ? "text-white/30" : "text-[#bbb]"}`}>
-                      <span className={`font-semibold ${isDark ? "text-white/60" : "text-[#666]"}`}><CountUp to={workout?.weeklyStats?.workoutsThisWeek ?? 4} duration={0.7} />×</span> this week
-                    </span>
+                    {loadingWorkout
+                      ? <><div className="sk h-3 w-12 rounded-full" /><div className="sk h-3 w-16 rounded-full" /></>
+                      : <>
+                          <span className={`text-[10px] ${isDark ? "text-white/30" : "text-[#bbb]"}`}>
+                            <span className={`font-semibold ${isDark ? "text-white/60" : "text-[#666]"}`}><CountUp to={workout?.duration ?? 0} duration={1.0} /></span> min
+                          </span>
+                          <span className={isDark ? "text-white/15" : "text-[#ddd]"}>·</span>
+                          <span className={`text-[10px] ${isDark ? "text-white/30" : "text-[#bbb]"}`}>
+                            <span className={`font-semibold ${isDark ? "text-white/60" : "text-[#666]"}`}><CountUp to={workout?.weeklyStats?.workoutsThisWeek ?? 0} duration={0.7} />×</span> this week
+                          </span>
+                        </>
+                    }
                   </div>
 
                   {/* divider */}
@@ -642,13 +669,14 @@ export default function Home() {
 
                   {/* exercise list */}
                   <div className="flex flex-col justify-between flex-1 min-h-0">
-                    {(workout?.exercises ?? [
-                      { name: "Bench Press",          sets: 4, reps: 8,  weight: 100 },
-                      { name: "Incline DB Press",     sets: 3, reps: 10, weight: 36  },
-                      { name: "Overhead Press",       sets: 4, reps: 8,  weight: 70  },
-                      { name: "Lateral Raises",       sets: 3, reps: 15, weight: 14  },
-                      { name: "Tricep Pushdown",      sets: 3, reps: 12, weight: 40  },
-                    ]).map((ex, i) => (
+                    {loadingWorkout
+                      ? [40, 56, 48, 52, 44].map((w, i) => (
+                          <div key={i} className="flex items-center justify-between gap-2 py-0.5">
+                            <div className="sk h-2.5 rounded-full flex-1" style={{ maxWidth: `${w}%` }} />
+                            <div className="sk h-4 w-12 rounded-md" />
+                          </div>
+                        ))
+                      : (workout?.exercises ?? []).map((ex, i) => (
                       <motion.div
                         key={ex.name}
                         initial={{ opacity: 0, x: -8 }}
@@ -679,20 +707,32 @@ export default function Home() {
                 <div ref={githubRef} className="flex flex-col flex-[3] min-w-0 p-4">
                   {/* header + stats */}
                   <div className="flex items-center gap-4 mb-3 shrink-0">
-                    <p className={`${LABEL} flex items-center gap-1.5 shrink-0`}><SiGithub size={10} />GitHub</p>
+                    <p className={`${LABEL} flex items-center gap-1.5 shrink-0`}>
+                      <span className="icon-pulse"><SiGithub size={10} /></span>GitHub
+                    </p>
                     <div className="flex gap-4 text-[11px] text-[#aaa] dark:text-[#555]">
-                      <span>
-                        <strong className="text-[#111] dark:text-[#eee] text-[13px] font-black"><CountUp to={stats?.totalCommitsThisYear ?? 539} separator="," duration={1.2} /></strong>
-                        <span className="ml-1">commits</span>
-                      </span>
-                      <span>
-                        <strong className="text-[13px] font-black" style={{ color: ACCENT }}><CountUp to={stats?.currentStreak ?? 8} duration={0.9} /></strong>
-                        <span className="ml-1">day streak</span>
-                      </span>
-                      <span>
-                        <strong className="text-[#111] dark:text-[#eee] text-[13px] font-black"><CountUp to={stats?.githubRepos ?? 28} duration={1.0} /></strong>
-                        <span className="ml-1">repos</span>
-                      </span>
+                      {loadingStats ? (
+                        <>
+                          <div className="sk h-3.5 w-14 rounded-full" />
+                          <div className="sk h-3.5 w-16 rounded-full" />
+                          <div className="sk h-3.5 w-12 rounded-full" />
+                        </>
+                      ) : (
+                        <>
+                          <span>
+                            <strong className="text-[#111] dark:text-[#eee] text-[13px] font-black"><CountUp to={stats?.totalCommitsThisYear ?? 0} separator="," duration={1.2} /></strong>
+                            <span className="ml-1">commits</span>
+                          </span>
+                          <span>
+                            <strong className="text-[13px] font-black" style={{ color: ACCENT }}><CountUp to={stats?.currentStreak ?? 0} duration={0.9} /></strong>
+                            <span className="ml-1">day streak</span>
+                          </span>
+                          <span>
+                            <strong className="text-[#111] dark:text-[#eee] text-[13px] font-black"><CountUp to={stats?.githubRepos ?? 0} duration={1.0} /></strong>
+                            <span className="ml-1">repos</span>
+                          </span>
+                        </>
+                      )}
                     </div>
                   </div>
                   {/* contribution grid */}
@@ -759,52 +799,72 @@ export default function Home() {
                 {/* header */}
                 <div className="flex items-center justify-between">
                   <span className={`text-[9px] font-bold uppercase tracking-widest ${isDark ? "text-[#5865f2]/50" : "text-[#5865f2]/60"}`}>Discord</span>
-                  <SiDiscord size={13} className="text-[#5865f2]" />
+                  <span className="icon-pulse"><SiDiscord size={13} className="text-[#5865f2]" /></span>
                 </div>
 
-                {/* avatar + name + status */}
-                <div className="flex flex-col items-center gap-2 pt-1">
-                  <div className="relative">
-                    <div className="w-14 h-14 rounded-full overflow-hidden ring-2 ring-[#5865f2]/20">
-                      {discord?.avatarUrl
-                        ? <img src={discord.avatarUrl} alt="avatar" className="w-full h-full object-cover" />
-                        : <div className="w-full h-full bg-[#5865f2] flex items-center justify-center"><SiDiscord size={24} className="text-white" /></div>
-                      }
+                {loadingDiscord ? (
+                  /* skeleton state */
+                  <>
+                    <div className="flex flex-col items-center gap-2 pt-1">
+                      <div className="sk w-14 h-14 rounded-full" />
+                      <div className="flex flex-col items-center gap-1.5">
+                        <div className="sk h-3 w-20 rounded-full" />
+                        <div className="sk h-2.5 w-14 rounded-full" />
+                      </div>
                     </div>
-                    <span
-                      className={`absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full border-[2.5px] ${isDark ? "border-[#1e1f22]" : "border-[#f5f6ff]"}`}
-                      style={{ backgroundColor: statusColor }}
-                    />
-                  </div>
-                  <div className="text-center">
-                    <p className={`font-bold text-[13px] leading-tight ${isDark ? "text-white" : "text-[#111]"}`}>
-                      {discord?.displayName ?? "lucashdo"}
-                    </p>
-                    <div className="flex items-center justify-center gap-1.5 mt-0.5">
-                      <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: statusColor }} />
-                      <p className={`text-[10px] capitalize ${isDark ? "text-white/40" : "text-[#888]"}`}>{discord?.status ?? "online"}</p>
+                    <div className={`border-t ${isDark ? "border-white/5" : "border-[#e3e4f0]"}`} />
+                    <div className={`rounded-xl p-2.5 border flex-1 flex flex-col justify-center gap-2 ${isDark ? "bg-white/[0.04] border-white/5" : "bg-white border-[#e3e4f0]"}`}>
+                      <div className="sk h-2 w-10 rounded-full" />
+                      <div className="sk h-3 w-24 rounded-full" />
                     </div>
-                  </div>
-                </div>
+                  </>
+                ) : (
+                  <>
+                    {/* avatar + name + status */}
+                    <div className="flex flex-col items-center gap-2 pt-1">
+                      <div className="relative">
+                        <div className="w-14 h-14 rounded-full overflow-hidden ring-2 ring-[#5865f2]/20">
+                          {discord?.avatarUrl
+                            ? <img src={discord.avatarUrl} alt="avatar" className="w-full h-full object-cover" />
+                            : <div className="w-full h-full bg-[#5865f2] flex items-center justify-center"><SiDiscord size={24} className="text-white" /></div>
+                          }
+                        </div>
+                        <span
+                          className={`absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full border-[2.5px] ${isDark ? "border-[#1e1f22]" : "border-[#f5f6ff]"}`}
+                          style={{ backgroundColor: statusColor }}
+                        />
+                      </div>
+                      <div className="text-center">
+                        <p className={`font-bold text-[13px] leading-tight ${isDark ? "text-white" : "text-[#111]"}`}>
+                          {discord?.displayName ?? "lucashdo"}
+                        </p>
+                        <div className="flex items-center justify-center gap-1.5 mt-0.5">
+                          <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: statusColor }} />
+                          <p className={`text-[10px] capitalize ${isDark ? "text-white/40" : "text-[#888]"}`}>{discord?.status ?? "online"}</p>
+                        </div>
+                      </div>
+                    </div>
 
-                {/* divider */}
-                <div className={`border-t ${isDark ? "border-white/5" : "border-[#e3e4f0]"}`} />
+                    {/* divider */}
+                    <div className={`border-t ${isDark ? "border-white/5" : "border-[#e3e4f0]"}`} />
 
-                {/* activity */}
-                <div className={`rounded-xl p-2.5 border flex-1 flex flex-col justify-center gap-1 ${isDark ? "bg-white/[0.04] border-white/5" : "bg-white border-[#e3e4f0]"}`}>
-                  <p className={`text-[8px] uppercase tracking-widest font-bold ${isDark ? "text-[#5865f2]/50" : "text-[#5865f2]/60"}`}>
-                    {discord?.activity ? "Playing" : "Status"}
-                  </p>
-                  <p className={`text-[11px] font-semibold truncate ${isDark ? "text-white/80" : "text-[#333]"}`}>
-                    {discord?.activity ?? "VS Code"}
-                  </p>
-                  {discord?.activityDetail && (
-                    <p className={`text-[9px] truncate ${isDark ? "text-white/30" : "text-[#aaa]"}`}>{discord.activityDetail}</p>
-                  )}
-                  {discord?.customStatus && (
-                    <p className={`text-[9px] italic mt-0.5 ${isDark ? "text-white/25" : "text-[#bbb]"}`}>"{discord.customStatus}"</p>
-                  )}
-                </div>
+                    {/* activity */}
+                    <div className={`rounded-xl p-2.5 border flex-1 flex flex-col justify-center gap-1 ${isDark ? "bg-white/[0.04] border-white/5" : "bg-white border-[#e3e4f0]"}`}>
+                      <p className={`text-[8px] uppercase tracking-widest font-bold ${isDark ? "text-[#5865f2]/50" : "text-[#5865f2]/60"}`}>
+                        {discord?.activity ? "Playing" : "Status"}
+                      </p>
+                      <p className={`text-[11px] font-semibold truncate ${isDark ? "text-white/80" : "text-[#333]"}`}>
+                        {discord?.activity ?? "VS Code"}
+                      </p>
+                      {discord?.activityDetail && (
+                        <p className={`text-[9px] truncate ${isDark ? "text-white/30" : "text-[#aaa]"}`}>{discord.activityDetail}</p>
+                      )}
+                      {discord?.customStatus && (
+                        <p className={`text-[9px] italic mt-0.5 ${isDark ? "text-white/25" : "text-[#bbb]"}`}>"{discord.customStatus}"</p>
+                      )}
+                    </div>
+                  </>
+                )}
 
               </motion.div>
             </BentoCard>
@@ -1136,48 +1196,62 @@ export default function Home() {
               style={{ backgroundColor: isDark ? "#1b2838" : "#f0f0f0", gridColumn: "4", gridRow: "7 / 9" }}
             >
               <motion.div custom={13} variants={fadeUp} initial="hidden" animate="show" className="w-full h-full relative">
-                {/* cycling game art */}
-                <AnimatePresence mode="wait">
-                  {(() => {
-                    const games = steam?.recentGames ?? [];
-                    const game = games[steamIdx % Math.max(games.length, 1)];
-                    return game?.imageUrl ? (
-                      <motion.div
-                        key={steamIdx}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.6 }}
-                        className="absolute inset-0"
-                      >
-                        <img src={game.imageUrl} alt={game.name} className="w-full h-full object-cover" />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
-                        <div className="absolute bottom-2.5 left-2.5 right-2.5">
-                          <p className="text-white/50 text-[8px] uppercase tracking-widest font-bold mb-0.5 flex items-center gap-1">
-                            <SiSteam size={7} />Steam
-                          </p>
-                          <p className="text-white text-[11px] font-bold leading-tight truncate">{game.name}</p>
-                          <p className="text-white/50 text-[9px]">{game.hoursPlayed}h played</p>
-                        </div>
-                      </motion.div>
-                    ) : (
-                      <motion.div
-                        key="placeholder"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        className="absolute inset-0 flex flex-col items-center justify-center gap-2"
-                      >
-                        <SiSteam size={24} className={isDark ? "text-[#c7d5e0]/20" : "text-[#ccc]"} />
-                        <p className={`text-[9px] font-bold uppercase tracking-widest ${isDark ? "text-[#c7d5e0]/30" : "text-[#bbb]"}`}>Steam</p>
-                      </motion.div>
-                    );
-                  })()}
-                </AnimatePresence>
-                {/* game count badge */}
-                <div className="absolute top-2.5 right-2.5 flex items-center gap-1 px-1.5 py-0.5 rounded-lg bg-black/40 backdrop-blur-sm">
-                  <SiSteam size={8} className="text-white/60" />
-                  <span className="text-[8px] text-white/60 font-semibold">{steam?.totalGames ?? 142}</span>
-                </div>
+                {loadingSteam ? (
+                  /* skeleton */
+                  <div className="absolute inset-0">
+                    <div className="sk absolute inset-0 rounded-none" style={{ borderRadius: 0 }} />
+                    <div className="absolute bottom-2.5 left-2.5 right-2.5 flex flex-col gap-1.5">
+                      <div className="sk h-2 w-8 rounded-full" style={{ opacity: 0.5 }} />
+                      <div className="sk h-3 w-20 rounded-full" style={{ opacity: 0.4 }} />
+                      <div className="sk h-2 w-12 rounded-full" style={{ opacity: 0.35 }} />
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    {/* cycling game art */}
+                    <AnimatePresence mode="wait">
+                      {(() => {
+                        const games = steam?.recentGames ?? [];
+                        const game = games[steamIdx % Math.max(games.length, 1)];
+                        return game?.imageUrl ? (
+                          <motion.div
+                            key={steamIdx}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.6 }}
+                            className="absolute inset-0"
+                          >
+                            <img src={game.imageUrl} alt={game.name} className="w-full h-full object-cover" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
+                            <div className="absolute bottom-2.5 left-2.5 right-2.5">
+                              <p className="text-white/50 text-[8px] uppercase tracking-widest font-bold mb-0.5 flex items-center gap-1">
+                                <span className="icon-pulse"><SiSteam size={7} /></span>Steam
+                              </p>
+                              <p className="text-white text-[11px] font-bold leading-tight truncate">{game.name}</p>
+                              <p className="text-white/50 text-[9px]">{game.hoursPlayed}h played</p>
+                            </div>
+                          </motion.div>
+                        ) : (
+                          <motion.div
+                            key="placeholder"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            className="absolute inset-0 flex flex-col items-center justify-center gap-2"
+                          >
+                            <span className="icon-pulse"><SiSteam size={24} className={isDark ? "text-[#c7d5e0]/20" : "text-[#ccc]"} /></span>
+                            <p className={`text-[9px] font-bold uppercase tracking-widest ${isDark ? "text-[#c7d5e0]/30" : "text-[#bbb]"}`}>Steam</p>
+                          </motion.div>
+                        );
+                      })()}
+                    </AnimatePresence>
+                    {/* game count badge */}
+                    <div className="absolute top-2.5 right-2.5 flex items-center gap-1 px-1.5 py-0.5 rounded-lg bg-black/40 backdrop-blur-sm">
+                      <SiSteam size={8} className="text-white/60" />
+                      <span className="text-[8px] text-white/60 font-semibold">{steam?.totalGames ?? 0}</span>
+                    </div>
+                  </>
+                )}
               </motion.div>
             </BentoCard>
 
@@ -1374,19 +1448,31 @@ export default function Home() {
 
           {/* Top Artists */}
           <motion.div custom={3} variants={fadeUp} initial="hidden" animate="show" className={`${CARD} p-4`}>
-            <p className={`${LABEL} mb-3`}>Top Artists</p>
+            <p className={`${LABEL} mb-3 flex items-center gap-1.5`}>
+              <span className="icon-pulse"><SiLastdotfm size={9} /></span>Top Artists
+            </p>
             <div className="space-y-2.5">
-              {(Array.isArray(topArtists) ? topArtists : []).slice(0, 4).map((artist, i) => (
-                <a key={i} href={artist.url} target="_blank" rel="noreferrer"
-                  className="flex items-center gap-2 group slide-up" style={{ "--delay": `${i*0.07}s` } as React.CSSProperties}>
-                  <span className="text-[10px] text-[#ccc] dark:text-[#444] w-3 shrink-0">{i + 1}</span>
-                  <div className="w-6 h-6 rounded-full bg-[#f0f0f0] dark:bg-[#252525] overflow-hidden shrink-0">
-                    {artist.imageUrl && <img src={artist.imageUrl} alt={artist.name} className="w-full h-full object-cover" />}
-                  </div>
-                  <span className="text-[12px] font-medium truncate flex-1 transition-colors" style={{ color: "inherit" }} onMouseEnter={e => (e.currentTarget.style.color = ACCENT)} onMouseLeave={e => (e.currentTarget.style.color = "")}>{artist.name}</span>
-                  <span className="text-[10px] text-[#ccc] dark:text-[#444] shrink-0">{Number(artist.playcount).toLocaleString()}</span>
-                </a>
-              ))}
+              {loadingArtists
+                ? [60, 80, 70, 55].map((w, i) => (
+                    <div key={i} className="flex items-center gap-2">
+                      <div className="sk w-3 h-2.5 rounded-full shrink-0" />
+                      <div className="sk w-6 h-6 rounded-full shrink-0" />
+                      <div className="sk h-3 rounded-full flex-1" style={{ maxWidth: `${w}%` }} />
+                      <div className="sk h-2.5 w-5 rounded-full shrink-0" />
+                    </div>
+                  ))
+                : (Array.isArray(topArtists) ? topArtists : []).slice(0, 4).map((artist, i) => (
+                    <a key={i} href={artist.url} target="_blank" rel="noreferrer"
+                      className="flex items-center gap-2 group slide-up" style={{ "--delay": `${i*0.07}s` } as React.CSSProperties}>
+                      <span className="text-[10px] text-[#ccc] dark:text-[#444] w-3 shrink-0">{i + 1}</span>
+                      <div className="w-6 h-6 rounded-full bg-[#f0f0f0] dark:bg-[#252525] overflow-hidden shrink-0">
+                        {artist.imageUrl && <img src={artist.imageUrl} alt={artist.name} className="w-full h-full object-cover" />}
+                      </div>
+                      <span className="text-[12px] font-medium truncate flex-1 transition-colors" style={{ color: "inherit" }} onMouseEnter={e => (e.currentTarget.style.color = ACCENT)} onMouseLeave={e => (e.currentTarget.style.color = "")}>{artist.name}</span>
+                      <span className="text-[10px] text-[#ccc] dark:text-[#444] shrink-0">{Number(artist.playcount).toLocaleString()}</span>
+                    </a>
+                  ))
+              }
             </div>
           </motion.div>
 
