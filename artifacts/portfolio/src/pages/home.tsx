@@ -8,14 +8,14 @@ import {
 } from "@workspace/api-client-react";
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import {
   SiGithub, SiDiscord, SiLastdotfm, SiSteam, SiMyanimelist,
   SiWakatime, SiTypescript, SiReact, SiNodedotjs, SiGo,
   SiPostgresql, SiDocker, SiNextdotjs, SiTailwindcss, SiFigma,
-  SiPython, SiRedis,
+  SiPython, SiRedis, SiSupabase, SiExpo,
 } from "react-icons/si";
-import { FiTwitter, FiMail, FiExternalLink, FiBook, FiClock } from "react-icons/fi";
+import { FiTwitter, FiMail, FiExternalLink, FiBook, FiClock, FiArrowUpRight } from "react-icons/fi";
 import { Dumbbell, Moon, Sun } from "lucide-react";
 import { BentoCard, BentoSection } from "@/components/BentoCard";
 import CountUp from "@/components/CountUp";
@@ -210,6 +210,7 @@ export default function Home() {
   const statusColor = STATUS_COLORS[discord?.status ?? "dnd"];
   const [weatherFlipped, setWeatherFlipped] = useState(false);
   const [isDark, setIsDark] = useState(false);
+  const [, navigate] = useLocation();
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", isDark);
@@ -252,11 +253,19 @@ export default function Home() {
   const [malFlipped, setMalFlipped] = useState(false);
   const [malPage,    setMalPage]    = useState(0);
   const [malHover,   setMalHover]   = useState<string | null>(null);
+  const [steamIdx,   setSteamIdx]   = useState(0);
 
   useEffect(() => {
     const t = setInterval(() => setMalPage(p => (p + 1) % 2), 4500);
     return () => clearInterval(t);
   }, []);
+
+  useEffect(() => {
+    const games = steam?.recentGames ?? [];
+    if (games.length < 2) return;
+    const t = setInterval(() => setSteamIdx(i => (i + 1) % games.length), 4000);
+    return () => clearInterval(t);
+  }, [steam?.recentGames?.length]);
 
 
   /* Wakatime mock data */
@@ -447,63 +456,64 @@ export default function Home() {
               </div>
             </BentoCard>
 
-            {/* PROJECTS — 2×2 */}
+            {/* CURRENTLY BUILDING — col2-3, rows1-2 */}
             <BentoCard
               className={`${CARD} overflow-hidden`}
               style={{ gridColumn: "2 / 4", gridRow: "1 / 3" }}
             >
-              <motion.div custom={3} variants={fadeUp} initial="hidden" animate="show" className="p-4 h-full flex flex-col gap-3">
+              <motion.div custom={3} variants={fadeUp} initial="hidden" animate="show" className="p-4 h-full flex flex-col justify-between gap-3">
+
                 {/* header */}
-                <div className="flex items-center justify-between">
-                  <p className={`${LABEL} flex items-center gap-1.5`}><SiGithub size={9} />Projects</p>
-                  <span className="flex items-center gap-1 text-[10px] text-[#aaa] dark:text-[#555]">
-                    ★ <CountUp to={totalStars} duration={1.2} /> total stars
+                <div className="flex items-center gap-2">
+                  <span className="relative flex h-2 w-2 shrink-0">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-60" style={{ backgroundColor: ACCENT }} />
+                    <span className="relative inline-flex h-2 w-2 rounded-full" style={{ backgroundColor: ACCENT }} />
                   </span>
+                  <p className={LABEL}>Currently Building</p>
                 </div>
 
-                {/* currently working on */}
-                {(() => {
-                  const wip = projects.find(p => p.wip);
-                  if (!wip) return null;
-                  return (
-                    <a href={wip.url} target="_blank" rel="noreferrer" className="rounded-xl border border-[#ebebeb] dark:border-[#282828] p-3 bg-[#f9f9f9] dark:bg-[#1e1e1e] hover:border-[#d5d5d5] dark:hover:border-[#333] transition-colors group flex flex-col gap-2">
-                      <div className="flex items-center justify-between">
-                        <span className="text-[9px] px-2 py-0.5 rounded-full font-semibold" style={{ backgroundColor: `${ACCENT}18`, color: ACCENT }}>
-                          currently working on
-                        </span>
-                        <FiExternalLink size={10} className="text-[#ccc] dark:text-[#444] group-hover:text-[#aaa] transition-colors" />
-                      </div>
-                      <div>
-                        <p className="text-[13px] font-bold text-[#111] dark:text-[#eee] leading-tight">{wip.name}</p>
-                        <p className="text-[11px] text-[#888] dark:text-[#666] mt-0.5 leading-snug">{wip.description}</p>
-                      </div>
-                      <div className="flex items-center gap-3 text-[10px] text-[#aaa] dark:text-[#555]">
-                        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full inline-block" style={{ backgroundColor: wip.color }} />{wip.language}</span>
-                        <span>★ {wip.stars}</span>
-                      </div>
-                    </a>
-                  );
-                })()}
+                {/* main content */}
+                <div className="flex flex-col flex-1 justify-center gap-5 py-1">
+                  <div>
+                    <p className="text-[24px] font-black text-[#111] dark:text-[#eee] leading-tight tracking-tight">
+                      Pingo Concursos App
+                    </p>
+                    <p className="text-[12px] text-[#999] dark:text-[#555] mt-1.5 leading-snug">
+                      A mobile platform for Brazilian public exam prep — built for scale.
+                    </p>
+                  </div>
 
-                {/* other projects */}
-                <div className="flex flex-col gap-1.5 flex-1">
-                  {projects.filter(p => !p.wip).map((proj, i) => (
-                    <a key={i} href={proj.url} target="_blank" rel="noreferrer"
-                      className="flex items-center gap-3 px-3 py-2 rounded-xl border border-transparent hover:border-[#ebebeb] dark:hover:border-[#282828] hover:bg-[#f9f9f9] dark:hover:bg-[#1e1e1e] transition-all group slide-up"
-                      style={{ "--delay": `${i * 0.07}s` } as React.CSSProperties}
-                    >
-                      <div className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: proj.color }} />
-                      <div className="flex-1 min-w-0">
-                        <p className="text-[12px] font-semibold text-[#333] dark:text-[#ccc] truncate">{proj.name}</p>
-                        <p className="text-[10px] text-[#aaa] dark:text-[#555] truncate">{proj.description}</p>
+                  <div className="flex flex-col gap-2">
+                    {[
+                      { text: "scalable question system", done: true },
+                      { text: "Supabase + Expo + React Native", done: true },
+                      { text: "offline-first + real-time sync", done: false },
+                    ].map((item, i) => (
+                      <div key={i} className="flex items-center gap-2.5">
+                        <span className="text-[13px] font-bold shrink-0 leading-none" style={{ color: ACCENT }}>→</span>
+                        <p className={`text-[12px] leading-snug ${item.done ? "text-[#555] dark:text-[#999]" : "text-[#aaa] dark:text-[#555]"}`}>
+                          {item.text}
+                        </p>
                       </div>
-                      <div className="flex items-center gap-2 text-[10px] text-[#bbb] dark:text-[#444] shrink-0">
-                        <span>★ {proj.stars}</span>
-                        <FiExternalLink size={9} className="opacity-0 group-hover:opacity-100 transition-opacity" />
-                      </div>
-                    </a>
+                    ))}
+                  </div>
+                </div>
+
+                {/* tech badges */}
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  {[
+                    { icon: <SiSupabase size={10} />, label: "Supabase", color: "#3ecf8e" },
+                    { icon: <SiExpo size={10} />, label: "Expo", color: isDark ? "#eee" : "#111" },
+                    { icon: <SiReact size={10} />, label: "React Native", color: "#61dafb" },
+                    { icon: <SiTypescript size={10} />, label: "TypeScript", color: "#3178c6" },
+                  ].map((t) => (
+                    <span key={t.label} className="flex items-center gap-1.5 px-2 py-1 rounded-lg text-[10px] font-medium bg-[#f5f5f5] dark:bg-[#1e1e1e] border border-[#ebebeb] dark:border-[#282828]">
+                      <span style={{ color: t.color }}>{t.icon}</span>
+                      <span className="text-[#555] dark:text-[#888]">{t.label}</span>
+                    </span>
                   ))}
                 </div>
+
               </motion.div>
             </BentoCard>
 
@@ -664,66 +674,98 @@ export default function Home() {
             {/* DISCORD — col4 rows3-4 */}
             <BentoCard
               className="rounded-2xl overflow-hidden"
-              style={{ backgroundColor: isDark ? "#23272a" : "#ffffff", border: isDark ? "none" : "1px solid #ebebeb", gridColumn: "4", gridRow: "3 / 5" }}
+              style={{ backgroundColor: isDark ? "#1e1f22" : "#f5f6ff", border: isDark ? "1px solid #2b2d31" : "1px solid #e3e4f0", gridColumn: "4", gridRow: "3 / 5" }}
             >
-              <motion.div custom={8} variants={fadeUp} initial="hidden" animate="show" className="p-3 h-full flex flex-col">
+              <motion.div custom={8} variants={fadeUp} initial="hidden" animate="show" className="p-3.5 h-full flex flex-col gap-3">
+
                 {/* header */}
-                <div className="flex items-center justify-between mb-3">
-                  <span className={`text-[9px] font-bold uppercase tracking-widest ${isDark ? "text-white/30" : "text-[#aaa]"}`}>Discord</span>
+                <div className="flex items-center justify-between">
+                  <span className={`text-[9px] font-bold uppercase tracking-widest ${isDark ? "text-[#5865f2]/50" : "text-[#5865f2]/60"}`}>Discord</span>
                   <SiDiscord size={13} className="text-[#5865f2]" />
                 </div>
-                {/* avatar */}
-                <div className="flex flex-col items-center gap-2">
+
+                {/* avatar + name + status */}
+                <div className="flex flex-col items-center gap-2 pt-1">
                   <div className="relative">
-                    <div className={`w-12 h-12 rounded-full overflow-hidden ring-2 ${isDark ? "bg-[#36393f] ring-white/10" : "bg-[#f0f0f0] ring-[#ebebeb]"}`}>
+                    <div className="w-14 h-14 rounded-full overflow-hidden ring-2 ring-[#5865f2]/20">
                       {discord?.avatarUrl
                         ? <img src={discord.avatarUrl} alt="avatar" className="w-full h-full object-cover" />
-                        : <SiDiscord size={20} className="m-auto mt-3 text-[#5865f2]/60" />
+                        : <div className="w-full h-full bg-[#5865f2] flex items-center justify-center"><SiDiscord size={24} className="text-white" /></div>
                       }
                     </div>
                     <span
-                      className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 status-dot ${isDark ? "border-[#23272a]" : "border-white"}`}
-                      style={{ backgroundColor: statusColor, color: statusColor }}
+                      className={`absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full border-[2.5px] ${isDark ? "border-[#1e1f22]" : "border-[#f5f6ff]"}`}
+                      style={{ backgroundColor: statusColor }}
                     />
                   </div>
-                  <div className="text-center w-full min-w-0">
-                    <p className={`font-bold text-[12px] truncate leading-tight ${isDark ? "text-white" : "text-[#111]"}`}>{discord?.displayName ?? "Your Name"}</p>
-                    <p className={`text-[10px] capitalize mt-0.5 ${isDark ? "text-white/40" : "text-[#aaa]"}`}>{discord?.status ?? "dnd"}</p>
+                  <div className="text-center">
+                    <p className={`font-bold text-[13px] leading-tight ${isDark ? "text-white" : "text-[#111]"}`}>
+                      {discord?.displayName ?? "lucashdo"}
+                    </p>
+                    <div className="flex items-center justify-center gap-1.5 mt-0.5">
+                      <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: statusColor }} />
+                      <p className={`text-[10px] capitalize ${isDark ? "text-white/40" : "text-[#888]"}`}>{discord?.status ?? "online"}</p>
+                    </div>
                   </div>
                 </div>
 
                 {/* divider */}
-                <div className={`border-t my-2.5 ${isDark ? "border-white/5" : "border-[#ebebeb]"}`} />
+                <div className={`border-t ${isDark ? "border-white/5" : "border-[#e3e4f0]"}`} />
 
                 {/* activity */}
-                <div className="flex flex-col gap-2 flex-1 min-h-0">
-                  <div className={`rounded-lg p-2.5 border min-w-0 ${isDark ? "bg-white/5 border-white/5" : "bg-[#f8f8f8] border-[#ebebeb]"}`}>
-                    <p className={`text-[8px] uppercase tracking-widest mb-1 ${isDark ? "text-white/30" : "text-[#aaa]"}`}>Playing</p>
-                    <p className={`text-[10px] font-semibold truncate ${isDark ? "text-white/80" : "text-[#333]"}`}>{discord?.activity ?? "VS Code"}</p>
-                    {discord?.activityDetail && (
-                      <p className={`text-[9px] truncate mt-0.5 ${isDark ? "text-white/30" : "text-[#aaa]"}`}>{discord.activityDetail}</p>
-                    )}
-                  </div>
+                <div className={`rounded-xl p-2.5 border flex-1 flex flex-col justify-center gap-1 ${isDark ? "bg-white/[0.04] border-white/5" : "bg-white border-[#e3e4f0]"}`}>
+                  <p className={`text-[8px] uppercase tracking-widest font-bold ${isDark ? "text-[#5865f2]/50" : "text-[#5865f2]/60"}`}>
+                    {discord?.activity ? "Playing" : "Status"}
+                  </p>
+                  <p className={`text-[11px] font-semibold truncate ${isDark ? "text-white/80" : "text-[#333]"}`}>
+                    {discord?.activity ?? "VS Code"}
+                  </p>
+                  {discord?.activityDetail && (
+                    <p className={`text-[9px] truncate ${isDark ? "text-white/30" : "text-[#aaa]"}`}>{discord.activityDetail}</p>
+                  )}
                   {discord?.customStatus && (
-                    <p className={`text-[9px] text-center italic truncate px-1 ${isDark ? "text-white/25" : "text-[#bbb]"}`}>"{discord.customStatus}"</p>
+                    <p className={`text-[9px] italic mt-0.5 ${isDark ? "text-white/25" : "text-[#bbb]"}`}>"{discord.customStatus}"</p>
                   )}
                 </div>
+
               </motion.div>
             </BentoCard>
 
             {/* TECH STACK — col2-3, rows3-4 */}
-            <BentoCard className={`${CARD} p-4 flex flex-col justify-between`} style={{ gridColumn: "2 / 4", gridRow: "3 / 5" }}>
-              <motion.div custom={11} variants={fadeUp} initial="hidden" animate="show" className="flex flex-col h-full justify-between">
-                <p className={`${LABEL} mb-2`}>Tech Stack</p>
-                <div className="flex flex-wrap gap-2">
-                  {stack.map((tech, i) => (
-                    <div
-                      key={tech.label}
-                      className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-[#f8f8f8] dark:bg-[#222] border border-[#f0f0f0] dark:border-[#2a2a2a] hover:border-[#e0e0e0] dark:hover:border-[#333] hover:bg-white dark:hover:bg-[#2a2a2a] transition-all cursor-default slide-up"
-                      style={{ "--delay": `${i * 0.04}s` } as React.CSSProperties}
-                    >
-                      <span className="text-[13px]" style={{ color: tech.color }}>{tech.icon}</span>
-                      <span className="text-[11px] font-medium text-[#555] dark:text-[#999]">{tech.label}</span>
+            <BentoCard className={`${CARD} p-4`} style={{ gridColumn: "2 / 4", gridRow: "3 / 5" }}>
+              <motion.div custom={11} variants={fadeUp} initial="hidden" animate="show" className="flex flex-col h-full gap-3">
+                <p className={LABEL}>Tech Stack</p>
+                <div className="grid grid-cols-2 gap-x-3 gap-y-2.5 flex-1 content-start">
+                  {[
+                    { group: "Languages", items: [
+                      { icon: <SiTypescript size={12} />, name: "TypeScript", color: "#3178c6" },
+                      { icon: <SiGo size={12} />, name: "Go", color: "#00add8" },
+                      { icon: <SiPython size={12} />, name: "Python", color: "#3572a5" },
+                    ]},
+                    { group: "Frontend", items: [
+                      { icon: <SiReact size={12} />, name: "React", color: "#61dafb" },
+                      { icon: <SiNextdotjs size={12} />, name: "Next.js", color: isDark ? "#eee" : "#111" },
+                      { icon: <SiTailwindcss size={12} />, name: "Tailwind", color: "#38bdf8" },
+                    ]},
+                    { group: "Backend · DB", items: [
+                      { icon: <SiNodedotjs size={12} />, name: "Node.js", color: "#5fa04e" },
+                      { icon: <SiPostgresql size={12} />, name: "PostgreSQL", color: "#4169e1" },
+                      { icon: <SiRedis size={12} />, name: "Redis", color: "#dc382d" },
+                    ]},
+                    { group: "Infra · Tools", items: [
+                      { icon: <SiDocker size={12} />, name: "Docker", color: "#2496ed" },
+                      { icon: <SiSupabase size={12} />, name: "Supabase", color: "#3ecf8e" },
+                      { icon: <SiFigma size={12} />, name: "Figma", color: "#a259ff" },
+                    ]},
+                  ].map((group) => (
+                    <div key={group.group} className="flex flex-col gap-1.5">
+                      <p className="text-[8px] font-bold uppercase tracking-widest text-[#ccc] dark:text-[#444]">{group.group}</p>
+                      {group.items.map((item) => (
+                        <div key={item.name} className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-[#f8f8f8] dark:bg-[#1e1e1e] border border-[#f0f0f0] dark:border-[#282828] hover:border-[#e0e0e0] dark:hover:border-[#333] transition-colors cursor-default">
+                          <span style={{ color: item.color }}>{item.icon}</span>
+                          <span className="text-[11px] font-medium text-[#555] dark:text-[#999]">{item.name}</span>
+                        </div>
+                      ))}
                     </div>
                   ))}
                 </div>
@@ -893,33 +935,74 @@ export default function Home() {
               </motion.div>
             </BentoCard>
 
-            {/* STEAM — col3-4, rows7-8 */}
+            {/* PROJECTS CTA — col3, row7 */}
             <BentoCard
-              className="rounded-2xl overflow-hidden"
-              style={{ backgroundColor: isDark ? "#1b2838" : "#ffffff", border: isDark ? "none" : "1px solid #ebebeb", gridColumn: "3 / 5", gridRow: "7 / 9" }}
+              className={`${CARD} overflow-hidden group cursor-pointer`}
+              style={{ gridColumn: "3", gridRow: "7" }}
+              onClick={() => navigate("/projects")}
             >
-              <motion.div custom={11} variants={fadeUp} initial="hidden" animate="show" className="p-3.5 h-full flex flex-col justify-between">
+              <motion.div custom={12} variants={fadeUp} initial="hidden" animate="show" className="p-3.5 h-full flex flex-col justify-between">
                 <div className="flex items-center justify-between">
-                  <p className={`text-[9px] font-bold uppercase tracking-widest flex items-center gap-1.5 ${isDark ? "text-[#c7d5e0]/50" : "text-[#aaa]"}`}>
-                    <SiSteam size={9} className={isDark ? "text-[#c7d5e0]/60" : "text-[#ccc]"} />Steam · {steam?.totalGames ?? 142} games
-                  </p>
-                  <span className={`text-[9px] ${isDark ? "text-[#c7d5e0]/30" : "text-[#ccc]"}`}>Recently played</span>
+                  <p className={LABEL}>Projects</p>
+                  <FiArrowUpRight size={12} className="text-[#ccc] dark:text-[#444] group-hover:text-[#888] dark:group-hover:text-[#888] transition-colors" />
                 </div>
-                <div className="flex gap-2.5 flex-1 items-end mt-1.5 overflow-hidden">
-                  {(steam?.recentGames ?? []).slice(0, 3).map((game, i) => (
-                    <div key={game.appId} className="flex-1 min-w-0 flex flex-col gap-1 slide-up overflow-hidden" style={{ "--delay": `${i*0.07}s` } as React.CSSProperties}>
-                      <div className={`w-full rounded-lg overflow-hidden relative ${isDark ? "bg-[#2a475e]" : "bg-[#f0f0f0]"}`} style={{ aspectRatio: "16/9" }}>
-                        {game.imageUrl
-                          ? <img src={game.imageUrl} alt={game.name} className="w-full h-full object-cover opacity-90 hover:opacity-100 transition-opacity" />
-                          : <div className={`w-full h-full flex items-center justify-center ${isDark ? "bg-[#2a475e]" : "bg-[#e8edf0]"}`}><SiSteam size={16} className={isDark ? "text-[#c7d5e0]/20" : "text-[#bbb]"} /></div>
-                        }
-                      </div>
-                      <div className="overflow-hidden">
-                        <p className={`text-[10px] font-semibold truncate ${isDark ? "text-[#c7d5e0]" : "text-[#333]"}`}>{game.name}</p>
-                        <p className={`text-[9px] ${isDark ? "text-[#c7d5e0]/40" : "text-[#bbb]"}`}>{game.hoursPlayed}h</p>
-                      </div>
-                    </div>
-                  ))}
+                <div>
+                  <p className="text-[20px] font-black text-[#111] dark:text-[#eee] leading-none">
+                    <CountUp to={totalStars} duration={1.2} />
+                  </p>
+                  <p className="text-[10px] text-[#bbb] dark:text-[#555] mt-0.5">total stars</p>
+                </div>
+                <p className="text-[10px]" style={{ color: ACCENT }}>view all work →</p>
+              </motion.div>
+            </BentoCard>
+
+            {/* STEAM — col4, row7 (1×1, rotating game art) */}
+            <BentoCard
+              className="rounded-2xl overflow-hidden relative"
+              style={{ backgroundColor: isDark ? "#1b2838" : "#f0f0f0", gridColumn: "4", gridRow: "7" }}
+            >
+              <motion.div custom={13} variants={fadeUp} initial="hidden" animate="show" className="w-full h-full relative">
+                {/* cycling game art */}
+                <AnimatePresence mode="wait">
+                  {(() => {
+                    const games = steam?.recentGames ?? [];
+                    const game = games[steamIdx % Math.max(games.length, 1)];
+                    return game?.imageUrl ? (
+                      <motion.div
+                        key={steamIdx}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.6 }}
+                        className="absolute inset-0"
+                      >
+                        <img src={game.imageUrl} alt={game.name} className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
+                        <div className="absolute bottom-2.5 left-2.5 right-2.5">
+                          <p className="text-white/50 text-[8px] uppercase tracking-widest font-bold mb-0.5 flex items-center gap-1">
+                            <SiSteam size={7} />Steam
+                          </p>
+                          <p className="text-white text-[11px] font-bold leading-tight truncate">{game.name}</p>
+                          <p className="text-white/50 text-[9px]">{game.hoursPlayed}h played</p>
+                        </div>
+                      </motion.div>
+                    ) : (
+                      <motion.div
+                        key="placeholder"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="absolute inset-0 flex flex-col items-center justify-center gap-2"
+                      >
+                        <SiSteam size={24} className={isDark ? "text-[#c7d5e0]/20" : "text-[#ccc]"} />
+                        <p className={`text-[9px] font-bold uppercase tracking-widest ${isDark ? "text-[#c7d5e0]/30" : "text-[#bbb]"}`}>Steam</p>
+                      </motion.div>
+                    );
+                  })()}
+                </AnimatePresence>
+                {/* game count badge */}
+                <div className="absolute top-2.5 right-2.5 flex items-center gap-1 px-1.5 py-0.5 rounded-lg bg-black/40 backdrop-blur-sm">
+                  <SiSteam size={8} className="text-white/60" />
+                  <span className="text-[8px] text-white/60 font-semibold">{steam?.totalGames ?? 142}</span>
                 </div>
               </motion.div>
             </BentoCard>
