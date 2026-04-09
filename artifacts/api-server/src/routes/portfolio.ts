@@ -18,7 +18,8 @@ const DISCORD_ID      = process.env.DISCORD_ID ?? "";
 const STEAM_KEY       = process.env.STEAM_API_KEY ?? "";
 const STEAM_ID        = process.env.STEAM_ID ?? "";
 const LYFTA_KEY       = process.env.LYFTA_API_KEY ?? "";
-const GITHUB_USER     = process.env.GITHUB_USERNAME ?? "lucashdo";
+const GITHUB_USER     = process.env.GITHUB_USERNAME ?? "LucasHenriqueDiniz";
+const GITHUB_PAT      = process.env.GITHUB_PAT ?? "";
 
 /* ── simple in-memory cache ───────────────────────────── */
 type CacheEntry = { data: unknown; expires: number };
@@ -293,19 +294,24 @@ router.get("/portfolio/workout", async (_req, res): Promise<void> => {
 });
 
 /* ═══════════════════════════════════════════════════════
-   GITHUB — public user stats (no token needed)
+   GITHUB — stats via GraphQL (contributions, streaks)
+             + REST (repos, languages)
    ═══════════════════════════════════════════════════════ */
 router.get("/portfolio/stats", async (_req, res): Promise<void> => {
   const cached = fromCache<object>("stats");
   if (cached) { res.json(cached); return; }
 
   try {
-    const headers = { "User-Agent": "portfolio-app/1.0" };
-    const [userRes, reposRes] = await Promise.all([
-      fetch(`https://api.github.com/users/${GITHUB_USER}`, { headers }),
-      fetch(`https://api.github.com/users/${GITHUB_USER}/repos?per_page=100&sort=pushed`, { headers }),
-    ]);
+    const authHeaders = {
+      "User-Agent": "portfolio-app/1.0",
+      ...(GITHUB_PAT ? { Authorization: `Bearer ${GITHUB_PAT}` } : {}),
+    };
 
+    /* ── REST: repos + languages ── */
+    const [userRes, reposRes] = await Promise.all([
+      fetch(`https://api.github.com/users/${GITHUB_USER}`, { headers: authHeaders }),
+      fetch(`https://api.github.com/users/${GITHUB_USER}/repos?per_page=100&sort=pushed`, { headers: authHeaders }),
+    ]);
     const user  = await userRes.json() as any;
     const repos = (await reposRes.json()) as any[];
 
@@ -324,18 +330,84 @@ router.get("/portfolio/stats", async (_req, res): Promise<void> => {
         color: LANG_COLORS[name] ?? "#888",
       }));
 
+    /* ── GraphQL: contributions + streaks ── */
+    let githubContributions = 0;
+    let totalCommitsThisYear = 0;
+    let currentStreak = 0;
+    let longestStreak = 0;
+
+    if (GITHUB_PAT) {
+      const gqlQuery = `
+        query($login: String!) {
+          user(login: $login) {
+            contributionsCollection {
+              totalCommitContributions
+              restrictedContributionsCount
+              contributionCalendar {
+                totalContributions
+                weeks {
+                  contributionDays {
+                    contributionCount
+                    date
+                  }
+                }
+              }
+            }
+          }
+        }
+      `;
+
+      const gqlRes = await fetch("https://api.github.com/graphql", {
+        method: "POST",
+        headers: { ...authHeaders, "Content-Type": "application/json" },
+        body: JSON.stringify({ query: gqlQuery, variables: { login: GITHUB_USER } }),
+      });
+
+      const gqlJson = await gqlRes.json() as any;
+      const collection = gqlJson?.data?.user?.contributionsCollection;
+      const calendar   = collection?.contributionCalendar;
+
+      if (calendar) {
+        githubContributions  = calendar.totalContributions ?? 0;
+        totalCommitsThisYear = (collection.totalCommitContributions ?? 0) +
+                               (collection.restrictedContributionsCount ?? 0);
+
+        /* flatten days oldest → newest */
+        const days: { date: string; count: number }[] = (calendar.weeks ?? [])
+          .flatMap((w: any) => w.contributionDays ?? [])
+          .map((d: any) => ({ date: d.date as string, count: d.contributionCount as number }));
+
+        /* current streak — walk backwards from today */
+        const todayStr = new Date().toISOString().split("T")[0];
+        let i = days.length - 1;
+        /* skip today if no contributions yet (don't break streak) */
+        if (i >= 0 && days[i].date === todayStr && days[i].count === 0) i--;
+        let run = 0;
+        while (i >= 0 && days[i].count > 0) { run++; i--; }
+        currentStreak = run;
+
+        /* longest streak */
+        let best = 0; run = 0;
+        for (const d of days) {
+          if (d.count > 0) { run++; best = Math.max(best, run); } else { run = 0; }
+        }
+        longestStreak = best;
+      }
+    }
+
     const data = GetStatsResponse.parse({
-      githubContributions: 0,
-      githubRepos:         user.public_repos ?? 0,
-      totalCommitsThisYear: 0,
-      currentStreak:       0,
-      longestStreak:       0,
+      githubContributions,
+      githubRepos: user.public_repos ?? 0,
+      totalCommitsThisYear,
+      currentStreak,
+      longestStreak,
       topLanguages,
     });
 
     toCache("stats", data, 600_000);
     res.json(data);
-  } catch {
+  } catch (err) {
+    console.error("GitHub stats error:", err);
     res.json(GetStatsResponse.parse({ githubContributions: 0, githubRepos: 0, totalCommitsThisYear: 0, currentStreak: 0, longestStreak: 0, topLanguages: [] }));
   }
 });
