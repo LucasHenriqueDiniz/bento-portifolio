@@ -36,6 +36,8 @@ const STATUS_COLORS: Record<string, string> = {
   offline:"#9ca3af",
 };
 
+const ACCENT = "#3d72cc";
+
 const CARD  = "bg-white dark:bg-[#181818] border border-[#ebebeb] dark:border-[#282828] rounded-2xl";
 const LABEL = "text-[10px] font-semibold uppercase tracking-widest text-[#aaa] dark:text-[#555]";
 
@@ -201,8 +203,8 @@ function EqBars() {
       {[0.8, 0.5, 0.7, 0.6].map((dur, i) => (
         <span
           key={i}
-          className="eq-bar inline-block w-[3px] bg-[#ef4444] rounded-sm"
-          style={{ height: 12, "--dur": `${dur}s`, animationDelay: `${i * 0.12}s` } as React.CSSProperties}
+          className="eq-bar inline-block w-[3px] rounded-sm"
+          style={{ backgroundColor: ACCENT, height: 12, "--dur": `${dur}s`, animationDelay: `${i * 0.12}s` } as React.CSSProperties}
         />
       ))}
     </span>
@@ -318,7 +320,9 @@ export default function Home() {
       {/* ── NAV ── */}
       <header className="shrink-0 z-50 h-11 flex items-center border-b border-[#ebebeb] dark:border-[#282828] bg-white/80 dark:bg-[#181818]/80 backdrop-blur px-4">
         <div className="flex w-full max-w-[1480px] mx-auto items-center justify-between">
-          <span className="font-bold text-[13px] tracking-tight">yourname.sh</span>
+          <span className="font-bold text-[16px] tracking-tight select-none">
+            <span className="text-[#2d3748] dark:text-[#e2e8f0]">lucas</span><span style={{ color: ACCENT }}>hdo</span>
+          </span>
           <nav className="flex items-center gap-5 text-[13px] text-[#888] dark:text-[#666]">
             <Link href="/" className="hover:text-[#111] dark:hover:text-[#eee] transition-colors">Home</Link>
             <Link href="/projects" className="hover:text-[#111] dark:hover:text-[#eee] transition-colors">Projects</Link>
@@ -345,7 +349,7 @@ export default function Home() {
             <div className="flex items-start justify-between mb-3">
               <p className={LABEL}>About Me</p>
               <div className="flex gap-2 text-[#ccc] dark:text-[#444]">
-                <a href="https://twitter.com" target="_blank" rel="noreferrer" className="hover:text-[#1da1f2] transition-colors"><FiTwitter size={12} /></a>
+                <a href="https://twitter.com" target="_blank" rel="noreferrer" className="transition-colors" style={{ color: "inherit" }} onMouseEnter={e => (e.currentTarget.style.color = ACCENT)} onMouseLeave={e => (e.currentTarget.style.color = "")}><FiTwitter size={12} /></a>
                 <a href="https://discord.com" target="_blank" rel="noreferrer" className="hover:text-[#5865f2] transition-colors"><SiDiscord size={12} /></a>
                 <a href="https://github.com" target="_blank" rel="noreferrer" className="hover:text-[#111] dark:hover:text-[#eee] transition-colors"><SiGithub size={12} /></a>
               </div>
@@ -355,7 +359,7 @@ export default function Home() {
                 <img src="https://api.dicebear.com/8.x/notionists/svg?seed=portfolio123&backgroundColor=c0aede" alt="avatar" className="w-full h-full object-cover" />
               </div>
               <div>
-                <p className="text-[13px] font-semibold leading-tight">Hey, I'm <span className="text-[#ef4444]">You</span></p>
+                <p className="text-[13px] font-semibold leading-tight">Hey, I'm <span style={{ color: ACCENT }}>Lucas</span></p>
                 <p className="text-[11px] text-[#aaa] dark:text-[#555] mt-0.5">Developer & Designer</p>
               </div>
             </div>
@@ -384,8 +388,8 @@ export default function Home() {
           <motion.div custom={3} variants={fadeUp} initial="hidden" animate="show" className={`${CARD} p-4`}>
             <p className={`${LABEL} mb-2 flex items-center gap-1`}><FiMail size={9} />Contact</p>
             <p className="text-[12px] text-[#777] dark:text-[#888] leading-relaxed">
-              Hit me up on{" "}<a href="https://twitter.com" className="text-[#1da1f2] hover:underline">Twitter</a>{" "}or email{" "}
-              <a href="mailto:you@example.com" className="text-[#ef4444] hover:underline">you@example.com</a>
+              Hit me up on{" "}<a href="https://twitter.com" style={{ color: ACCENT }} className="hover:underline">Twitter</a>{" "}or email{" "}
+              <a href="mailto:you@example.com" style={{ color: ACCENT }} className="hover:underline">you@example.com</a>
             </p>
           </motion.div>
         </aside>
@@ -679,7 +683,7 @@ export default function Home() {
                         <span className="ml-1">commits</span>
                       </span>
                       <span>
-                        <strong className="text-[#30a14e] tabular-nums text-[13px] font-black">{githubInView ? animStreak : 0}</strong>
+                        <strong className="tabular-nums text-[13px] font-black" style={{ color: ACCENT }}>{githubInView ? animStreak : 0}</strong>
                         <span className="ml-1">day streak</span>
                       </span>
                       <span>
@@ -847,7 +851,7 @@ export default function Home() {
                   <div className="w-6 h-6 rounded-full bg-[#f0f0f0] dark:bg-[#252525] overflow-hidden shrink-0">
                     {artist.imageUrl && <img src={artist.imageUrl} alt={artist.name} className="w-full h-full object-cover" />}
                   </div>
-                  <span className="text-[12px] font-medium truncate flex-1 group-hover:text-[#ef4444] transition-colors">{artist.name}</span>
+                  <span className="text-[12px] font-medium truncate flex-1 transition-colors" style={{ color: "inherit" }} onMouseEnter={e => (e.currentTarget.style.color = ACCENT)} onMouseLeave={e => (e.currentTarget.style.color = "")}>{artist.name}</span>
                   <span className="text-[10px] text-[#ccc] dark:text-[#444] shrink-0">{Number(artist.playcount).toLocaleString()}</span>
                 </a>
               ))}
