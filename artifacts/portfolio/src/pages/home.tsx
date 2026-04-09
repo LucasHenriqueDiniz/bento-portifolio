@@ -394,69 +394,9 @@ export default function Home() {
         <BentoSection className="flex-1 min-w-0 h-full overflow-hidden">
           <div className="grid gap-2.5 h-full" style={{ gridTemplateColumns: "repeat(4, 1fr)", gridAutoRows: "calc((100dvh - 124px) / 7)" }}>
 
-            {/* STATUS */}
-            <BentoCard className={`${CARD} p-4 flex flex-col justify-between col-span-1 row-span-1`}>
-              <motion.div custom={2} variants={fadeUp} initial="hidden" animate="show" className="flex flex-col h-full justify-between">
-                <p className={`${LABEL} flex items-center gap-1.5`}>
-                  <span
-                    className="w-1.5 h-1.5 rounded-full inline-block status-dot"
-                    style={{ backgroundColor: statusColor, color: statusColor }}
-                  />
-                  Status
-                </p>
-                <div>
-                  <p className="text-[28px] font-black tracking-tight leading-none" style={{ color: statusColor }}>
-                    {(discord?.status ?? "DND").toUpperCase()}
-                  </p>
-                  {discord?.customStatus && (
-                    <p className="text-[11px] text-[#aaa] mt-1 truncate">{discord.customStatus}</p>
-                  )}
-                </div>
-              </motion.div>
-            </BentoCard>
-
-            {/* MAP — 2×2 */}
-            <BentoCard className="col-span-2 row-span-2 rounded-2xl border border-[#ebebeb] overflow-hidden relative">
-              <motion.div custom={3} variants={fadeUp} initial="hidden" animate="show" className="w-full h-full">
-                <iframe
-                  src="https://www.openstreetmap.org/export/embed.html?bbox=-43.35%2C-23.05%2C-43.05%2C-22.75&layer=mapnik"
-                  className="w-full h-full grayscale opacity-80"
-                  style={{ border: 0, pointerEvents: "none" }}
-                  title="map"
-                />
-                <div className="absolute bottom-0 left-0 right-0 p-3">
-                  <div className="bg-white/90 backdrop-blur rounded-xl px-3 py-2 inline-flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-[#ef4444] status-dot" style={{ color: "#ef4444" }} />
-                    <span className="text-[12px] font-semibold text-[#111]">Rio de Janeiro, Brazil</span>
-                  </div>
-                </div>
-              </motion.div>
-            </BentoCard>
-
-            {/* ALBUM ART — 1×2 */}
-            <BentoCard className="col-span-1 row-span-2 rounded-2xl border border-[#ebebeb] overflow-hidden relative">
-              <motion.div custom={4} variants={fadeUp} initial="hidden" animate="show" className="w-full h-full">
-                {nowPlaying?.albumArt ? (
-                  <>
-                    <img src={nowPlaying.albumArt} alt="album" className="w-full h-full object-cover" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
-                    <div className="absolute bottom-3 left-3 right-3">
-                      <p className="text-white/70 text-[9px] uppercase tracking-widest font-semibold mb-0.5">Listening</p>
-                      <p className="text-white text-[13px] font-bold leading-tight truncate">{nowPlaying.track}</p>
-                      <p className="text-white/60 text-[11px] truncate">{nowPlaying.artist}</p>
-                    </div>
-                  </>
-                ) : (
-                  <div className="w-full h-full bg-[#f0f0f0] flex items-center justify-center">
-                    <SiLastdotfm size={28} className="text-[#ccc]" />
-                  </div>
-                )}
-              </motion.div>
-            </BentoCard>
-
-            {/* WEATHER / CLOCK FLIP — 1×1 */}
+            {/* WEATHER / CLOCK FLIP — 1×1 (moved to col1 row1 after removing STATUS) */}
             <BentoCard
-              className="col-span-1 row-span-1 rounded-2xl border border-[#ebebeb] cursor-pointer overflow-hidden"
+              className="col-span-1 row-span-1 rounded-2xl border border-[#ebebeb] dark:border-[#282828] cursor-pointer overflow-hidden"
               style={{ perspective: "800px" }}
               onClick={() => setWeatherFlipped(f => !f)}
             >
@@ -489,10 +429,55 @@ export default function Home() {
               </div>
             </BentoCard>
 
-            {/* LAST WORKOUT — 1×2 */}
+            {/* MAP — 2×2 (explicitly positioned so it stays at col2-3) */}
             <BentoCard
-              className="col-span-1 row-span-2 rounded-2xl overflow-hidden flex flex-col"
-              style={{ background: "linear-gradient(160deg, #181818 0%, #0f0f0f 100%)" }}
+              className="rounded-2xl border border-[#ebebeb] dark:border-[#282828] overflow-hidden relative"
+              style={{ gridColumn: "2 / 4", gridRow: "1 / 3" }}
+            >
+              <motion.div custom={3} variants={fadeUp} initial="hidden" animate="show" className="w-full h-full">
+                <iframe
+                  src="https://www.openstreetmap.org/export/embed.html?bbox=-43.35%2C-23.05%2C-43.05%2C-22.75&layer=mapnik"
+                  className="w-full h-full grayscale opacity-80"
+                  style={{ border: 0, pointerEvents: "none" }}
+                  title="map"
+                />
+                <div className="absolute bottom-0 left-0 right-0 p-3">
+                  <div className="bg-white/90 dark:bg-[#181818]/90 backdrop-blur rounded-xl px-3 py-2 inline-flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-[#ef4444] status-dot" style={{ color: "#ef4444" }} />
+                    <span className="text-[12px] font-semibold text-[#111] dark:text-[#eee]">Rio de Janeiro, Brazil</span>
+                  </div>
+                </div>
+              </motion.div>
+            </BentoCard>
+
+            {/* ALBUM ART — 1×2 (explicitly positioned at col4) */}
+            <BentoCard
+              className="rounded-2xl border border-[#ebebeb] dark:border-[#282828] overflow-hidden relative"
+              style={{ gridColumn: "4", gridRow: "1 / 3" }}
+            >
+              <motion.div custom={4} variants={fadeUp} initial="hidden" animate="show" className="w-full h-full">
+                {nowPlaying?.albumArt ? (
+                  <>
+                    <img src={nowPlaying.albumArt} alt="album" className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+                    <div className="absolute bottom-3 left-3 right-3">
+                      <p className="text-white/70 text-[9px] uppercase tracking-widest font-semibold mb-0.5">Listening</p>
+                      <p className="text-white text-[13px] font-bold leading-tight truncate">{nowPlaying.track}</p>
+                      <p className="text-white/60 text-[11px] truncate">{nowPlaying.artist}</p>
+                    </div>
+                  </>
+                ) : (
+                  <div className="w-full h-full bg-[#f0f0f0] dark:bg-[#252525] flex items-center justify-center">
+                    <SiLastdotfm size={28} className="text-[#ccc] dark:text-[#444]" />
+                  </div>
+                )}
+              </motion.div>
+            </BentoCard>
+
+            {/* LAST WORKOUT — 1×3 (taller, explicitly at col1 rows2-4) */}
+            <BentoCard
+              className="rounded-2xl overflow-hidden flex flex-col"
+              style={{ background: "linear-gradient(160deg, #181818 0%, #0f0f0f 100%)", gridColumn: "1", gridRow: "2 / 5" }}
             >
               <div ref={workoutRef} className="p-3.5 h-full flex flex-col gap-2.5">
                 <motion.div custom={6} variants={fadeUp} initial="hidden" animate="show" className="flex flex-col h-full gap-2.5">
@@ -730,46 +715,39 @@ export default function Home() {
                     {/* header */}
                     <div className="flex items-center justify-between shrink-0">
                       <div className="flex items-center gap-2">
-                        <SiMyanimelist size={13} style={{ color: "#2e51a2" }} />
-                        <span className={LABEL}>MyAnimeList</span>
-                        <span className="text-[8px] text-[#aaa] dark:text-[#555] bg-[#f5f5f5] dark:bg-[#252525] px-1.5 py-0.5 rounded-full">
-                          Anime · tap to flip
-                        </span>
+                        <SiMyanimelist size={15} style={{ color: "#2e51a2" }} />
+                        <span className="text-[14px] font-bold text-[#111] dark:text-[#eee]">Anime</span>
                       </div>
+                      <span className="text-[9px] text-[#bbb] dark:text-[#555]">tap for manga →</span>
                     </div>
                     {/* stats row */}
-                    <div className="flex gap-6 shrink-0">
+                    <div className="flex gap-5 shrink-0">
                       <div>
                         <p className="text-[28px] font-black leading-none tabular-nums text-[#111] dark:text-[#eee]">{malData.anime.completed}</p>
                         <p className={`${LABEL} mt-1`}>completed</p>
                       </div>
-                      <div className="border-l border-[#ebebeb] dark:border-[#282828] pl-6">
+                      <div className="border-l border-[#ebebeb] dark:border-[#282828] pl-5">
                         <p className="text-[28px] font-black leading-none tabular-nums text-[#111] dark:text-[#eee]">{malData.anime.watching}</p>
                         <p className={`${LABEL} mt-1`}>watching</p>
                       </div>
-                      <div className="border-l border-[#ebebeb] dark:border-[#282828] pl-6">
+                      <div className="border-l border-[#ebebeb] dark:border-[#282828] pl-5">
                         <p className="text-[28px] font-black leading-none tabular-nums text-[#111] dark:text-[#eee]">{malData.anime.episodes.toLocaleString()}</p>
                         <p className={`${LABEL} mt-1`}>episodes</p>
                       </div>
                     </div>
                     {/* divider */}
                     <div className="border-t border-[#ebebeb] dark:border-[#282828] shrink-0" />
-                    {/* cover images */}
-                    <div className="flex-1 min-h-0 flex flex-col gap-2">
-                      <p className={`${LABEL} shrink-0`}>Top Anime</p>
-                      <div className="flex gap-3 overflow-x-auto" style={{ scrollbarWidth: "none" }}>
-                        {malData.anime.favorites.map((f, i) => (
-                          <div key={f.title} className="shrink-0 flex flex-col gap-1.5" style={{ width: 72 }}>
-                            <div className="rounded-xl overflow-hidden bg-[#f0f0f0] dark:bg-[#252525]" style={{ width: 72, height: 104 }}>
-                              <img
-                                src={f.img}
-                                alt={f.title}
-                                className="w-full h-full object-cover"
-                                style={{ animationDelay: `${i * 0.06}s` }}
-                              />
+                    {/* cover grid */}
+                    <div className="flex-1 min-h-0 overflow-hidden">
+                      <div className="flex gap-2 h-full">
+                        {malData.anime.favorites.map((f) => (
+                          <div key={f.title} className="flex-1 relative rounded-xl overflow-hidden bg-[#f0f0f0] dark:bg-[#252525] min-w-0">
+                            <img src={f.img} alt={f.title} className="w-full h-full object-cover" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
+                            <div className="absolute bottom-0 left-0 right-0 p-2">
+                              <p className="text-white text-[8px] font-semibold leading-tight line-clamp-2">{f.title}</p>
+                              <p className="text-white/50 text-[7px] mt-0.5 tabular-nums">{f.year}</p>
                             </div>
-                            <p className="text-[9px] font-medium text-[#555] dark:text-[#999] leading-tight truncate text-center">{f.title}</p>
-                            <p className="text-[8px] text-[#bbb] dark:text-[#555] text-center tabular-nums leading-none">{f.year}</p>
                           </div>
                         ))}
                       </div>
@@ -784,24 +762,22 @@ export default function Home() {
                     {/* header */}
                     <div className="flex items-center justify-between shrink-0">
                       <div className="flex items-center gap-2">
-                        <SiMyanimelist size={13} style={{ color: "#2e51a2" }} />
-                        <span className={LABEL}>MyAnimeList</span>
-                        <span className="text-[8px] text-[#aaa] dark:text-[#555] bg-[#f5f5f5] dark:bg-[#252525] px-1.5 py-0.5 rounded-full">
-                          Manga · tap to flip
-                        </span>
+                        <SiMyanimelist size={15} style={{ color: "#2e51a2" }} />
+                        <span className="text-[14px] font-bold text-[#111] dark:text-[#eee]">Manga</span>
                       </div>
+                      <span className="text-[9px] text-[#bbb] dark:text-[#555]">← tap for anime</span>
                     </div>
                     {/* stats row */}
-                    <div className="flex gap-6 shrink-0">
+                    <div className="flex gap-5 shrink-0">
                       <div>
                         <p className="text-[28px] font-black leading-none tabular-nums text-[#111] dark:text-[#eee]">{malData.manga.completed}</p>
                         <p className={`${LABEL} mt-1`}>completed</p>
                       </div>
-                      <div className="border-l border-[#ebebeb] dark:border-[#282828] pl-6">
+                      <div className="border-l border-[#ebebeb] dark:border-[#282828] pl-5">
                         <p className="text-[28px] font-black leading-none tabular-nums text-[#111] dark:text-[#eee]">{malData.manga.reading}</p>
                         <p className={`${LABEL} mt-1`}>reading</p>
                       </div>
-                      <div className="border-l border-[#ebebeb] dark:border-[#282828] pl-6">
+                      <div className="border-l border-[#ebebeb] dark:border-[#282828] pl-5">
                         <p className="text-[28px] font-black leading-none tabular-nums text-[#111] dark:text-[#eee]">{malData.manga.chapters.toLocaleString()}</p>
                         <p className={`${LABEL} mt-1`}>chapters</p>
                       </div>
@@ -809,20 +785,16 @@ export default function Home() {
                     {/* divider */}
                     <div className="border-t border-[#ebebeb] dark:border-[#282828] shrink-0" />
                     {/* cover images */}
-                    <div className="flex-1 min-h-0 flex flex-col gap-2">
-                      <p className={`${LABEL} shrink-0`}>Top Manga</p>
-                      <div className="flex gap-3 overflow-x-auto" style={{ scrollbarWidth: "none" }}>
-                        {malData.manga.favorites.map((f, i) => (
-                          <div key={f.title} className="shrink-0 flex flex-col gap-1.5" style={{ width: 72 }}>
-                            <div className="rounded-xl overflow-hidden bg-[#f0f0f0] dark:bg-[#252525]" style={{ width: 72, height: 104 }}>
-                              <img
-                                src={f.img}
-                                alt={f.title}
-                                className="w-full h-full object-cover"
-                              />
+                    <div className="flex-1 min-h-0">
+                      <div className="flex gap-2 h-full">
+                        {malData.manga.favorites.map((f) => (
+                          <div key={f.title} className="flex-1 relative rounded-xl overflow-hidden bg-[#f0f0f0] dark:bg-[#252525] min-w-0">
+                            <img src={f.img} alt={f.title} className="w-full h-full object-cover" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
+                            <div className="absolute bottom-0 left-0 right-0 p-2">
+                              <p className="text-white text-[8px] font-semibold leading-tight line-clamp-2">{f.title}</p>
+                              <p className="text-white/50 text-[7px] mt-0.5 tabular-nums">{f.year}</p>
                             </div>
-                            <p className="text-[9px] font-medium text-[#555] dark:text-[#999] leading-tight truncate text-center">{f.title}</p>
-                            <p className="text-[8px] text-[#bbb] dark:text-[#555] text-center tabular-nums leading-none">{f.year}</p>
                           </div>
                         ))}
                       </div>
