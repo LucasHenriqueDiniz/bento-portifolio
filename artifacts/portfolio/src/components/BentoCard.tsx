@@ -132,7 +132,7 @@ export function BentoCard({ children, className = "", style, glowColor = GLOW_CO
   );
 }
 
-export function BentoSection({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+export function BentoSection({ children, className = "", style }: { children: React.ReactNode; className?: string; style?: React.CSSProperties }) {
   const ref = useRef<HTMLDivElement>(null);
   const spotRef = useRef<HTMLDivElement | null>(null);
 
@@ -161,7 +161,7 @@ export function BentoSection({ children, className = "" }: { children: React.Rea
   }, []);
 
   return (
-    <div ref={ref} className={className}>
+    <div ref={ref} className={className} style={style}>
       {children}
     </div>
   );
