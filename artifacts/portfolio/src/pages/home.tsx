@@ -450,8 +450,8 @@ export default function Home() {
         </aside>
 
         {/* ════ CENTER BENTO ════ */}
-        <BentoSection className="flex-1 min-w-0 h-full overflow-hidden">
-          <div className="grid gap-2.5 h-full" style={{ gridTemplateColumns: "repeat(4, 1fr)", gridAutoRows: "calc((100dvh - 124px) / 8)" }}>
+        <BentoSection className="flex-1 min-w-0 h-full overflow-y-auto" style={{ scrollbarWidth: "none" } as React.CSSProperties}>
+          <div className="grid gap-2.5" style={{ gridTemplateColumns: "repeat(4, 1fr)", gridAutoRows: "calc((100dvh - 124px) / 8)" }}>
 
             {/* WEATHER / CLOCK FLIP — 1×1 (moved to col1 row1 after removing STATUS) */}
             <BentoCard
@@ -1183,6 +1183,190 @@ export default function Home() {
 
 
           </div>
+
+          {/* ════ TIMELINE SECTION ════ */}
+          {(() => {
+            type TLEntry = {
+              id: string;
+              type: "job" | "academic" | "scholarship" | "volunteer";
+              title: string;
+              institution: string;
+              url?: string;
+              start: string;
+              end: string | null;
+              tags: string[];
+              description: string;
+            };
+
+            const TYPE_LABEL: Record<TLEntry["type"], string> = {
+              job: "Job",
+              academic: "Academic",
+              scholarship: "Scholarship",
+              volunteer: "Volunteer",
+            };
+            const TYPE_COLOR: Record<TLEntry["type"], string> = {
+              job: ACCENT,
+              academic: "#40c463",
+              scholarship: "#f59e0b",
+              volunteer: "#a78bfa",
+            };
+
+            const entries: TLEntry[] = [
+              {
+                id: "uergs",
+                type: "academic",
+                title: "Engenharia da Computação",
+                institution: "UERGS",
+                url: "https://www.uergs.edu.br/",
+                start: "Feb 2023",
+                end: "Jan 2025",
+                tags: ["C", "Python", "Microcontrollers", "Assembly"],
+                description: "Academic projects on low-level programming, algorithm development, and embedded systems.",
+              },
+              {
+                id: "eng-futuro-vol",
+                type: "volunteer",
+                title: "Desenvolvedor Voluntário",
+                institution: "Engenharia do Futuro",
+                url: "https://engenhariadofuturo.com.br/",
+                start: "May 2023",
+                end: "Feb 2024",
+                tags: ["React", "Node.js", "TypeScript", "ViteJS"],
+                description: "Led Front-End workshop, developed embedded firmware, web interface and backend API.",
+              },
+              {
+                id: "include-gurias",
+                type: "scholarship",
+                title: "Bolsa Include Gurias",
+                institution: "UERGS",
+                url: "https://www.uergs.edu.br/",
+                start: "Jun 2023",
+                end: "Jan 2024",
+                tags: ["Figma", "AWS", "Web Dev", "Auth"],
+                description: "Architected institutional fullstack platform with custom headless CMS and admin dashboard.",
+              },
+              {
+                id: "unicv",
+                type: "academic",
+                title: "Engenharia de Software",
+                institution: "UNICV",
+                url: "https://www.unicv.edu.br/",
+                start: "Feb 2025",
+                end: null,
+                tags: ["Software Arch.", "Agile", "Databases"],
+                description: "Robust system architecture, scalable development and agile methodology.",
+              },
+              {
+                id: "eng-futuro",
+                type: "job",
+                title: "Dev. Full Stack",
+                institution: "Engenharia do Futuro",
+                url: "https://engenhariadofuturo.com.br/",
+                start: "Apr 2025",
+                end: null,
+                tags: ["React", "TypeScript", "Python", "Web Serial API"],
+                description: "Complete platform refactor, design system, and browser-based firmware flashing via Web Serial API.",
+              },
+              {
+                id: "comunica-mulher",
+                type: "scholarship",
+                title: "Bolsa ComunicaMulher",
+                institution: "ComunicaMulher",
+                url: "https://reclame-mulher.vercel.app/",
+                start: "Aug 2025",
+                end: null,
+                tags: ["Next.js", "Supabase", "TypeScript", "RLS"],
+                description: "Complaint management system with moderation workflow, Supabase RLS policies and audit logging.",
+              },
+            ];
+
+            return (
+              <div className="pt-2.5 pb-2.5">
+                <BentoCard className={`${CARD} p-5`}>
+                  <motion.div custom={14} variants={fadeUp} initial="hidden" animate="show">
+                    {/* header */}
+                    <div className="flex items-center justify-between mb-5">
+                      <p className={LABEL}>Timeline</p>
+                      <div className="flex items-center gap-3">
+                        {(["job", "academic", "scholarship", "volunteer"] as TLEntry["type"][]).map(t => (
+                          <div key={t} className="flex items-center gap-1.5">
+                            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: TYPE_COLOR[t] }} />
+                            <span className="text-[9px] text-[#bbb] dark:text-[#444]">{TYPE_LABEL[t]}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* timeline entries */}
+                    <div className="relative flex flex-col gap-0">
+                      {/* vertical line */}
+                      <div className="absolute left-[5px] top-2 bottom-2 w-px bg-[#ebebeb] dark:bg-[#282828]" />
+
+                      {entries.map((entry, i) => (
+                        <motion.div
+                          key={entry.id}
+                          initial={{ opacity: 0, x: -8 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: 0.08 * i, duration: 0.3 }}
+                          className="relative pl-7 pb-5 last:pb-0 group"
+                        >
+                          {/* dot */}
+                          <div
+                            className="absolute left-0 top-[5px] w-[11px] h-[11px] rounded-full border-2 border-white dark:border-[#181818] z-10 transition-transform group-hover:scale-125"
+                            style={{ backgroundColor: TYPE_COLOR[entry.type] }}
+                          />
+
+                          <div className="flex items-start justify-between gap-4">
+                            {/* left: content */}
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-1 flex-wrap">
+                                <h3 className="text-[13px] font-bold text-[#111] dark:text-[#eee] leading-none">{entry.title}</h3>
+                                <span
+                                  className="text-[8px] font-bold px-1.5 py-0.5 rounded-full leading-none"
+                                  style={{ color: TYPE_COLOR[entry.type], backgroundColor: `${TYPE_COLOR[entry.type]}18` }}
+                                >
+                                  {TYPE_LABEL[entry.type].toUpperCase()}
+                                </span>
+                              </div>
+                              <a
+                                href={entry.url || "#"}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="text-[11px] text-[#888] dark:text-[#555] hover:underline leading-none"
+                                onClick={e => e.stopPropagation()}
+                              >
+                                {entry.institution}
+                              </a>
+                              <p className="text-[10px] text-[#aaa] dark:text-[#444] leading-snug mt-1.5 max-w-[560px]">
+                                {entry.description}
+                              </p>
+                              {/* tags */}
+                              <div className="flex flex-wrap gap-1 mt-2">
+                                {entry.tags.map(tag => (
+                                  <span key={tag} className={`text-[9px] px-1.5 py-0.5 rounded-md border leading-none ${isDark ? "text-[#555] border-[#282828] bg-[#1e1e1e]" : "text-[#aaa] border-[#ebebeb] bg-[#f8f8f8]"}`}>
+                                    {tag}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* right: date chip */}
+                            <div className="shrink-0 text-right mt-0.5">
+                              <span className={`text-[10px] font-semibold tabular-nums ${isDark ? "text-[#444]" : "text-[#ccc]"}`}>
+                                {entry.start}
+                              </span>
+                              <div className={`text-[9px] ${isDark ? "text-[#333]" : "text-[#ddd]"}`}>→ {entry.end ?? "Present"}</div>
+                            </div>
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </motion.div>
+                </BentoCard>
+              </div>
+            );
+          })()}
+
         </BentoSection>
 
         {/* ════ RIGHT SIDEBAR ════ */}
