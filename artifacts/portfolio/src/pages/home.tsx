@@ -456,10 +456,10 @@ export default function Home() {
               </div>
             </BentoCard>
 
-            {/* CURRENTLY BUILDING — col2-3, rows1-2 */}
+            {/* CURRENTLY BUILDING — col3, rows7-8 */}
             <BentoCard
               className={`${CARD} overflow-hidden`}
-              style={{ gridColumn: "2 / 4", gridRow: "1 / 3" }}
+              style={{ gridColumn: "3", gridRow: "7 / 9" }}
             >
               <motion.div custom={3} variants={fadeUp} initial="hidden" animate="show" className="p-4 h-full flex flex-col justify-between gap-3">
 
@@ -935,31 +935,55 @@ export default function Home() {
               </motion.div>
             </BentoCard>
 
-            {/* PROJECTS CTA — col3, row7 */}
+            {/* PROJECTS CTA — col2-3, rows1-2 */}
             <BentoCard
               className={`${CARD} overflow-hidden group cursor-pointer`}
-              style={{ gridColumn: "3", gridRow: "7" }}
+              style={{ gridColumn: "2 / 4", gridRow: "1 / 3" }}
               onClick={() => navigate("/projects")}
             >
-              <motion.div custom={12} variants={fadeUp} initial="hidden" animate="show" className="p-3.5 h-full flex flex-col justify-between">
-                <div className="flex items-center justify-between">
-                  <p className={LABEL}>Projects</p>
-                  <FiArrowUpRight size={12} className="text-[#ccc] dark:text-[#444] group-hover:text-[#888] dark:group-hover:text-[#888] transition-colors" />
+              <motion.div custom={12} variants={fadeUp} initial="hidden" animate="show" className="p-5 h-full flex flex-col justify-between">
+
+                {/* header */}
+                <div className="flex items-start justify-between">
+                  <p className={`${LABEL} flex items-center gap-1.5`}><SiGithub size={9} />Projects</p>
+                  <FiArrowUpRight size={14} className="text-[#ccc] dark:text-[#444] group-hover:text-[#999] dark:group-hover:text-[#666] transition-colors mt-0.5" />
                 </div>
-                <div>
-                  <p className="text-[20px] font-black text-[#111] dark:text-[#eee] leading-none">
-                    <CountUp to={totalStars} duration={1.2} />
+
+                {/* center stats */}
+                <div className="flex flex-col gap-5 flex-1 justify-center">
+                  <div className="flex gap-6">
+                    <div>
+                      <p className="text-[36px] font-black text-[#111] dark:text-[#eee] leading-none tabular-nums">
+                        <CountUp to={stats?.githubRepos ?? 28} duration={1.0} />
+                      </p>
+                      <p className="text-[11px] text-[#bbb] dark:text-[#555] mt-1">repos</p>
+                    </div>
+                    <div className={`border-l ${isDark ? "border-white/10" : "border-[#ebebeb]"} pl-6`}>
+                      <p className="text-[36px] font-black leading-none tabular-nums" style={{ color: ACCENT }}>
+                        <CountUp to={totalStars} duration={1.2} />
+                      </p>
+                      <p className="text-[11px] text-[#bbb] dark:text-[#555] mt-1">total stars</p>
+                    </div>
+                  </div>
+
+                  <p className="text-[13px] text-[#999] dark:text-[#555] leading-snug max-w-[240px]">
+                    Open-source tools, side projects, and experiments. All on GitHub.
                   </p>
-                  <p className="text-[10px] text-[#bbb] dark:text-[#555] mt-0.5">total stars</p>
                 </div>
-                <p className="text-[10px]" style={{ color: ACCENT }}>view all work →</p>
+
+                {/* cta */}
+                <div className="flex items-center gap-2">
+                  <span className="text-[12px] font-semibold" style={{ color: ACCENT }}>View all projects</span>
+                  <FiArrowUpRight size={12} style={{ color: ACCENT }} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                </div>
+
               </motion.div>
             </BentoCard>
 
             {/* STEAM — col4, row7 (1×1, rotating game art) */}
             <BentoCard
               className="rounded-2xl overflow-hidden relative"
-              style={{ backgroundColor: isDark ? "#1b2838" : "#f0f0f0", gridColumn: "4", gridRow: "7" }}
+              style={{ backgroundColor: isDark ? "#1b2838" : "#f0f0f0", gridColumn: "4", gridRow: "7 / 9" }}
             >
               <motion.div custom={13} variants={fadeUp} initial="hidden" animate="show" className="w-full h-full relative">
                 {/* cycling game art */}
