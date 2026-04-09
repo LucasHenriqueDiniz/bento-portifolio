@@ -480,53 +480,57 @@ export default function Home() {
 
             {/* LAST WORKOUT — 1×3 (taller, explicitly at col1 rows2-4) */}
             <BentoCard
-              className="rounded-2xl overflow-hidden flex flex-col"
-              style={{ background: "linear-gradient(160deg, #181818 0%, #0f0f0f 100%)", gridColumn: "1", gridRow: "2 / 5" }}
+              className={`rounded-2xl overflow-hidden flex flex-col ${!isDark ? "border border-[#ebebeb] bg-white" : ""}`}
+              style={{
+                background: isDark ? "linear-gradient(160deg, #181818 0%, #0f0f0f 100%)" : undefined,
+                gridColumn: "1",
+                gridRow: "2 / 5",
+              }}
             >
               <div ref={workoutRef} className="p-3.5 h-full flex flex-col gap-2.5">
                 <motion.div custom={6} variants={fadeUp} initial="hidden" animate="show" className="flex flex-col h-full gap-2.5">
 
                   {/* header */}
                   <div className="flex items-center justify-between">
-                    <p className="text-[9px] font-bold uppercase tracking-widest text-white/30 flex items-center gap-1.5">
-                      <Dumbbell size={9} className="text-white/40" />Last Workout
+                    <p className={`text-[9px] font-bold uppercase tracking-widest flex items-center gap-1.5 ${isDark ? "text-white/30" : "text-[#aaa]"}`}>
+                      <Dumbbell size={9} className={isDark ? "text-white/40" : "text-[#ccc]"} />Last Workout
                     </p>
-                    <span className="text-[8px] text-white/30 bg-white/5 px-1.5 py-0.5 rounded-full border border-white/8">
+                    <span className={`text-[8px] px-1.5 py-0.5 rounded-full border ${isDark ? "text-white/30 bg-white/5 border-white/[0.08]" : "text-[#888] bg-[#f5f5f5] border-[#e8e8e8]"}`}>
                       {workout?.type?.split("(")[0]?.trim() ?? "Push"}
                     </span>
                   </div>
 
                   {/* top stats row */}
                   <div className="grid grid-cols-2 gap-1.5">
-                    <div className="bg-white/5 border border-white/5 rounded-xl p-2">
-                      <p className="text-white font-black tabular-nums text-[18px] leading-none">
+                    <div className={`rounded-xl p-2 border ${isDark ? "bg-white/5 border-white/5" : "bg-[#f8f8f8] border-[#ebebeb]"}`}>
+                      <p className={`font-black tabular-nums text-[18px] leading-none ${isDark ? "text-white" : "text-[#111]"}`}>
                         {workoutInView ? animVolume.toLocaleString() : "0"}
-                        <span className="text-[9px] text-white/30 font-normal ml-0.5">kg</span>
+                        <span className={`text-[9px] font-normal ml-0.5 ${isDark ? "text-white/30" : "text-[#bbb]"}`}>kg</span>
                       </p>
-                      <p className="text-[8px] text-white/25 uppercase tracking-wider mt-1">total volume</p>
+                      <p className={`text-[8px] uppercase tracking-wider mt-1 ${isDark ? "text-white/25" : "text-[#bbb]"}`}>total volume</p>
                     </div>
-                    <div className="bg-white/5 border border-white/5 rounded-xl p-2">
-                      <p className="text-white font-black tabular-nums text-[18px] leading-none">
+                    <div className={`rounded-xl p-2 border ${isDark ? "bg-white/5 border-white/5" : "bg-[#f8f8f8] border-[#ebebeb]"}`}>
+                      <p className={`font-black tabular-nums text-[18px] leading-none ${isDark ? "text-white" : "text-[#111]"}`}>
                         {workout?.weeklyStats?.streak ?? 12}
-                        <span className="text-[9px] text-white/30 font-normal ml-0.5">days</span>
+                        <span className={`text-[9px] font-normal ml-0.5 ${isDark ? "text-white/30" : "text-[#bbb]"}`}>days</span>
                       </p>
-                      <p className="text-[8px] text-white/25 uppercase tracking-wider mt-1">streak 🔥</p>
+                      <p className={`text-[8px] uppercase tracking-wider mt-1 ${isDark ? "text-white/25" : "text-[#bbb]"}`}>streak 🔥</p>
                     </div>
                   </div>
 
                   {/* sub stats */}
                   <div className="flex gap-3 px-0.5">
-                    <span className="text-[10px] text-white/30">
-                      <span className="text-white/60 font-semibold">{workoutInView ? animDuration : 0}</span> min
+                    <span className={`text-[10px] ${isDark ? "text-white/30" : "text-[#bbb]"}`}>
+                      <span className={`font-semibold ${isDark ? "text-white/60" : "text-[#666]"}`}>{workoutInView ? animDuration : 0}</span> min
                     </span>
-                    <span className="text-white/15">·</span>
-                    <span className="text-[10px] text-white/30">
-                      <span className="text-white/60 font-semibold">{workout?.weeklyStats?.workoutsThisWeek ?? 4}×</span> this week
+                    <span className={isDark ? "text-white/15" : "text-[#ddd]"}>·</span>
+                    <span className={`text-[10px] ${isDark ? "text-white/30" : "text-[#bbb]"}`}>
+                      <span className={`font-semibold ${isDark ? "text-white/60" : "text-[#666]"}`}>{workout?.weeklyStats?.workoutsThisWeek ?? 4}×</span> this week
                     </span>
                   </div>
 
                   {/* divider */}
-                  <div className="border-t border-white/6" />
+                  <div className={`border-t ${isDark ? "border-white/[0.06]" : "border-[#ebebeb]"}`} />
 
                   {/* exercise list */}
                   <div className="flex flex-col justify-between flex-1 min-h-0">
@@ -544,10 +548,10 @@ export default function Home() {
                         transition={{ delay: 0.15 + i * 0.06, duration: 0.32 }}
                         className="flex items-center justify-between gap-2 py-0.5"
                       >
-                        <p className="text-[10px] text-white/55 font-medium truncate flex-1">{ex.name}</p>
+                        <p className={`text-[10px] font-medium truncate flex-1 ${isDark ? "text-white/55" : "text-[#555]"}`}>{ex.name}</p>
                         <div className="flex items-center gap-1.5 shrink-0">
-                          <span className="text-[9px] text-white/25">{ex.sets}×{ex.reps}</span>
-                          <span className="text-[9px] font-semibold text-white/45 bg-white/5 px-1.5 py-0.5 rounded-md">
+                          <span className={`text-[9px] ${isDark ? "text-white/25" : "text-[#bbb]"}`}>{ex.sets}×{ex.reps}</span>
+                          <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded-md ${isDark ? "text-white/45 bg-white/5" : "text-[#555] bg-[#f5f5f5]"}`}>
                             {ex.weight}kg
                           </span>
                         </div>
@@ -605,47 +609,50 @@ export default function Home() {
             </BentoCard>
 
             {/* DISCORD — 1×2 */}
-            <BentoCard className="col-span-1 row-span-2 rounded-2xl overflow-hidden" style={{ backgroundColor: "#23272a" }}>
+            <BentoCard
+              className="col-span-1 row-span-2 rounded-2xl overflow-hidden"
+              style={{ backgroundColor: isDark ? "#23272a" : "#ffffff", border: isDark ? "none" : "1px solid #ebebeb" }}
+            >
               <motion.div custom={8} variants={fadeUp} initial="hidden" animate="show" className="p-3 h-full flex flex-col">
                 {/* header */}
                 <div className="flex items-center justify-between mb-3">
-                  <span className="text-[9px] font-bold uppercase tracking-widest text-white/30">Discord</span>
+                  <span className={`text-[9px] font-bold uppercase tracking-widest ${isDark ? "text-white/30" : "text-[#aaa]"}`}>Discord</span>
                   <SiDiscord size={13} className="text-[#5865f2]" />
                 </div>
                 {/* avatar */}
                 <div className="flex flex-col items-center gap-2">
                   <div className="relative">
-                    <div className="w-12 h-12 rounded-full overflow-hidden bg-[#36393f] ring-2 ring-white/10">
+                    <div className={`w-12 h-12 rounded-full overflow-hidden ring-2 ${isDark ? "bg-[#36393f] ring-white/10" : "bg-[#f0f0f0] ring-[#ebebeb]"}`}>
                       {discord?.avatarUrl
                         ? <img src={discord.avatarUrl} alt="avatar" className="w-full h-full object-cover" />
                         : <SiDiscord size={20} className="m-auto mt-3 text-[#5865f2]/60" />
                       }
                     </div>
                     <span
-                      className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-[#23272a] status-dot"
+                      className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 status-dot ${isDark ? "border-[#23272a]" : "border-white"}`}
                       style={{ backgroundColor: statusColor, color: statusColor }}
                     />
                   </div>
                   <div className="text-center w-full min-w-0">
-                    <p className="text-white font-bold text-[12px] truncate leading-tight">{discord?.displayName ?? "Your Name"}</p>
-                    <p className="text-white/40 text-[10px] capitalize mt-0.5">{discord?.status ?? "dnd"}</p>
+                    <p className={`font-bold text-[12px] truncate leading-tight ${isDark ? "text-white" : "text-[#111]"}`}>{discord?.displayName ?? "Your Name"}</p>
+                    <p className={`text-[10px] capitalize mt-0.5 ${isDark ? "text-white/40" : "text-[#aaa]"}`}>{discord?.status ?? "dnd"}</p>
                   </div>
                 </div>
 
                 {/* divider */}
-                <div className="border-t border-white/5 my-2.5" />
+                <div className={`border-t my-2.5 ${isDark ? "border-white/5" : "border-[#ebebeb]"}`} />
 
                 {/* activity */}
                 <div className="flex flex-col gap-2 flex-1 min-h-0">
-                  <div className="bg-white/5 rounded-lg p-2.5 border border-white/5 min-w-0">
-                    <p className="text-white/30 text-[8px] uppercase tracking-widest mb-1">Playing</p>
-                    <p className="text-white/80 text-[10px] font-semibold truncate">{discord?.activity ?? "VS Code"}</p>
+                  <div className={`rounded-lg p-2.5 border min-w-0 ${isDark ? "bg-white/5 border-white/5" : "bg-[#f8f8f8] border-[#ebebeb]"}`}>
+                    <p className={`text-[8px] uppercase tracking-widest mb-1 ${isDark ? "text-white/30" : "text-[#aaa]"}`}>Playing</p>
+                    <p className={`text-[10px] font-semibold truncate ${isDark ? "text-white/80" : "text-[#333]"}`}>{discord?.activity ?? "VS Code"}</p>
                     {discord?.activityDetail && (
-                      <p className="text-white/30 text-[9px] truncate mt-0.5">{discord.activityDetail}</p>
+                      <p className={`text-[9px] truncate mt-0.5 ${isDark ? "text-white/30" : "text-[#aaa]"}`}>{discord.activityDetail}</p>
                     )}
                   </div>
                   {discord?.customStatus && (
-                    <p className="text-white/25 text-[9px] text-center italic truncate px-1">"{discord.customStatus}"</p>
+                    <p className={`text-[9px] text-center italic truncate px-1 ${isDark ? "text-white/25" : "text-[#bbb]"}`}>"{discord.customStatus}"</p>
                   )}
                 </div>
               </motion.div>
@@ -809,23 +816,29 @@ export default function Home() {
             </BentoCard>
 
             {/* STEAM — 2×1 */}
-            <BentoCard className="col-span-2 row-span-1 rounded-2xl overflow-hidden" style={{ backgroundColor: "#1b2838" }}>
+            <BentoCard
+              className="col-span-2 row-span-1 rounded-2xl overflow-hidden"
+              style={{ backgroundColor: isDark ? "#1b2838" : "#ffffff", border: isDark ? "none" : "1px solid #ebebeb" }}
+            >
               <motion.div custom={11} variants={fadeUp} initial="hidden" animate="show" className="p-3.5 h-full flex flex-col justify-between">
                 <div className="flex items-center justify-between">
-                  <p className="text-[9px] font-bold uppercase tracking-widest text-[#c7d5e0]/50 flex items-center gap-1.5">
-                    <SiSteam size={9} className="text-[#c7d5e0]/60" />Steam · {steam?.totalGames ?? 142} games
+                  <p className={`text-[9px] font-bold uppercase tracking-widest flex items-center gap-1.5 ${isDark ? "text-[#c7d5e0]/50" : "text-[#aaa]"}`}>
+                    <SiSteam size={9} className={isDark ? "text-[#c7d5e0]/60" : "text-[#ccc]"} />Steam · {steam?.totalGames ?? 142} games
                   </p>
-                  <span className="text-[9px] text-[#c7d5e0]/30">Recently played</span>
+                  <span className={`text-[9px] ${isDark ? "text-[#c7d5e0]/30" : "text-[#ccc]"}`}>Recently played</span>
                 </div>
                 <div className="flex gap-2.5 flex-1 items-end mt-1.5 overflow-hidden">
                   {(steam?.recentGames ?? []).slice(0, 3).map((game, i) => (
                     <div key={game.appId} className="flex-1 min-w-0 flex flex-col gap-1 slide-up overflow-hidden" style={{ "--delay": `${i*0.07}s` } as React.CSSProperties}>
-                      <div className="w-full rounded-lg overflow-hidden bg-[#2a475e]" style={{ aspectRatio: "16/9" }}>
-                        {game.imageUrl && <img src={game.imageUrl} alt={game.name} className="w-full h-full object-cover opacity-90 hover:opacity-100 transition-opacity" />}
+                      <div className={`w-full rounded-lg overflow-hidden relative ${isDark ? "bg-[#2a475e]" : "bg-[#f0f0f0]"}`} style={{ aspectRatio: "16/9" }}>
+                        {game.imageUrl
+                          ? <img src={game.imageUrl} alt={game.name} className="w-full h-full object-cover opacity-90 hover:opacity-100 transition-opacity" />
+                          : <div className={`w-full h-full flex items-center justify-center ${isDark ? "bg-[#2a475e]" : "bg-[#e8edf0]"}`}><SiSteam size={16} className={isDark ? "text-[#c7d5e0]/20" : "text-[#bbb]"} /></div>
+                        }
                       </div>
                       <div className="overflow-hidden">
-                        <p className="text-[10px] font-semibold truncate text-[#c7d5e0]">{game.name}</p>
-                        <p className="text-[9px] text-[#c7d5e0]/40">{game.hoursPlayed}h</p>
+                        <p className={`text-[10px] font-semibold truncate ${isDark ? "text-[#c7d5e0]" : "text-[#333]"}`}>{game.name}</p>
+                        <p className={`text-[9px] ${isDark ? "text-[#c7d5e0]/40" : "text-[#bbb]"}`}>{game.hoursPlayed}h</p>
                       </div>
                     </div>
                   ))}
