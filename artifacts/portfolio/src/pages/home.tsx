@@ -104,131 +104,75 @@ function GitHubGrid({ seed, inView }: { seed: number; inView: boolean }) {
   );
 }
 
-/* ─── Fitness rings ────────────────────────────────── */
-function ActivityRings({ move = 75, exercise = 55, stand = 80, inView }: {
-  move?: number; exercise?: number; stand?: number; inView: boolean;
-}) {
-  const ring = (r: number, color: string, pct: number, delay: number) => {
-    const circ = 2 * Math.PI * r;
-    const target = circ * (1 - pct / 100);
-    return (
-      <>
-        <circle cx={60} cy={60} r={r} fill="none" stroke="#f0f0f0" strokeWidth={9} />
-        <circle
-          cx={60} cy={60} r={r} fill="none" stroke={color} strokeWidth={9}
-          strokeDasharray={circ}
-          strokeDashoffset={inView ? undefined : circ}
-          strokeLinecap="round"
-          transform="rotate(-90 60 60)"
-          className={inView ? "ring-animate" : ""}
-          style={{
-            "--ring-circ": circ,
-            "--ring-target": target,
-            "--ring-delay": `${delay}s`,
-            strokeDashoffset: inView ? target : circ,
-          } as React.CSSProperties}
-        />
-      </>
-    );
-  };
-  return (
-    <svg viewBox="0 0 120 120" className="w-[88px] h-[88px]">
-      {ring(52, "#ff3b30", move, 0)}
-      {ring(38, "#30d158", exercise, 0.2)}
-      {ring(24, "#0a84ff", stand, 0.4)}
-    </svg>
-  );
-}
 
-/* ─── Polaroid Stack ──────────────────────────────── */
+/* ─── Photo Card ──────────────────────────────────── */
 const POLAROID_PHOTOS = [
-  "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&auto=format&fit=crop&q=80",
-  "https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?w=400&auto=format&fit=crop&q=80",
-  "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=400&auto=format&fit=crop&q=80",
-  "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&auto=format&fit=crop&q=80",
-  "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&auto=format&fit=crop&q=80",
+  "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&auto=format&fit=crop&q=80",
+  "https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?w=600&auto=format&fit=crop&q=80",
+  "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=600&auto=format&fit=crop&q=80",
+  "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=600&auto=format&fit=crop&q=80",
+  "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=600&auto=format&fit=crop&q=80",
 ];
 const POLAROID_CAPTIONS = ["summer '23", "buenos aires", "coffee run", "studio day", "road trip"];
 
-/* stack resting positions for each card in the pile */
-const STACK_TRANSFORMS = [
-  { y: 0,   scale: 1,    rotate:  0,   zIndex: 30 },
-  { y: 6,   scale: 0.97, rotate:  3,   zIndex: 20 },
-  { y: 11,  scale: 0.94, rotate: -2.5, zIndex: 10 },
-];
-
-/* Polaroid card dimensions */
-const PHOTO_W = 178;
-const PHOTO_H = 168;
-const POLAROID_PAD = 9;
-const POLAROID_BOTTOM = 34;
-
 function PolaroidStack() {
   const [current, setCurrent] = useState(0);
-  const [leaving, setLeaving] = useState(false);
   const n = POLAROID_PHOTOS.length;
 
   useEffect(() => {
-    const id = setInterval(() => {
-      setLeaving(true);
-      setTimeout(() => {
-        setCurrent(c => (c + 1) % n);
-        setLeaving(false);
-      }, 420);
-    }, 3400);
+    const id = setInterval(() => setCurrent(c => (c + 1) % n), 3600);
     return () => clearInterval(id);
   }, [n]);
 
-  const cards = [0, 1, 2].map(offset => ({
-    src:      POLAROID_PHOTOS[(current + offset) % n],
-    caption:  POLAROID_CAPTIONS[(current + offset) % n],
-    stackIdx: leaving ? Math.max(offset - 1, 0) : offset,
-    key:      (current + offset) % n,
-    isExiting: offset === 0 && leaving,
-  }));
-
-  const cardW = POLAROID_PAD * 2 + PHOTO_W;
-  const cardH = POLAROID_PAD + PHOTO_H + POLAROID_BOTTOM;
-
   return (
-    <div className="relative" style={{ width: cardW, height: cardH }}>
-      {[...cards].reverse().map(({ src, caption, stackIdx, key, isExiting }) => {
-        const t = STACK_TRANSFORMS[stackIdx];
-        return (
-          <motion.div
-            key={key}
-            className="absolute inset-0 bg-white"
-            style={{
-              width: cardW,
-              height: cardH,
-              boxShadow: "0 4px 16px rgba(0,0,0,0.18), 0 1px 4px rgba(0,0,0,0.10)",
-              transformOrigin: "bottom center",
-            }}
-            animate={isExiting
-              ? { x: "-130%", rotate: -16, zIndex: t.zIndex }
-              : { x: 0, y: t.y, scale: t.scale, rotate: t.rotate, zIndex: t.zIndex }
-            }
-            transition={isExiting
-              ? { duration: 0.38, ease: [0.4, 0.0, 0.6, 1] }
-              : { type: "spring", stiffness: 300, damping: 28 }
-            }
+    <div className="w-full h-full flex flex-col" style={{ padding: 10, background: "white" }}>
+      {/* photo area fills available space */}
+      <div className="flex-1 relative overflow-hidden">
+        <AnimatePresence mode="wait">
+          <motion.img
+            key={current}
+            src={POLAROID_PHOTOS[current]}
+            alt={POLAROID_CAPTIONS[current]}
+            draggable={false}
+            className="absolute inset-0 w-full h-full object-cover"
+            initial={{ opacity: 0, scale: 1.04 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.97 }}
+            transition={{ duration: 0.5, ease: "easeInOut" }}
+          />
+        </AnimatePresence>
+      </div>
+      {/* caption strip */}
+      <div className="h-8 flex items-center justify-center shrink-0">
+        <AnimatePresence mode="wait">
+          <motion.p
+            key={current}
+            className="text-[11px] text-[#888] tracking-wide"
+            style={{ fontFamily: "Georgia, serif", fontStyle: "italic" }}
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }}
+            transition={{ duration: 0.3 }}
           >
-            {/* photo */}
-            <div style={{ margin: POLAROID_PAD, width: PHOTO_W, height: PHOTO_H, overflow: "hidden" }}>
-              <img src={src} alt="" draggable={false} className="w-full h-full object-cover" />
-            </div>
-            {/* caption inside polaroid */}
-            <div className="flex items-center justify-center" style={{ height: POLAROID_BOTTOM }}>
-              <p
-                className="text-[10px] text-[#888] tracking-wide"
-                style={{ fontFamily: "Georgia, serif", fontStyle: "italic" }}
-              >
-                {caption}
-              </p>
-            </div>
-          </motion.div>
-        );
-      })}
+            {POLAROID_CAPTIONS[current]}
+          </motion.p>
+        </AnimatePresence>
+      </div>
+      {/* dot indicators */}
+      <div className="flex items-center justify-center gap-1 pb-1 shrink-0">
+        {Array.from({ length: n }).map((_, i) => (
+          <button
+            key={i}
+            onClick={() => setCurrent(i)}
+            className="rounded-full transition-all"
+            style={{
+              width: i === current ? 14 : 5,
+              height: 5,
+              backgroundColor: i === current ? "#bbb" : "#ddd",
+            }}
+          />
+        ))}
+      </div>
     </div>
   );
 }
@@ -261,19 +205,16 @@ export default function Home() {
   const [weatherFlipped, setWeatherFlipped] = useState(false);
 
   /* inView refs for scroll-triggered animations */
-  const githubRef   = useRef<HTMLDivElement>(null);
-  const fitnessRef  = useRef<HTMLDivElement>(null);
-  const workoutRef  = useRef<HTMLDivElement>(null);
+  const githubRef  = useRef<HTMLDivElement>(null);
+  const workoutRef = useRef<HTMLDivElement>(null);
 
   const githubInView  = useInView(githubRef,  { once: true, margin: "-50px" });
-  const fitnessInView = useInView(fitnessRef, { once: true, margin: "-50px" });
   const workoutInView = useInView(workoutRef, { once: true, margin: "-50px" });
 
   /* Animated counters */
-  const animDuration  = useCounter(workout?.duration    ?? 68,   workoutInView);
-  const animVolume    = useCounter(workout?.totalVolume  ?? 8420, workoutInView, 1.4);
-  const animExercises = useCounter(workout?.exercises?.length ?? 5, workoutInView, 0.8);
-  const animCommits   = useCounter(stats?.totalCommitsThisYear ?? 847, githubInView);
+  const animDuration = useCounter(workout?.duration    ?? 68,   workoutInView);
+  const animVolume   = useCounter(workout?.totalVolume  ?? 8420, workoutInView, 1.4);
+  const animCommits  = useCounter(stats?.totalCommitsThisYear ?? 847, githubInView);
   const animStreak    = useCounter(stats?.currentStreak ?? 12, githubInView, 0.9);
   const animRepos     = useCounter(stats?.githubRepos ?? 42, githubInView, 1.0);
 
@@ -380,10 +321,9 @@ export default function Home() {
             </ul>
           </motion.div>
 
-          {/* Polaroid Photos */}
+          {/* Photos */}
           <motion.div custom={2} variants={fadeUp} initial="hidden" animate="show"
-            className="rounded-2xl border border-[#ebebeb] flex items-center justify-center flex-1 min-h-[200px]"
-            style={{ background: "#f0ede8", overflow: "hidden" }}>
+            className="rounded-2xl border border-[#ebebeb] flex-1 min-h-[200px] overflow-hidden">
             <PolaroidStack />
           </motion.div>
 
@@ -496,71 +436,83 @@ export default function Home() {
               </div>
             </BentoCard>
 
-            {/* LAST WORKOUT — 1×2 (visual redesign, rings included) */}
+            {/* LAST WORKOUT — 1×2 */}
             <BentoCard
               className="col-span-1 row-span-2 rounded-2xl overflow-hidden flex flex-col"
-              style={{ background: "linear-gradient(160deg, #1a1a1a 0%, #111 100%)" }}
+              style={{ background: "linear-gradient(160deg, #181818 0%, #0f0f0f 100%)" }}
             >
-              <div ref={workoutRef} className="p-4 h-full flex flex-col">
-                <motion.div custom={6} variants={fadeUp} initial="hidden" animate="show" className="flex flex-col h-full">
+              <div ref={workoutRef} className="p-3.5 h-full flex flex-col gap-2.5">
+                <motion.div custom={6} variants={fadeUp} initial="hidden" animate="show" className="flex flex-col h-full gap-2.5">
+
                   {/* header */}
-                  <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center justify-between">
                     <p className="text-[9px] font-bold uppercase tracking-widest text-white/30 flex items-center gap-1.5">
                       <Dumbbell size={9} className="text-white/40" />Last Workout
                     </p>
-                    <span className="text-[9px] text-white/20 bg-white/5 px-2 py-0.5 rounded-full border border-white/10">
-                      {workout?.type?.split(" ")[0] ?? "Push"}
+                    <span className="text-[8px] text-white/30 bg-white/5 px-1.5 py-0.5 rounded-full border border-white/8">
+                      {workout?.type?.split("(")[0]?.trim() ?? "Push"}
                     </span>
                   </div>
 
-                  {/* workout name */}
-                  <p className="text-white/70 text-[11px] font-semibold truncate mb-3 leading-tight">
-                    {workout?.type ?? "Push · Chest / Shoulders / Triceps"}
-                  </p>
-
-                  {/* activity rings */}
-                  <div ref={fitnessRef} className="flex items-center justify-center py-2">
-                    <ActivityRings
-                      inView={fitnessInView}
-                      move={Math.min(((workout?.weeklyStats?.workoutsThisWeek ?? 4) / 5) * 100, 100)}
-                      exercise={Math.min(((workout?.duration ?? 55) / 90) * 100, 100)}
-                      stand={Math.min(((workout?.weeklyStats?.streak ?? 6) / 7) * 100, 100)}
-                    />
+                  {/* top stats row */}
+                  <div className="grid grid-cols-2 gap-1.5">
+                    <div className="bg-white/5 border border-white/5 rounded-xl p-2">
+                      <p className="text-white font-black tabular-nums text-[18px] leading-none">
+                        {workoutInView ? animVolume.toLocaleString() : "0"}
+                        <span className="text-[9px] text-white/30 font-normal ml-0.5">kg</span>
+                      </p>
+                      <p className="text-[8px] text-white/25 uppercase tracking-wider mt-1">total volume</p>
+                    </div>
+                    <div className="bg-white/5 border border-white/5 rounded-xl p-2">
+                      <p className="text-white font-black tabular-nums text-[18px] leading-none">
+                        {workout?.weeklyStats?.streak ?? 12}
+                        <span className="text-[9px] text-white/30 font-normal ml-0.5">days</span>
+                      </p>
+                      <p className="text-[8px] text-white/25 uppercase tracking-wider mt-1">streak 🔥</p>
+                    </div>
                   </div>
 
-                  {/* ring legend */}
-                  <div className="space-y-1 mb-3">
-                    {[
-                      { color: "#ff3b30", label: `${workout?.weeklyStats?.workoutsThisWeek ?? 4}× this week` },
-                      { color: "#30d158", label: `${workout?.duration ?? 68} min avg` },
-                      { color: "#0a84ff", label: `${workout?.weeklyStats?.streak ?? 12} day streak` },
-                    ].map((r, i) => (
-                      <div key={i} className="flex items-center gap-2 text-[10px] text-white/40">
-                        <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: r.color }} />
-                        {r.label}
-                      </div>
-                    ))}
+                  {/* sub stats */}
+                  <div className="flex gap-3 px-0.5">
+                    <span className="text-[10px] text-white/30">
+                      <span className="text-white/60 font-semibold">{workoutInView ? animDuration : 0}</span> min
+                    </span>
+                    <span className="text-white/15">·</span>
+                    <span className="text-[10px] text-white/30">
+                      <span className="text-white/60 font-semibold">{workout?.weeklyStats?.workoutsThisWeek ?? 4}×</span> this week
+                    </span>
                   </div>
 
                   {/* divider */}
-                  <div className="border-t border-white/8 mb-3" />
+                  <div className="border-t border-white/6" />
 
-                  {/* big stats */}
-                  <div className="grid grid-cols-3 gap-1.5 flex-1 items-end">
-                    {[
-                      { val: workoutInView ? animDuration : 0, unit: "min", label: "Duration" },
-                      { val: workoutInView ? animVolume.toLocaleString() : "0", unit: "kg", label: "Volume" },
-                      { val: workoutInView ? animExercises : 0, unit: "ex", label: "Exercises" },
-                    ].map((s, i) => (
-                      <div key={i} className="bg-white/5 rounded-xl p-2 border border-white/5 text-center">
-                        <div className="flex items-end justify-center gap-0.5">
-                          <span className="text-[18px] font-black tabular-nums text-white leading-none">{s.val}</span>
-                          <span className="text-[9px] text-white/30 mb-0.5">{s.unit}</span>
+                  {/* exercise list */}
+                  <div className="flex flex-col justify-between flex-1 min-h-0">
+                    {(workout?.exercises ?? [
+                      { name: "Bench Press",          sets: 4, reps: 8,  weight: 100 },
+                      { name: "Incline DB Press",     sets: 3, reps: 10, weight: 36  },
+                      { name: "Overhead Press",       sets: 4, reps: 8,  weight: 70  },
+                      { name: "Lateral Raises",       sets: 3, reps: 15, weight: 14  },
+                      { name: "Tricep Pushdown",      sets: 3, reps: 12, weight: 40  },
+                    ]).map((ex, i) => (
+                      <motion.div
+                        key={ex.name}
+                        initial={{ opacity: 0, x: -8 }}
+                        animate={workoutInView ? { opacity: 1, x: 0 } : {}}
+                        transition={{ delay: 0.15 + i * 0.06, duration: 0.32 }}
+                        className="flex items-center justify-between gap-2 py-0.5"
+                      >
+                        <p className="text-[10px] text-white/55 font-medium truncate flex-1">{ex.name}</p>
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          <span className="text-[9px] text-white/25">{ex.sets}×{ex.reps}</span>
+                          <span className="text-[9px] font-semibold text-white/45 bg-white/5 px-1.5 py-0.5 rounded-md">
+                            {ex.weight}kg
+                          </span>
                         </div>
-                        <p className="text-[8px] text-white/25 uppercase tracking-wider mt-0.5">{s.label}</p>
-                      </div>
+                      </motion.div>
                     ))}
                   </div>
+
                 </motion.div>
               </div>
             </BentoCard>
