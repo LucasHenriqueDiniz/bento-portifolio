@@ -254,6 +254,7 @@ export default function Home() {
   const [malPage,    setMalPage]    = useState(0);
   const [malHover,   setMalHover]   = useState<string | null>(null);
   const [steamIdx,   setSteamIdx]   = useState(0);
+  const [projIdx,    setProjIdx]    = useState(0);
 
   useEffect(() => {
     const t = setInterval(() => setMalPage(p => (p + 1) % 2), 4500);
@@ -266,6 +267,11 @@ export default function Home() {
     const t = setInterval(() => setSteamIdx(i => (i + 1) % games.length), 4000);
     return () => clearInterval(t);
   }, [steam?.recentGames?.length]);
+
+  useEffect(() => {
+    const t = setInterval(() => setProjIdx(i => (i + 1) % 4), 4000);
+    return () => clearInterval(t);
+  }, []);
 
 
   /* Wakatime mock data */
@@ -292,8 +298,16 @@ export default function Home() {
       wip: true,
     },
     {
+      name: "pingo-api",
+      description: "REST + WebSocket backend for the concursos platform",
+      stars: 24,
+      language: "Go",
+      color: "#00add8",
+      url: "#",
+    },
+    {
       name: "animelist-tracker",
-      description: "MAL API wrapper with caching & webhooks",
+      description: "MAL API wrapper with caching & webhook support",
       stars: 18,
       language: "Go",
       color: "#00add8",
@@ -301,7 +315,7 @@ export default function Home() {
     },
     {
       name: "workout-logger",
-      description: "Lyfta integration & progression analytics",
+      description: "Lyfta integration with progression analytics",
       stars: 7,
       language: "TypeScript",
       color: "#3178c6",
@@ -461,57 +475,51 @@ export default function Home() {
               className={`${CARD} overflow-hidden`}
               style={{ gridColumn: "3", gridRow: "7 / 9" }}
             >
-              <motion.div custom={3} variants={fadeUp} initial="hidden" animate="show" className="p-4 h-full flex flex-col justify-between gap-3">
+              <motion.div custom={3} variants={fadeUp} initial="hidden" animate="show" className="p-3.5 h-full flex flex-col gap-0">
 
                 {/* header */}
-                <div className="flex items-center gap-2">
-                  <span className="relative flex h-2 w-2 shrink-0">
+                <div className="flex items-center gap-1.5 mb-3">
+                  <span className="relative flex h-1.5 w-1.5 shrink-0">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-60" style={{ backgroundColor: ACCENT }} />
-                    <span className="relative inline-flex h-2 w-2 rounded-full" style={{ backgroundColor: ACCENT }} />
+                    <span className="relative inline-flex h-1.5 w-1.5 rounded-full" style={{ backgroundColor: ACCENT }} />
                   </span>
-                  <p className={LABEL}>Currently Building</p>
+                  <p className={LABEL}>Building</p>
                 </div>
 
-                {/* main content */}
-                <div className="flex flex-col flex-1 justify-center gap-5 py-1">
+                {/* project name + description */}
+                <div className="flex-1 flex flex-col justify-between">
                   <div>
-                    <p className="text-[24px] font-black text-[#111] dark:text-[#eee] leading-tight tracking-tight">
+                    <p className="text-[17px] font-black text-[#111] dark:text-[#eee] leading-tight tracking-tight">
                       Pingo Concursos App
                     </p>
-                    <p className="text-[12px] text-[#999] dark:text-[#555] mt-1.5 leading-snug">
-                      A mobile platform for Brazilian public exam prep — built for scale.
+                    <p className="text-[10px] text-[#999] dark:text-[#555] mt-2 leading-relaxed">
+                      Mobile exam prep for Brazilian concursos — built for scale.
                     </p>
                   </div>
 
-                  <div className="flex flex-col gap-2">
+                  {/* bullets */}
+                  <div className={`flex flex-col gap-1.5 py-3 border-t border-b ${isDark ? "border-white/[0.06]" : "border-[#ebebeb]"}`}>
                     {[
-                      { text: "scalable question system", done: true },
-                      { text: "Supabase + Expo + React Native", done: true },
-                      { text: "offline-first + real-time sync", done: false },
+                      { text: "question system", done: true },
+                      { text: "Supabase + Expo", done: true },
+                      { text: "offline sync", done: false },
                     ].map((item, i) => (
-                      <div key={i} className="flex items-center gap-2.5">
-                        <span className="text-[13px] font-bold shrink-0 leading-none" style={{ color: ACCENT }}>→</span>
-                        <p className={`text-[12px] leading-snug ${item.done ? "text-[#555] dark:text-[#999]" : "text-[#aaa] dark:text-[#555]"}`}>
+                      <div key={i} className="flex items-start gap-1.5">
+                        <span className="text-[11px] font-bold shrink-0 leading-snug" style={{ color: item.done ? ACCENT : "#ccc" }}>→</span>
+                        <p className={`text-[10px] leading-snug ${item.done ? "text-[#555] dark:text-[#888]" : "text-[#bbb] dark:text-[#444]"}`}>
                           {item.text}
                         </p>
                       </div>
                     ))}
                   </div>
-                </div>
 
-                {/* tech badges */}
-                <div className="flex items-center gap-1.5 flex-wrap">
-                  {[
-                    { icon: <SiSupabase size={10} />, label: "Supabase", color: "#3ecf8e" },
-                    { icon: <SiExpo size={10} />, label: "Expo", color: isDark ? "#eee" : "#111" },
-                    { icon: <SiReact size={10} />, label: "React Native", color: "#61dafb" },
-                    { icon: <SiTypescript size={10} />, label: "TypeScript", color: "#3178c6" },
-                  ].map((t) => (
-                    <span key={t.label} className="flex items-center gap-1.5 px-2 py-1 rounded-lg text-[10px] font-medium bg-[#f5f5f5] dark:bg-[#1e1e1e] border border-[#ebebeb] dark:border-[#282828]">
-                      <span style={{ color: t.color }}>{t.icon}</span>
-                      <span className="text-[#555] dark:text-[#888]">{t.label}</span>
-                    </span>
-                  ))}
+                  {/* tech icons — icon only */}
+                  <div className="flex items-center gap-2.5 pt-2.5">
+                    <SiSupabase size={12} style={{ color: "#3ecf8e" }} />
+                    <SiExpo size={12} style={{ color: isDark ? "#bbb" : "#555" }} />
+                    <SiReact size={12} style={{ color: "#61dafb" }} />
+                    <SiTypescript size={12} style={{ color: "#3178c6" }} />
+                  </div>
                 </div>
 
               </motion.div>
@@ -941,40 +949,100 @@ export default function Home() {
               style={{ gridColumn: "2 / 4", gridRow: "1 / 3" }}
               onClick={() => navigate("/projects")}
             >
-              <motion.div custom={12} variants={fadeUp} initial="hidden" animate="show" className="p-5 h-full flex flex-col justify-between">
+              <motion.div custom={12} variants={fadeUp} initial="hidden" animate="show" className="p-5 h-full flex flex-col gap-4">
 
                 {/* header */}
-                <div className="flex items-start justify-between">
+                <div className="flex items-center justify-between shrink-0">
                   <p className={`${LABEL} flex items-center gap-1.5`}><SiGithub size={9} />Projects</p>
-                  <FiArrowUpRight size={14} className="text-[#ccc] dark:text-[#444] group-hover:text-[#999] dark:group-hover:text-[#666] transition-colors mt-0.5" />
+                  <FiArrowUpRight size={13} className="text-[#ccc] dark:text-[#444] group-hover:text-[#999] dark:group-hover:text-[#666] transition-colors" />
                 </div>
 
-                {/* center stats */}
-                <div className="flex flex-col gap-5 flex-1 justify-center">
-                  <div className="flex gap-6">
+                {/* cycling project card */}
+                <div className={`flex-1 min-h-0 relative rounded-xl border overflow-hidden ${isDark ? "border-white/[0.07] bg-white/[0.03]" : "border-[#ebebeb] bg-[#fafafa]"}`}>
+                  <AnimatePresence mode="wait">
+                    {(() => {
+                      const p = projects[projIdx];
+                      return (
+                        <motion.div
+                          key={projIdx}
+                          initial={{ opacity: 0, y: 8 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -8 }}
+                          transition={{ duration: 0.35, ease: "easeInOut" }}
+                          className="absolute inset-0 p-4 flex flex-col justify-between"
+                        >
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1 min-w-0 pr-3">
+                              <div className="flex items-center gap-2 mb-1.5">
+                                {p.wip && (
+                                  <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full" style={{ backgroundColor: `${ACCENT}18`, color: ACCENT }}>WIP</span>
+                                )}
+                                <h3 className="text-[15px] font-bold text-[#111] dark:text-[#eee] truncate">{p.name}</h3>
+                              </div>
+                              <p className="text-[11px] text-[#999] dark:text-[#555] leading-snug">{p.description}</p>
+                            </div>
+                            <a
+                              href={p.url}
+                              onClick={e => e.stopPropagation()}
+                              className="shrink-0 p-1.5 rounded-lg transition-colors"
+                              style={{ color: "#bbb" }}
+                            >
+                              <FiArrowUpRight size={12} />
+                            </a>
+                          </div>
+
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-1.5">
+                              <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: p.color }} />
+                              <span className="text-[10px] text-[#999] dark:text-[#555]">{p.language}</span>
+                            </div>
+                            <div className="flex items-center gap-1 text-[#bbb] dark:text-[#444]">
+                              <svg width="10" height="10" viewBox="0 0 16 16" fill="currentColor"><path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.75.75 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z"/></svg>
+                              <span className="text-[10px]">{p.stars}</span>
+                            </div>
+                          </div>
+                        </motion.div>
+                      );
+                    })()}
+                  </AnimatePresence>
+
+                  {/* pagination dots */}
+                  <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1">
+                    {projects.map((_, i) => (
+                      <button
+                        key={i}
+                        onClick={e => { e.stopPropagation(); setProjIdx(i); }}
+                        className="rounded-full transition-all duration-300"
+                        style={{
+                          width: i === projIdx ? 14 : 5,
+                          height: 5,
+                          backgroundColor: i === projIdx ? ACCENT : (isDark ? "#333" : "#ddd"),
+                        }}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                {/* bottom stats + cta */}
+                <div className="flex items-end justify-between shrink-0">
+                  <div className="flex gap-5">
                     <div>
-                      <p className="text-[36px] font-black text-[#111] dark:text-[#eee] leading-none tabular-nums">
+                      <p className="text-[22px] font-black text-[#111] dark:text-[#eee] leading-none tabular-nums">
                         <CountUp to={stats?.githubRepos ?? 28} duration={1.0} />
                       </p>
-                      <p className="text-[11px] text-[#bbb] dark:text-[#555] mt-1">repos</p>
+                      <p className="text-[10px] text-[#bbb] dark:text-[#555] mt-0.5">repos</p>
                     </div>
-                    <div className={`border-l ${isDark ? "border-white/10" : "border-[#ebebeb]"} pl-6`}>
-                      <p className="text-[36px] font-black leading-none tabular-nums" style={{ color: ACCENT }}>
+                    <div className={`border-l ${isDark ? "border-white/10" : "border-[#ebebeb]"} pl-5`}>
+                      <p className="text-[22px] font-black leading-none tabular-nums" style={{ color: ACCENT }}>
                         <CountUp to={totalStars} duration={1.2} />
                       </p>
-                      <p className="text-[11px] text-[#bbb] dark:text-[#555] mt-1">total stars</p>
+                      <p className="text-[10px] text-[#bbb] dark:text-[#555] mt-0.5">stars</p>
                     </div>
                   </div>
-
-                  <p className="text-[13px] text-[#999] dark:text-[#555] leading-snug max-w-[240px]">
-                    Open-source tools, side projects, and experiments. All on GitHub.
-                  </p>
-                </div>
-
-                {/* cta */}
-                <div className="flex items-center gap-2">
-                  <span className="text-[12px] font-semibold" style={{ color: ACCENT }}>View all projects</span>
-                  <FiArrowUpRight size={12} style={{ color: ACCENT }} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[11px] font-semibold" style={{ color: ACCENT }}>View all</span>
+                    <FiArrowUpRight size={11} style={{ color: ACCENT }} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                  </div>
                 </div>
 
               </motion.div>
