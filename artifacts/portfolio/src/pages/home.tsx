@@ -712,10 +712,10 @@ export default function Home() {
               </motion.div>
             </BentoCard>
 
-            {/* DISCORD — col4, rows3-7 (extended) */}
+            {/* DISCORD — col4, rows3-6 */}
             <BentoCard
               className="rounded-2xl overflow-hidden"
-              style={{ backgroundColor: isDark ? "#1e1f22" : "#f5f6ff", border: isDark ? "1px solid #2b2d31" : "1px solid #e3e4f0", gridColumn: "4", gridRow: "3 / 7" }}
+              style={{ backgroundColor: isDark ? "#1e1f22" : "#f5f6ff", border: isDark ? "1px solid #2b2d31" : "1px solid #e3e4f0", gridColumn: "4", gridRow: "3 / 6" }}
             >
               <motion.div custom={8} variants={fadeUp} initial="hidden" animate="show" className="p-3.5 h-full flex flex-col gap-3">
 
@@ -769,6 +769,46 @@ export default function Home() {
                   )}
                 </div>
 
+              </motion.div>
+            </BentoCard>
+
+            {/* CV CTA — col4, row6 */}
+            <BentoCard
+              className="rounded-2xl overflow-hidden cursor-pointer group"
+              style={{ gridColumn: "4", gridRow: "6 / 7" }}
+              onClick={() => navigate("/cv")}
+            >
+              <motion.div
+                custom={8.5}
+                variants={fadeUp}
+                initial="hidden"
+                animate="show"
+                className="relative h-full flex items-center justify-between px-4 overflow-hidden"
+                style={{
+                  background: isDark
+                    ? `linear-gradient(135deg, ${ACCENT}22 0%, transparent 70%), #111`
+                    : `linear-gradient(135deg, ${ACCENT}14 0%, transparent 70%), #f8f9fb`,
+                  border: `1px solid ${ACCENT}28`,
+                  borderRadius: 16,
+                }}
+              >
+                {/* decorative blob */}
+                <div
+                  className="absolute -right-6 -top-6 w-20 h-20 rounded-full blur-2xl pointer-events-none"
+                  style={{ backgroundColor: ACCENT, opacity: 0.15 }}
+                />
+
+                <div className="relative z-10">
+                  <p className="text-[10px] font-bold uppercase tracking-widest mb-0.5" style={{ color: ACCENT, opacity: 0.7 }}>Résumé</p>
+                  <p className="text-[14px] font-black text-[#111] dark:text-[#eee] leading-none">View CV</p>
+                </div>
+
+                <div
+                  className="relative z-10 w-8 h-8 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform shrink-0"
+                  style={{ backgroundColor: ACCENT }}
+                >
+                  <FiArrowUpRight size={14} className="text-white" />
+                </div>
               </motion.div>
             </BentoCard>
 
