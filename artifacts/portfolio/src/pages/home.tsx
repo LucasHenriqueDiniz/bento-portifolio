@@ -506,16 +506,16 @@ export default function Home() {
                   <div className="flex-1 flex items-center justify-center">
                     <ActivityRings
                       inView={fitnessInView}
-                      move={workout ? Math.min((workout.weeklyStats.workoutsThisWeek / 5) * 100, 100) : 75}
-                      exercise={workout ? Math.min((workout.duration / 90) * 100, 100) : 55}
-                      stand={workout ? Math.min((workout.weeklyStats.streak / 7) * 100, 100) : 80}
+                      move={Math.min(((workout?.weeklyStats?.workoutsThisWeek ?? 4) / 5) * 100, 100)}
+                      exercise={Math.min(((workout?.duration ?? 55) / 90) * 100, 100)}
+                      stand={Math.min(((workout?.weeklyStats?.streak ?? 6) / 7) * 100, 100)}
                     />
                   </div>
                   <div className="space-y-1.5">
                     {[
-                      { color: "#ff3b30", label: `${workout?.weeklyStats.workoutsThisWeek ?? 4}x this week`, },
+                      { color: "#ff3b30", label: `${workout?.weeklyStats?.workoutsThisWeek ?? 4}x this week`, },
                       { color: "#30d158", label: `${workout?.duration ?? 68} min avg`, },
-                      { color: "#0a84ff", label: `${workout?.weeklyStats.streak ?? 12} day streak`, },
+                      { color: "#0a84ff", label: `${workout?.weeklyStats?.streak ?? 12} day streak`, },
                     ].map((r, i) => (
                       <div key={i} className="flex items-center gap-2 text-[11px] text-[#777]">
                         <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: r.color }} />{r.label}
@@ -786,7 +786,7 @@ export default function Home() {
           <motion.div custom={3} variants={fadeUp} initial="hidden" animate="show" className={`${CARD} p-4`}>
             <p className={`${LABEL} mb-3`}>Top Artists</p>
             <div className="space-y-2.5">
-              {topArtists?.slice(0, 4).map((artist, i) => (
+              {(Array.isArray(topArtists) ? topArtists : []).slice(0, 4).map((artist, i) => (
                 <a key={i} href={artist.url} target="_blank" rel="noreferrer"
                   className="flex items-center gap-2 group slide-up" style={{ "--delay": `${i*0.07}s` } as React.CSSProperties}>
                   <span className="text-[10px] text-[#ccc] w-3 shrink-0">{i + 1}</span>
