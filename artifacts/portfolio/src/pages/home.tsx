@@ -158,10 +158,10 @@ const STACK_TRANSFORMS = [
 ];
 
 /* Polaroid card dimensions */
-const PHOTO_W = 148;
-const PHOTO_H = 148;
-const POLAROID_PAD = 8;
-const POLAROID_BOTTOM = 32;
+const PHOTO_W = 178;
+const PHOTO_H = 168;
+const POLAROID_PAD = 9;
+const POLAROID_BOTTOM = 34;
 
 function PolaroidStack() {
   const [current, setCurrent] = useState(0);
@@ -264,12 +264,10 @@ export default function Home() {
   const githubRef   = useRef<HTMLDivElement>(null);
   const fitnessRef  = useRef<HTMLDivElement>(null);
   const workoutRef  = useRef<HTMLDivElement>(null);
-  const langsRef    = useRef<HTMLDivElement>(null);
 
   const githubInView  = useInView(githubRef,  { once: true, margin: "-50px" });
   const fitnessInView = useInView(fitnessRef, { once: true, margin: "-50px" });
   const workoutInView = useInView(workoutRef, { once: true, margin: "-50px" });
-  const langsInView   = useInView(langsRef,   { once: true, margin: "-50px" });
 
   /* Animated counters */
   const animDuration  = useCounter(workout?.duration    ?? 68,   workoutInView);
@@ -384,8 +382,8 @@ export default function Home() {
 
           {/* Polaroid Photos */}
           <motion.div custom={2} variants={fadeUp} initial="hidden" animate="show"
-            className="rounded-2xl border border-[#ebebeb] flex items-center justify-center"
-            style={{ height: 220, background: "#f0ede8", overflow: "hidden" }}>
+            className="rounded-2xl border border-[#ebebeb] flex items-center justify-center flex-1 min-h-[200px]"
+            style={{ background: "#f0ede8", overflow: "hidden" }}>
             <PolaroidStack />
           </motion.div>
 
@@ -498,12 +496,30 @@ export default function Home() {
               </div>
             </BentoCard>
 
-            {/* FITNESS RINGS — 1×2 */}
-            <BentoCard className={`${CARD} p-4 flex flex-col col-span-1 row-span-2`}>
-              <div ref={fitnessRef} className="flex flex-col h-full">
+            {/* LAST WORKOUT — 1×2 (visual redesign, rings included) */}
+            <BentoCard
+              className="col-span-1 row-span-2 rounded-2xl overflow-hidden flex flex-col"
+              style={{ background: "linear-gradient(160deg, #1a1a1a 0%, #111 100%)" }}
+            >
+              <div ref={workoutRef} className="p-4 h-full flex flex-col">
                 <motion.div custom={6} variants={fadeUp} initial="hidden" animate="show" className="flex flex-col h-full">
-                  <p className={`${LABEL} mb-3 flex items-center gap-1`}><Dumbbell size={9} />Fitness</p>
-                  <div className="flex-1 flex items-center justify-center">
+                  {/* header */}
+                  <div className="flex items-center justify-between mb-3">
+                    <p className="text-[9px] font-bold uppercase tracking-widest text-white/30 flex items-center gap-1.5">
+                      <Dumbbell size={9} className="text-white/40" />Last Workout
+                    </p>
+                    <span className="text-[9px] text-white/20 bg-white/5 px-2 py-0.5 rounded-full border border-white/10">
+                      {workout?.type?.split(" ")[0] ?? "Push"}
+                    </span>
+                  </div>
+
+                  {/* workout name */}
+                  <p className="text-white/70 text-[11px] font-semibold truncate mb-3 leading-tight">
+                    {workout?.type ?? "Push · Chest / Shoulders / Triceps"}
+                  </p>
+
+                  {/* activity rings */}
+                  <div ref={fitnessRef} className="flex items-center justify-center py-2">
                     <ActivityRings
                       inView={fitnessInView}
                       move={Math.min(((workout?.weeklyStats?.workoutsThisWeek ?? 4) / 5) * 100, 100)}
@@ -511,14 +527,37 @@ export default function Home() {
                       stand={Math.min(((workout?.weeklyStats?.streak ?? 6) / 7) * 100, 100)}
                     />
                   </div>
-                  <div className="space-y-1.5">
+
+                  {/* ring legend */}
+                  <div className="space-y-1 mb-3">
                     {[
-                      { color: "#ff3b30", label: `${workout?.weeklyStats?.workoutsThisWeek ?? 4}x this week`, },
-                      { color: "#30d158", label: `${workout?.duration ?? 68} min avg`, },
-                      { color: "#0a84ff", label: `${workout?.weeklyStats?.streak ?? 12} day streak`, },
+                      { color: "#ff3b30", label: `${workout?.weeklyStats?.workoutsThisWeek ?? 4}× this week` },
+                      { color: "#30d158", label: `${workout?.duration ?? 68} min avg` },
+                      { color: "#0a84ff", label: `${workout?.weeklyStats?.streak ?? 12} day streak` },
                     ].map((r, i) => (
-                      <div key={i} className="flex items-center gap-2 text-[11px] text-[#777]">
-                        <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: r.color }} />{r.label}
+                      <div key={i} className="flex items-center gap-2 text-[10px] text-white/40">
+                        <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: r.color }} />
+                        {r.label}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* divider */}
+                  <div className="border-t border-white/8 mb-3" />
+
+                  {/* big stats */}
+                  <div className="grid grid-cols-3 gap-1.5 flex-1 items-end">
+                    {[
+                      { val: workoutInView ? animDuration : 0, unit: "min", label: "Duration" },
+                      { val: workoutInView ? animVolume.toLocaleString() : "0", unit: "kg", label: "Volume" },
+                      { val: workoutInView ? animExercises : 0, unit: "ex", label: "Exercises" },
+                    ].map((s, i) => (
+                      <div key={i} className="bg-white/5 rounded-xl p-2 border border-white/5 text-center">
+                        <div className="flex items-end justify-center gap-0.5">
+                          <span className="text-[18px] font-black tabular-nums text-white leading-none">{s.val}</span>
+                          <span className="text-[9px] text-white/30 mb-0.5">{s.unit}</span>
+                        </div>
+                        <p className="text-[8px] text-white/25 uppercase tracking-wider mt-0.5">{s.label}</p>
                       </div>
                     ))}
                   </div>
@@ -526,103 +565,94 @@ export default function Home() {
               </div>
             </BentoCard>
 
-            {/* LAST WORKOUT — 2×1 */}
-            <BentoCard className={`${CARD} p-4 flex flex-col justify-between col-span-2 row-span-1`}>
-              <div ref={workoutRef} className="flex flex-col h-full justify-between">
-                <motion.div custom={7} variants={fadeUp} initial="hidden" animate="show" className="flex flex-col h-full justify-between">
-                  <p className={LABEL}>Last Workout</p>
-                  <div>
-                    <p className="text-[12px] font-semibold text-[#555] truncate mb-2">{workout?.type ?? "Push (Chest / Shoulders / Triceps)"}</p>
-                    <div className="flex gap-6">
-                      <div>
-                        <span className="text-[22px] font-black tabular-nums">{workoutInView ? animDuration : 0}</span>
-                        <span className="text-[11px] text-[#aaa] ml-1">min</span>
-                      </div>
-                      <div>
-                        <span className="text-[22px] font-black tabular-nums">{workoutInView ? animVolume.toLocaleString() : "0"}</span>
-                        <span className="text-[11px] text-[#aaa] ml-1">kg</span>
-                      </div>
-                      <div>
-                        <span className="text-[22px] font-black tabular-nums">{workoutInView ? animExercises : 0}</span>
-                        <span className="text-[11px] text-[#aaa] ml-1">exercises</span>
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-              </div>
-            </BentoCard>
-
-            {/* DISCORD — 1×2 */}
-            <BentoCard className="col-span-1 row-span-2 rounded-2xl overflow-hidden" style={{ backgroundColor: "#23272a" }}>
-              <motion.div custom={8} variants={fadeUp} initial="hidden" animate="show" className="p-3 h-full flex flex-col gap-3">
-                {/* header */}
-                <div className="flex items-center justify-between">
-                  <span className="text-[9px] font-bold uppercase tracking-widest text-white/30">Discord</span>
-                  <SiDiscord size={13} className="text-[#5865f2]" />
-                </div>
-                {/* avatar */}
-                <div className="flex flex-col items-center gap-2 pt-1">
-                  <div className="relative">
-                    <div className="w-14 h-14 rounded-full overflow-hidden bg-[#36393f] ring-2 ring-white/10">
-                      {discord?.avatarUrl
-                        ? <img src={discord.avatarUrl} alt="avatar" className="w-full h-full object-cover" />
-                        : <SiDiscord size={24} className="m-auto mt-4 text-[#5865f2]/60" />
-                      }
-                    </div>
-                    <span
-                      className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full border-2 border-[#23272a] status-dot"
-                      style={{ backgroundColor: statusColor, color: statusColor }}
-                    />
-                  </div>
-                  <div className="text-center min-w-0 w-full">
-                    <p className="text-white font-bold text-[13px] truncate leading-tight">{discord?.displayName ?? "Your Name"}</p>
-                    <p className="text-white/40 text-[10px] capitalize mt-0.5">{discord?.status ?? "dnd"}</p>
-                  </div>
-                </div>
-                {/* divider */}
-                <div className="border-t border-white/5" />
-                {/* activity */}
-                <div className="flex-1 flex flex-col justify-center gap-2">
-                  <div className="bg-white/5 rounded-lg px-2.5 py-2.5 border border-white/5 space-y-1">
-                    <p className="text-white/30 text-[8px] uppercase tracking-widest">Playing</p>
-                    <p className="text-white/80 text-[11px] font-semibold truncate">{discord?.activity ?? "VS Code"}</p>
-                    {discord?.activityDetail && (
-                      <p className="text-white/30 text-[10px] truncate">{discord.activityDetail}</p>
-                    )}
-                  </div>
-                  {discord?.customStatus && (
-                    <p className="text-white/25 text-[10px] text-center italic truncate">"{discord.customStatus}"</p>
-                  )}
-                </div>
-              </motion.div>
-            </BentoCard>
-
-            {/* WAKATIME — 2×1 */}
-            <BentoCard className={`${CARD} p-4 col-span-2 row-span-1 flex flex-col justify-between`}>
-              <motion.div custom={9} variants={fadeUp} initial="hidden" animate="show" className="flex flex-col h-full justify-between">
-                <div className="flex items-center justify-between">
+            {/* WAKATIME — 2×2 (expanded) */}
+            <BentoCard className={`${CARD} p-4 col-span-2 row-span-2 flex flex-col`}>
+              <motion.div custom={9} variants={fadeUp} initial="hidden" animate="show" className="flex flex-col h-full">
+                {/* header row */}
+                <div className="flex items-start justify-between mb-3">
                   <p className={`${LABEL} flex items-center gap-1.5`}><SiWakatime size={9} />Wakatime</p>
-                  <div className="flex gap-3 text-[11px] text-[#888]">
-                    <span><strong className="text-[#111] font-bold">{waka.today.h}h {waka.today.m}m</strong> today</span>
-                    <span><strong className="text-[#111] font-bold">{waka.week.h}h {waka.week.m}m</strong> this week</span>
+                  <div className="flex gap-3 text-[10px] text-[#888] text-right">
+                    <div>
+                      <p className="font-black text-[#111] text-[16px] leading-none">{waka.today.h}h<span className="text-[12px]">{waka.today.m}m</span></p>
+                      <p className="text-[9px] text-[#bbb] mt-0.5">today</p>
+                    </div>
+                    <div className="w-px bg-[#f0f0f0]" />
+                    <div>
+                      <p className="font-black text-[#111] text-[16px] leading-none">{waka.week.h}h<span className="text-[12px]">{waka.week.m}m</span></p>
+                      <p className="text-[9px] text-[#bbb] mt-0.5">this week</p>
+                    </div>
                   </div>
                 </div>
-                <div className="space-y-1.5">
+
+                {/* language bars — bigger with more breathing room */}
+                <div className="flex flex-col justify-between flex-1">
                   {waka.langs.map((l, i) => (
-                    <div key={l.name} className="flex items-center gap-2">
-                      <span className="text-[10px] text-[#888] w-[72px] shrink-0 truncate">{l.name}</span>
-                      <div className="flex-1 h-1.5 bg-[#f0f0f0] rounded-full overflow-hidden">
+                    <div key={l.name} className="flex flex-col gap-1">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1.5">
+                          <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: l.color }} />
+                          <span className="text-[11px] font-medium text-[#555]">{l.name}</span>
+                        </div>
+                        <span className="text-[11px] text-[#bbb] tabular-nums font-semibold">{l.pct}%</span>
+                      </div>
+                      <div className="h-2 bg-[#f0f0f0] rounded-full overflow-hidden">
                         <motion.div
                           initial={{ width: 0 }}
                           animate={{ width: `${l.pct}%` }}
-                          transition={{ duration: 0.8, delay: i * 0.1, ease: "easeOut" }}
+                          transition={{ duration: 0.9, delay: i * 0.12, ease: "easeOut" }}
                           style={{ backgroundColor: l.color }}
                           className="h-full rounded-full"
                         />
                       </div>
-                      <span className="text-[10px] text-[#aaa] w-6 text-right shrink-0">{l.pct}%</span>
                     </div>
                   ))}
+                </div>
+              </motion.div>
+            </BentoCard>
+
+            {/* DISCORD — 1×2 */}
+            <BentoCard className="col-span-1 row-span-2 rounded-2xl overflow-hidden" style={{ backgroundColor: "#23272a" }}>
+              <motion.div custom={8} variants={fadeUp} initial="hidden" animate="show" className="p-3 h-full flex flex-col">
+                {/* header */}
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-[9px] font-bold uppercase tracking-widest text-white/30">Discord</span>
+                  <SiDiscord size={13} className="text-[#5865f2]" />
+                </div>
+                {/* avatar */}
+                <div className="flex flex-col items-center gap-2">
+                  <div className="relative">
+                    <div className="w-12 h-12 rounded-full overflow-hidden bg-[#36393f] ring-2 ring-white/10">
+                      {discord?.avatarUrl
+                        ? <img src={discord.avatarUrl} alt="avatar" className="w-full h-full object-cover" />
+                        : <SiDiscord size={20} className="m-auto mt-3 text-[#5865f2]/60" />
+                      }
+                    </div>
+                    <span
+                      className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-[#23272a] status-dot"
+                      style={{ backgroundColor: statusColor, color: statusColor }}
+                    />
+                  </div>
+                  <div className="text-center w-full min-w-0">
+                    <p className="text-white font-bold text-[12px] truncate leading-tight">{discord?.displayName ?? "Your Name"}</p>
+                    <p className="text-white/40 text-[10px] capitalize mt-0.5">{discord?.status ?? "dnd"}</p>
+                  </div>
+                </div>
+
+                {/* divider */}
+                <div className="border-t border-white/5 my-2.5" />
+
+                {/* activity */}
+                <div className="flex flex-col gap-2 flex-1 min-h-0">
+                  <div className="bg-white/5 rounded-lg p-2.5 border border-white/5 min-w-0">
+                    <p className="text-white/30 text-[8px] uppercase tracking-widest mb-1">Playing</p>
+                    <p className="text-white/80 text-[10px] font-semibold truncate">{discord?.activity ?? "VS Code"}</p>
+                    {discord?.activityDetail && (
+                      <p className="text-white/30 text-[9px] truncate mt-0.5">{discord.activityDetail}</p>
+                    )}
+                  </div>
+                  {discord?.customStatus && (
+                    <p className="text-white/25 text-[9px] text-center italic truncate px-1">"{discord.customStatus}"</p>
+                  )}
                 </div>
               </motion.div>
             </BentoCard>
@@ -646,12 +676,12 @@ export default function Home() {
               </motion.div>
             </BentoCard>
 
-            {/* GITHUB + LANGUAGES — 2×2 */}
-            <BentoCard className={`${CARD} p-4 col-span-2 row-span-2 flex`}>
-              <div ref={githubRef} className="flex w-full h-full gap-4">
-                <motion.div custom={10} variants={fadeUp} initial="hidden" animate="show" className="flex flex-col flex-1 min-w-0 h-full justify-between">
-                  {/* top row: label + stats */}
-                  <div className="flex items-center gap-4 mb-2">
+            {/* GITHUB — 2×2 */}
+            <BentoCard className={`${CARD} p-4 col-span-2 row-span-2 flex flex-col`}>
+              <div ref={githubRef} className="flex flex-col w-full h-full">
+                <motion.div custom={10} variants={fadeUp} initial="hidden" animate="show" className="flex flex-col h-full">
+                  {/* header: label + stats */}
+                  <div className="flex items-center gap-4 mb-3">
                     <p className={`${LABEL} flex items-center gap-1.5 shrink-0`}><SiGithub size={10} />GitHub</p>
                     <div className="flex gap-4 text-[11px] text-[#aaa]">
                       <span>
@@ -668,52 +698,11 @@ export default function Home() {
                       </span>
                     </div>
                   </div>
-                  {/* contribution grid */}
+                  {/* contribution grid — fills remaining space */}
                   <div className="overflow-hidden flex-1 flex items-end">
                     <GitHubGrid seed={stats?.totalCommitsThisYear ?? 847} inView={githubInView} />
                   </div>
                 </motion.div>
-
-                {/* divider */}
-                <div className="w-px bg-[#f0f0f0] shrink-0 my-1" />
-
-                {/* TOP LANGUAGES side panel */}
-                <div ref={langsRef} className="w-[140px] shrink-0 flex flex-col justify-between">
-                  <motion.div custom={11} variants={fadeUp} initial="hidden" animate="show" className="flex flex-col h-full justify-between">
-                    <p className={`${LABEL} mb-2`}>Top Languages</p>
-                    <div className="space-y-1.5 flex-1">
-                      {(stats?.topLanguages ?? [
-                        { name: "TypeScript", percentage: 52, color: "#3178c6" },
-                        { name: "Go",         percentage: 24, color: "#00add8" },
-                        { name: "Python",     percentage: 14, color: "#3572a5" },
-                        { name: "Other",      percentage: 10, color: "#d1d5db" },
-                      ]).map((l, i) => (
-                        <div key={l.name} className="flex items-center gap-1.5 text-[10px]">
-                          <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: l.color }} />
-                          <span className="text-[#666] font-medium flex-1 truncate">{l.name}</span>
-                          <span className="text-[#bbb] tabular-nums">{l.percentage}%</span>
-                        </div>
-                      ))}
-                    </div>
-                    <div className="h-2 w-full rounded-full overflow-hidden flex mt-2">
-                      {(stats?.topLanguages ?? [
-                        { name: "TypeScript", percentage: 52, color: "#3178c6" },
-                        { name: "Go",         percentage: 24, color: "#00add8" },
-                        { name: "Python",     percentage: 14, color: "#3572a5" },
-                        { name: "Other",      percentage: 10, color: "#d1d5db" },
-                      ]).map((l) => (
-                        <motion.div
-                          key={l.name}
-                          initial={{ width: 0 }}
-                          animate={githubInView ? { width: `${l.percentage}%` } : { width: 0 }}
-                          transition={{ duration: 0.8, ease: "easeOut", delay: 0.3 }}
-                          style={{ backgroundColor: l.color }}
-                          className="h-full"
-                        />
-                      ))}
-                    </div>
-                  </motion.div>
-                </div>
               </div>
             </BentoCard>
 
