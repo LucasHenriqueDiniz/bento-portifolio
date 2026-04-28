@@ -1,0 +1,28 @@
+{
+  "projectName": "portifolio",
+  "environment": {
+    "os": "windows",
+    "shell": "powershell",
+    "packageManager": "pnpm"
+  },
+  "scripts": {
+    "dev": "pnpm dev",
+    "dev:portfolio": "pnpm dev:portfolio",
+    "dev:api": "pnpm dev:api",
+    "build": "pnpm build",
+    "typecheck": "pnpm typecheck",
+    "test": "pnpm --filter @workspace/portfolio test"
+  },
+  "rules": [
+    "rules/architecture-rules.md",
+    "rules/clean-code-rules.md",
+    "rules/testing-rules.md",
+    "rules/workflow-rules.md"
+  ],
+  "skills": [
+    "skills/lint",
+    "skills/pitch",
+    "skills/postmortem",
+    "skills/research"
+  ]
+}
