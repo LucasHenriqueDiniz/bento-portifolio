@@ -23,6 +23,7 @@ export interface AcademicExperience {
     value?: string;
   }[];
   description: string;
+  icon?: string; // lucide-react icon name or logo path
 }
 
 export const academicExperiences: AcademicExperience[] = [
@@ -34,6 +35,7 @@ export const academicExperiences: AcademicExperience[] = [
     startDate: "2023-02",
     endDate: "2025-01",
     showInTimeline: true,
+    icon: "/timeline/uergs.webp",
     topTags: [
       { label: "Academic" },
       { label: "UERGS" },
@@ -44,7 +46,86 @@ export const academicExperiences: AcademicExperience[] = [
       { label: "Microcontrollers" },
       { label: "Assembly" },
     ],
-    description: "Participated in academic projects focused on low-level programming, algorithm development, and embedded systems. Hands-on experience with microcontrollers and AI fundamentals.",
+    description: "Participei de projetos acadêmicos focados em programação de baixo nível, desenvolvimento de algoritmos e sistemas embarcados. Experiência prática com microcontroladores e fundamentos de IA.",
+  },
+  {
+    id: "unicv",
+    title: "Engenharia de Software",
+    institution: "UNICV",
+    url: "https://www.unicv.edu.br/",
+    startDate: "2025-02",
+    endDate: null,
+    showInTimeline: true,
+    icon: "/timeline/unicive.webp",
+    topTags: [
+      { label: "Academic" },
+      { label: "UNICV" },
+    ],
+    tags: [
+      { label: "Software Engineering" },
+      { label: "Web Development" },
+      { label: "Agile Methods" },
+      { label: "Databases" },
+      { label: "Software Architecture" },
+    ],
+    description: "Foco em arquitetura robusta de sistemas, desenvolvimento escalável e implementação de metodologia ágil. Imersão profunda em padrões de design e engenharia de software moderna.",
+  },
+  {
+    id: "belart-estetica",
+    title: "Ensino Técnico, Massoterapia",
+    institution: "Belart Escola de Estética",
+    url: "",
+    startDate: "2021-01",
+    endDate: "2022-12",
+    showInTimeline: false,
+    icon: "GraduationCap",
+    topTags: [
+      { label: "Academic" },
+      { label: "Technical" },
+    ],
+    tags: [
+      { label: "Therapeutic massage" },
+      { label: "Client relations" },
+    ],
+    description: "Treinamento técnico em terapia de massagem focando em técnicas terapêuticas e relação com cliente.",
+  },
+  {
+    id: "jovem-profissional-necropsia",
+    title: "Auxiliar Necropsia",
+    institution: "Escola Técnica e Faculdade Jovem Profissional Porto Alegre",
+    url: "",
+    startDate: "2020-01",
+    endDate: "2022-12",
+    showInTimeline: false,
+    icon: "GraduationCap",
+    topTags: [
+      { label: "Academic" },
+      { label: "Technical" },
+    ],
+    tags: [
+      { label: "Forensics" },
+      { label: "Human anatomy" },
+      { label: "Technical presentations" },
+    ],
+    description: "Treinamento técnico como auxiliar de necropsia com conhecimento em perícia, anatomia humana e apresentações técnicas.",
+  },
+  {
+    id: "uniritter",
+    title: "Medicina Veterinária",
+    institution: "UniRitter",
+    url: "https://www.uniritter.edu.br/",
+    startDate: "2020-02",
+    endDate: "2023-12",
+    showInTimeline: false,
+    icon: "/timeline/uniritter.webp",
+    topTags: [
+      { label: "Academic" },
+      { label: "UniRitter" },
+    ],
+    tags: [
+      { label: "Veterinary" },
+    ],
+    description: "Forte fundação em ciências biológicas e desenvolvimento de habilidades analíticas. Experiência que fortaleceu disciplina, resiliência e pensamento crítico aplicado à resolução de problemas.",
   },
   {
     id: "unicv",
@@ -67,49 +148,29 @@ export const academicExperiences: AcademicExperience[] = [
     ],
     description: "Focus on robust system architecture, scalable development, and agile methodology implementation. Deep dive into design patterns and modern software engineering.",
   },
-  {
-    id: "include-gurias-bolsa",
-    title: "Bolsa de Estudos - Include Gurias",
-    institution: "UERGS",
-    url: "https://www.uergs.edu.br/",
-    startDate: "2023-06",
-    endDate: "2024-01",
-    showInTimeline: true,
-    topTags: [
-      { label: "Scholarship" },
-      { label: "Include Gurias" },
-    ],
-    tags: [
-      { label: "Inclusion" },
-      { label: "Figma" },
-      { label: "Web Development" },
-      { label: "AWS" },
-    ],
-    description: "Architected fullstack institutional platform with custom headless CMS. Implemented authentication system, interactive chatbot, and admin dashboard with full CRUD for educational content and member management.",
-  },
-  {
-    id: "comunica-mulher-bolsa",
-    title: "Bolsa de Estudos - ComunicaMulher",
-    institution: "ComunicaMulher",
-    url: "https://reclame-mulher.vercel.app/",
-    startDate: "2025-08",
-    endDate: null,
-    showInTimeline: true,
-    topTags: [
-      { label: "Scholarship" },
-      { label: "ComunicaMulher" },
-    ],
-    tags: [
-      { label: "Next.js" },
-      { label: "TypeScript" },
-      { label: "Supabase" },
-      { label: "Databases" },
-      { label: "Social Impact" },
-    ],
-    description: "Built complaint management system with complete moderation workflow. Implemented intake pipeline with validation and sanitization, granular Supabase RLS policies, and admin dashboard with advanced filters. Security-focused architecture with auditing.",
-  },
-  {
-    id: "belart-estetica",
+   {
+     id: "unicv",
+     title: "Engenharia de Software",
+     institution: "UNICV",
+     url: "https://www.unicv.edu.br/",
+     startDate: "2025-02",
+     endDate: null,
+     showInTimeline: true,
+     topTags: [
+       { label: "Academic" },
+       { label: "UNICV" },
+     ],
+     tags: [
+       { label: "Software Engineering" },
+       { label: "Web Development" },
+       { label: "Agile Methods" },
+       { label: "Databases" },
+       { label: "Software Architecture" },
+     ],
+     description: "Foco em arquitetura robusta de sistemas, desenvolvimento escalável e implementação de metodologia ágil. Imersão profunda em padrões de design e engenharia de software moderna.",
+   },
+   {
+     id: "belart-estetica",
     title: "Ensino Técnico, Massoterapia",
     institution: "Belart Escola de Estética",
     url: "",

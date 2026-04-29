@@ -1,12 +1,25 @@
 import { Link } from "wouter";
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { FiArrowLeft, FiPrinter, FiGithub, FiTwitter, FiMail, FiExternalLink } from "react-icons/fi";
-import { Moon, Sun } from "lucide-react";
-import { jobExperiences, academicExperiences, projects } from "@/constants";
+import { FiArrowLeft, FiPrinter, FiGithub, FiTwitter, FiMail, FiExternalLink, FiAward, FiBriefcase } from "react-icons/fi";
+import { Moon, Sun, GraduationCap } from "lucide-react";
+import { jobExperiences, academicExperiences, projects, certificates } from "@/constants";
 import { formatDateRange } from "@/lib/dateFormatter";
 
 const ACCENT = "#3d72cc";
+
+const iconMap: Record<string, React.ReactNode> = {
+  "Palette": <FiBriefcase size={16} />,
+  "Warehouse": <FiBriefcase size={16} />,
+  "MessageSquare": <FiBriefcase size={16} />,
+  "GraduationCap": <GraduationCap size={16} />,
+};
+
+const getIcon = (iconName?: string) => {
+  if (!iconName) return null;
+  if (iconName.startsWith("/")) return null; // logo path, not an icon
+  return iconMap[iconName];
+};
 const fadeUp = (delay = 0) => ({
   initial: { opacity: 0, y: 10 },
   animate: { opacity: 1, y: 0 },
@@ -138,16 +151,26 @@ export default function CV() {
           <div className="space-y-6">
             {activeJobs.map((job, i) => (
               <motion.div key={job.id} {...fadeUp(0.12 + i * 0.04)} className="flex gap-4">
-                {/* Logo */}
-                {logoMap[job.institution] && (
-                  <div className="shrink-0 w-12 h-12 rounded-lg overflow-hidden flex items-center justify-center" style={{ backgroundColor: isDark ? "rgb(31, 41, 55)" : "rgb(243, 244, 246)" }}>
+                {/* Logo or Icon */}
+                <div className="shrink-0 w-12 h-12 rounded-lg overflow-hidden flex items-center justify-center" style={{ backgroundColor: isDark ? "rgb(31, 41, 55)" : "rgb(243, 244, 246)" }}>
+                  {logoMap[job.institution] ? (
                     <img
                       src={logoMap[job.institution]}
                       alt={job.institution}
                       className="w-8 h-8 object-contain"
                     />
-                  </div>
-                )}
+                  ) : job.icon && job.icon.startsWith("/") ? (
+                    <img
+                      src={job.icon}
+                      alt={job.institution}
+                      className="w-8 h-8 object-contain"
+                    />
+                  ) : getIcon(job.icon) ? (
+                    <div style={{ color: ACCENT }}>{getIcon(job.icon)}</div>
+                  ) : (
+                    <FiBriefcase size={16} style={{ color: ACCENT }} />
+                  )}
+                </div>
 
                 {/* Content */}
                 <div className="flex-1 min-w-0">
@@ -188,16 +211,26 @@ export default function CV() {
           <div className="space-y-5">
             {activeEducation.map((ed, i) => (
               <motion.div key={ed.id} {...fadeUp(0.20 + i * 0.04)} className="flex gap-4">
-                {/* Logo */}
-                {logoMap[ed.institution] && (
-                  <div className="shrink-0 w-12 h-12 rounded-lg overflow-hidden flex items-center justify-center" style={{ backgroundColor: isDark ? "rgb(31, 41, 55)" : "rgb(243, 244, 246)" }}>
+                {/* Logo or Icon */}
+                <div className="shrink-0 w-12 h-12 rounded-lg overflow-hidden flex items-center justify-center" style={{ backgroundColor: isDark ? "rgb(31, 41, 55)" : "rgb(243, 244, 246)" }}>
+                  {logoMap[ed.institution] ? (
                     <img
                       src={logoMap[ed.institution]}
                       alt={ed.institution}
                       className="w-8 h-8 object-contain"
                     />
-                  </div>
-                )}
+                  ) : ed.icon && ed.icon.startsWith("/") ? (
+                    <img
+                      src={ed.icon}
+                      alt={ed.institution}
+                      className="w-8 h-8 object-contain"
+                    />
+                  ) : getIcon(ed.icon) ? (
+                    <div style={{ color: ACCENT }}>{getIcon(ed.icon)}</div>
+                  ) : (
+                    <GraduationCap size={16} style={{ color: ACCENT }} />
+                  )}
+                </div>
 
                 {/* Content */}
                 <div className="flex-1 min-w-0">
@@ -324,6 +357,47 @@ export default function CV() {
                   <p className={`text-xs ${isDark ? "text-gray-500" : "text-gray-600"}`}>
                     <span className="font-medium">Tech:</span> {proj.techStack.join(", ")}
                   </p>
+                </motion.div>
+              ))}
+            </div>
+          </motion.section>
+        )}
+
+        {/* ── CERTIFICATES ── */}
+        {certificates.length > 0 && (
+          <motion.section {...fadeUp(0.32)}>
+            <div className="mb-6 pb-3 border-b" style={{ borderColor: isDark ? "rgb(55, 65, 81)" : "rgb(229, 231, 235)" }}>
+              <h2 className="text-sm font-bold uppercase tracking-widest" style={{ color: ACCENT }}>
+                CERTIFICAÇÕES
+              </h2>
+            </div>
+            <div className="space-y-4">
+              {certificates.map((cert, i) => (
+                <motion.div key={cert.title} {...fadeUp(0.36 + i * 0.04)} className="flex gap-3">
+                  {/* Icon */}
+                  <div className="shrink-0 w-10 h-10 rounded-lg flex items-center justify-center mt-0.5" style={{ backgroundColor: isDark ? "rgb(31, 41, 55)" : "rgb(243, 244, 246)" }}>
+                    <FiAward size={16} style={{ color: ACCENT }} />
+                  </div>
+
+                  {/* Content */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between gap-3 mb-0.5">
+                      <h3 className="font-bold text-sm" style={{ color: isDark ? "#ffffff" : "#000000" }}>
+                        {cert.title}
+                      </h3>
+                      {cert.url && (
+                        <a href={cert.url} target="_blank" rel="noreferrer" className={`shrink-0 hover:opacity-70 transition-opacity ${isDark ? "text-gray-500" : "text-gray-400"}`}>
+                          <FiExternalLink size={12} />
+                        </a>
+                      )}
+                    </div>
+                    <p className={`text-xs mb-1 ${isDark ? "text-gray-500" : "text-gray-500"}`}>
+                      {cert.issuer}
+                    </p>
+                    <p className={`text-xs font-medium ${isDark ? "text-gray-400" : "text-gray-600"}`}>
+                      {cert.issueDate}
+                    </p>
+                  </div>
                 </motion.div>
               ))}
             </div>

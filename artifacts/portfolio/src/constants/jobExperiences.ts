@@ -15,6 +15,7 @@ export interface JobExperience {
     value?: string;
   }[];
   description: string;
+  icon?: string; // lucide-react icon name or logo path
 }
 
 export const jobExperiences: JobExperience[] = [
@@ -26,6 +27,7 @@ export const jobExperiences: JobExperience[] = [
     startDate: "2025-04",
     endDate: null,
     showInTimeline: true,
+    icon: "/timeline/seu-iot-logo.jpg",
     topTags: [
       { label: "Job" },
       { label: "Engenharia do Futuro" },
@@ -36,7 +38,7 @@ export const jobExperiences: JobExperience[] = [
       { label: "Python" },
       { label: "Microcontrollers" },
     ],
-    description: "Architected and implemented complete platform and landing page refactor, establishing design system and guidelines. Built firmware installation system using Web Serial API, automating flash process and serial communication directly in browser.",
+    description: "Arquitetei e implementei refator completo da plataforma e landing page, estabelecendo design system e guidelines. Construí sistema de instalação de firmware usando Web Serial API, automatizando processo de flash e comunicação serial diretamente no navegador.",
   },
   {
     id: "eng-futuro-vol",
@@ -46,6 +48,7 @@ export const jobExperiences: JobExperience[] = [
     startDate: "2023-05",
     endDate: "2024-02",
     showInTimeline: true,
+    icon: "/timeline/seu-iot-logo.jpg",
     topTags: [
       { label: "Volunteer" },
       { label: "Engenharia do Futuro" },
@@ -59,7 +62,7 @@ export const jobExperiences: JobExperience[] = [
       { label: "C" },
       { label: "ViteJS" },
     ],
-    description: "Led technical Front-End workshop covering architecture and code patterns. Developed embedded firmware, web interface, and backend API, integrating hardware with fullstack application.",
+    description: "Lideiei workshop técnico de Front-End cobrindo arquitetura e padrões de código. Desenvolvi firmware embarcado, interface web e API backend, integrando hardware com aplicação fullstack.",
   },
   {
     id: "bots-channel",
@@ -69,6 +72,7 @@ export const jobExperiences: JobExperience[] = [
     startDate: "2024-01",
     endDate: "2024-12",
     showInTimeline: true,
+    icon: "/timeline/botschanell-logo.webp",
     topTags: [
       { label: "Job" },
       { label: "Bots Channel" },
@@ -81,7 +85,7 @@ export const jobExperiences: JobExperience[] = [
       { label: "Zustand" },
       { label: "TypeScript" },
     ],
-    description: "Architected serverless SaaS platform for multi-channel chatbot automation (WhatsApp, Telegram, Instagram). Implemented custom authentication system, JSON-based flow processing engine, and AWS Lambda infrastructure with PostgreSQL. Built no-code interface for visual automation workflows.",
+    description: "Arquitetei plataforma SaaS serverless para automação de chatbots multi-canal (WhatsApp, Telegram, Instagram). Implementei sistema de autenticação customizado, mecanismo de processamento JSON, e infraestrutura AWS Lambda com PostgreSQL. Construí interface no-code para fluxos de automação visuais.",
   },
   {
     id: "freelance-design",
@@ -91,6 +95,7 @@ export const jobExperiences: JobExperience[] = [
     startDate: "2019-01",
     endDate: "2020-12",
     showInTimeline: true,
+    icon: "Palette",
     topTags: [
       { label: "Freelance" },
       { label: "Graphic Design" },
@@ -101,7 +106,7 @@ export const jobExperiences: JobExperience[] = [
       { label: "After Effects" },
       { label: "Graphic Design" },
     ],
-    description: "Managed end-to-end design projects for multiple clients, maintaining 98.7% satisfaction rate. Developed visual identities, promotional materials, and motion graphics, coordinating deliveries and stakeholder communication.",
+    description: "Gerenciei projetos de design end-to-end para múltiplos clientes, mantendo 98.7% de taxa de satisfação. Desenvolvi identidades visuais, materiais promocionais e motion graphics, coordenando entregas e comunicação com stakeholders.",
   },
   {
     id: "vix-logistica",
@@ -111,6 +116,7 @@ export const jobExperiences: JobExperience[] = [
     startDate: "2017-02",
     endDate: "2019-02",
     showInTimeline: false,
+    icon: "Warehouse",
     topTags: [
       { label: "Job" },
       { label: "Vix Logistics" },
@@ -119,6 +125,50 @@ export const jobExperiences: JobExperience[] = [
       { label: "Warehouse" },
       { label: "Data Sheets" },
     ],
-    description: "Performed administrative and warehouse control duties, creating data spreadsheets and managing inventory, demonstrating organizational skills and attention to detail in a corporate setting.",
+    description: "Realizei tarefas administrativas e de controle de warehouse, criando planilhas de dados e gerenciando inventário, demonstrando habilidades organizacionais e atenção aos detalhes em ambiente corporativo.",
+  },
+  {
+    id: "include-gurias-work",
+    title: "Desenvolvedor - Bolsa de Pesquisa",
+    institution: "Include Gurias",
+    url: "https://includegurias.com/",
+    startDate: "2023-06",
+    endDate: "2024-01",
+    showInTimeline: true,
+    icon: "/timeline/include-gurias.webp",
+    topTags: [
+      { label: "Bolsa" },
+      { label: "Include Gurias" },
+    ],
+    tags: [
+      { label: "React" },
+      { label: "TypeScript" },
+      { label: "Node.js" },
+      { label: "AWS" },
+      { label: "Figma" },
+    ],
+    description: "Arquitetei plataforma institucional fullstack com CMS headless customizado. Implementei sistema de autenticação, chatbot interativo, e dashboard administrativo com CRUD completo para gerenciamento de conteúdo educacional e membros.",
+  },
+  {
+    id: "comunica-mulher-work",
+    title: "Desenvolvedor - Bolsa de Pesquisa",
+    institution: "ComunicaMulher",
+    url: "https://reclame-mulher.vercel.app/",
+    startDate: "2024-08",
+    endDate: null,
+    showInTimeline: true,
+    icon: "MessageSquare",
+    topTags: [
+      { label: "Bolsa" },
+      { label: "ComunicaMulher" },
+    ],
+    tags: [
+      { label: "Next.js" },
+      { label: "TypeScript" },
+      { label: "Supabase" },
+      { label: "PostgreSQL" },
+      { label: "Impacto Social" },
+    ],
+    description: "Construí sistema de gestão de denúncias com fluxo de moderação completo. Implementei pipeline de recebimento com validação e sanitização, políticas granulares de RLS no Supabase, e dashboard administrativo com filtros avançados. Arquitetura focada em segurança com auditoria completa.",
   },
 ];
