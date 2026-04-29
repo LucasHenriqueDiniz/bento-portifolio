@@ -2,7 +2,8 @@ import { Link } from "wouter";
 import { motion } from "framer-motion";
 import { useState, useMemo } from "react";
 import { FiArrowLeft, FiPrinter, FiGithub, FiMail, FiExternalLink, FiAward, FiBriefcase, FiCode } from "react-icons/fi";
-import { Moon, Sun, Globe, GraduationCap, MapPin, Calendar } from "lucide-react";
+import { Moon, Sun, Globe, GraduationCap, MapPin, Linkedin } from "lucide-react";
+import { SiInstagram, SiDiscord, SiGithub, SiSteam } from "react-icons/si";
 import { jobExperiences, academicExperiences, projects, certificates, languages, skillsData, ContactLinks } from "@/constants";
 import { formatDateRange } from "@/lib/dateFormatter";
 
@@ -30,6 +31,54 @@ const logoMap: Record<string, string> = {
   "Udemy": "/timeline/udemy_logo.webp",
   "BotsChannel": "/timeline/botschanell-logo.webp",
 };
+
+// Social links with colors
+const socialLinks = [
+  { icon: SiGithub, href: ContactLinks.github, label: "GitHub", color: "#333" },
+  { icon: SiInstagram, href: ContactLinks.instagram, label: "Instagram", color: "#E4405F" },
+  { icon: SiDiscord, href: `https://discord.com/users/${ContactLinks.discord}`, label: "Discord", color: "#5865F2" },
+  { icon: SiSteam, href: ContactLinks.steam, label: "Steam", color: "#1b2838" },
+];
+
+// ─── Social Links Component ──────────────────────────────
+function SocialLinks({ isDark }: { isDark: boolean }) {
+  return (
+    <div className="flex items-center gap-2 mt-3">
+      {socialLinks.map((social) => (
+        <a
+          key={social.label}
+          href={social.href}
+          target="_blank"
+          rel="noreferrer"
+          className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all hover:scale-110 ${isDark ? "bg-white/5 hover:bg-white/10" : "bg-gray-100 hover:bg-gray-200"}`}
+          style={{ color: social.color }}
+          title={social.label}
+        >
+          <social.icon size={16} />
+        </a>
+      ))}
+      {/* LinkedIn with lucide icon */}
+      <a
+        href={ContactLinks.linkedin}
+        target="_blank"
+        rel="noreferrer"
+        className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all hover:scale-110 ${isDark ? "bg-white/5 hover:bg-white/10" : "bg-gray-100 hover:bg-gray-200"}`}
+        style={{ color: "#0A66C2" }}
+        title="LinkedIn"
+      >
+        <Linkedin size={16} />
+      </a>
+      <a
+        href={`mailto:${ContactLinks.email}`}
+        className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all hover:scale-110 ${isDark ? "bg-white/5 hover:bg-white/10" : "bg-gray-100 hover:bg-gray-200"}`}
+        style={{ color: "#EA4335" }}
+        title="Email"
+      >
+        <FiMail size={16} />
+      </a>
+    </div>
+  );
+}
 
 // ─── Section Title Component ─────────────────────────────
 function SectionTitle({ children, icon: Icon, delay = 0, isDark }: { children: React.ReactNode; icon?: any; delay?: number; isDark: boolean }) {
@@ -89,11 +138,25 @@ function VisualResume({ isDark, locale }: { isDark: boolean; locale: Locale }) {
               ? "5+ years building scalable web apps, IoT platforms & AI automation. React, TypeScript, Node.js, AWS."
               : "5+ anos construindo apps web, plataformas IoT e automação com IA. React, TypeScript, Node.js, AWS."}
           </p>
+          
+          {/* Contact links with icons */}
           <div className="flex flex-wrap gap-3 mt-3 text-xs">
-            <a href={`mailto:${ContactLinks.email}`} className={`flex items-center gap-1 hover:opacity-70 ${isDark ? "text-gray-400" : "text-gray-600"}`}><FiMail size={11} /> {ContactLinks.email}</a>
-            <a href={ContactLinks.github} target="_blank" rel="noreferrer" className={`flex items-center gap-1 hover:opacity-70 ${isDark ? "text-gray-400" : "text-gray-600"}`}><FiGithub size={11} /> github.com/LucasHenriqueDiniz</a>
-            <a href={ContactLinks.linkedin} target="_blank" rel="noreferrer" className={`flex items-center gap-1 hover:opacity-70 ${isDark ? "text-gray-400" : "text-gray-600"}`}><FiExternalLink size={11} /> LinkedIn</a>
+            <a href={`mailto:${ContactLinks.email}`} className={`flex items-center gap-1.5 hover:opacity-70 transition-opacity ${isDark ? "text-gray-300" : "text-gray-700"}`}>
+              <FiMail size={12} style={{ color: "#EA4335" }} /> 
+              <span>{ContactLinks.email}</span>
+            </a>
+            <a href={ContactLinks.github} target="_blank" rel="noreferrer" className={`flex items-center gap-1.5 hover:opacity-70 transition-opacity ${isDark ? "text-gray-300" : "text-gray-700"}`}>
+              <SiGithub size={12} style={{ color: "#333" }} /> 
+              <span>github.com/LucasHenriqueDiniz</span>
+            </a>
+            <a href={ContactLinks.linkedin} target="_blank" rel="noreferrer" className={`flex items-center gap-1.5 hover:opacity-70 transition-opacity ${isDark ? "text-gray-300" : "text-gray-700"}`}>
+              <Linkedin size={12} style={{ color: "#0A66C2" }} /> 
+              <span>linkedin.com/in/lucas-diniz-ostroski</span>
+            </a>
           </div>
+          
+          {/* Social icons */}
+          <SocialLinks isDark={isDark} />
         </div>
       </motion.section>
 
@@ -130,7 +193,7 @@ function VisualResume({ isDark, locale }: { isDark: boolean; locale: Locale }) {
         </div>
       </section>
 
-      {/* ── PROJECTS (Horizontal cards) ── */}
+      {/* ── PROJECTS (Cards with images) ── */}
       <section>
         <SectionTitle icon={FiCode} delay={0.15} isDark={isDark}>
           {locale === "en" ? "Featured Projects" : "Projetos em Destaque"}
@@ -143,22 +206,30 @@ function VisualResume({ isDark, locale }: { isDark: boolean; locale: Locale }) {
               target="_blank"
               rel="noreferrer"
               {...fadeUp(0.18 + i * 0.04)}
-              className={`group block rounded-xl border p-3 transition-all hover:scale-[1.02] ${isDark ? "bg-white/[0.02] border-white/8 hover:border-[#3d72cc]/30" : "bg-white border-gray-200 hover:border-[#3d72cc]/30"}`}
+              className={`group block rounded-xl border overflow-hidden transition-all hover:scale-[1.02] hover:shadow-lg ${isDark ? "bg-white/[0.02] border-white/8 hover:border-[#3d72cc]/30" : "bg-white border-gray-200 hover:border-[#3d72cc]/30"}`}
             >
-              <div className="flex items-center gap-2 mb-2">
-                <div className="w-8 h-8 rounded-lg overflow-hidden shrink-0">
-                  <img src={proj.image || "/logo.svg"} alt={proj.name} className="w-full h-full object-cover" />
-                </div>
-                <div className="min-w-0">
-                  <h3 className="text-[13px] font-bold truncate" style={{ color: isDark ? "#fff" : "#000" }}>{proj.name}</h3>
-                  <div className="flex gap-1 flex-wrap">
-                    {proj.techStack.slice(0, 3).map(t => (
-                      <span key={t} className={`text-[9px] px-1 py-px rounded ${isDark ? "bg-white/10 text-gray-400" : "bg-gray-100 text-gray-600"}`}>{t}</span>
-                    ))}
-                  </div>
+              {/* Project Image */}
+              <div className="relative h-24 overflow-hidden">
+                <img 
+                  src={proj.image || "/logo.svg"} 
+                  alt={proj.name} 
+                  className="w-full h-full object-cover transition-transform group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                <div className="absolute bottom-2 left-2 right-2">
+                  <h3 className="text-sm font-bold text-white truncate">{proj.name}</h3>
                 </div>
               </div>
-              <p className={`text-[11px] leading-relaxed line-clamp-2 ${isDark ? "text-gray-400" : "text-gray-600"}`}>{proj.description}</p>
+              
+              {/* Content */}
+              <div className="p-3">
+                <div className="flex gap-1 flex-wrap mb-2">
+                  {proj.techStack.slice(0, 3).map(t => (
+                    <span key={t} className={`text-[9px] px-1.5 py-px rounded font-medium ${isDark ? "bg-white/10 text-gray-400" : "bg-gray-100 text-gray-600"}`}>{t}</span>
+                  ))}
+                </div>
+                <p className={`text-[11px] leading-relaxed line-clamp-2 ${isDark ? "text-gray-400" : "text-gray-600"}`}>{proj.description}</p>
+              </div>
             </motion.a>
           ))}
         </div>
