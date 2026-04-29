@@ -147,7 +147,7 @@ export default function Home() {
           <nav className="flex items-center gap-5 text-[13px] text-[#888] dark:text-[#666]">
             <Link href="/" className="hover:text-[#111] dark:hover:text-[#eee] transition-colors">Home</Link>
             <Link href="/projects" className="hover:text-[#111] dark:hover:text-[#eee] transition-colors">Projects</Link>
-            <Link href="/cv" className="hover:text-[#111] dark:hover:text-[#eee] transition-colors">CV</Link>
+            <Link href="/resume" className="hover:text-[#111] dark:hover:text-[#eee] transition-colors">Resume</Link>
             <button onClick={() => setIsDark(d => !d)} className="w-7 h-7 rounded-lg flex items-center justify-center border border-[#ebebeb] dark:border-[#282828] bg-white dark:bg-[#222] hover:bg-[#f0f0f0] dark:hover:bg-[#2a2a2a] transition-colors text-[#888] dark:text-[#666]">
               {isDark ? <Sun size={13} /> : <Moon size={13} />}
             </button>
