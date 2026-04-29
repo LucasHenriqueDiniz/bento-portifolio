@@ -7,3 +7,4 @@ export * from "./jobExperiences";
 export * from "./languages";
 export * from "./contacts";
 export * from "./projects";
+export * from "./skillsData";

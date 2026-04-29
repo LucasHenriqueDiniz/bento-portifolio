@@ -53,7 +53,7 @@ const socialIcons: Record<string, React.ReactNode> = {
   Email: <FiMail size={14} />,
 };
 
-function SocialCard({ contact, isDark }: { contact: (typeof contacts)[number]; isDark: boolean }) {
+function SocialCard({ contact, isDark }: { contact: typeof contacts[number]; isDark: boolean }) {
   return (
     <motion.a
       href={contact.url}
