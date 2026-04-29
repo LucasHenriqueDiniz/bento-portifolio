@@ -34,7 +34,7 @@
         "comunica-mulher": {
           "title": "Pesquisador Desenvolvedor",
           "company": "ComunicaMulher",
-          "period": "Ago 2024 – Presente",
+          "period": "Jan 2026 – Presente",
           "bullets": [
             "Construí sistema de gestão de denúncias com fluxo de moderação completo usando Next.js, TypeScript e Supabase",
             "Implementei políticas granulares de Row-Level Security (RLS), pipeline de sanitização de dados e dashboard administrativo avançado com filtros",
