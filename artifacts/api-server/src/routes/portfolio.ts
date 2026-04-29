@@ -106,10 +106,11 @@ router.get("/portfolio/top-artists", async (_req, res): Promise<void> => {
       `&user=${LASTFM_USER}&api_key=${LASTFM_KEY}&format=json&period=1month&limit=5`;
     const r = await fetch(url);
     const json = await r.json() as any;
-    const artists: any[] = json?.topartists?.artist ?? [];
+    const rawArtists = json?.topartists?.artist ?? [];
+    const artists = Array.isArray(rawArtists) ? rawArtists : [rawArtists];
 
     const data = GetTopArtistsResponse.parse(
-      artists.map((a) => ({
+      artists.map((a: any) => ({
         name: a.name,
         playcount: String(a.playcount),
         imageUrl:
@@ -141,8 +142,10 @@ router.get("/portfolio/discord", async (_req, res): Promise<void> => {
 
     const user      = d?.discord_user;
     const statusStr = d?.discord_status ?? "offline";
-    const activity  = d?.activities?.find((a: any) => a.type === 0);
-    const customAct = d?.activities?.find((a: any) => a.type === 4);
+    const rawActivities = d?.activities ?? [];
+    const activities = Array.isArray(rawActivities) ? rawActivities : [rawActivities];
+    const activity  = activities.find((a: any) => a.type === 0);
+    const customAct = activities.find((a: any) => a.type === 4);
     const spotify   = d?.listening_to_spotify ? d?.spotify : null;
 
     let activityImageUrl: string | null = null;
@@ -194,7 +197,9 @@ router.get("/portfolio/steam", async (_req, res): Promise<void> => {
     const ownedJson   = await ownedRes.json() as any;
 
     const player      = profileJson?.response?.players?.[0];
-    const recentGames = ((recentJson?.response?.games ?? []) as any[]).slice(0, 5).map((g) => ({
+    const rawRecentGames = recentJson?.response?.games ?? [];
+    const recentGamesArr = Array.isArray(rawRecentGames) ? rawRecentGames : [rawRecentGames];
+    const recentGames = recentGamesArr.slice(0, 5).map((g: any) => ({
       name: g.name,
       hoursPlayed: Math.round((g.playtime_2weeks ?? g.playtime_forever ?? 0) / 60 * 10) / 10,
       imageUrl: `https://cdn.cloudflare.steamstatic.com/steam/apps/${g.appid}/header.jpg`,
@@ -232,7 +237,9 @@ router.get("/portfolio/workout", async (_req, res): Promise<void> => {
     const w = workouts[0];
     if (!w) throw new Error("no workouts");
 
-    const exercises = ((w.exercises ?? []) as any[]).slice(0, 6).map((ex) => {
+    const rawExercises = w.exercises ?? [];
+    const exercisesArr = Array.isArray(rawExercises) ? rawExercises : [rawExercises];
+    const exercises = exercisesArr.slice(0, 6).map((ex: any) => {
       const setsArr: any[] = Array.isArray(ex.sets) ? ex.sets : [];
       const setsCount = setsArr.length || Number(ex.sets_count ?? 3);
       const maxWeight = setsArr.length
@@ -489,8 +496,10 @@ router.get("/portfolio/mal", async (_req, res): Promise<void> => {
 
     const anime = statsJson.data?.anime;
     const manga = statsJson.data?.manga;
-    const favAnime = favsJson.data?.anime ?? [];
-    const favManga = favsJson.data?.manga ?? [];
+    const rawFavAnime = favsJson.data?.anime ?? [];
+    const rawFavManga = favsJson.data?.manga ?? [];
+    const favAnime = Array.isArray(rawFavAnime) ? rawFavAnime : [rawFavAnime];
+    const favManga = Array.isArray(rawFavManga) ? rawFavManga : [rawFavManga];
 
     const data = GetMalDataResponse.parse({
       animeStats: {
@@ -503,14 +512,14 @@ router.get("/portfolio/mal", async (_req, res): Promise<void> => {
         reading: manga?.reading ?? 0,
         chaptersRead: manga?.chapters_read ?? 0,
       },
-      animeFavorites: favAnime.map((a) => ({
+      animeFavorites: favAnime.map((a: any) => ({
         malId: a.mal_id,
         title: a.title,
         year: a.start_year ?? null,
         imageUrl: a.images?.jpg?.image_url ?? null,
         url: `https://myanimelist.net/anime/${a.mal_id}`,
       })),
-      mangaFavorites: favManga.map((m) => ({
+      mangaFavorites: favManga.map((m: any) => ({
         malId: m.mal_id,
         title: m.title,
         year: m.start_year ?? null,
