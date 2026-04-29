@@ -9,6 +9,7 @@ export interface Certificate {
 export interface AcademicExperience {
   id: string;
   title: string;
+  titleEn?: string;
   institution: string;
   url?: string;
   startDate: string; // YYYY-MM
@@ -23,6 +24,7 @@ export interface AcademicExperience {
     value?: string;
   }[];
   description: string;
+  descriptionEn?: string;
   icon?: string; // lucide-react icon name or logo path
 }
 
@@ -30,6 +32,7 @@ export const academicExperiences: AcademicExperience[] = [
   {
     id: "uergs",
     title: "Engenharia da Computação",
+    titleEn: "Computer Engineering",
     institution: "UERGS - Universidade Estadual do Rio Grande do Sul",
     url: "https://www.uergs.edu.br/",
     startDate: "2023-02",
@@ -47,10 +50,12 @@ export const academicExperiences: AcademicExperience[] = [
       { label: "Assembly" },
     ],
     description: "Participei de projetos acadêmicos focados em programação de baixo nível, desenvolvimento de algoritmos e sistemas embarcados. Experiência prática com microcontroladores e fundamentos de IA.",
+    descriptionEn: "Participated in academic projects focused on low-level programming, algorithm development and embedded systems. Hands-on experience with microcontrollers and AI fundamentals.",
   },
   {
     id: "unicv",
     title: "Engenharia de Software",
+    titleEn: "Software Engineering",
     institution: "UNICV",
     url: "https://www.unicv.edu.br/",
     startDate: "2025-02",
@@ -69,6 +74,7 @@ export const academicExperiences: AcademicExperience[] = [
       { label: "Software Architecture" },
     ],
     description: "Foco em arquitetura robusta de sistemas, desenvolvimento escalável e implementação de metodologia ágil. Imersão profunda em padrões de design e engenharia de software moderna.",
+    descriptionEn: "Focus on robust system architecture, scalable development and agile methodology implementation. Deep dive into design patterns and modern software engineering.",
   },
   {
     id: "belart-estetica",

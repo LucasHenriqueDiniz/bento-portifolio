@@ -1,0 +1,126 @@
+{
+  "about": {
+    "label": "ABOUT ME",
+    "greeting": "Hey, I'm",
+    "name": "Lucas",
+    "role": "Developer & Designer",
+    "description": "Full-stack dev who loves turning ideas into real products. When I'm not coding, you'll find me at the gym, gaming, or discovering new music on Last.fm."
+  },
+  "funFacts": {
+    "label": "FUN FACTS",
+    "items": [
+      "Full-stack developer",
+      "Gym rat (4x/week)",
+      "Last.fm scrobbler since 2018",
+      "Dark mode everything",
+      "{{animeCount}} anime completed"
+    ]
+  },
+  "projectsCta": {
+    "title": "Projects",
+    "subtitle": "View all projects"
+  },
+  "weather": {
+    "title": "Weather",
+    "location": "Brasilia",
+    "loading": "Loading weather...",
+    "timezone": "Brasilia (BRT, UTC-3)",
+    "timeLabel": "Time",
+    "localTime": "Local time",
+    "flipLabel": "weather"
+  },
+  "building": {
+    "label": "In development",
+    "project": "Pingo Concursos",
+    "description": "Mobile exam prep educational platform for public competitions",
+    "focus": "Mobile app with offline-first, real-time sync and polished UI",
+    "focusLabel": "Current focus:",
+    "stackLabel": "Tech Stack",
+    "status": "Active development"
+  },
+  "workout": {
+    "title": "Last Workout",
+    "error": "Workout data unavailable",
+    "volume": "Volume (kg)",
+    "streak": "Day Streak",
+    "minutes": "Minutes",
+    "thisWeek": "This Week"
+  },
+  "github": {
+    "title": "GitHub",
+    "repos": "repos",
+    "contribs": "contribs",
+    "commits": "commits",
+    "streak": "streak",
+    "days": {
+      "mon": "mon",
+      "wed": "wed",
+      "fri": "fri"
+    }
+  },
+  "timeline": {
+    "workTitle": "Work Experience",
+    "educationTitle": "Education",
+    "flipWork": "work",
+    "flipEducation": "education",
+    "viewFullCV": "View Full CV",
+    "present": "Present"
+  },
+  "mal": {
+    "anime": "Anime",
+    "manga": "Manga",
+    "flipAnime": "anime",
+    "flipManga": "manga",
+    "completed": "completed",
+    "watching": "watching",
+    "reading": "reading",
+    "episodes": "episodes",
+    "chapters": "chapters",
+    "error": "MyAnimeList data unavailable",
+    "empty": "No data available"
+  },
+  "steam": {
+    "title": "Steam",
+    "error": "No recent games",
+    "hours": "h played",
+    "games": "games"
+  },
+  "artists": {
+    "title": "Top Artists",
+    "subtitle": "· last 90 days",
+    "tracks": "tracks",
+    "flipTracks": "tracks",
+    "flipArtists": "artists",
+    "error": "No artists available",
+    "empty": "No artists available",
+    "noTracks": "No tracks"
+  },
+  "cv": {
+    "title": "Full CV",
+    "work": "Work",
+    "education": "Education",
+    "viewFull": "View full resume",
+    "studying": "Studying..."
+  },
+  "tech": {
+    "title": "Tech Stack",
+    "frontend": "Frontend",
+    "backend": "Backend",
+    "devops": "DevOps"
+  },
+  "project": {
+    "featured": "Featured Project",
+    "view": "View",
+    "wip": "WIP",
+    "done": "Done",
+    "empty": {
+      "title": "No projects yet",
+      "subtitle": "Add featured projects...",
+      "description": "Project highlights will appear here"
+    }
+  },
+  "album": {
+    "listening": "Listening",
+    "empty": "No music playing"
+  }
+}
