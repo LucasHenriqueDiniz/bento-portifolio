@@ -5,7 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import Projects from "@/pages/projects";
-import CV from "@/pages/cv";
+import Resume from "@/pages/resume";
 
 const queryClient = new QueryClient();
 
@@ -14,7 +14,7 @@ function Router() {
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/projects" component={Projects} />
-      <Route path="/cv" component={CV} />
+      <Route path="/resume" component={Resume} />
       <Route component={NotFound} />
     </Switch>
   );
