@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import { FiArrowLeft, FiPrinter, FiGithub, FiTwitter, FiMail, FiExternalLink, FiAward, FiBriefcase } from "react-icons/fi";
 import { Moon, Sun, GraduationCap, Globe } from "lucide-react";
-import { jobExperiences, academicExperiences, projects, certificates } from "@/constants";
+import { jobExperiences, academicExperiences, projects, certificates, languages, skillsData, ContactLinks } from "@/constants";
 import { formatDateRange } from "@/lib/dateFormatter";
 import { useResumeTranslation, getAvailableLocales } from "@/hooks/useResumeTranslation";
 
@@ -86,13 +86,17 @@ function VisualCV({ isDark, locale }: { isDark: boolean; locale: Locale }) {
           </p>
 
           <div className="flex flex-wrap gap-4 mt-4 text-sm">
-            <a href="mailto:lucas.diniz@email.com" className={`flex items-center gap-1.5 font-medium hover:opacity-70 transition-opacity ${isDark ? "text-gray-300" : "text-gray-700"}`}>
+            <a href={`mailto:${ContactLinks.email}`} className={`flex items-center gap-1.5 font-medium hover:opacity-70 transition-opacity ${isDark ? "text-gray-300" : "text-gray-700"}`}>
               <FiMail size={14} />
-              lucas.diniz@email.com
+              {ContactLinks.email}
             </a>
-            <a href="https://github.com/lucashdo" target="_blank" rel="noreferrer" className={`flex items-center gap-1.5 font-medium hover:opacity-70 transition-opacity ${isDark ? "text-gray-300" : "text-gray-700"}`}>
+            <a href={ContactLinks.github} target="_blank" rel="noreferrer" className={`flex items-center gap-1.5 font-medium hover:opacity-70 transition-opacity ${isDark ? "text-gray-300" : "text-gray-700"}`}>
               <FiGithub size={14} />
-              github.com/lucashdo
+              github.com/LucasHenriqueDiniz
+            </a>
+            <a href={ContactLinks.linkedin} target="_blank" rel="noreferrer" className={`flex items-center gap-1.5 font-medium hover:opacity-70 transition-opacity ${isDark ? "text-gray-300" : "text-gray-700"}`}>
+              <FiExternalLink size={14} />
+              LinkedIn
             </a>
           </div>
         </div>
@@ -216,30 +220,23 @@ function VisualCV({ isDark, locale }: { isDark: boolean; locale: Locale }) {
               </h2>
             </div>
             <div className="space-y-3">
-              <div>
-                <p className={`text-xs font-bold uppercase tracking-widest mb-1.5 ${isDark ? "text-gray-500" : "text-gray-500"}`}>
-                  {locale === "en" ? "Languages" : "Linguagens"}
-                </p>
-                <p className={`text-sm ${isDark ? "text-gray-300" : "text-gray-700"}`}>
-                  TypeScript, Python, Go, JavaScript, SQL
-                </p>
-              </div>
-              <div>
-                <p className={`text-xs font-bold uppercase tracking-widest mb-1.5 ${isDark ? "text-gray-500" : "text-gray-500"}`}>
-                  Frontend
-                </p>
-                <p className={`text-sm ${isDark ? "text-gray-300" : "text-gray-700"}`}>
-                  React, Next.js, React Native, Expo, Tailwind CSS, Framer Motion
-                </p>
-              </div>
-              <div>
-                <p className={`text-xs font-bold uppercase tracking-widest mb-1.5 ${isDark ? "text-gray-500" : "text-gray-500"}`}>
-                  Backend
-                </p>
-                <p className={`text-sm ${isDark ? "text-gray-300" : "text-gray-700"}`}>
-                  Node.js, PostgreSQL, Supabase, Redis, Docker, AWS, Firebase
-                </p>
-              </div>
+              {['frontend', 'backend', 'integration', 'devops'].map((category) => {
+                const categorySkills = skillsData.filter(s => s.category === category);
+                if (categorySkills.length === 0) return null;
+                return (
+                  <div key={category}>
+                    <p className={`text-xs font-bold uppercase tracking-widest mb-1.5 ${isDark ? "text-gray-500" : "text-gray-500"}`}>
+                      {category === 'frontend' ? (locale === "en" ? "Frontend" : "Frontend") :
+                       category === 'backend' ? (locale === "en" ? "Backend" : "Backend") :
+                       category === 'integration' ? (locale === "en" ? "Integration" : "Integração") :
+                       category === 'devops' ? (locale === "en" ? "Cloud & DevOps" : "Cloud & DevOps") : category}
+                    </p>
+                    <p className={`text-sm ${isDark ? "text-gray-300" : "text-gray-700"}`}>
+                      {categorySkills.map(s => s.name).join(", ")}
+                    </p>
+                  </div>
+                );
+              })}
             </div>
           </div>
 
@@ -250,28 +247,18 @@ function VisualCV({ isDark, locale }: { isDark: boolean; locale: Locale }) {
               </h2>
             </div>
             <div className="space-y-3">
-              <div>
-                <div className="flex items-center justify-between mb-1">
-                  <span className={`text-sm font-medium ${isDark ? "text-gray-300" : "text-gray-700"}`}>Português</span>
-                  <span className={`text-xs font-semibold px-2 py-0.5 rounded ${isDark ? "bg-white/10 text-gray-300" : "bg-gray-100 text-gray-600"}`}>
-                    {locale === "en" ? "Native" : "Nativo"}
-                  </span>
+              {languages.map((lang) => (
+                <div key={lang.name}>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className={`text-sm font-medium ${isDark ? "text-gray-300" : "text-gray-700"}`}>
+                      {lang.name}
+                    </span>
+                    <span className={`text-xs font-semibold px-2 py-0.5 rounded ${isDark ? "bg-white/10 text-gray-300" : "bg-gray-100 text-gray-600"}`}>
+                      {locale === "en" ? lang.levelLabel.en : lang.levelLabel.pt}
+                    </span>
+                  </div>
                 </div>
-              </div>
-              <div>
-                <div className="flex items-center justify-between mb-1">
-                  <span className={`text-sm font-medium ${isDark ? "text-gray-300" : "text-gray-700"}`}>Inglês</span>
-                  <span className={`text-xs font-semibold px-2 py-0.5 rounded ${isDark ? "bg-white/10 text-gray-300" : "bg-gray-100 text-gray-600"}`}>
-                    {locale === "en" ? "Advanced" : "Avançado"}
-                  </span>
-                </div>
-              </div>
-              <div>
-                <div className="flex items-center justify-between mb-1">
-                  <span className={`text-sm font-medium ${isDark ? "text-gray-300" : "text-gray-700"}`}>日本語 (Japonês)</span>
-                  <span className={`text-xs font-semibold px-2 py-0.5 rounded ${isDark ? "bg-white/10 text-gray-300" : "bg-gray-100 text-gray-600"}`}>N5</span>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
         </div>
@@ -372,13 +359,13 @@ function ProfessionalResume({ isDark, locale }: { isDark: boolean; locale: Local
         </p>
 
         <div className="flex flex-wrap gap-4 mt-4 text-sm">
-          <a href="mailto:lucas.diniz@email.com" className={`flex items-center gap-1.5 font-medium hover:opacity-70 transition-opacity ${isDark ? "text-gray-300" : "text-gray-700"}`}>
+          <a href={`mailto:${ContactLinks.email}`} className={`flex items-center gap-1.5 font-medium hover:opacity-70 transition-opacity ${isDark ? "text-gray-300" : "text-gray-700"}`}>
             <FiMail size={14} />
-            lucas.diniz@email.com
+            {ContactLinks.email}
           </a>
-          <a href="https://github.com/lucashdo" target="_blank" rel="noreferrer" className={`flex items-center gap-1.5 font-medium hover:opacity-70 transition-opacity ${isDark ? "text-gray-300" : "text-gray-700"}`}>
+          <a href={ContactLinks.github} target="_blank" rel="noreferrer" className={`flex items-center gap-1.5 font-medium hover:opacity-70 transition-opacity ${isDark ? "text-gray-300" : "text-gray-700"}`}>
             <FiGithub size={14} />
-            github.com/lucashdo
+            github.com/LucasHenriqueDiniz
           </a>
         </div>
       </motion.section>

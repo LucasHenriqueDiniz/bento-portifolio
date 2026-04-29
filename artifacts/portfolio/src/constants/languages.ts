@@ -1,38 +1,35 @@
-/**
- * Language proficiency data structure
- * @interface Language
- * @property {string} name - Language name
- * @property {string} code - ISO 639-1 language code (e.g., "en", "pt")
- * @property {string} proficiency - Proficiency level (native, fluent, advanced, intermediate, basic)
- * @property {string} [description] - Optional description of proficiency
- */
-export interface Language {
+export interface LanguageData {
   name: string;
-  code: string;
-  proficiency: "native" | "fluent" | "advanced" | "intermediate" | "basic";
-  description?: string;
+  level: 'native' | 'fluent' | 'advanced' | 'intermediate' | 'basic';
+  levelLabel: {
+    pt: string;
+    en: string;
+  };
 }
 
-/**
- * List of languages spoken
- */
-export const languages: Language[] = [
+export const languages: LanguageData[] = [
   {
-    name: "Portuguese",
-    code: "pt",
-    proficiency: "native",
-    description: "Native speaker",
+    name: 'Português',
+    level: 'native',
+    levelLabel: {
+      pt: 'Nativo',
+      en: 'Native',
+    },
   },
   {
-    name: "English",
-    code: "en",
-    proficiency: "fluent",
-    description: "Professional working proficiency",
+    name: 'English',
+    level: 'fluent',
+    levelLabel: {
+      pt: 'Fluente',
+      en: 'Fluent',
+    },
   },
   {
-    name: "Spanish",
-    code: "es",
-    proficiency: "intermediate",
-    description: "Conversational proficiency",
+    name: '日本語',
+    level: 'basic',
+    levelLabel: {
+      pt: 'Básico',
+      en: 'Basic',
+    },
   },
 ];
