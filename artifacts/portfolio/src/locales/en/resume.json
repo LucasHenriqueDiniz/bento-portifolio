@@ -1,0 +1,162 @@
+{
+  "resume": {
+    "title": "Resume",
+    "header": {
+      "role": "Full Stack Developer",
+      "subtitle": "IoT & Automation Specialist"
+    },
+    "summary": {
+      "title": "Professional Summary",
+      "text": "Full Stack Developer with 5+ years building scalable web applications, IoT platforms, and AI-powered automation systems. Expertise in React, Node.js, TypeScript, and cloud infrastructure (AWS, Supabase). Proven track record architecting SaaS platforms, implementing real-time systems, and leading technical initiatives."
+    },
+    "experience": {
+      "title": "Professional Experience",
+      "jobs": {
+        "eng-futuro": {
+          "title": "Full Stack Developer",
+          "company": "Engenharia do Futuro",
+          "period": "Apr 2025 – Present",
+          "bullets": [
+            "Architected complete platform refactor with design system and component guidelines using React + TypeScript",
+            "Built Web Serial API-based firmware installer automating ESP32/ESP8266 flash process and serial communication directly in browser"
+          ]
+        },
+        "bots-channel": {
+          "title": "CTO & Co-Founder",
+          "company": "Bots Channel",
+          "period": "Jan 2024 – Dec 2024",
+          "bullets": [
+            "Architected serverless SaaS platform for multi-channel chatbot automation (WhatsApp, Telegram, Instagram) using AWS Lambda and Node.js",
+            "Implemented custom authentication system, JSON-based flow processing engine, and no-code visual workflow builder",
+            "Scaled infrastructure to support concurrent multi-channel message processing with PostgreSQL backend"
+          ]
+        },
+        "comunica-mulher": {
+          "title": "Research Scholar - Developer",
+          "company": "ComunicaMulher",
+          "period": "Aug 2024 – Present",
+          "bullets": [
+            "Built complaint management system with complete moderation workflow using Next.js, TypeScript, and Supabase",
+            "Implemented granular Row-Level Security (RLS) policies, data sanitization pipeline, and advanced admin dashboard with filtering",
+            "Architected security-focused system with complete audit trail for LGBTQ+ support platform"
+          ]
+        },
+        "include-gurias": {
+          "title": "Research Scholar - Developer",
+          "company": "Include Gurias",
+          "period": "Jun 2023 – Jan 2024",
+          "bullets": [
+            "Architected fullstack institutional platform with custom headless CMS using Next.js, React, and Supabase",
+            "Implemented authentication system, interactive chatbot, and admin dashboard with complete CRUD for educational content management",
+            "Designed and deployed strategic caching architecture handling 1000+ concurrent users"
+          ]
+        },
+        "eng-futuro-volunteer": {
+          "title": "Frontend & Embedded Developer",
+          "company": "Engenharia do Futuro (Volunteer)",
+          "period": "May 2023 – Feb 2024",
+          "bullets": [
+            "Led technical Front-End workshop covering React architecture and code patterns for team of 5+ developers",
+            "Developed embedded firmware (C/Python), web interface (React), and REST API, integrating microcontroller hardware with fullstack application"
+          ]
+        },
+        "freelance-designer": {
+          "title": "Freelance Graphic Designer",
+          "company": "Self-Employed",
+          "period": "Jan 2019 – Dec 2020",
+          "bullets": [
+            "Managed end-to-end design projects for multiple clients maintaining 98.7% satisfaction rate",
+            "Delivered visual identities, promotional materials, and motion graphics using Photoshop, Illustrator, After Effects"
+          ]
+        }
+      }
+    },
+    "projects": {
+      "title": "Selected Projects",
+      "projects": {
+        "heartopia-guide": {
+          "name": "Heartopia Guide",
+          "subtitle": "Production Content Platform",
+          "bullets": [
+            "Built SEO-focused Next.js platform with dynamic routing and data-driven pages using App Router",
+            "Implemented structured content ingestion pipeline and strategic caching for 100k+ monthly visitors"
+          ],
+          "tech": "Next.js, TypeScript, PostgreSQL, Vercel",
+          "url": "heartopia.guide"
+        },
+        "weeb-profile": {
+          "name": "Weeb Profile",
+          "subtitle": "Multi-API Integration & Automation",
+          "bullets": [
+            "Engineered dynamic SVG generation system aggregating real-time data from Last.fm, MyAnimeList, and GitHub APIs",
+            "Built automated pipeline via GitHub Actions for data collection, processing, and deployment"
+          ],
+          "tech": "Node.js, TypeScript, GitHub Actions",
+          "url": "github.com/LucasHenriqueDiniz/WeebProfile"
+        },
+        "windows-xp-online": {
+          "name": "Windows XP Online",
+          "subtitle": "Real-Time Multiplayer System",
+          "bullets": [
+            "Architected faithful Windows XP recreation in browser with WebSockets real-time multiplayer, draggable windows, themes",
+            "Implemented multitasking event system, WebSocket synchronization, and persistent state management"
+          ],
+          "tech": "React, TypeScript, WebSockets",
+          "url": "w-xp-online.web.app"
+        }
+      }
+    },
+    "skills": {
+      "title": "Technical Skills",
+      "categories": {
+        "languages": {
+          "label": "Languages",
+          "value": "TypeScript, JavaScript, Python, Go, SQL, C"
+        },
+        "frontend": {
+          "label": "Frontend",
+          "value": "React, Next.js, React Native, Expo, Tailwind CSS, Framer Motion, Zustand"
+        },
+        "backend": {
+          "label": "Backend",
+          "value": "Node.js, PostgreSQL, Supabase, Redis, Firebase, Prisma, NestJS"
+        },
+        "cloud": {
+          "label": "Cloud & DevOps",
+          "value": "AWS (Lambda, EC2, S3), Docker, GitHub Actions, Vercel, Web Serial API"
+        },
+        "specialties": {
+          "label": "Specialties",
+          "value": "SaaS Architecture, IoT Integration, Real-Time Systems, API Integration, Automation"
+        }
+      }
+    },
+    "education": {
+      "title": "Education",
+      "degrees": {
+        "uergs": {
+          "title": "Computer Engineering",
+          "institution": "UERGS (State University of Rio Grande do Sul)",
+          "period": "2023 – 2025",
+          "description": "Academic projects: Microcontrollers, Low-level Programming (C, Assembly), AI Fundamentals, Algorithm Development"
+        },
+        "unicv": {
+          "title": "Software Engineering",
+          "institution": "UNICV",
+          "period": "2025 – Present",
+          "description": "Focus: System Architecture, Design Patterns, Agile Methodology, Scalable Database Design"
+        }
+      }
+    },
+    "certifications": {
+      "title": "Certifications",
+      "certs": {
+        "microsoft": "Microsoft & LinkedIn Learning: Career Essentials in Software Development (2024)",
+        "efset": "EF SET: English Certificate C2 Proficiency (2024)",
+        "jlpt": "Tokyo Sakura Gaoka Institute: JLPT N5 Japanese Language (2026)",
+        "lovable": "Lovable: AI-Assisted Development L1: Bronze (2026)"
+      }
+    },
+    "downloadButton": "Download Resume"
+  }
+}

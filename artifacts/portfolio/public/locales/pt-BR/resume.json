@@ -1,0 +1,162 @@
+{
+  "resume": {
+    "title": "Currículo",
+    "header": {
+      "role": "Desenvolvedor Full Stack",
+      "subtitle": "Especialista em IoT & Automação"
+    },
+    "summary": {
+      "title": "Resumo Profissional",
+      "text": "Desenvolvedor Full Stack com 5+ anos construindo aplicações web escaláveis, plataformas IoT e sistemas de automação com IA. Expertise em React, Node.js, TypeScript e infraestrutura cloud (AWS, Supabase). Histórico comprovado de arquitetar plataformas SaaS, implementar sistemas em tempo real e liderar iniciativas técnicas."
+    },
+    "experience": {
+      "title": "Experiência Profissional",
+      "jobs": {
+        "eng-futuro": {
+          "title": "Desenvolvedor Full Stack",
+          "company": "Engenharia do Futuro",
+          "period": "Abr 2025 – Presente",
+          "bullets": [
+            "Arquitetei refatoração completa da plataforma com design system e diretrizes de componentes usando React + TypeScript",
+            "Construí instalador de firmware baseado em Web Serial API automatizando processo de flash e comunicação serial do ESP32/ESP8266 diretamente no navegador"
+          ]
+        },
+        "bots-channel": {
+          "title": "CTO & Co-fundador",
+          "company": "Bots Channel",
+          "period": "Jan 2024 – Dez 2024",
+          "bullets": [
+            "Arquitetei plataforma SaaS serverless para automação de chatbots multi-canal (WhatsApp, Telegram, Instagram) usando AWS Lambda e Node.js",
+            "Implementei sistema de autenticação customizado, mecanismo de processamento JSON e builder de fluxos de trabalho visuais no-code",
+            "Escalei infraestrutura para suportar processamento concorrente de mensagens multi-canal com backend PostgreSQL"
+          ]
+        },
+        "comunica-mulher": {
+          "title": "Pesquisador Desenvolvedor",
+          "company": "ComunicaMulher",
+          "period": "Ago 2024 – Presente",
+          "bullets": [
+            "Construí sistema de gestão de denúncias com fluxo de moderação completo usando Next.js, TypeScript e Supabase",
+            "Implementei políticas granulares de Row-Level Security (RLS), pipeline de sanitização de dados e dashboard administrativo avançado com filtros",
+            "Arquitetei sistema focado em segurança com auditoria completa para plataforma de apoio LGBTQ+"
+          ]
+        },
+        "include-gurias": {
+          "title": "Pesquisador Desenvolvedor",
+          "company": "Include Gurias",
+          "period": "Jun 2023 – Jan 2024",
+          "bullets": [
+            "Arquitetei plataforma institucional fullstack com CMS headless customizado usando Next.js, React e Supabase",
+            "Implementei sistema de autenticação, chatbot interativo e dashboard administrativo com CRUD completo para gerenciamento de conteúdo educacional",
+            "Projetei e implementei arquitetura de cache estratégico suportando 1000+ usuários simultâneos"
+          ]
+        },
+        "eng-futuro-volunteer": {
+          "title": "Desenvolvedor Frontend & Embarcado",
+          "company": "Engenharia do Futuro (Voluntário)",
+          "period": "Mai 2023 – Fev 2024",
+          "bullets": [
+            "Lideiei workshop técnico de Front-End cobrindo arquitetura React e padrões de código para time de 5+ desenvolvedores",
+            "Desenvolvi firmware embarcado (C/Python), interface web (React) e API REST, integrando hardware de microcontrolador com aplicação fullstack"
+          ]
+        },
+        "freelance-designer": {
+          "title": "Designer Gráfico Freelancer",
+          "company": "Autônomo",
+          "period": "Jan 2019 – Dez 2020",
+          "bullets": [
+            "Gerenciei projetos de design end-to-end para múltiplos clientes mantendo taxa de satisfação de 98.7%",
+            "Entreguei identidades visuais, materiais promocionais e motion graphics usando Photoshop, Illustrator, After Effects"
+          ]
+        }
+      }
+    },
+    "projects": {
+      "title": "Projetos em Destaque",
+      "projects": {
+        "heartopia-guide": {
+          "name": "Heartopia Guide",
+          "subtitle": "Plataforma de Conteúdo Profissional",
+          "bullets": [
+            "Construí plataforma Next.js focada em SEO com roteamento dinâmico e páginas orientadas a dados usando App Router",
+            "Implementei pipeline de ingestão de conteúdo estruturado e cache estratégico para 100k+ visitantes mensais"
+          ],
+          "tech": "Next.js, TypeScript, PostgreSQL, Vercel",
+          "url": "heartopia.guide"
+        },
+        "weeb-profile": {
+          "name": "Weeb Profile",
+          "subtitle": "Integração Multi-API & Automação",
+          "bullets": [
+            "Engenheiei sistema de geração de SVG dinâmico agregando dados em tempo real de Last.fm, MyAnimeList e GitHub APIs",
+            "Construí pipeline automatizado via GitHub Actions para coleta, processamento e deployment de dados"
+          ],
+          "tech": "Node.js, TypeScript, GitHub Actions",
+          "url": "github.com/LucasHenriqueDiniz/WeebProfile"
+        },
+        "windows-xp-online": {
+          "name": "Windows XP Online",
+          "subtitle": "Sistema Multiplayer em Tempo Real",
+          "bullets": [
+            "Arquitetei recriação fiel do Windows XP no navegador com multiplayer em tempo real via WebSockets, janelas arrastáveis, temas",
+            "Implementei sistema de eventos multitarefa, sincronização WebSocket e gerenciamento de estado persistente"
+          ],
+          "tech": "React, TypeScript, WebSockets",
+          "url": "w-xp-online.web.app"
+        }
+      }
+    },
+    "skills": {
+      "title": "Habilidades Técnicas",
+      "categories": {
+        "languages": {
+          "label": "Linguagens",
+          "value": "TypeScript, JavaScript, Python, Go, SQL, C"
+        },
+        "frontend": {
+          "label": "Frontend",
+          "value": "React, Next.js, React Native, Expo, Tailwind CSS, Framer Motion, Zustand"
+        },
+        "backend": {
+          "label": "Backend",
+          "value": "Node.js, PostgreSQL, Supabase, Redis, Firebase, Prisma, NestJS"
+        },
+        "cloud": {
+          "label": "Cloud & DevOps",
+          "value": "AWS (Lambda, EC2, S3), Docker, GitHub Actions, Vercel, Web Serial API"
+        },
+        "specialties": {
+          "label": "Especialidades",
+          "value": "Arquitetura SaaS, Integração IoT, Sistemas em Tempo Real, Integração de APIs, Automação"
+        }
+      }
+    },
+    "education": {
+      "title": "Educação",
+      "degrees": {
+        "uergs": {
+          "title": "Engenharia da Computação",
+          "institution": "UERGS (Universidade Estadual do Rio Grande do Sul)",
+          "period": "2023 – 2025",
+          "description": "Projetos acadêmicos: Microcontroladores, Programação de Baixo Nível (C, Assembly), Fundamentos de IA, Desenvolvimento de Algoritmos"
+        },
+        "unicv": {
+          "title": "Engenharia de Software",
+          "institution": "UNICV",
+          "period": "2025 – Presente",
+          "description": "Foco: Arquitetura de Sistemas, Padrões de Design, Metodologia Ágil, Design de Banco de Dados Escalável"
+        }
+      }
+    },
+    "certifications": {
+      "title": "Certificações",
+      "certs": {
+        "microsoft": "Microsoft & LinkedIn Learning: Career Essentials in Software Development (2024)",
+        "efset": "EF SET: English Certificate C2 Proficiency (2024)",
+        "jlpt": "Tokyo Sakura Gaoka Institute: JLPT N5 Japanese Language (2026)",
+        "lovable": "Lovable: AI-Assisted Development L1: Bronze (2026)"
+      }
+    },
+    "downloadButton": "Baixar Currículo"
+  }
+}
