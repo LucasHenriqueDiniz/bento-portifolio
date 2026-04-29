@@ -148,6 +148,10 @@ export const GetMalDataResponse = zod.object({
       year: zod.number().nullish(),
       imageUrl: zod.string().nullish(),
       url: zod.string(),
+      score: zod.number().nullish(),
+      synopsis: zod.string().nullish(),
+      type: zod.string().nullish(),
+      episodes: zod.number().nullish(),
     }),
   ),
   mangaFavorites: zod.array(
@@ -157,6 +161,10 @@ export const GetMalDataResponse = zod.object({
       year: zod.number().nullish(),
       imageUrl: zod.string().nullish(),
       url: zod.string(),
+      score: zod.number().nullish(),
+      synopsis: zod.string().nullish(),
+      type: zod.string().nullish(),
+      chapters: zod.number().nullish(),
     }),
   ),
 });

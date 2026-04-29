@@ -11,6 +11,12 @@ import {
   SiDocker, SiSupabase, SiFigma, SiExpo,
 } from "react-icons/si";
 import { Moon, Sun } from "lucide-react";
+import { 
+  jobExperiences, 
+  academicExperiences, 
+  projects 
+} from "@/constants";
+import { formatDateRange } from "@/lib/dateFormatter";
 
 const ACCENT = "#3d72cc";
 
@@ -22,6 +28,7 @@ const fadeUp = (delay = 0) => ({
   transition: { delay, duration: 0.38, ease: [0.25, 0.46, 0.45, 0.94] as const },
 });
 
+// CV metadata
 const resumeData = {
   name: "Lucas",
   title: "Full-stack Developer & Designer",
@@ -34,37 +41,6 @@ const resumeData = {
     email: "lucas@example.com",
     website: "lucashdo.com",
   },
-  experience: [
-    {
-      role: "Full-stack Developer",
-      company: "Freelance / Self-employed",
-      period: "2022 – present",
-      current: true,
-      bullets: [
-        "Developing Pingo Concursos — a React Native + Expo mobile platform with Supabase backend, real-time sync, and offline-first architecture",
-        "Built and maintained Go REST APIs with PostgreSQL + Redis caching serving production traffic",
-        "Designed and shipped lucashdo.com — bento-style portfolio with live Discord, Last.fm, GitHub, and Steam integrations",
-      ],
-    },
-    {
-      role: "Frontend Developer",
-      company: "Agency / Client Work",
-      period: "2020 – 2022",
-      current: false,
-      bullets: [
-        "Delivered responsive React and Next.js applications for e-commerce and SaaS clients",
-        "Translated Figma designs into pixel-perfect, accessible UI components",
-        "Improved Core Web Vitals scores and page performance on key client properties",
-      ],
-    },
-  ],
-  education: [
-    {
-      degree: "B.Sc. Computer Science",
-      institution: "Universidade Federal",
-      period: "2019 – 2023",
-    },
-  ],
   skills: [
     { group: "Languages", items: [
       { name: "TypeScript", color: "#3178c6", icon: <SiTypescript size={11} /> },
@@ -92,32 +68,6 @@ const resumeData = {
     { name: "Portuguese", level: "Native", pct: 100 },
     { name: "English", level: "Professional", pct: 82 },
   ],
-  projects: [
-    {
-      name: "lucashdo.com",
-      description: "Bento-style portfolio with live integrations (Discord, Last.fm, GitHub, WakaTime, Steam, MAL)",
-      stars: 42,
-      lang: "TypeScript",
-      langColor: "#3d72cc",
-      url: "https://lucashdo.com",
-    },
-    {
-      name: "pingo-api",
-      description: "REST + WebSocket backend for the concursos mobile platform — Go, PostgreSQL, Redis",
-      stars: 24,
-      lang: "Go",
-      langColor: "#00add8",
-      url: "#",
-    },
-    {
-      name: "animelist-tracker",
-      description: "MyAnimeList API wrapper with caching and webhook support",
-      stars: 18,
-      lang: "Go",
-      langColor: "#00add8",
-      url: "#",
-    },
-  ],
 };
 
 export default function CV() {
@@ -135,7 +85,7 @@ export default function CV() {
   };
 
   return (
-    <div className={`min-h-screen font-sans transition-colors duration-300${isDark ? " dark bg-[#0d0d0d] text-[#eee]" : " bg-[#f5f5f5] text-[#111]"}`}>
+    <div className={`min-h-screen font-sans transition-colors duration-300 ${isDark ? "dark bg-[#0a0a0a] text-white" : "bg-white text-gray-900"}`}>
 
       <style>{`
         @media print {
@@ -146,74 +96,76 @@ export default function CV() {
       `}</style>
 
       {/* ── NAV ── */}
-      <header className="no-print shrink-0 z-50 h-11 flex items-center border-b border-[#ebebeb] dark:border-[#282828] bg-white/80 dark:bg-[#181818]/80 backdrop-blur sticky top-0">
-        <div className="flex w-full max-w-[920px] mx-auto px-4 items-center justify-between">
-          <Link href="/" className="flex items-center gap-1.5 text-[13px] text-[#888] dark:text-[#555] hover:text-[#111] dark:hover:text-[#eee] transition-colors">
-            <FiArrowLeft size={13} />
-            Back
+      <header className={`no-print sticky top-0 z-50 h-14 flex items-center border-b ${isDark ? "bg-black/80 border-gray-800" : "bg-white/80 border-gray-200"} backdrop-blur-md`}>
+        <div className="flex w-full max-w-5xl mx-auto px-6 sm:px-8 items-center justify-between">
+          <Link href="/" className={`flex items-center gap-1.5 text-xs font-medium transition-colors hover:opacity-60 ${isDark ? "text-gray-400 hover:text-white" : "text-gray-600 hover:text-gray-900"}`}>
+            <FiArrowLeft size={14} />
+            Voltar
           </Link>
-          <span className="font-bold text-[15px] tracking-tight select-none">
-            <span className="text-[#2d3748] dark:text-[#e2e8f0]">lucas</span><span style={{ color: ACCENT }}>hdo</span>
+          <span className="font-black text-base tracking-tight select-none">
+            <span className={isDark ? "text-white" : "text-gray-900"}>lucas</span><span style={{ color: ACCENT }}>hdo</span>
           </span>
           <div className="flex items-center gap-2">
             <button
               onClick={() => window.print()}
-              className="flex items-center gap-1.5 text-[12px] text-[#666] dark:text-[#888] hover:text-[#111] dark:hover:text-[#eee] transition-colors px-3 py-1.5 rounded-lg border border-[#e0e0e0] dark:border-[#282828] bg-white dark:bg-[#222]"
+              className={`flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg border transition-colors ${isDark ? "text-gray-400 border-gray-700 hover:text-white hover:border-gray-600" : "text-gray-600 border-gray-300 hover:text-gray-900 hover:border-gray-400"}`}
             >
-              <FiPrinter size={12} />
-              <span>Print</span>
+              <FiPrinter size={13} />
+              <span>Imprimir</span>
             </button>
             <button
               onClick={toggleDark}
-              className="w-7 h-7 rounded-lg flex items-center justify-center border border-[#ebebeb] dark:border-[#282828] bg-white dark:bg-[#222] hover:bg-[#f0f0f0] dark:hover:bg-[#2a2a2a] transition-colors text-[#888] dark:text-[#666]"
+              className={`w-8 h-8 rounded-lg flex items-center justify-center border transition-colors ${isDark ? "text-gray-500 border-gray-700 hover:bg-gray-900" : "text-gray-600 border-gray-300 hover:bg-gray-100"}`}
             >
-              {isDark ? <Sun size={13} /> : <Moon size={13} />}
+              {isDark ? <Sun size={14} /> : <Moon size={14} />}
             </button>
           </div>
         </div>
       </header>
 
       {/* ── CONTENT ── */}
-      <div className="max-w-[920px] mx-auto px-4 py-6 flex flex-col gap-4">
+      <div className="max-w-5xl mx-auto px-6 sm:px-8 py-8 sm:py-12 flex flex-col gap-8">
 
         {/* HERO CARD */}
-        <motion.div {...fadeUp(0)} className={`${CARD} p-6 flex items-start gap-5`}>
+        <motion.div {...fadeUp(0)} className={`${CARD} p-8 sm:p-10 flex items-start gap-6`}>
           <div
-            className="w-16 h-16 rounded-2xl shrink-0 flex items-center justify-center text-[26px] font-black text-white shadow-sm"
-            style={{ background: `linear-gradient(135deg, ${ACCENT}, #6a9fd8)` }}
+            className="w-24 h-24 rounded-3xl shrink-0 flex items-center justify-center text-4xl font-black text-white shadow-lg"
+            style={{ background: `linear-gradient(135deg, ${ACCENT}, #2563eb)` }}
           >
             L
           </div>
           <div className="flex-1 min-w-0">
-            <div className="flex items-start justify-between gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
               <div>
-                <h1 className="text-[26px] font-black leading-none text-[#111] dark:text-[#eee]">{resumeData.name}</h1>
-                <p className="text-[14px] text-[#888] dark:text-[#555] mt-0.5">{resumeData.title}</p>
-                <div className="flex items-center gap-1 mt-1 text-[11px] text-[#bbb] dark:text-[#444]">
-                  <FiMapPin size={10} />
+                <h1 className="text-4xl sm:text-5xl font-black leading-tight tracking-tight mb-2" style={{ color: isDark ? "#ffffff" : "#000000" }}>
+                  {resumeData.name}
+                </h1>
+                <p className={`text-lg font-semibold mb-1 ${isDark ? "text-blue-400" : "text-blue-600"}`}>{resumeData.title}</p>
+                <div className={`flex items-center gap-1.5 text-sm ${isDark ? "text-gray-400" : "text-gray-600"}`}>
+                  <FiMapPin size={14} />
                   <span>{resumeData.location}</span>
                 </div>
               </div>
               <div
-                className="shrink-0 text-[11px] font-semibold px-2.5 py-1 rounded-full border"
-                style={{ color: ACCENT, borderColor: `${ACCENT}30`, backgroundColor: `${ACCENT}0f` }}
+                className="shrink-0 text-xs font-bold px-3 py-1.5 rounded-full border whitespace-nowrap"
+                style={{ color: ACCENT, borderColor: `${ACCENT}50`, backgroundColor: `${ACCENT}15` }}
               >
-                Open to work
+                ✓ Aberto para trabalho
               </div>
             </div>
-            <div className="flex flex-wrap items-center gap-4 mt-3">
+            <div className={`flex flex-wrap gap-4 pt-4 border-t ${isDark ? "border-gray-800" : "border-gray-200"}`}>
               {[
-                { icon: <FiGithub size={11} />, label: "lucashdo", href: resumeData.contact.github },
-                { icon: <FiTwitter size={11} />, label: "@lucashdo", href: resumeData.contact.twitter },
-                { icon: <FiMail size={11} />, label: resumeData.contact.email, href: `mailto:${resumeData.contact.email}` },
-                { icon: <FiExternalLink size={11} />, label: resumeData.contact.website, href: "https://lucashdo.com" },
+                { icon: <FiGithub size={13} />, label: "lucashdo", href: resumeData.contact.github },
+                { icon: <FiTwitter size={13} />, label: "@lucashdo", href: resumeData.contact.twitter },
+                { icon: <FiMail size={13} />, label: resumeData.contact.email, href: `mailto:${resumeData.contact.email}` },
+                { icon: <FiExternalLink size={13} />, label: resumeData.contact.website, href: "https://lucashdo.com" },
               ].map(c => (
                 <a
                   key={c.label}
                   href={c.href}
                   target="_blank"
                   rel="noreferrer"
-                  className="flex items-center gap-1.5 text-[11px] text-[#999] dark:text-[#555] hover:text-[#111] dark:hover:text-[#eee] transition-colors"
+                  className={`flex items-center gap-1.5 text-xs font-medium transition-colors hover:opacity-70 ${isDark ? "text-gray-300" : "text-gray-700"}`}
                 >
                   {c.icon}
                   <span>{c.label}</span>
@@ -223,43 +175,101 @@ export default function CV() {
           </div>
         </motion.div>
 
-        {/* TWO-COLUMN */}
-        <div className="grid grid-cols-[240px_1fr] gap-4 items-start">
+        {/* SUMMARY */}
+        <motion.div {...fadeUp(0.04)} className={`${CARD} p-8 sm:p-10`}>
+          <h2 className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: ACCENT }}>Sobre</h2>
+          <p className={`text-base leading-relaxed ${isDark ? "text-gray-300" : "text-gray-700"}`}>
+            {resumeData.summary}
+          </p>
+        </motion.div>
 
-          {/* ── LEFT SIDEBAR ── */}
-          <div className="flex flex-col gap-4">
+        {/* THREE-COLUMN LAYOUT */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
 
-            {/* SKILLS */}
-            <motion.div {...fadeUp(0.08)} className={`${CARD} p-4 flex flex-col gap-3`}>
-              <SectionLabel>Skills</SectionLabel>
+          {/* ── LEFT: SKILLS ── */}
+          <motion.div {...fadeUp(0.08)} className={`${CARD} p-6 flex flex-col gap-4`}>
+            <h2 className="text-xs font-bold uppercase tracking-widest" style={{ color: ACCENT }}>Habilidades</h2>
+            <div className="flex flex-col gap-4">
+              {resumeData.skills.map(group => (
+                <div key={group.group}>
+                  <p className={`text-xs font-bold uppercase tracking-widest mb-3 ${isDark ? "text-gray-500" : "text-gray-400"}`}>{group.group}</p>
+                  <div className="flex flex-wrap gap-2">
+                    {group.items.map(item => (
+                      <div key={item.name} className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border ${isDark ? "bg-gray-900 border-gray-800" : "bg-gray-50 border-gray-200"} text-xs font-medium`}>
+                        <span style={{ color: item.color }}>{item.icon}</span>
+                        <span className={isDark ? "text-gray-300" : "text-gray-700"}>{item.name}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* ── CENTER: EXPERIENCE ── */}
+          <motion.div {...fadeUp(0.1)} className={`${CARD} p-6 flex flex-col gap-6 md:col-span-2`}>
+            <div>
+              <h2 className="text-xs font-bold uppercase tracking-widest mb-6" style={{ color: ACCENT }}>Experiência</h2>
+              <div className="flex flex-col gap-6">
+                {jobExperiences.filter(exp => exp.showInTimeline).map((job, i) => (
+                  <div key={job.id} className={`${i > 0 ? `pt-6 border-t ${isDark ? "border-gray-800" : "border-gray-200"}` : ""}`}>
+                    <div className="flex items-start justify-between gap-2 mb-1">
+                      <div>
+                        <h3 className={`text-sm font-bold ${isDark ? "text-white" : "text-gray-900"}`}>{job.title}</h3>
+                        <p className={`text-xs ${isDark ? "text-gray-400" : "text-gray-600"}`}>{job.institution}</p>
+                      </div>
+                      {!job.endDate && (
+                        <span
+                          className="text-xs font-bold px-2 py-0.5 rounded-full shrink-0"
+                          style={{ color: ACCENT, backgroundColor: `${ACCENT}15` }}
+                        >
+                          atual
+                        </span>
+                      )}
+                    </div>
+                    <p className={`text-xs ${isDark ? "text-gray-400" : "text-gray-600"} mb-2`}>
+                      {formatDateRange(job.startDate, job.endDate)}
+                    </p>
+                    <p className={`text-sm leading-relaxed ${isDark ? "text-gray-300" : "text-gray-700"}`}>{job.description}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* EDUCATION */}
+            <div className={`pt-6 border-t ${isDark ? "border-gray-800" : "border-gray-200"}`}>
+              <h2 className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: ACCENT }}>Educação</h2>
               <div className="flex flex-col gap-3">
-                {resumeData.skills.map(group => (
-                  <div key={group.group}>
-                    <p className="text-[9px] font-bold uppercase tracking-widest text-[#ccc] dark:text-[#444] mb-1.5">{group.group}</p>
-                    <div className="flex flex-col gap-1">
-                      {group.items.map(item => (
-                        <div key={item.name} className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-[#f8f8f8] dark:bg-[#1e1e1e] border border-[#f0f0f0] dark:border-[#282828]">
-                          <span style={{ color: item.color }}>{item.icon}</span>
-                          <span className="text-[11px] font-medium text-[#555] dark:text-[#999]">{item.name}</span>
-                        </div>
-                      ))}
+                {academicExperiences.filter(ed => ed.showInTimeline).map((ed) => (
+                  <div key={ed.id}>
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <h3 className={`text-sm font-bold ${isDark ? "text-white" : "text-gray-900"}`}>{ed.title}</h3>
+                        <p className={`text-xs ${isDark ? "text-gray-400" : "text-gray-600"}`}>{ed.institution}</p>
+                      </div>
+                      <span className={`text-xs shrink-0 ${isDark ? "text-gray-500" : "text-gray-500"}`}>
+                        {formatDateRange(ed.startDate, ed.endDate)}
+                      </span>
                     </div>
                   </div>
                 ))}
               </div>
-            </motion.div>
+            </div>
+          </motion.div>
 
+          {/* ── RIGHT: LANGUAGES & PROJECTS ── */}
+          <motion.div {...fadeUp(0.12)} className="flex flex-col gap-6">
             {/* LANGUAGES */}
-            <motion.div {...fadeUp(0.12)} className={`${CARD} p-4 flex flex-col gap-3`}>
-              <SectionLabel>Languages</SectionLabel>
+            <div className={`${CARD} p-6 flex flex-col gap-4`}>
+              <h2 className="text-xs font-bold uppercase tracking-widest" style={{ color: ACCENT }}>Idiomas</h2>
               <div className="flex flex-col gap-3">
                 {resumeData.languages.map(lang => (
-                  <div key={lang.name} className="flex flex-col gap-1.5">
-                    <div className="flex items-center justify-between">
-                      <span className="text-[12px] font-medium text-[#555] dark:text-[#999]">{lang.name}</span>
-                      <span className="text-[10px] text-[#bbb] dark:text-[#555]">{lang.level}</span>
+                  <div key={lang.name}>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className={`text-xs font-medium ${isDark ? "text-gray-300" : "text-gray-700"}`}>{lang.name}</span>
+                      <span className={`text-xs ${isDark ? "text-gray-500" : "text-gray-600"}`}>{lang.level}</span>
                     </div>
-                    <div className="h-1.5 rounded-full overflow-hidden bg-[#f0f0f0] dark:bg-[#282828]">
+                    <div className={`h-2 rounded-full overflow-hidden ${isDark ? "bg-gray-800" : "bg-gray-200"}`}>
                       <motion.div
                         initial={{ width: 0 }}
                         animate={{ width: `${lang.pct}%` }}
@@ -271,129 +281,37 @@ export default function CV() {
                   </div>
                 ))}
               </div>
-            </motion.div>
-
-          </div>
-
-          {/* ── RIGHT MAIN ── */}
-          <div className="flex flex-col gap-4">
-
-            {/* ABOUT */}
-            <motion.div {...fadeUp(0.04)} className={`${CARD} p-5`}>
-              <SectionLabel>About</SectionLabel>
-              <p className="text-[13px] text-[#777] dark:text-[#555] leading-relaxed mt-2">
-                {resumeData.summary}
-              </p>
-            </motion.div>
-
-            {/* EXPERIENCE */}
-            <motion.div {...fadeUp(0.1)} className={`${CARD} p-5 flex flex-col gap-5`}>
-              <SectionLabel>Experience</SectionLabel>
-              {resumeData.experience.map((job, i) => (
-                <div key={i} className={`flex gap-4 print-break ${i > 0 ? "pt-5 border-t border-[#f0f0f0] dark:border-[#282828]" : ""}`}>
-                  {/* timeline dot */}
-                  <div className="flex flex-col items-center shrink-0 mt-1">
-                    <div
-                      className="w-2.5 h-2.5 rounded-full shrink-0"
-                      style={{ backgroundColor: job.current ? ACCENT : "#ddd" }}
-                    />
-                    {i < resumeData.experience.length - 1 && (
-                      <div className="w-px flex-1 mt-1.5 bg-[#ebebeb] dark:bg-[#282828]" />
-                    )}
-                  </div>
-                  <div className="flex-1 pb-1">
-                    <div className="flex items-start justify-between gap-2 mb-2">
-                      <div>
-                        <h3 className="text-[14px] font-bold text-[#111] dark:text-[#eee] leading-tight">{job.role}</h3>
-                        <p className="text-[12px] text-[#888] dark:text-[#555] mt-0.5">{job.company}</p>
-                      </div>
-                      <div className="flex items-center gap-2 shrink-0">
-                        {job.current && (
-                          <span
-                            className="text-[9px] font-semibold px-2 py-0.5 rounded-full"
-                            style={{ color: ACCENT, backgroundColor: `${ACCENT}12` }}
-                          >
-                            current
-                          </span>
-                        )}
-                        <span className="text-[11px] text-[#bbb] dark:text-[#444] tabular-nums">{job.period}</span>
-                      </div>
-                    </div>
-                    <ul className="flex flex-col gap-1.5">
-                      {job.bullets.map((b, j) => (
-                        <li key={j} className="flex items-start gap-2 text-[12px] text-[#777] dark:text-[#555] leading-snug">
-                          <span className="shrink-0 mt-1.5 w-1 h-1 rounded-full bg-[#ddd] dark:bg-[#444]" />
-                          {b}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              ))}
-            </motion.div>
-
-            {/* EDUCATION */}
-            <motion.div {...fadeUp(0.14)} className={`${CARD} p-5 flex flex-col gap-3`}>
-              <SectionLabel>Education</SectionLabel>
-              {resumeData.education.map((ed, i) => (
-                <div key={i} className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-[13px] font-bold text-[#111] dark:text-[#eee]">{ed.degree}</h3>
-                    <p className="text-[12px] text-[#888] dark:text-[#555]">{ed.institution}</p>
-                  </div>
-                  <span className="text-[11px] text-[#bbb] dark:text-[#444] tabular-nums shrink-0">{ed.period}</span>
-                </div>
-              ))}
-            </motion.div>
+            </div>
 
             {/* FEATURED PROJECTS */}
-            <motion.div {...fadeUp(0.18)} className={`${CARD} p-5 flex flex-col gap-3`}>
-              <SectionLabel>Featured Projects</SectionLabel>
-              <div className="flex flex-col gap-2.5">
-                {resumeData.projects.map((proj) => (
+            <div className={`${CARD} p-6 flex flex-col gap-3`}>
+              <h2 className="text-xs font-bold uppercase tracking-widest" style={{ color: ACCENT }}>Projetos</h2>
+              <div className="flex flex-col gap-3">
+                {projects.filter(p => p.featured).slice(0, 3).map((proj) => (
                   <div
-                    key={proj.name}
-                    className="flex items-start justify-between gap-3 p-3 rounded-xl border border-[#f0f0f0] dark:border-[#282828] bg-[#fafafa] dark:bg-[#111]"
+                    key={proj.id}
+                    className={`p-3 rounded-lg border transition-colors cursor-pointer ${isDark ? "bg-gray-900 border-gray-800 hover:border-gray-700" : "bg-gray-50 border-gray-200 hover:border-gray-300"}`}
                   >
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h4 className="text-[13px] font-bold text-[#111] dark:text-[#eee]">{proj.name}</h4>
-                        <div className="flex items-center gap-0.5 text-[#bbb] dark:text-[#444]">
-                          <FiStar size={10} />
-                          <span className="text-[10px] tabular-nums">{proj.stars}</span>
-                        </div>
-                      </div>
-                      <p className="text-[11px] text-[#888] dark:text-[#555] leading-snug">{proj.description}</p>
-                    </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                      <div className="flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: proj.langColor }} />
-                        <span className="text-[10px] text-[#999] dark:text-[#555]">{proj.lang}</span>
-                      </div>
-                      <a href={proj.url} target="_blank" rel="noreferrer" className="text-[#ccc] dark:text-[#444] hover:text-[#888] transition-colors">
-                        <FiExternalLink size={11} />
+                    <div className="flex items-start justify-between gap-2 mb-1">
+                      <h4 className={`text-xs font-bold ${isDark ? "text-white" : "text-gray-900"}`}>{proj.name}</h4>
+                      <a href={proj.url} target="_blank" rel="noreferrer" className={`shrink-0 transition-opacity hover:opacity-60 ${isDark ? "text-gray-500" : "text-gray-400"}`}>
+                        <FiExternalLink size={12} />
                       </a>
                     </div>
+                    <p className={`text-xs leading-snug ${isDark ? "text-gray-400" : "text-gray-600"}`}>{proj.description}</p>
                   </div>
                 ))}
               </div>
-            </motion.div>
-
-          </div>
+            </div>
+          </motion.div>
         </div>
 
         {/* FOOTER */}
-        <div className="no-print text-center text-[11px] text-[#ccc] dark:text-[#333] pb-4">
-          Generated from <span style={{ color: ACCENT }}>lucashdo.com</span>
+        <div className={`text-center text-xs no-print py-6 ${isDark ? "text-gray-600" : "text-gray-400"}`}>
+          Gerado a partir de <span style={{ color: ACCENT }} className="font-semibold">lucashdo.com</span>
         </div>
 
       </div>
     </div>
-  );
-}
-
-function SectionLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <p className="text-[9px] font-bold uppercase tracking-widest text-[#bbb] dark:text-[#444]">{children}</p>
   );
 }

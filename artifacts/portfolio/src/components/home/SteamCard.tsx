@@ -142,25 +142,18 @@ export const SteamCard = React.memo(function SteamCard({
       loadingIcon={
         <SiSteam
           size={28}
-          className={isDark ? "text-[#c7d5e0]" : "text-[#1b2838]"}
+          className={isDark ? "text-[#1b2838]" : "text-[#1b2838]"}
         />
       }
       emptyIcon={
         <SiSteam
           size={24}
-          className={isDark ? "text-[#c7d5e0]" : "text-[#1b2838]"}
+          className={isDark ? "text-[#1b2838]" : "text-[#1b2838]"}
         />
       }
-      className={`rounded-2xl relative h-full
-        /* Mobile: full width, order 14 (tier-3) */
-        col-span-1 order-14
-        /* Tablet: column 4, rows 13-17 */
-        md:col-start-4 md:col-end-5 md:row-start-13 md:row-end-17
-        /* Desktop: column 5, rows 13-17 */
-        lg:col-start-5 lg:col-end-6 lg:row-start-13 lg:row-end-17`}
+      className="h-full rounded-2xl overflow-hidden"
       style={{
-        backgroundColor: isDark ? "#1b2838" : "#f0f0f0",
-        overflow: "hidden", // Move overflow to style to maintain border radius
+        border: isDark ? "1px solid #282828" : "1px solid #ebebeb",
       }}
       glowColor="27, 40, 56"
     >
@@ -199,24 +192,25 @@ export const SteamCard = React.memo(function SteamCard({
                         className="w-full h-full object-cover rounded-2xl"
                         onError={() => handleImageError(game)}
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent rounded-2xl" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent rounded-2xl" />
                     </>
                   ) : (
-                    // Placeholder para jogos sem imagem ou com erro ao carregar
                     <div className="absolute inset-0 bg-gradient-to-br from-[#1b2838] to-[#2a475e] flex items-center justify-center rounded-2xl">
                       <SiSteam size={48} className="text-white/20" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent rounded-2xl" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent rounded-2xl" />
                     </div>
                   )}
-                  <div className="absolute bottom-2.5 left-2.5 right-2.5">
-                    <p className="text-white/60 text-[8px] uppercase tracking-widest font-bold mb-0.5 flex items-center gap-1 drop-shadow-lg">
+                  
+                  {/* Bottom Info */}
+                  <div className="absolute bottom-0 left-0 right-0 p-2.5">
+                    <p className="text-white/60 text-[7px] uppercase tracking-widest font-bold mb-1 flex items-center gap-1 drop-shadow-lg">
                       <SiSteam size={7} />
                       Steam
                     </p>
-                    <p className="text-white text-[12px] font-bold leading-tight truncate drop-shadow-lg">
+                    <p className="text-white text-[11px] font-bold leading-tight truncate drop-shadow-lg">
                       {game.name}
                     </p>
-                    <p className="text-white/70 text-[10px] font-medium drop-shadow-lg">
+                    <p className="text-white/75 text-[9px] font-medium drop-shadow-lg mt-0.5">
                       {game.hoursPlayed}h played
                     </p>
                   </div>
@@ -224,12 +218,11 @@ export const SteamCard = React.memo(function SteamCard({
               ) : null;
             })()}
           </AnimatePresence>
+          
           {/* game count badge */}
-          <div className="absolute top-2.5 right-2.5 flex items-center gap-1 px-2 py-1 rounded-lg bg-black/60 backdrop-blur-sm border border-white/10 z-10">
-            <SiSteam size={9} className="text-white/80" />
-            <span className="text-[9px] text-white/90 font-bold">
-              {steam.totalGames ?? 0}
-            </span>
+          <div className="absolute top-2.5 right-2.5 flex items-center gap-1.5 px-2 py-1.5 rounded-lg bg-black/70 backdrop-blur-sm border border-white/15 z-10 shadow-lg">
+            <SiSteam size={10} className="text-white/90" />
+            <span className="text-[9px] text-white font-bold">{steam.totalGames ?? 0} games</span>
           </div>
         </motion.div>
       )}

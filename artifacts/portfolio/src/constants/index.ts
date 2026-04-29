@@ -6,3 +6,4 @@ export * from "./academicExperiences";
 export * from "./jobExperiences";
 export * from "./languages";
 export * from "./contacts";
+export * from "./projects";

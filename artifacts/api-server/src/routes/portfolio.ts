@@ -94,7 +94,7 @@ router.get("/portfolio/now-playing", async (_req, res): Promise<void> => {
 });
 
 /* ═══════════════════════════════════════════════════════
-   LAST.FM — top artists (1 month)
+   LAST.FM — top artists (90 days / 3 months)
    ═══════════════════════════════════════════════════════ */
 router.get("/portfolio/top-artists", async (_req, res): Promise<void> => {
   const cached = fromCache<object[]>("top-artists");
@@ -103,7 +103,7 @@ router.get("/portfolio/top-artists", async (_req, res): Promise<void> => {
   try {
     const url =
       `https://ws.audioscrobbler.com/2.0/?method=user.getTopArtists` +
-      `&user=${LASTFM_USER}&api_key=${LASTFM_KEY}&format=json&period=1month&limit=5`;
+      `&user=${LASTFM_USER}&api_key=${LASTFM_KEY}&format=json&period=3month&limit=5`;
     const r = await fetch(url);
     const json = await r.json() as any;
     const rawArtists = json?.topartists?.artist ?? [];
@@ -122,6 +122,40 @@ router.get("/portfolio/top-artists", async (_req, res): Promise<void> => {
     );
 
     toCache("top-artists", data, 300_000);
+    res.json(data);
+  } catch {
+    res.json([]);
+  }
+});
+
+/* ═══════════════════════════════════════════════════════
+   LAST.FM — top tracks (90 days / 3 months)
+   ═══════════════════════════════════════════════════════ */
+router.get("/portfolio/top-tracks", async (_req, res): Promise<void> => {
+  const cached = fromCache<object[]>("top-tracks");
+  if (cached) { res.json(cached); return; }
+
+  try {
+    const url =
+      `https://ws.audioscrobbler.com/2.0/?method=user.getTopTracks` +
+      `&user=${LASTFM_USER}&api_key=${LASTFM_KEY}&format=json&period=3month&limit=5`;
+    const r = await fetch(url);
+    const json = await r.json() as any;
+    const rawTracks = json?.toptracks?.track ?? [];
+    const tracks = Array.isArray(rawTracks) ? rawTracks : [rawTracks];
+
+    const data = tracks.map((t: any) => ({
+      name: t.name,
+      artist: t.artist?.name ?? "",
+      playcount: String(t.playcount),
+      imageUrl:
+        t.image?.find((img: any) => img.size === "medium")?.["#text"] ||
+        t.image?.find((img: any) => img.size === "small")?.["#text"] ||
+        null,
+      url: t.url,
+    }));
+
+    toCache("top-tracks", data, 300_000);
     res.json(data);
   } catch {
     res.json([]);
@@ -479,6 +513,27 @@ router.get("/portfolio/projects", async (_req, res): Promise<void> => {
 const MAL_USER = process.env.MAL_USERNAME ?? "Amayacrab";
 const JIKAN_BASE = "https://api.jikan.moe/v4";
 
+const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+async function fetchJikanDetails(type: "anime" | "manga", id: number, retries = 2): Promise<any> {
+  for (let i = 0; i <= retries; i++) {
+    try {
+      const r = await fetch(`${JIKAN_BASE}/${type}/${id}`);
+      if (r.status === 429) {
+        await delay(1000);
+        continue;
+      }
+      if (!r.ok) return null;
+      const json = await r.json() as any;
+      return json.data ?? null;
+    } catch {
+      if (i === retries) return null;
+      await delay(500);
+    }
+  }
+  return null;
+}
+
 router.get("/portfolio/mal", async (_req, res): Promise<void> => {
   const cached = fromCache<ReturnType<typeof GetMalDataResponse.parse>>("mal");
   if (cached) { res.json(cached); return; }
@@ -501,6 +556,23 @@ router.get("/portfolio/mal", async (_req, res): Promise<void> => {
     const favAnime = Array.isArray(rawFavAnime) ? rawFavAnime : [rawFavAnime];
     const favManga = Array.isArray(rawFavManga) ? rawFavManga : [rawFavManga];
 
+    // Fetch details for each favorite with delay to respect Jikan rate limit (~3 req/s)
+    const animeDetails: any[] = [];
+    for (const a of favAnime.slice(0, 10)) {
+      const d = await fetchJikanDetails("anime", a.mal_id);
+      if (d) animeDetails.push(d);
+      await delay(350);
+    }
+
+    const mangaDetails: any[] = [];
+    for (const m of favManga.slice(0, 10)) {
+      const d = await fetchJikanDetails("manga", m.mal_id);
+      if (d) mangaDetails.push(d);
+      await delay(350);
+    }
+
+    const findDetail = (details: any[], malId: number) => details.find((d) => d.mal_id === malId);
+
     const data = GetMalDataResponse.parse({
       animeStats: {
         completed: anime?.completed ?? 0,
@@ -512,26 +584,44 @@ router.get("/portfolio/mal", async (_req, res): Promise<void> => {
         reading: manga?.reading ?? 0,
         chaptersRead: manga?.chapters_read ?? 0,
       },
-      animeFavorites: favAnime.map((a: any) => ({
-        malId: a.mal_id,
-        title: a.title,
-        year: a.start_year ?? null,
-        imageUrl: a.images?.jpg?.image_url ?? null,
-        url: `https://myanimelist.net/anime/${a.mal_id}`,
-      })),
-      mangaFavorites: favManga.map((m: any) => ({
-        malId: m.mal_id,
-        title: m.title,
-        year: m.start_year ?? null,
-        imageUrl: m.images?.jpg?.image_url ?? null,
-        url: `https://myanimelist.net/manga/${m.mal_id}`,
-      })),
+      animeFavorites: favAnime.slice(0, 10).map((a: any) => {
+        const d = findDetail(animeDetails, a.mal_id);
+        return {
+          malId: a.mal_id,
+          title: a.title,
+          year: a.start_year ?? null,
+          imageUrl: a.images?.jpg?.image_url ?? null,
+          url: `https://myanimelist.net/anime/${a.mal_id}`,
+          score: d?.score ?? null,
+          synopsis: d?.synopsis ?? null,
+          type: d?.type ?? null,
+          episodes: d?.episodes ?? null,
+        };
+      }),
+      mangaFavorites: favManga.slice(0, 10).map((m: any) => {
+        const d = findDetail(mangaDetails, m.mal_id);
+        return {
+          malId: m.mal_id,
+          title: m.title,
+          year: m.start_year ?? null,
+          imageUrl: m.images?.jpg?.image_url ?? null,
+          url: `https://myanimelist.net/manga/${m.mal_id}`,
+          score: d?.score ?? null,
+          synopsis: d?.synopsis ?? null,
+          type: d?.type ?? null,
+          chapters: d?.chapters ?? null,
+        };
+      }),
     });
 
     toCache("mal", data, 900_000);
     res.json(data);
   } catch (err) {
     console.error("MAL/Jikan error:", err);
+    if (err instanceof Error) {
+      console.error("Error message:", err.message);
+      console.error("Error stack:", err.stack);
+    }
     res.json(GetMalDataResponse.parse({
       animeStats: { completed: 0, watching: 0, episodesWatched: 0 },
       mangaStats: { completed: 0, reading: 0, chaptersRead: 0 },

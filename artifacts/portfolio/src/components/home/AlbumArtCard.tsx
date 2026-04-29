@@ -44,13 +44,7 @@ export const AlbumArtCard = memo(function AlbumArtCard({
       emptyIcon={
         <SiLastdotfm size={24} className="text-[#ccc] dark:text-[#444]" />
       }
-      className={`rounded-2xl overflow-hidden relative
-        /* Mobile: full width, order 13 (tier-3) */
-        col-span-1 order-13
-        /* Tablet: column 4, rows 1-5 */
-        md:col-start-4 md:col-end-5 md:row-start-1 md:row-end-5
-        /* Desktop: column 5, rows 1-5 */
-        lg:col-start-5 lg:col-end-6 lg:row-start-1 lg:row-end-5`}
+      className="rounded-2xl overflow-hidden relative h-full"
       style={{
         border: "1px solid",
         borderColor: isDark ? "#282828" : "#ebebeb",

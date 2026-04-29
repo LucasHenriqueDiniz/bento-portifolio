@@ -1,8 +1,6 @@
 import React from "react";
-import { motion } from "framer-motion";
 import { SiDiscord } from "react-icons/si";
 import { WidgetCard } from "@/components/WidgetCard";
-import { fadeUpSoft } from "@/lib/animations";
 
 const STATUS_COLORS: Record<string, string> = {
   online: "#22c55e",
@@ -63,108 +61,87 @@ export const DiscordCard = React.memo(function DiscordCard({
       error={!discord ? "Status indisponível" : null}
       loadingIcon={<SiDiscord size={28} className="text-[#5865f2]" />}
       emptyIcon={<SiDiscord size={24} className="text-[#5865f2]" />}
-      className="rounded-2xl"
+      className="h-full rounded-2xl overflow-hidden"
       style={{
-        backgroundColor: isDark ? "#1e1f22" : "#f5f6ff",
-        border: isDark ? "1px solid #2b2d31" : "1px solid #e3e4f0",
-        gridColumn: "5",
-        gridRow: "5 / 9",
+        border: isDark ? "1px solid #282828" : "1px solid #ebebeb",
       }}
       glowColor="88, 101, 242"
     >
-      <motion.div
-        custom={8}
-        variants={fadeUpSoft}
-        initial="hidden"
-        animate="show"
-        className="p-2.5 h-full flex flex-col"
-      >
-        {/* header */}
-        <div className="flex items-center justify-between mb-2">
-          <span
-            className={`text-[8px] font-bold uppercase tracking-widest ${isDark ? "text-[#5865f2]/50" : "text-[#5865f2]/60"}`}
-          >
-            Discord
-          </span>
-          <SiDiscord size={11} className="text-[#5865f2]" />
-        </div>
-
-        {/* avatar + name + status - layout horizontal compacto */}
-        <div className="flex items-center gap-2 mb-2">
-          <div className="relative shrink-0">
-            <div className="w-11 h-11 rounded-full overflow-hidden ring-2 ring-[#5865f2]/20">
-              {discord?.avatarUrl ? (
-                <img
-                  src={discord.avatarUrl}
-                  alt="avatar"
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="w-full h-full bg-[#5865f2] flex items-center justify-center">
-                  <SiDiscord size={20} className="text-white" />
-                </div>
-              )}
+      {discord && (
+        <div className="p-3 h-full flex flex-col gap-2">
+          {/* Header */}
+          <div className="flex items-center justify-between shrink-0">
+            <div className="inline-flex items-center gap-1.5">
+              <SiDiscord size={12} className="text-[#5865f2]" />
+              <span className="text-[9px] font-semibold text-[#5865f2] uppercase tracking-wider">Discord</span>
             </div>
-            <span
-              className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-[2px] ${isDark ? "border-[#1e1f22]" : "border-[#f5f6ff]"}`}
-              style={{ backgroundColor: statusColor }}
-            />
           </div>
-          <div className="flex-1 min-w-0">
-            <p
-              className={`font-bold text-[11px] leading-tight truncate ${isDark ? "text-white" : "text-[#111]"}`}
-            >
-              {discord?.displayName ?? "lucashdo"}
-            </p>
-            <div className="flex items-center gap-1 mt-0.5">
+
+          {/* Avatar + Name + Status */}
+          <div className="flex items-center gap-2.5 shrink-0">
+            <div className="relative shrink-0">
+              <div className="w-10 h-10 rounded-full overflow-hidden ring-2 ring-[#5865f2]/20">
+                {discord.avatarUrl ? (
+                  <img
+                    src={discord.avatarUrl}
+                    alt="avatar"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-[#5865f2] flex items-center justify-center">
+                    <SiDiscord size={18} className="text-white" />
+                  </div>
+                )}
+              </div>
               <span
-                className="w-1.5 h-1.5 rounded-full shrink-0"
+                className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-[2px] ring-1 ring-[#5865f2]/20 ${isDark ? "border-[#181818]" : "border-white"}`}
                 style={{ backgroundColor: statusColor }}
               />
-              <p
-                className={`text-[9px] capitalize ${isDark ? "text-white/40" : "text-[#888]"}`}
-              >
-                {discord?.status ?? "online"}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className={`font-bold text-[11px] leading-tight truncate ${isDark ? "text-white" : "text-[#111]"}`}>
+                {discord.displayName ?? "lucashdo"}
               </p>
+              <div className="flex items-center gap-1 mt-0.5">
+                <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: statusColor }} />
+                <p className={`text-[8px] capitalize font-medium ${isDark ? "text-white/50" : "text-[#666]"}`}>
+                  {discord.status ?? "online"}
+                </p>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* divider */}
-        <div
-          className={`border-t mb-2 ${isDark ? "border-white/5" : "border-[#e3e4f0]"}`}
-        />
+          {/* Divider */}
+          <div className={`border-t ${isDark ? "border-white/[0.08]" : "border-[#ebebeb]"}`} />
 
-        {/* activity - ocupa espaço restante */}
-        <div
-          className={`rounded-lg p-2 border flex-1 flex flex-col justify-center min-h-0 ${isDark ? "bg-white/[0.04] border-white/5" : "bg-white border-[#e3e4f0]"}`}
-        >
-          <p
-            className={`text-[7px] uppercase tracking-widest font-bold mb-0.5 ${isDark ? "text-[#5865f2]/50" : "text-[#5865f2]/60"}`}
-          >
-            {discord?.activity ? "Playing" : "Status"}
-          </p>
-          <p
-            className={`text-[10px] font-semibold truncate ${isDark ? "text-white/80" : "text-[#333]"}`}
-          >
-            {discord?.activity ?? "VS Code"}
-          </p>
-          {discord?.activityDetail && (
-            <p
-              className={`text-[8px] truncate mt-0.5 ${isDark ? "text-white/30" : "text-[#aaa]"}`}
-            >
-              {discord.activityDetail}
-            </p>
-          )}
-          {discord?.customStatus && (
-            <p
-              className={`text-[8px] italic truncate mt-0.5 ${isDark ? "text-white/25" : "text-[#bbb]"}`}
-            >
-              "{discord.customStatus}"
-            </p>
-          )}
+          {/* Activity Section */}
+          <div className="flex-1 min-h-0 flex flex-col justify-between">
+            <div>
+              <p className={`text-[7px] uppercase tracking-widest font-bold mb-1 ${isDark ? "text-[#5865f2]/60" : "text-[#5865f2]/70"}`}>
+                {discord.activity ? "Activity" : "Status"}
+              </p>
+              <div className={`rounded-lg p-2 border ${isDark ? "bg-white/3 border-white/8" : "bg-[#f5f5ff] border-[#e0e0ff]"}`}>
+                <p className={`text-[10px] font-semibold truncate ${isDark ? "text-white" : "text-[#111]"}`}>
+                  {discord.activity ?? discord.customStatus ?? "Idle"}
+                </p>
+                {discord.activityDetail && (
+                  <p className={`text-[8px] truncate mt-0.5 ${isDark ? "text-white/40" : "text-[#666]"}`}>
+                    {discord.activityDetail}
+                  </p>
+                )}
+              </div>
+            </div>
+            
+            {discord.customStatus && (
+              <div className={`rounded-lg p-2 border text-center ${isDark ? "bg-white/3 border-white/8" : "bg-[#f5f5ff] border-[#e0e0ff]"}`}>
+                <p className={`text-[8px] italic ${isDark ? "text-white/60" : "text-[#555]"}`}>
+                  "{discord.customStatus}"
+                </p>
+              </div>
+            )}
+          </div>
         </div>
-      </motion.div>
+      )}
     </WidgetCard>
   );
 });
