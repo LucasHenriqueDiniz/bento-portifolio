@@ -1,11 +1,16 @@
 import { useMemo } from 'react';
-import { en, ptBR } from '@/locales';
+import enModule from '@/locales/en/resume.json';
+import ptBRModule from '@/locales/pt-BR/resume.json';
+
+// Debug: verificar estrutura dos imports
+console.log('[i18n] EN module:', enModule);
+console.log('[i18n] PT-BR module:', ptBRModule);
 
 type Locale = 'en' | 'pt-BR';
 
 const translations = {
-  en: en,
-  'pt-BR': ptBR,
+  en: enModule,
+  'pt-BR': ptBRModule,
 };
 
 /**
@@ -14,7 +19,18 @@ const translations = {
  * @returns Translation object for the resume
  */
 export function useResumeTranslation(locale: Locale = 'en') {
-  return useMemo(() => translations[locale].resume, [locale]);
+  return useMemo(() => {
+    console.log('[i18n] Requested locale:', locale);
+    console.log('[i18n] Available:', Object.keys(translations));
+    console.log('[i18n] Has translation:', !!translations[locale]);
+    
+    const t = translations[locale] || translations['en'];
+    if (!t || !t.resume) {
+      console.warn(`[i18n] Translation not found for locale: ${locale}`);
+      return translations['en']?.resume || {};
+    }
+    return t.resume;
+  }, [locale]);
 }
 
 /**
