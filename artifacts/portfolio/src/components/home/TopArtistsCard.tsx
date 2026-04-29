@@ -72,10 +72,12 @@ export const TopArtistsCard = React.memo(function TopArtistsCard({
     return name.slice(0, 2).toUpperCase();
   }
 
+  const artists = Array.isArray(topArtists) ? topArtists : [];
+
   return (
     <WidgetCard
       isLoading={isLoading}
-      error={!topArtists || topArtists.length === 0 ? "Nenhum artista disponível" : null}
+      error={artists.length === 0 ? "Nenhum artista disponível" : null}
       loadingIcon={<SiLastdotfm size={28} className="text-[#d51007]" />}
       emptyIcon={<SiLastdotfm size={24} className="text-[#ccc] dark:text-[#444]" />}
       emptyMessage="Nenhum artista disponível"
@@ -86,13 +88,13 @@ export const TopArtistsCard = React.memo(function TopArtistsCard({
       }}
       glowColor="213, 16, 7"
     >
-      {topArtists && topArtists.length > 0 && (
+      {artists.length > 0 && (
         <div className="relative w-full h-full p-4 flex flex-col">
           <div className="mb-3 shrink-0">
             <CardHeader icon={<SiLastdotfm size={9} />} title="Top Artists" />
           </div>
           <div className="flex-1 flex flex-col justify-between space-y-2">
-            {(topArtists ?? []).slice(0, 5).map((artist, i) => {
+            {artists.slice(0, 5).map((artist, i) => {
               const gradient = getGradientFromString(artist.name);
               const initials = getInitials(artist.name);
               const imgUrl = images[artist.name];
