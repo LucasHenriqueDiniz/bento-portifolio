@@ -154,7 +154,7 @@ export const jobExperiences: JobExperience[] = [
     title: "Desenvolvedor - Bolsa de Pesquisa",
     institution: "ComunicaMulher",
     url: "https://reclame-mulher.vercel.app/",
-    startDate: "2024-08",
+    startDate: "2026-01",
     endDate: null,
     showInTimeline: true,
     icon: "MessageSquare",
