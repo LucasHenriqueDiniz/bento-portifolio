@@ -150,10 +150,18 @@ export const MyAnimeListCard = React.memo(function MyAnimeListCard({
   };
 
   const renderFace = (type: "anime" | "manga") => {
-    const data = type === "anime" ? malData.anime : malData.manga;
+    const data = type === "anime" ? malData?.anime : malData?.manga;
     const favorites =
-      type === "anime" ? malData.anime.favorites : malData.manga.favorites;
+      type === "anime" ? malData?.anime?.favorites ?? [] : malData?.manga?.favorites ?? [];
     const isBack = type === "manga";
+
+    if (!data) {
+      return (
+        <div className="absolute inset-0 flex items-center justify-center bg-white dark:bg-[#181818] rounded-2xl">
+          <span className="text-[12px] text-[#999] dark:text-[#555]">No data</span>
+        </div>
+      );
+    }
 
     return (
       <div
