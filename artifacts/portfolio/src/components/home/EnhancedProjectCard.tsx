@@ -30,7 +30,7 @@ export function EnhancedProjectCard({
   className,
 }: EnhancedProjectCardProps) {
   const safeProjects = useMemo(
-    () => (projects.length ? projects : [emptyProject]),
+    () => (Array.isArray(projects) && projects.length ? projects : [emptyProject]),
     [projects],
   );
 

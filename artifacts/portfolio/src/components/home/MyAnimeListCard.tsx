@@ -151,8 +151,8 @@ export const MyAnimeListCard = React.memo(function MyAnimeListCard({
 
   const renderFace = (type: "anime" | "manga") => {
     const data = type === "anime" ? malData?.anime : malData?.manga;
-    const favorites =
-      type === "anime" ? malData?.anime?.favorites ?? [] : malData?.manga?.favorites ?? [];
+    const rawFavorites = type === "anime" ? malData?.anime?.favorites : malData?.manga?.favorites;
+    const favorites = Array.isArray(rawFavorites) ? rawFavorites : [];
     const isBack = type === "manga";
 
     if (!data) {

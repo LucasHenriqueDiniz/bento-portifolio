@@ -42,15 +42,16 @@ export const TopArtistsCard = React.memo(function TopArtistsCard({
 }: TopArtistsCardProps) {
   const [images, setImages] = useState<Record<string, string>>({});
 
+  const artists = Array.isArray(topArtists) ? topArtists : [];
+
   useEffect(() => {
-    if (!topArtists) return;
-    topArtists.slice(0, 5).forEach(async (artist) => {
+    artists.slice(0, 5).forEach(async (artist) => {
       const img = await fetchArtistImage(artist.name);
       if (img) {
         setImages(prev => ({ ...prev, [artist.name]: img }));
       }
     });
-  }, [topArtists]);
+  }, [artists]);
 
   function getGradientFromString(str: string): { from: string; to: string } {
     let hash = 0;
@@ -71,8 +72,6 @@ export const TopArtistsCard = React.memo(function TopArtistsCard({
     }
     return name.slice(0, 2).toUpperCase();
   }
-
-  const artists = Array.isArray(topArtists) ? topArtists : [];
 
   return (
     <WidgetCard
