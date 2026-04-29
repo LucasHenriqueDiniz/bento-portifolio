@@ -1,0 +1,126 @@
+{
+  "about": {
+    "label": "SOBRE MIM",
+    "greeting": "Oi, eu sou",
+    "name": "Lucas",
+    "role": "Desenvolvedor & Designer",
+    "description": "Desenvolvedor full-stack que adora transformar ideias em produtos reais. Quando não estou codando, você me encontra na academia, jogando ou descobrindo música nova no Last.fm."
+  },
+  "funFacts": {
+    "label": "CURIOSIDADES",
+    "items": [
+      "Desenvolvedor full-stack",
+      "Ratão da academia (4x/semana)",
+      "Scrobbler no Last.fm desde 2018",
+      "Dark mode em tudo",
+      "{{animeCount}} animes completados"
+    ]
+  },
+  "projectsCta": {
+    "title": "Projetos",
+    "subtitle": "Ver todos os projetos"
+  },
+  "weather": {
+    "title": "Clima",
+    "location": "Brasília",
+    "loading": "Carregando clima...",
+    "timezone": "Brasília (BRT, UTC-3)",
+    "timeLabel": "Horário",
+    "localTime": "Horário local",
+    "flipLabel": "clima"
+  },
+  "building": {
+    "label": "Em desenvolvimento",
+    "project": "Pingo Concursos",
+    "description": "Plataforma educacional mobile para preparação de concursos públicos",
+    "focus": "Mobile app com offline-first, real-time sync e UI polida",
+    "focusLabel": "Foco atual:",
+    "stackLabel": "Stack de tecnologias",
+    "status": "Em desenvolvimento ativo"
+  },
+  "workout": {
+    "title": "Último Treino",
+    "error": "Dados de treino indisponíveis",
+    "volume": "Volume (kg)",
+    "streak": "Dias Seguidos",
+    "minutes": "Minutos",
+    "thisWeek": "Esta Semana"
+  },
+  "github": {
+    "title": "GitHub",
+    "repos": "repos",
+    "contribs": "contribs",
+    "commits": "commits",
+    "streak": "streak",
+    "days": {
+      "mon": "seg",
+      "wed": "qua",
+      "fri": "sex"
+    }
+  },
+  "timeline": {
+    "workTitle": "Experiência Profissional",
+    "educationTitle": "Educação",
+    "flipWork": "trabalho",
+    "flipEducation": "educação",
+    "viewFullCV": "Ver CV Completo",
+    "present": "Atual"
+  },
+  "mal": {
+    "anime": "Anime",
+    "manga": "Manga",
+    "flipAnime": "anime",
+    "flipManga": "manga",
+    "completed": "completados",
+    "watching": "assistindo",
+    "reading": "lendo",
+    "episodes": "episódios",
+    "chapters": "capítulos",
+    "error": "Dados do MyAnimeList indisponíveis",
+    "empty": "Nenhum dado disponível"
+  },
+  "steam": {
+    "title": "Steam",
+    "error": "Nenhum jogo recente",
+    "hours": "h jogadas",
+    "games": "jogos"
+  },
+  "artists": {
+    "title": "Top Artistas",
+    "subtitle": "· últimos 90 dias",
+    "tracks": "músicas",
+    "flipTracks": "músicas",
+    "flipArtists": "artistas",
+    "error": "Nenhum artista disponível",
+    "empty": "Nenhum artista disponível",
+    "noTracks": "Sem músicas"
+  },
+  "cv": {
+    "title": "CV Completo",
+    "work": "Trabalho",
+    "education": "Educação",
+    "viewFull": "Ver currículo completo",
+    "studying": "Cursando..."
+  },
+  "tech": {
+    "title": "Tech Stack",
+    "frontend": "Frontend",
+    "backend": "Backend",
+    "devops": "DevOps"
+  },
+  "project": {
+    "featured": "Projeto em Destaque",
+    "view": "Ver",
+    "wip": "WIP",
+    "done": "Done",
+    "empty": {
+      "title": "Sem projetos ainda",
+      "subtitle": "Adicione projetos em destaque...",
+      "description": "Os destaques do projeto aparecerão aqui"
+    }
+  },
+  "album": {
+    "listening": "Ouvindo",
+    "empty": "Nenhuma música tocando"
+  }
+}

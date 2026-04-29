@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Link } from "wouter";
+import { useTranslation } from 'react-i18next';
 import { Moon, Sun } from "lucide-react";
+import { LanguageSwitcher } from "@/i18n/LanguageSwitcher";
 import {
   useGetNowPlaying,
   useGetTopArtists,
@@ -97,8 +99,8 @@ function ProjectsCTA() {
             <path d="M7 17L17 7"/><path d="M7 7h10v10"/>
           </svg>
         </span>
-        <p className="text-[13px] font-black text-white tracking-tight">Projects</p>
-        <p className="text-[9px] text-white/70">View all projects</p>
+      <p className="text-[13px] font-black text-white tracking-tight">Projects</p>
+      <p className="text-[9px] text-white/70">View all projects</p>
       </div>
     </motion.a>
   );
@@ -106,6 +108,7 @@ function ProjectsCTA() {
 
 /* ─── Home Page ───────────────────────────────────── */
 export default function Home() {
+  const { t } = useTranslation('home');
   const [isDark, setIsDark] = useState(() =>
     typeof window !== "undefined" && document.documentElement.classList.contains("dark")
   );
@@ -144,10 +147,11 @@ export default function Home() {
           <span className="font-bold text-[16px] tracking-tight select-none">
             <span className="text-[#2d3748] dark:text-[#e2e8f0]">lucas</span><span style={{ color: ACCENT }}>hdo</span>
           </span>
-          <nav className="flex items-center gap-5 text-[13px] text-[#888] dark:text-[#666]">
+          <nav className="flex items-center gap-4 text-[13px] text-[#888] dark:text-[#666]">
             <Link href="/" className="hover:text-[#111] dark:hover:text-[#eee] transition-colors">Home</Link>
             <Link href="/projects" className="hover:text-[#111] dark:hover:text-[#eee] transition-colors">Projects</Link>
             <Link href="/resume" className="hover:text-[#111] dark:hover:text-[#eee] transition-colors">Resume</Link>
+            <LanguageSwitcher isDark={isDark} />
             <button onClick={() => setIsDark(d => !d)} className="w-7 h-7 rounded-lg flex items-center justify-center border border-[#ebebeb] dark:border-[#282828] bg-white dark:bg-[#222] hover:bg-[#f0f0f0] dark:hover:bg-[#2a2a2a] transition-colors text-[#888] dark:text-[#666]">
               {isDark ? <Sun size={13} /> : <Moon size={13} />}
             </button>
@@ -163,7 +167,7 @@ export default function Home() {
             {/* ── Col 1 ── */}
             <motion.div custom={0} variants={fadeUp} initial="hidden" animate="show" className={`${CARD} p-4 flex flex-col lg:col-start-1 lg:row-start-1 lg:row-span-2`}>
               <div className="flex items-start justify-between mb-2">
-                <p className={LABEL}>ABOUT ME</p>
+                <p className={LABEL}>{t('about.label')}</p>
                 <div className="flex gap-2 text-[#ccc] dark:text-[#444]">
                   <a href="https://github.com/LucasHenriqueDiniz" target="_blank" rel="noreferrer"><SiGithub size={12} /></a>
                   <a href="https://discord.com" target="_blank" rel="noreferrer"><SiDiscord size={12} /></a>
@@ -174,17 +178,17 @@ export default function Home() {
                   <img src="/selfie.webp" alt="avatar" className="w-full h-full object-cover" />
                 </div>
                 <div>
-                  <p className="text-[13px] font-semibold leading-tight">Hey, I'm <span style={{ color: ACCENT }}>Lucas</span></p>
-                  <p className="text-[11px] text-[#aaa] dark:text-[#555] mt-0.5">Developer & Designer</p>
+                  <p className="text-[13px] font-semibold leading-tight">{t('about.greeting')} <span style={{ color: ACCENT }}>{t('about.name')}</span></p>
+                  <p className="text-[11px] text-[#aaa] dark:text-[#555] mt-0.5">{t('about.role')}</p>
                 </div>
               </div>
-              <p className="text-[11px] text-[#777] dark:text-[#888] leading-relaxed flex-1">Full-stack dev who loves turning ideas into real products. When I'm not coding, you'll find me at the gym, gaming, or discovering new music on Last.fm.</p>
+              <p className="text-[11px] text-[#777] dark:text-[#888] leading-relaxed flex-1">{t('about.description')}</p>
             </motion.div>
 
             <motion.div custom={1} variants={fadeUp} initial="hidden" animate="show" className={`${CARD} p-4 flex flex-col lg:col-start-1 lg:row-start-3 lg:row-span-2`}>
-              <p className={`${LABEL} mb-2`}>FUN FACTS</p>
+              <p className={`${LABEL} mb-2`}>{t('funFacts.label')}</p>
               <ul className="space-y-1.5 flex-1">
-                {["Full-stack developer","Gym rat (4x/week)","Last.fm scrobbler since 2018","Dark mode everything",`${(malData as any)?.anime?.completed ?? "…"} anime completed`].map((f,i) => (
+                {(t('funFacts.items', { animeCount: (malData as any)?.anime?.completed ?? "…", returnObjects: true }) as string[]).map((f: string, i: number) => (
                   <li key={i} className="flex gap-2 text-[11px] text-[#666] dark:text-[#888]">
                     <span className="text-[#ccc] dark:text-[#444] mt-px">•</span>{f}
                   </li>

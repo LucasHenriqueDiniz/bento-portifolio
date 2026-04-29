@@ -1,0 +1,30 @@
+{
+  "nav": {
+    "home": "Home",
+    "projects": "Projects",
+    "resume": "Resume"
+  },
+  "buttons": {
+    "back": "Back",
+    "print": "Print",
+    "viewAll": "View all",
+    "send": "Send",
+    "sending": "Sending...",
+    "view": "View",
+    "viewFull": "View full"
+  },
+  "status": {
+    "current": "Current",
+    "loading": "Loading...",
+    "inDevelopment": "In development",
+    "error": "Error loading data",
+    "empty": "No data available"
+  },
+  "notFound": {
+    "title": "404 Page Not Found",
+    "message": "Are you lost? Go back home."
+  },
+  "footer": {
+    "generatedFrom": "Generated from"
+  }
+}

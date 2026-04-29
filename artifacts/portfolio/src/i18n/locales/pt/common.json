@@ -1,0 +1,30 @@
+{
+  "nav": {
+    "home": "Home",
+    "projects": "Projetos",
+    "resume": "Currículo"
+  },
+  "buttons": {
+    "back": "Voltar",
+    "print": "Imprimir",
+    "viewAll": "Ver todos",
+    "send": "Enviar",
+    "sending": "Enviando...",
+    "view": "Ver",
+    "viewFull": "Ver completo"
+  },
+  "status": {
+    "current": "Atual",
+    "loading": "Carregando...",
+    "inDevelopment": "Em desenvolvimento",
+    "error": "Erro ao carregar dados",
+    "empty": "Nenhum dado disponível"
+  },
+  "notFound": {
+    "title": "404 Página Não Encontrada",
+    "message": "Você se perdeu? Volte para o início."
+  },
+  "footer": {
+    "generatedFrom": "Gerado a partir de"
+  }
+}

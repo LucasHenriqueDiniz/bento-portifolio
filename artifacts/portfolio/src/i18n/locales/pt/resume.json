@@ -1,0 +1,26 @@
+{
+  "header": {
+    "role": "Desenvolvedor Full Stack",
+    "summary": "3+ anos como desenvolvedor construindo apps web, plataformas IoT e automação com IA. React, TypeScript, Node.js, AWS."
+  },
+  "sections": {
+    "experience": "Experiência",
+    "projects": "Projetos em Destaque",
+    "skills": "Habilidades",
+    "education": "Educação",
+    "languages": "Idiomas",
+    "certifications": "Certificações"
+  },
+  "status": {
+    "current": "Atual"
+  },
+  "categories": {
+    "frontend": "Frontend",
+    "backend": "Backend",
+    "integration": "Integração",
+    "automation": "Automação",
+    "database": "Database",
+    "devops": "Cloud & DevOps",
+    "ai": "IA"
+  }
+}
