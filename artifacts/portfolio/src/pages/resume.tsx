@@ -1,9 +1,8 @@
 import { Link } from "wouter";
 import { motion } from "framer-motion";
 import { useState, useMemo } from "react";
-import { FiArrowLeft, FiPrinter, FiGithub, FiMail, FiExternalLink, FiAward, FiBriefcase, FiCode } from "react-icons/fi";
+import { FiArrowLeft, FiPrinter, FiGithub, FiMail, FiExternalLink, FiAward, FiBriefcase, FiCode, FiCpu, FiDatabase, FiCloud, FiGlobe, FiTerminal, FiLayers } from "react-icons/fi";
 import { Moon, Sun, Globe, GraduationCap, MapPin, Linkedin } from "lucide-react";
-import { SiInstagram, SiDiscord, SiGithub, SiSteam } from "react-icons/si";
 import { jobExperiences, academicExperiences, projects, certificates, languages, skillsData, ContactLinks } from "@/constants";
 import { formatDateRange } from "@/lib/dateFormatter";
 
@@ -32,53 +31,30 @@ const logoMap: Record<string, string> = {
   "BotsChannel": "/timeline/botschanell-logo.webp",
 };
 
-// Social links with colors
-const socialLinks = [
-  { icon: SiGithub, href: ContactLinks.github, label: "GitHub", color: "#333" },
-  { icon: SiInstagram, href: ContactLinks.instagram, label: "Instagram", color: "#E4405F" },
-  { icon: SiDiscord, href: `https://discord.com/users/${ContactLinks.discord}`, label: "Discord", color: "#5865F2" },
-  { icon: SiSteam, href: ContactLinks.steam, label: "Steam", color: "#1b2838" },
-];
+// Fix project image names (files have different names than in constants)
+const projectImageMap: Record<string, string> = {
+  "heartopia-guide": "/projects/heartopiaguide.webp",
+  "weeb-profile": "/projects/weebprofile.webp",
+  "windows-xp-online": "/projects/windows_xp_online.webp",
+  "include-gurias": "/projects/include_gurias.webp",
+  "botschannel-platform": "/projects/botschannel_plataform.webp",
+  "resgate-rs": "/projects/rs_resgate.webp",
+  "autowabba": "/projects/autowabba.webp",
+  "itemmarketcap": "/projects/itemmarketcap.webp",
+  "comunica-mulher": "/projects/comunicamulher.webp",
+  "quizhub": "/projects/quizhub-thumbnail.webp",
+};
 
-// ─── Social Links Component ──────────────────────────────
-function SocialLinks({ isDark }: { isDark: boolean }) {
-  return (
-    <div className="flex items-center gap-2 mt-3">
-      {socialLinks.map((social) => (
-        <a
-          key={social.label}
-          href={social.href}
-          target="_blank"
-          rel="noreferrer"
-          className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all hover:scale-110 ${isDark ? "bg-white/5 hover:bg-white/10" : "bg-gray-100 hover:bg-gray-200"}`}
-          style={{ color: social.color }}
-          title={social.label}
-        >
-          <social.icon size={16} />
-        </a>
-      ))}
-      {/* LinkedIn with lucide icon */}
-      <a
-        href={ContactLinks.linkedin}
-        target="_blank"
-        rel="noreferrer"
-        className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all hover:scale-110 ${isDark ? "bg-white/5 hover:bg-white/10" : "bg-gray-100 hover:bg-gray-200"}`}
-        style={{ color: "#0A66C2" }}
-        title="LinkedIn"
-      >
-        <Linkedin size={16} />
-      </a>
-      <a
-        href={`mailto:${ContactLinks.email}`}
-        className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all hover:scale-110 ${isDark ? "bg-white/5 hover:bg-white/10" : "bg-gray-100 hover:bg-gray-200"}`}
-        style={{ color: "#EA4335" }}
-        title="Email"
-      >
-        <FiMail size={16} />
-      </a>
-    </div>
-  );
-}
+// Skill icons by category
+const skillCategoryIcons: Record<string, any> = {
+  frontend: FiCode,
+  backend: FiCpu,
+  integration: FiGlobe,
+  automation: FiTerminal,
+  database: FiDatabase,
+  devops: FiCloud,
+  ai: FiLayers,
+};
 
 // ─── Section Title Component ─────────────────────────────
 function SectionTitle({ children, icon: Icon, delay = 0, isDark }: { children: React.ReactNode; icon?: any; delay?: number; isDark: boolean }) {
@@ -108,7 +84,6 @@ function VisualResume({ isDark, locale }: { isDark: boolean; locale: Locale }) {
   const activeEducation = useMemo(() => academicExperiences
     .filter(ed => ed.showInTimeline)
     .sort((a, b) => {
-      // Sort by start date descending (most recent first)
       const dateA = a.startDate ? new Date(a.startDate).getTime() : 0;
       const dateB = b.startDate ? new Date(b.startDate).getTime() : 0;
       return dateB - dateA;
@@ -116,12 +91,22 @@ function VisualResume({ isDark, locale }: { isDark: boolean; locale: Locale }) {
   const featuredProjects = useMemo(() => projects.filter(p => p.featured).slice(0, 3), []);
 
   const skillsByCategory = useMemo(() => {
-    const cats = ['frontend', 'backend', 'integration', 'automation', 'database', 'devops'];
+    const cats = ['frontend', 'backend', 'integration', 'automation', 'database', 'devops', 'ai'];
     return cats.map(cat => ({
       category: cat,
+      icon: skillCategoryIcons[cat],
       skills: skillsData.filter(s => s.category === cat).slice(0, 6),
     })).filter(g => g.skills.length > 0);
   }, []);
+
+  // Helper to get logo for a job
+  const getJobLogo = (job: any) => {
+    // First check if job has an icon path
+    if (job.icon && job.icon.startsWith("/")) return job.icon;
+    // Then check logoMap by institution name
+    if (logoMap[job.institution]) return logoMap[job.institution];
+    return null;
+  };
 
   return (
     <div className="max-w-[900px] mx-auto px-6 py-8 space-y-6">
@@ -135,18 +120,18 @@ function VisualResume({ isDark, locale }: { isDark: boolean; locale: Locale }) {
           </p>
           <p className={`text-[13px] leading-relaxed mt-2 ${isDark ? "text-gray-400" : "text-gray-600"}`}>
             {locale === "en"
-              ? "5+ years building scalable web apps, IoT platforms & AI automation. React, TypeScript, Node.js, AWS."
-              : "5+ anos construindo apps web, plataformas IoT e automação com IA. React, TypeScript, Node.js, AWS."}
+              ? "3+ years as a developer building web apps, IoT platforms & AI automation. React, TypeScript, Node.js, AWS."
+              : "3+ anos como desenvolvedor construindo apps web, plataformas IoT e automação com IA. React, TypeScript, Node.js, AWS."}
           </p>
           
-          {/* Contact links with icons */}
-          <div className="flex flex-wrap gap-3 mt-3 text-xs">
+          {/* Contact links with colored icons */}
+          <div className="flex flex-wrap gap-4 mt-3 text-xs">
             <a href={`mailto:${ContactLinks.email}`} className={`flex items-center gap-1.5 hover:opacity-70 transition-opacity ${isDark ? "text-gray-300" : "text-gray-700"}`}>
               <FiMail size={12} style={{ color: "#EA4335" }} /> 
               <span>{ContactLinks.email}</span>
             </a>
             <a href={ContactLinks.github} target="_blank" rel="noreferrer" className={`flex items-center gap-1.5 hover:opacity-70 transition-opacity ${isDark ? "text-gray-300" : "text-gray-700"}`}>
-              <SiGithub size={12} style={{ color: "#333" }} /> 
+              <FiGithub size={12} style={{ color: isDark ? "#ccc" : "#333" }} /> 
               <span>github.com/LucasHenriqueDiniz</span>
             </a>
             <a href={ContactLinks.linkedin} target="_blank" rel="noreferrer" className={`flex items-center gap-1.5 hover:opacity-70 transition-opacity ${isDark ? "text-gray-300" : "text-gray-700"}`}>
@@ -154,42 +139,44 @@ function VisualResume({ isDark, locale }: { isDark: boolean; locale: Locale }) {
               <span>linkedin.com/in/lucas-diniz-ostroski</span>
             </a>
           </div>
-          
-          {/* Social icons */}
-          <SocialLinks isDark={isDark} />
         </div>
       </motion.section>
 
-      {/* ── EXPERIENCE (Timeline layout) ── */}
+      {/* ── EXPERIENCE (Timeline with logos) ── */}
       <section>
         <SectionTitle icon={FiBriefcase} delay={0.05} isDark={isDark}>
           {locale === "en" ? "Experience" : "Experiência"}
         </SectionTitle>
         <div className="relative pl-4 border-l border-dashed" style={{ borderColor: isDark ? "rgba(61,114,204,0.25)" : "rgba(61,114,204,0.2)" }}>
-          {activeJobs.map((job, i) => (
-            <motion.div key={job.id} {...fadeUp(0.08 + i * 0.03)} className="relative mb-4 last:mb-0">
-              {/* Dot */}
-              <div className="absolute -left-[21px] top-1.5 w-2.5 h-2.5 rounded-full border-2" style={{ backgroundColor: isDark ? "#1f2937" : "#fff", borderColor: ACCENT }} />
-              <div className="flex items-start gap-3">
-                {logoMap[job.institution] && (
-                  <img src={logoMap[job.institution]} alt="" className="w-8 h-8 rounded object-contain shrink-0 mt-0.5" />
-                )}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <h3 className="text-sm font-bold" style={{ color: isDark ? "#fff" : "#000" }}>{job.title}</h3>
-                    {!job.endDate && (
-                      <span className="text-[9px] font-bold px-1.5 py-0.5 rounded" style={{ color: ACCENT, backgroundColor: isDark ? "rgba(61,114,204,0.12)" : "rgba(61,114,204,0.08)" }}>
-                        {locale === "en" ? "Current" : "Atual"}
-                      </span>
-                    )}
+          {activeJobs.map((job, i) => {
+            const logoSrc = getJobLogo(job);
+            return (
+              <motion.div key={job.id} {...fadeUp(0.08 + i * 0.03)} className="relative mb-4 last:mb-0">
+                {/* Dot */}
+                <div className="absolute -left-[21px] top-1.5 w-2.5 h-2.5 rounded-full border-2" style={{ backgroundColor: isDark ? "#1f2937" : "#fff", borderColor: ACCENT }} />
+                <div className="flex items-start gap-3">
+                  {logoSrc && (
+                    <div className={`w-10 h-10 rounded-lg overflow-hidden flex items-center justify-center shrink-0 ${isDark ? "bg-white/5" : "bg-gray-100"}`}>
+                      <img src={logoSrc} alt="" className="w-7 h-7 object-contain" />
+                    </div>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h3 className="text-sm font-bold" style={{ color: isDark ? "#fff" : "#000" }}>{job.title}</h3>
+                      {!job.endDate && (
+                        <span className="text-[9px] font-bold px-1.5 py-0.5 rounded" style={{ color: ACCENT, backgroundColor: isDark ? "rgba(61,114,204,0.12)" : "rgba(61,114,204,0.08)" }}>
+                          {locale === "en" ? "Current" : "Atual"}
+                        </span>
+                      )}
+                    </div>
+                    <p className={`text-xs font-medium ${isDark ? "text-gray-400" : "text-gray-500"}`}>{job.institution}</p>
+                    <p className={`text-[10px] mb-1 ${isDark ? "text-gray-600" : "text-gray-400"}`}>{formatDateRange(job.startDate, job.endDate)}</p>
+                    <p className={`text-[12px] leading-relaxed ${isDark ? "text-gray-300" : "text-gray-700"}`}>{job.description}</p>
                   </div>
-                  <p className={`text-xs font-medium ${isDark ? "text-gray-400" : "text-gray-500"}`}>{job.institution}</p>
-                  <p className={`text-[10px] mb-1 ${isDark ? "text-gray-600" : "text-gray-400"}`}>{formatDateRange(job.startDate, job.endDate)}</p>
-                  <p className={`text-[12px] leading-relaxed ${isDark ? "text-gray-300" : "text-gray-700"}`}>{job.description}</p>
                 </div>
-              </div>
-            </motion.div>
-          ))}
+              </motion.div>
+            );
+          })}
         </div>
       </section>
 
@@ -199,62 +186,74 @@ function VisualResume({ isDark, locale }: { isDark: boolean; locale: Locale }) {
           {locale === "en" ? "Featured Projects" : "Projetos em Destaque"}
         </SectionTitle>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          {featuredProjects.map((proj, i) => (
-            <motion.a
-              key={proj.id}
-              href={proj.url}
-              target="_blank"
-              rel="noreferrer"
-              {...fadeUp(0.18 + i * 0.04)}
-              className={`group block rounded-xl border overflow-hidden transition-all hover:scale-[1.02] hover:shadow-lg ${isDark ? "bg-white/[0.02] border-white/8 hover:border-[#3d72cc]/30" : "bg-white border-gray-200 hover:border-[#3d72cc]/30"}`}
-            >
-              {/* Project Image */}
-              <div className="relative h-24 overflow-hidden">
-                <img 
-                  src={proj.image || "/logo.svg"} 
-                  alt={proj.name} 
-                  className="w-full h-full object-cover transition-transform group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                <div className="absolute bottom-2 left-2 right-2">
-                  <h3 className="text-sm font-bold text-white truncate">{proj.name}</h3>
+          {featuredProjects.map((proj, i) => {
+            const imageSrc = projectImageMap[proj.id] || proj.image || "/logo.svg";
+            return (
+              <motion.a
+                key={proj.id}
+                href={proj.url}
+                target="_blank"
+                rel="noreferrer"
+                {...fadeUp(0.18 + i * 0.04)}
+                className={`group block rounded-xl border overflow-hidden transition-all hover:scale-[1.02] hover:shadow-lg ${isDark ? "bg-white/[0.02] border-white/8 hover:border-[#3d72cc]/30" : "bg-white border-gray-200 hover:border-[#3d72cc]/30"}`}
+              >
+                {/* Project Image */}
+                <div className="relative h-28 overflow-hidden bg-gray-100 dark:bg-gray-800">
+                  <img 
+                    src={imageSrc}
+                    alt={proj.name}
+                    className="w-full h-full object-cover transition-transform group-hover:scale-110"
+                    onError={(e) => { (e.target as HTMLImageElement).src = "/logo.svg"; }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                  <div className="absolute bottom-2 left-2 right-2">
+                    <h3 className="text-sm font-bold text-white truncate">{proj.name}</h3>
+                  </div>
                 </div>
-              </div>
-              
-              {/* Content */}
-              <div className="p-3">
-                <div className="flex gap-1 flex-wrap mb-2">
-                  {proj.techStack.slice(0, 3).map(t => (
-                    <span key={t} className={`text-[9px] px-1.5 py-px rounded font-medium ${isDark ? "bg-white/10 text-gray-400" : "bg-gray-100 text-gray-600"}`}>{t}</span>
-                  ))}
+                
+                {/* Content */}
+                <div className="p-3">
+                  <div className="flex gap-1 flex-wrap mb-2">
+                    {proj.techStack.slice(0, 3).map(t => (
+                      <span key={t} className={`text-[9px] px-1.5 py-px rounded font-medium ${isDark ? "bg-white/10 text-gray-400" : "bg-gray-100 text-gray-600"}`}>{t}</span>
+                    ))}
+                  </div>
+                  <p className={`text-[11px] leading-relaxed line-clamp-2 ${isDark ? "text-gray-400" : "text-gray-600"}`}>{proj.description}</p>
                 </div>
-                <p className={`text-[11px] leading-relaxed line-clamp-2 ${isDark ? "text-gray-400" : "text-gray-600"}`}>{proj.description}</p>
-              </div>
-            </motion.a>
-          ))}
+              </motion.a>
+            );
+          })}
         </div>
       </section>
 
-      {/* ── SKILLS (Tag cloud) ── */}
+      {/* ── SKILLS (With category icons) ── */}
       <section>
         <SectionTitle icon={FiCode} delay={0.22} isDark={isDark}>
           {locale === "en" ? "Skills" : "Habilidades"}
         </SectionTitle>
-        <div className="space-y-2">
-          {skillsByCategory.map((group) => (
-            <div key={group.category} className="flex items-center gap-2 flex-wrap">
-              <span className={`text-[10px] font-bold uppercase tracking-wider shrink-0 w-20 ${isDark ? "text-gray-500" : "text-gray-500"}`}>
-                {group.category}
-              </span>
-              <div className="flex flex-wrap gap-1">
-                {group.skills.map(s => <SkillTag key={s.name} name={s.name} isDark={isDark} />)}
-              </div>
-            </div>
-          ))}
+        <div className="space-y-2.5">
+          {skillsByCategory.map((group) => {
+            const CategoryIcon = group.icon || FiCode;
+            return (
+              <motion.div key={group.category} {...fadeUp(0.24)} className="flex items-start gap-2">
+                <div className="shrink-0 mt-0.5 w-5 flex justify-center">
+                  <CategoryIcon size={13} style={{ color: ACCENT }} />
+                </div>
+                <div className="flex items-center gap-2 flex-wrap flex-1">
+                  <span className={`text-[10px] font-bold uppercase tracking-wider shrink-0 w-16 ${isDark ? "text-gray-500" : "text-gray-500"}`}>
+                    {group.category}
+                  </span>
+                  <div className="flex flex-wrap gap-1">
+                    {group.skills.map(s => <SkillTag key={s.name} name={s.name} isDark={isDark} />)}
+                  </div>
+                </div>
+              </motion.div>
+            );
+          })}
         </div>
       </section>
 
-      {/* ── EDUCATION (Compact horizontal) ── */}
+      {/* ── EDUCATION ── */}
       <section>
         <SectionTitle icon={GraduationCap} delay={0.28} isDark={isDark}>
           {locale === "en" ? "Education" : "Educação"}
@@ -263,7 +262,9 @@ function VisualResume({ isDark, locale }: { isDark: boolean; locale: Locale }) {
           {activeEducation.map((ed, i) => (
             <motion.div key={ed.id} {...fadeUp(0.30 + i * 0.03)} className={`flex gap-3 p-3 rounded-xl border ${isDark ? "bg-white/[0.02] border-white/8" : "bg-white border-gray-200"}`}>
               {logoMap[ed.institution] && (
-                <img src={logoMap[ed.institution]} alt="" className="w-10 h-10 rounded-lg object-contain shrink-0" />
+                <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${isDark ? "bg-white/5" : "bg-gray-100"}`}>
+                  <img src={logoMap[ed.institution]} alt="" className="w-7 h-7 object-contain" />
+                </div>
               )}
               <div className="min-w-0">
                 <h3 className="text-sm font-bold" style={{ color: isDark ? "#fff" : "#000" }}>{ed.title}</h3>
@@ -275,7 +276,7 @@ function VisualResume({ isDark, locale }: { isDark: boolean; locale: Locale }) {
         </div>
       </section>
 
-      {/* ── LANGUAGES (Compact inline) ── */}
+      {/* ── LANGUAGES ── */}
       <section>
         <SectionTitle icon={MapPin} delay={0.35} isDark={isDark}>
           {locale === "en" ? "Languages" : "Idiomas"}
@@ -292,17 +293,20 @@ function VisualResume({ isDark, locale }: { isDark: boolean; locale: Locale }) {
         </div>
       </section>
 
-      {/* ── CERTIFICATES (Ultra compact grid) ── */}
+      {/* ── CERTIFICATES (With open link icon) ── */}
       <section>
         <SectionTitle icon={FiAward} delay={0.40} isDark={isDark}>
           {locale === "en" ? "Certifications" : "Certificações"}
         </SectionTitle>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1.5">
+        <div className="grid grid-cols-1 gap-y-1">
           {certificates.map((cert) => (
-            <a key={cert.title} href={cert.url} target="_blank" rel="noreferrer" className={`flex items-center gap-2 text-[11px] py-1 hover:opacity-70 transition-opacity ${isDark ? "text-gray-300" : "text-gray-700"}`}>
+            <a key={cert.title} href={cert.url} target="_blank" rel="noreferrer" className={`flex items-center gap-2 text-[11px] py-1 hover:opacity-70 transition-opacity group ${isDark ? "text-gray-300" : "text-gray-700"}`}>
               <span style={{ color: ACCENT }}>•</span>
-              <span className="truncate">{cert.title}</span>
+              <span className="flex-1 truncate">{cert.title}</span>
               <span className={`text-[10px] shrink-0 ${isDark ? "text-gray-600" : "text-gray-400"}`}>({cert.issueDate})</span>
+              {cert.url && (
+                <FiExternalLink size={10} className="opacity-0 group-hover:opacity-100 transition-opacity shrink-0" style={{ color: ACCENT }} />
+              )}
             </a>
           ))}
         </div>
@@ -314,11 +318,10 @@ function VisualResume({ isDark, locale }: { isDark: boolean; locale: Locale }) {
 // ─── ATS Resume (text-only, dense) ───────────────────────
 function ATSResume({ isDark, locale }: { isDark: boolean; locale: Locale }) {
   const t = useMemo(() => {
-    // Inline translations to avoid JSON import issues
     const data = {
       en: {
         header: { role: "Full Stack Developer", subtitle: "IoT & Automation Specialist" },
-        summary: { title: "Professional Summary", text: "Full Stack Developer with 5+ years building scalable web applications, IoT platforms, and AI-powered automation systems. Expertise in React, TypeScript, Node.js, and cloud infrastructure (AWS, Supabase). Proven track record architecting SaaS platforms, implementing real-time systems, and leading technical initiatives." },
+        summary: { title: "Professional Summary", text: "Full Stack Developer with 3+ years building scalable web applications, IoT platforms, and AI-powered automation systems. Expertise in React, TypeScript, Node.js, and cloud infrastructure (AWS, Supabase). Proven track record architecting SaaS platforms, implementing real-time systems, and leading technical initiatives." },
         experience: { title: "Professional Experience" },
         projects: { title: "Selected Projects" },
         skills: { title: "Technical Skills" },
@@ -327,7 +330,7 @@ function ATSResume({ isDark, locale }: { isDark: boolean; locale: Locale }) {
       },
       'pt-BR': {
         header: { role: "Desenvolvedor Full Stack", subtitle: "Especialista em IoT & Automação" },
-        summary: { title: "Resumo Profissional", text: "Desenvolvedor Full Stack com 5+ anos construindo aplicações web escaláveis, plataformas IoT e sistemas de automação com IA. Expertise em React, TypeScript, Node.js e infraestrutura cloud (AWS, Supabase)." },
+        summary: { title: "Resumo Profissional", text: "Desenvolvedor Full Stack com 3+ anos construindo aplicações web escaláveis, plataformas IoT e sistemas de automação com IA. Expertise em React, TypeScript, Node.js e infraestrutura cloud (AWS, Supabase)." },
         experience: { title: "Experiência Profissional" },
         projects: { title: "Projetos em Destaque" },
         skills: { title: "Habilidades Técnicas" },
