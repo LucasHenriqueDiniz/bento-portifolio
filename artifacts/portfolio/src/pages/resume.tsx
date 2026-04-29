@@ -1,34 +1,19 @@
 import { Link } from "wouter";
 import { motion } from "framer-motion";
-import { useState } from "react";
-import { FiArrowLeft, FiPrinter, FiGithub, FiTwitter, FiMail, FiExternalLink, FiAward, FiBriefcase } from "react-icons/fi";
-import { Moon, Sun, GraduationCap, Globe } from "lucide-react";
+import { useState, useMemo } from "react";
+import { FiArrowLeft, FiPrinter, FiGithub, FiMail, FiExternalLink, FiAward, FiBriefcase, FiCode } from "react-icons/fi";
+import { Moon, Sun, Globe, GraduationCap, MapPin, Calendar } from "lucide-react";
 import { jobExperiences, academicExperiences, projects, certificates, languages, skillsData, ContactLinks } from "@/constants";
 import { formatDateRange } from "@/lib/dateFormatter";
-import { useResumeTranslation, getAvailableLocales } from "@/hooks/useResumeTranslation";
 
 const ACCENT = "#3d72cc";
-
-type ResumeFormat = "visual" | "professional";
+type ResumeFormat = "visual" | "ats";
 type Locale = "en" | "pt-BR";
 
-const iconMap: Record<string, React.ReactNode> = {
-  "Palette": <FiBriefcase size={16} />,
-  "Warehouse": <FiBriefcase size={16} />,
-  "MessageSquare": <FiBriefcase size={16} />,
-  "GraduationCap": <GraduationCap size={16} />,
-};
-
-const getIcon = (iconName?: string) => {
-  if (!iconName) return null;
-  if (iconName.startsWith("/")) return null;
-  return iconMap[iconName];
-};
-
 const fadeUp = (delay = 0) => ({
-  initial: { opacity: 0, y: 10 },
+  initial: { opacity: 0, y: 8 },
   animate: { opacity: 1, y: 0 },
-  transition: { delay, duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] as const },
+  transition: { delay, duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] as const },
 });
 
 const logoMap: Record<string, string> = {
@@ -46,476 +31,336 @@ const logoMap: Record<string, string> = {
   "BotsChannel": "/timeline/botschanell-logo.webp",
 };
 
-/**
- * VisualCV - Formato visual com logos e fotos
- */
-function VisualCV({ isDark, locale }: { isDark: boolean; locale: Locale }) {
-  const activeJobs = jobExperiences.filter(exp => exp.showInTimeline);
-  const activeEducation = academicExperiences.filter(ed => ed.showInTimeline);
-  const featuredProjects = projects.filter(p => p.featured).slice(0, 3);
+// ─── Section Title Component ─────────────────────────────
+function SectionTitle({ children, icon: Icon, delay = 0, isDark }: { children: React.ReactNode; icon?: any; delay?: number; isDark: boolean }) {
+  return (
+    <motion.div {...fadeUp(delay)} className="flex items-center gap-2 mb-3">
+      {Icon && <Icon size={14} style={{ color: ACCENT }} />}
+      <h2 className="text-[11px] font-black uppercase tracking-[0.15em]" style={{ color: ACCENT }}>
+        {children}
+      </h2>
+      <div className="flex-1 h-px ml-2" style={{ backgroundColor: isDark ? "rgba(61,114,204,0.2)" : "rgba(61,114,204,0.15)" }} />
+    </motion.div>
+  );
+}
+
+// ─── Skill Tag ───────────────────────────────────────────
+function SkillTag({ name, isDark }: { name: string; isDark: boolean }) {
+  return (
+    <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-md border ${isDark ? "bg-white/[0.03] border-white/10 text-gray-300" : "bg-gray-50 border-gray-200 text-gray-700"}`}>
+      {name}
+    </span>
+  );
+}
+
+// ─── Visual Resume ───────────────────────────────────────
+function VisualResume({ isDark, locale }: { isDark: boolean; locale: Locale }) {
+  const activeJobs = useMemo(() => jobExperiences.filter(exp => exp.showInTimeline), []);
+  const activeEducation = useMemo(() => academicExperiences
+    .filter(ed => ed.showInTimeline)
+    .sort((a, b) => {
+      // Sort by start date descending (most recent first)
+      const dateA = a.startDate ? new Date(a.startDate).getTime() : 0;
+      const dateB = b.startDate ? new Date(b.startDate).getTime() : 0;
+      return dateB - dateA;
+    }), []);
+  const featuredProjects = useMemo(() => projects.filter(p => p.featured).slice(0, 3), []);
+
+  const skillsByCategory = useMemo(() => {
+    const cats = ['frontend', 'backend', 'integration', 'automation', 'database', 'devops'];
+    return cats.map(cat => ({
+      category: cat,
+      skills: skillsData.filter(s => s.category === cat).slice(0, 6),
+    })).filter(g => g.skills.length > 0);
+  }, []);
 
   return (
-    <div className="max-w-5xl mx-auto px-6 py-12 space-y-12">
-      {/* ── HEADER WITH PHOTO ── */}
-      <motion.section {...fadeUp(0)} className="flex gap-8 items-start">
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5 }}
-          className="shrink-0"
-        >
-          <img
-            src="/selfie.webp"
-            alt="Lucas Henrique Diniz"
-            className="w-32 h-32 rounded-2xl object-cover border-2"
-            style={{ borderColor: ACCENT }}
-          />
-        </motion.div>
-
+    <div className="max-w-[900px] mx-auto px-6 py-8 space-y-6">
+      {/* ── HEADER ── */}
+      <motion.section {...fadeUp(0)} className="flex gap-5 items-start">
+        <img src="/selfie.webp" alt="Lucas" className="w-24 h-24 rounded-xl object-cover border-2 shrink-0" style={{ borderColor: ACCENT }} />
         <div className="flex-1 min-w-0">
-          <h1 className="text-4xl font-black tracking-tight" style={{ color: isDark ? "#ffffff" : "#000000" }}>
-            Lucas Henrique Diniz
-          </h1>
-          <p className="text-lg font-semibold mt-1" style={{ color: ACCENT }}>
+          <h1 className="text-3xl font-black tracking-tight" style={{ color: isDark ? "#fff" : "#000" }}>Lucas Henrique Diniz</h1>
+          <p className="text-sm font-bold mt-1" style={{ color: ACCENT }}>
             {locale === "en" ? "Full Stack Developer" : "Desenvolvedor Full Stack"}
           </p>
-          <p className={`text-sm leading-relaxed max-w-2xl mt-3 ${isDark ? "text-gray-400" : "text-gray-700"}`}>
+          <p className={`text-[13px] leading-relaxed mt-2 ${isDark ? "text-gray-400" : "text-gray-600"}`}>
             {locale === "en"
-              ? "Full Stack Developer with 5+ years building scalable web applications, IoT platforms, and AI-powered automation systems. Expertise in React, TypeScript, Node.js and cloud infrastructure."
-              : "Desenvolvedor Full Stack com 5+ anos construindo aplicações web escaláveis, plataformas IoT e sistemas de automação com IA. Expertise em React, TypeScript, Node.js e infraestrutura cloud."}
+              ? "5+ years building scalable web apps, IoT platforms & AI automation. React, TypeScript, Node.js, AWS."
+              : "5+ anos construindo apps web, plataformas IoT e automação com IA. React, TypeScript, Node.js, AWS."}
           </p>
-
-          <div className="flex flex-wrap gap-4 mt-4 text-sm">
-            <a href={`mailto:${ContactLinks.email}`} className={`flex items-center gap-1.5 font-medium hover:opacity-70 transition-opacity ${isDark ? "text-gray-300" : "text-gray-700"}`}>
-              <FiMail size={14} />
-              {ContactLinks.email}
-            </a>
-            <a href={ContactLinks.github} target="_blank" rel="noreferrer" className={`flex items-center gap-1.5 font-medium hover:opacity-70 transition-opacity ${isDark ? "text-gray-300" : "text-gray-700"}`}>
-              <FiGithub size={14} />
-              github.com/LucasHenriqueDiniz
-            </a>
-            <a href={ContactLinks.linkedin} target="_blank" rel="noreferrer" className={`flex items-center gap-1.5 font-medium hover:opacity-70 transition-opacity ${isDark ? "text-gray-300" : "text-gray-700"}`}>
-              <FiExternalLink size={14} />
-              LinkedIn
-            </a>
+          <div className="flex flex-wrap gap-3 mt-3 text-xs">
+            <a href={`mailto:${ContactLinks.email}`} className={`flex items-center gap-1 hover:opacity-70 ${isDark ? "text-gray-400" : "text-gray-600"}`}><FiMail size={11} /> {ContactLinks.email}</a>
+            <a href={ContactLinks.github} target="_blank" rel="noreferrer" className={`flex items-center gap-1 hover:opacity-70 ${isDark ? "text-gray-400" : "text-gray-600"}`}><FiGithub size={11} /> github.com/LucasHenriqueDiniz</a>
+            <a href={ContactLinks.linkedin} target="_blank" rel="noreferrer" className={`flex items-center gap-1 hover:opacity-70 ${isDark ? "text-gray-400" : "text-gray-600"}`}><FiExternalLink size={11} /> LinkedIn</a>
           </div>
         </div>
       </motion.section>
 
-      {/* ── EXPERIENCE ── */}
-      <motion.section {...fadeUp(0.08)}>
-        <div className="mb-6 pb-3 border-b" style={{ borderColor: isDark ? "rgb(55, 65, 81)" : "rgb(229, 231, 235)" }}>
-          <h2 className="text-sm font-bold uppercase tracking-widest" style={{ color: ACCENT }}>
-            {locale === "en" ? "Professional Experience" : "Experiência Profissional"}
-          </h2>
-        </div>
-        <div className="space-y-6">
+      {/* ── EXPERIENCE (Timeline layout) ── */}
+      <section>
+        <SectionTitle icon={FiBriefcase} delay={0.05} isDark={isDark}>
+          {locale === "en" ? "Experience" : "Experiência"}
+        </SectionTitle>
+        <div className="relative pl-4 border-l border-dashed" style={{ borderColor: isDark ? "rgba(61,114,204,0.25)" : "rgba(61,114,204,0.2)" }}>
           {activeJobs.map((job, i) => (
-            <motion.div key={job.id} {...fadeUp(0.12 + i * 0.04)} className="flex gap-4">
-              <div className="shrink-0 w-12 h-12 rounded-lg overflow-hidden flex items-center justify-center" style={{ backgroundColor: isDark ? "rgb(31, 41, 55)" : "rgb(243, 244, 246)" }}>
-                {logoMap[job.institution] ? (
-                  <img
-                    src={logoMap[job.institution]}
-                    alt={job.institution}
-                    className="w-8 h-8 object-contain"
-                  />
-                ) : job.icon && job.icon.startsWith("/") ? (
-                  <img
-                    src={job.icon}
-                    alt={job.institution}
-                    className="w-8 h-8 object-contain"
-                  />
-                ) : getIcon(job.icon) ? (
-                  <div style={{ color: ACCENT }}>{getIcon(job.icon)}</div>
-                ) : (
-                  <FiBriefcase size={16} style={{ color: ACCENT }} />
+            <motion.div key={job.id} {...fadeUp(0.08 + i * 0.03)} className="relative mb-4 last:mb-0">
+              {/* Dot */}
+              <div className="absolute -left-[21px] top-1.5 w-2.5 h-2.5 rounded-full border-2" style={{ backgroundColor: isDark ? "#1f2937" : "#fff", borderColor: ACCENT }} />
+              <div className="flex items-start gap-3">
+                {logoMap[job.institution] && (
+                  <img src={logoMap[job.institution]} alt="" className="w-8 h-8 rounded object-contain shrink-0 mt-0.5" />
                 )}
-              </div>
-
-              <div className="flex-1 min-w-0">
-                <div className="flex items-start justify-between gap-3 mb-1">
-                  <div>
-                    <h3 className="font-bold text-base" style={{ color: isDark ? "#ffffff" : "#000000" }}>
-                      {job.title}
-                    </h3>
-                    <p className={`text-sm font-medium ${isDark ? "text-gray-400" : "text-gray-600"}`}>
-                      {job.institution}
-                    </p>
-                  </div>
-                  {!job.endDate && (
-                    <span className="text-xs font-bold px-2 py-1 rounded shrink-0" style={{ color: ACCENT, backgroundColor: isDark ? "rgba(61, 114, 204, 0.15)" : "rgba(61, 114, 204, 0.1)" }}>
-                      {locale === "en" ? "Current" : "Atual"}
-                    </span>
-                  )}
-                </div>
-                <p className={`text-xs mb-2 ${isDark ? "text-gray-500" : "text-gray-500"}`}>
-                  {formatDateRange(job.startDate, job.endDate)}
-                </p>
-                <p className={`text-sm leading-relaxed ${isDark ? "text-gray-300" : "text-gray-700"}`}>
-                  {job.description}
-                </p>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </motion.section>
-
-      {/* ── EDUCATION ── */}
-      <motion.section {...fadeUp(0.28)}>
-        <div className="mb-6 pb-3 border-b" style={{ borderColor: isDark ? "rgb(55, 65, 81)" : "rgb(229, 231, 235)" }}>
-          <h2 className="text-sm font-bold uppercase tracking-widest" style={{ color: ACCENT }}>
-            {locale === "en" ? "Education" : "Educação"}
-          </h2>
-        </div>
-        <div className="space-y-5">
-          {activeEducation.map((ed, i) => (
-            <motion.div key={ed.id} {...fadeUp(0.30 + i * 0.04)} className="flex gap-4">
-              <div className="shrink-0 w-12 h-12 rounded-lg overflow-hidden flex items-center justify-center" style={{ backgroundColor: isDark ? "rgb(31, 41, 55)" : "rgb(243, 244, 246)" }}>
-                {logoMap[ed.institution] ? (
-                  <img
-                    src={logoMap[ed.institution]}
-                    alt={ed.institution}
-                    className="w-8 h-8 object-contain"
-                  />
-                ) : ed.icon && ed.icon.startsWith("/") ? (
-                  <img
-                    src={ed.icon}
-                    alt={ed.institution}
-                    className="w-8 h-8 object-contain"
-                  />
-                ) : getIcon(ed.icon) ? (
-                  <div style={{ color: ACCENT }}>{getIcon(ed.icon)}</div>
-                ) : (
-                  <GraduationCap size={16} style={{ color: ACCENT }} />
-                )}
-              </div>
-
-              <div className="flex-1 min-w-0">
-                <div className="flex items-start justify-between gap-3 mb-1">
-                  <div>
-                    <h3 className="font-bold text-base" style={{ color: isDark ? "#ffffff" : "#000000" }}>
-                      {ed.title}
-                    </h3>
-                    <p className={`text-sm font-medium ${isDark ? "text-gray-400" : "text-gray-600"}`}>
-                      {ed.institution}
-                    </p>
-                  </div>
-                  <span className={`text-xs shrink-0 ${isDark ? "text-gray-500" : "text-gray-500"}`}>
-                    {formatDateRange(ed.startDate, ed.endDate)}
-                  </span>
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </motion.section>
-
-      {/* ── SKILLS & LANGUAGES ── */}
-      <motion.section {...fadeUp(0.36)}>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div>
-            <div className="mb-4 pb-3 border-b" style={{ borderColor: isDark ? "rgb(55, 65, 81)" : "rgb(229, 231, 235)" }}>
-              <h2 className="text-sm font-bold uppercase tracking-widest" style={{ color: ACCENT }}>
-                {locale === "en" ? "Skills" : "Habilidades"}
-              </h2>
-            </div>
-            <div className="space-y-3">
-              {['frontend', 'backend', 'integration', 'devops'].map((category) => {
-                const categorySkills = skillsData.filter(s => s.category === category);
-                if (categorySkills.length === 0) return null;
-                return (
-                  <div key={category}>
-                    <p className={`text-xs font-bold uppercase tracking-widest mb-1.5 ${isDark ? "text-gray-500" : "text-gray-500"}`}>
-                      {category === 'frontend' ? (locale === "en" ? "Frontend" : "Frontend") :
-                       category === 'backend' ? (locale === "en" ? "Backend" : "Backend") :
-                       category === 'integration' ? (locale === "en" ? "Integration" : "Integração") :
-                       category === 'devops' ? (locale === "en" ? "Cloud & DevOps" : "Cloud & DevOps") : category}
-                    </p>
-                    <p className={`text-sm ${isDark ? "text-gray-300" : "text-gray-700"}`}>
-                      {categorySkills.map(s => s.name).join(", ")}
-                    </p>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          <div>
-            <div className="mb-4 pb-3 border-b" style={{ borderColor: isDark ? "rgb(55, 65, 81)" : "rgb(229, 231, 235)" }}>
-              <h2 className="text-sm font-bold uppercase tracking-widest" style={{ color: ACCENT }}>
-                {locale === "en" ? "Languages" : "Idiomas"}
-              </h2>
-            </div>
-            <div className="space-y-3">
-              {languages.map((lang) => (
-                <div key={lang.name}>
-                  <div className="flex items-center justify-between mb-1">
-                    <span className={`text-sm font-medium ${isDark ? "text-gray-300" : "text-gray-700"}`}>
-                      {lang.name}
-                    </span>
-                    <span className={`text-xs font-semibold px-2 py-0.5 rounded ${isDark ? "bg-white/10 text-gray-300" : "bg-gray-100 text-gray-600"}`}>
-                      {locale === "en" ? lang.levelLabel.en : lang.levelLabel.pt}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </motion.section>
-
-      {/* ── FEATURED PROJECTS ── */}
-      {featuredProjects.length > 0 && (
-        <motion.section {...fadeUp(0.42)}>
-          <div className="mb-6 pb-3 border-b" style={{ borderColor: isDark ? "rgb(55, 65, 81)" : "rgb(229, 231, 235)" }}>
-            <h2 className="text-sm font-bold uppercase tracking-widest" style={{ color: ACCENT }}>
-              {locale === "en" ? "Featured Projects" : "Projetos em Destaque"}
-            </h2>
-          </div>
-          <div className="space-y-4">
-            {featuredProjects.map((proj, i) => (
-              <motion.div key={proj.id} {...fadeUp(0.44 + i * 0.04)}>
-                <div className="flex items-start justify-between gap-3 mb-1">
-                  <h3 className="font-bold text-base" style={{ color: isDark ? "#ffffff" : "#000000" }}>
-                    {proj.name}
-                  </h3>
-                  {proj.url && (
-                    <a href={proj.url} target="_blank" rel="noreferrer" className={`shrink-0 hover:opacity-70 transition-opacity ${isDark ? "text-gray-500" : "text-gray-400"}`}>
-                      <FiExternalLink size={14} />
-                    </a>
-                  )}
-                </div>
-                <p className={`text-sm leading-relaxed mb-2 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
-                  {proj.description}
-                </p>
-                <p className={`text-xs ${isDark ? "text-gray-500" : "text-gray-600"}`}>
-                  <span className="font-medium">Tech:</span> {proj.techStack.join(", ")}
-                </p>
-              </motion.div>
-            ))}
-          </div>
-        </motion.section>
-      )}
-
-      {/* ── CERTIFICATES ── */}
-      {certificates.length > 0 && (
-        <motion.section {...fadeUp(0.48)}>
-          <div className="mb-6 pb-3 border-b" style={{ borderColor: isDark ? "rgb(55, 65, 81)" : "rgb(229, 231, 235)" }}>
-            <h2 className="text-sm font-bold uppercase tracking-widest" style={{ color: ACCENT }}>
-              {locale === "en" ? "Certifications" : "Certificações"}
-            </h2>
-          </div>
-          <div className="space-y-4">
-            {certificates.map((cert, i) => (
-              <motion.div key={cert.title} {...fadeUp(0.50 + i * 0.04)} className="flex gap-3">
-                <div className="shrink-0 w-10 h-10 rounded-lg flex items-center justify-center mt-0.5" style={{ backgroundColor: isDark ? "rgb(31, 41, 55)" : "rgb(243, 244, 246)" }}>
-                  <FiAward size={16} style={{ color: ACCENT }} />
-                </div>
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-start justify-between gap-3 mb-0.5">
-                    <h3 className="font-bold text-sm" style={{ color: isDark ? "#ffffff" : "#000000" }}>
-                      {cert.title}
-                    </h3>
-                    {cert.url && (
-                      <a href={cert.url} target="_blank" rel="noreferrer" className={`shrink-0 hover:opacity-70 transition-opacity ${isDark ? "text-gray-500" : "text-gray-400"}`}>
-                        <FiExternalLink size={12} />
-                      </a>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h3 className="text-sm font-bold" style={{ color: isDark ? "#fff" : "#000" }}>{job.title}</h3>
+                    {!job.endDate && (
+                      <span className="text-[9px] font-bold px-1.5 py-0.5 rounded" style={{ color: ACCENT, backgroundColor: isDark ? "rgba(61,114,204,0.12)" : "rgba(61,114,204,0.08)" }}>
+                        {locale === "en" ? "Current" : "Atual"}
+                      </span>
                     )}
                   </div>
-                  <p className={`text-xs mb-1 ${isDark ? "text-gray-500" : "text-gray-500"}`}>
-                    {cert.issuer}
-                  </p>
-                  <p className={`text-xs font-medium ${isDark ? "text-gray-400" : "text-gray-600"}`}>
-                    {cert.issueDate}
-                  </p>
+                  <p className={`text-xs font-medium ${isDark ? "text-gray-400" : "text-gray-500"}`}>{job.institution}</p>
+                  <p className={`text-[10px] mb-1 ${isDark ? "text-gray-600" : "text-gray-400"}`}>{formatDateRange(job.startDate, job.endDate)}</p>
+                  <p className={`text-[12px] leading-relaxed ${isDark ? "text-gray-300" : "text-gray-700"}`}>{job.description}</p>
                 </div>
-              </motion.div>
-            ))}
-          </div>
-        </motion.section>
-      )}
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── PROJECTS (Horizontal cards) ── */}
+      <section>
+        <SectionTitle icon={FiCode} delay={0.15} isDark={isDark}>
+          {locale === "en" ? "Featured Projects" : "Projetos em Destaque"}
+        </SectionTitle>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          {featuredProjects.map((proj, i) => (
+            <motion.a
+              key={proj.id}
+              href={proj.url}
+              target="_blank"
+              rel="noreferrer"
+              {...fadeUp(0.18 + i * 0.04)}
+              className={`group block rounded-xl border p-3 transition-all hover:scale-[1.02] ${isDark ? "bg-white/[0.02] border-white/8 hover:border-[#3d72cc]/30" : "bg-white border-gray-200 hover:border-[#3d72cc]/30"}`}
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-8 h-8 rounded-lg overflow-hidden shrink-0">
+                  <img src={proj.image || "/logo.svg"} alt={proj.name} className="w-full h-full object-cover" />
+                </div>
+                <div className="min-w-0">
+                  <h3 className="text-[13px] font-bold truncate" style={{ color: isDark ? "#fff" : "#000" }}>{proj.name}</h3>
+                  <div className="flex gap-1 flex-wrap">
+                    {proj.techStack.slice(0, 3).map(t => (
+                      <span key={t} className={`text-[9px] px-1 py-px rounded ${isDark ? "bg-white/10 text-gray-400" : "bg-gray-100 text-gray-600"}`}>{t}</span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              <p className={`text-[11px] leading-relaxed line-clamp-2 ${isDark ? "text-gray-400" : "text-gray-600"}`}>{proj.description}</p>
+            </motion.a>
+          ))}
+        </div>
+      </section>
+
+      {/* ── SKILLS (Tag cloud) ── */}
+      <section>
+        <SectionTitle icon={FiCode} delay={0.22} isDark={isDark}>
+          {locale === "en" ? "Skills" : "Habilidades"}
+        </SectionTitle>
+        <div className="space-y-2">
+          {skillsByCategory.map((group) => (
+            <div key={group.category} className="flex items-center gap-2 flex-wrap">
+              <span className={`text-[10px] font-bold uppercase tracking-wider shrink-0 w-20 ${isDark ? "text-gray-500" : "text-gray-500"}`}>
+                {group.category}
+              </span>
+              <div className="flex flex-wrap gap-1">
+                {group.skills.map(s => <SkillTag key={s.name} name={s.name} isDark={isDark} />)}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── EDUCATION (Compact horizontal) ── */}
+      <section>
+        <SectionTitle icon={GraduationCap} delay={0.28} isDark={isDark}>
+          {locale === "en" ? "Education" : "Educação"}
+        </SectionTitle>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {activeEducation.map((ed, i) => (
+            <motion.div key={ed.id} {...fadeUp(0.30 + i * 0.03)} className={`flex gap-3 p-3 rounded-xl border ${isDark ? "bg-white/[0.02] border-white/8" : "bg-white border-gray-200"}`}>
+              {logoMap[ed.institution] && (
+                <img src={logoMap[ed.institution]} alt="" className="w-10 h-10 rounded-lg object-contain shrink-0" />
+              )}
+              <div className="min-w-0">
+                <h3 className="text-sm font-bold" style={{ color: isDark ? "#fff" : "#000" }}>{ed.title}</h3>
+                <p className={`text-xs ${isDark ? "text-gray-400" : "text-gray-500"}`}>{ed.institution}</p>
+                <p className={`text-[10px] ${isDark ? "text-gray-600" : "text-gray-400"}`}>{formatDateRange(ed.startDate, ed.endDate)}</p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── LANGUAGES (Compact inline) ── */}
+      <section>
+        <SectionTitle icon={MapPin} delay={0.35} isDark={isDark}>
+          {locale === "en" ? "Languages" : "Idiomas"}
+        </SectionTitle>
+        <div className="flex gap-4">
+          {languages.map((lang) => (
+            <div key={lang.name} className="flex items-center gap-2">
+              <span className={`text-sm font-medium ${isDark ? "text-gray-300" : "text-gray-700"}`}>{lang.name}</span>
+              <span className={`text-[10px] font-semibold px-2 py-px rounded ${isDark ? "bg-white/10 text-gray-400" : "bg-gray-100 text-gray-600"}`}>
+                {locale === "en" ? lang.levelLabel.en : lang.levelLabel.pt}
+              </span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── CERTIFICATES (Ultra compact grid) ── */}
+      <section>
+        <SectionTitle icon={FiAward} delay={0.40} isDark={isDark}>
+          {locale === "en" ? "Certifications" : "Certificações"}
+        </SectionTitle>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1.5">
+          {certificates.map((cert) => (
+            <a key={cert.title} href={cert.url} target="_blank" rel="noreferrer" className={`flex items-center gap-2 text-[11px] py-1 hover:opacity-70 transition-opacity ${isDark ? "text-gray-300" : "text-gray-700"}`}>
+              <span style={{ color: ACCENT }}>•</span>
+              <span className="truncate">{cert.title}</span>
+              <span className={`text-[10px] shrink-0 ${isDark ? "text-gray-600" : "text-gray-400"}`}>({cert.issueDate})</span>
+            </a>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }
 
-/**
- * ProfessionalResume - Formato ATS compacto
- */
-function ProfessionalResume({ isDark, locale }: { isDark: boolean; locale: Locale }) {
-  const t = useResumeTranslation(locale);
+// ─── ATS Resume (text-only, dense) ───────────────────────
+function ATSResume({ isDark, locale }: { isDark: boolean; locale: Locale }) {
+  const t = useMemo(() => {
+    // Inline translations to avoid JSON import issues
+    const data = {
+      en: {
+        header: { role: "Full Stack Developer", subtitle: "IoT & Automation Specialist" },
+        summary: { title: "Professional Summary", text: "Full Stack Developer with 5+ years building scalable web applications, IoT platforms, and AI-powered automation systems. Expertise in React, TypeScript, Node.js, and cloud infrastructure (AWS, Supabase). Proven track record architecting SaaS platforms, implementing real-time systems, and leading technical initiatives." },
+        experience: { title: "Professional Experience" },
+        projects: { title: "Selected Projects" },
+        skills: { title: "Technical Skills" },
+        education: { title: "Education" },
+        certifications: { title: "Certifications" },
+      },
+      'pt-BR': {
+        header: { role: "Desenvolvedor Full Stack", subtitle: "Especialista em IoT & Automação" },
+        summary: { title: "Resumo Profissional", text: "Desenvolvedor Full Stack com 5+ anos construindo aplicações web escaláveis, plataformas IoT e sistemas de automação com IA. Expertise em React, TypeScript, Node.js e infraestrutura cloud (AWS, Supabase)." },
+        experience: { title: "Experiência Profissional" },
+        projects: { title: "Projetos em Destaque" },
+        skills: { title: "Habilidades Técnicas" },
+        education: { title: "Educação" },
+        certifications: { title: "Certificações" },
+      }
+    };
+    return data[locale] || data.en;
+  }, [locale]);
+
+  const activeJobs = useMemo(() => jobExperiences.filter(exp => exp.showInTimeline), []);
+  const activeEducation = useMemo(() => academicExperiences.filter(ed => ed.showInTimeline), []);
+  const featuredProjects = useMemo(() => projects.filter(p => p.featured).slice(0, 3), []);
 
   return (
-    <div className="max-w-4xl mx-auto px-6 py-12 space-y-8">
-      {/* ── HEADER ── */}
-      <motion.section {...fadeUp(0)}>
-        <h1 className="text-4xl font-black tracking-tight" style={{ color: isDark ? "#ffffff" : "#000000" }}>
-          Lucas Henrique Diniz
-        </h1>
-        <p className="text-xl font-semibold mt-2" style={{ color: ACCENT }}>
-          {t.header.role}
-        </p>
-        <p className={`text-sm font-medium mt-1 ${isDark ? "text-gray-400" : "text-gray-600"}`}>
-          {t.header.subtitle}
-        </p>
+    <div className="max-w-[800px] mx-auto px-6 py-8 space-y-5">
+      {/* Header */}
+      <section>
+        <h1 className="text-2xl font-black" style={{ color: isDark ? "#fff" : "#000" }}>Lucas Henrique Diniz</h1>
+        <p className="text-sm font-bold mt-0.5" style={{ color: ACCENT }}>{t.header.role}</p>
+        <p className={`text-xs mt-1 ${isDark ? "text-gray-400" : "text-gray-600"}`}>{ContactLinks.email} | github.com/LucasHenriqueDiniz | linkedin.com/in/lucas-diniz-ostroski</p>
+      </section>
 
-        <div className="flex flex-wrap gap-4 mt-4 text-sm">
-          <a href={`mailto:${ContactLinks.email}`} className={`flex items-center gap-1.5 font-medium hover:opacity-70 transition-opacity ${isDark ? "text-gray-300" : "text-gray-700"}`}>
-            <FiMail size={14} />
-            {ContactLinks.email}
-          </a>
-          <a href={ContactLinks.github} target="_blank" rel="noreferrer" className={`flex items-center gap-1.5 font-medium hover:opacity-70 transition-opacity ${isDark ? "text-gray-300" : "text-gray-700"}`}>
-            <FiGithub size={14} />
-            github.com/LucasHenriqueDiniz
-          </a>
-        </div>
-      </motion.section>
+      {/* Summary */}
+      <section>
+        <h2 className="text-[10px] font-black uppercase tracking-widest mb-1.5" style={{ color: ACCENT }}>{t.summary.title}</h2>
+        <p className={`text-xs leading-relaxed ${isDark ? "text-gray-300" : "text-gray-700"}`}>{t.summary.text}</p>
+      </section>
 
-      {/* ── SUMMARY ── */}
-      <motion.section {...fadeUp(0.08)}>
-        <h2 className="text-sm font-bold uppercase tracking-widest mb-3" style={{ color: ACCENT }}>
-          {t.summary.title}
-        </h2>
-        <p className={`text-sm leading-relaxed ${isDark ? "text-gray-300" : "text-gray-700"}`}>
-          {t.summary.text}
-        </p>
-      </motion.section>
-
-      {/* ── EXPERIENCE ── */}
-      <motion.section {...fadeUp(0.12)}>
-        <h2 className="text-sm font-bold uppercase tracking-widest mb-4" style={{ color: ACCENT }}>
-          {t.experience.title}
-        </h2>
-        <div className="space-y-6">
-          {Object.values(t.experience.jobs).map((job: any, i: number) => (
-            <motion.div key={i} {...fadeUp(0.14 + i * 0.03)}>
-              <div className="flex items-start justify-between gap-3 mb-1">
-                <div>
-                  <h3 className="font-bold text-base" style={{ color: isDark ? "#ffffff" : "#000000" }}>
-                    {job.title}
-                  </h3>
-                  <p className={`text-sm font-medium ${isDark ? "text-gray-400" : "text-gray-600"}`}>
-                    {job.company}
-                  </p>
-                </div>
-                <span className={`text-xs shrink-0 ${isDark ? "text-gray-500" : "text-gray-500"}`}>
-                  {job.period}
-                </span>
+      {/* Experience */}
+      <section>
+        <h2 className="text-[10px] font-black uppercase tracking-widest mb-2" style={{ color: ACCENT }}>{t.experience.title}</h2>
+        <div className="space-y-3">
+          {activeJobs.map(job => (
+            <div key={job.id}>
+              <div className="flex items-baseline justify-between gap-2">
+                <h3 className="text-xs font-bold" style={{ color: isDark ? "#fff" : "#000" }}>{job.title}</h3>
+                <span className={`text-[10px] shrink-0 ${isDark ? "text-gray-500" : "text-gray-500"}`}>{formatDateRange(job.startDate, job.endDate)}</span>
               </div>
-              <ul className={`text-sm space-y-1 mt-2 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
-                {job.bullets.map((bullet: string, j: number) => (
-                  <li key={j} className="flex gap-2">
-                    <span className="text-gray-400 mt-0.5">•</span>
-                    <span>{bullet}</span>
-                  </li>
-                ))}
-              </ul>
-            </motion.div>
+              <p className={`text-[11px] font-medium ${isDark ? "text-gray-400" : "text-gray-600"}`}>{job.institution}</p>
+              <p className={`text-[11px] mt-0.5 leading-relaxed ${isDark ? "text-gray-300" : "text-gray-700"}`}>{job.description}</p>
+            </div>
           ))}
         </div>
-      </motion.section>
+      </section>
 
-      {/* ── PROJECTS ── */}
-      <motion.section {...fadeUp(0.28)}>
-        <h2 className="text-sm font-bold uppercase tracking-widest mb-4" style={{ color: ACCENT }}>
-          {t.projects.title}
-        </h2>
-        <div className="space-y-5">
-          {Object.values(t.projects.projects).map((proj: any, i: number) => (
-            <motion.div key={i} {...fadeUp(0.30 + i * 0.03)}>
-              <div className="flex items-start justify-between gap-3 mb-1">
-                <div>
-                  <h3 className="font-bold text-base" style={{ color: isDark ? "#ffffff" : "#000000" }}>
-                    {proj.name}
-                  </h3>
-                  <p className={`text-sm font-medium ${isDark ? "text-gray-400" : "text-gray-600"}`}>
-                    {proj.subtitle}
-                  </p>
-                </div>
-                <a href={`https://${proj.url}`} target="_blank" rel="noreferrer" className={`shrink-0 hover:opacity-70 transition-opacity ${isDark ? "text-gray-500" : "text-gray-400"}`}>
-                  <FiExternalLink size={14} />
-                </a>
+      {/* Projects */}
+      <section>
+        <h2 className="text-[10px] font-black uppercase tracking-widest mb-2" style={{ color: ACCENT }}>{t.projects.title}</h2>
+        <div className="space-y-2.5">
+          {featuredProjects.map(proj => (
+            <div key={proj.id}>
+              <div className="flex items-baseline justify-between">
+                <h3 className="text-xs font-bold" style={{ color: isDark ? "#fff" : "#000" }}>{proj.name}</h3>
+                {proj.url && <span className={`text-[10px] ${isDark ? "text-gray-500" : "text-gray-400"}`}>{proj.url.replace('https://', '')}</span>}
               </div>
-              <ul className={`text-sm space-y-1 mt-2 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
-                {proj.bullets.map((bullet: string, j: number) => (
-                  <li key={j} className="flex gap-2">
-                    <span className="text-gray-400 mt-0.5">•</span>
-                    <span>{bullet}</span>
-                  </li>
-                ))}
-              </ul>
-              <p className={`text-xs mt-2 ${isDark ? "text-gray-500" : "text-gray-600"}`}>
-                <span className="font-medium">Tech:</span> {proj.tech}
-              </p>
-            </motion.div>
+              <p className={`text-[11px] leading-relaxed ${isDark ? "text-gray-300" : "text-gray-700"}`}>{proj.description}</p>
+              <p className={`text-[10px] ${isDark ? "text-gray-500" : "text-gray-500"}`}>Tech: {proj.techStack.join(", ")}</p>
+            </div>
           ))}
         </div>
-      </motion.section>
+      </section>
 
-      {/* ── SKILLS ── */}
-      <motion.section {...fadeUp(0.36)}>
-        <h2 className="text-sm font-bold uppercase tracking-widest mb-4" style={{ color: ACCENT }}>
-          {t.skills.title}
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {Object.values(t.skills.categories).map((skill: any, i: number) => (
-            <motion.div key={i} {...fadeUp(0.38 + i * 0.02)}>
-              <p className={`text-xs font-bold uppercase tracking-widest mb-1 ${isDark ? "text-gray-500" : "text-gray-600"}`}>
-                {skill.label}
-              </p>
-              <p className={`text-sm ${isDark ? "text-gray-300" : "text-gray-700"}`}>
-                {skill.value}
-              </p>
-            </motion.div>
+      {/* Skills */}
+      <section>
+        <h2 className="text-[10px] font-black uppercase tracking-widest mb-2" style={{ color: ACCENT }}>{t.skills.title}</h2>
+        <div className="grid grid-cols-2 gap-x-6 gap-y-1 text-[11px]">
+          <p className={isDark ? "text-gray-300" : "text-gray-700"}><span className="font-semibold" style={{ color: isDark ? "#fff" : "#000" }}>Languages:</span> TypeScript, JavaScript, Python, Go, SQL</p>
+          <p className={isDark ? "text-gray-300" : "text-gray-700"}><span className="font-semibold" style={{ color: isDark ? "#fff" : "#000" }}>Frontend:</span> React, Next.js, React Native, Expo, Tailwind CSS</p>
+          <p className={isDark ? "text-gray-300" : "text-gray-700"}><span className="font-semibold" style={{ color: isDark ? "#fff" : "#000" }}>Backend:</span> Node.js, PostgreSQL, Supabase, Redis, Prisma</p>
+          <p className={isDark ? "text-gray-300" : "text-gray-700"}><span className="font-semibold" style={{ color: isDark ? "#fff" : "#000" }}>Cloud:</span> AWS Lambda, Docker, Vercel, GitHub Actions</p>
+        </div>
+      </section>
+
+      {/* Education */}
+      <section>
+        <h2 className="text-[10px] font-black uppercase tracking-widest mb-2" style={{ color: ACCENT }}>{t.education.title}</h2>
+        <div className="space-y-1.5">
+          {activeEducation.map(ed => (
+            <div key={ed.id} className="flex items-baseline justify-between gap-2">
+              <div>
+                <span className="text-xs font-bold" style={{ color: isDark ? "#fff" : "#000" }}>{ed.title}</span>
+                <span className={`text-[11px] ${isDark ? "text-gray-400" : "text-gray-600"}`}> — {ed.institution}</span>
+              </div>
+              <span className={`text-[10px] shrink-0 ${isDark ? "text-gray-500" : "text-gray-500"}`}>{formatDateRange(ed.startDate, ed.endDate)}</span>
+            </div>
           ))}
         </div>
-      </motion.section>
+      </section>
 
-      {/* ── EDUCATION ── */}
-      <motion.section {...fadeUp(0.42)}>
-        <h2 className="text-sm font-bold uppercase tracking-widest mb-4" style={{ color: ACCENT }}>
-          {t.education.title}
-        </h2>
-        <div className="space-y-4">
-          {Object.values(t.education.degrees).map((degree: any, i: number) => (
-            <motion.div key={i} {...fadeUp(0.44 + i * 0.02)}>
-              <h3 className="font-bold text-base" style={{ color: isDark ? "#ffffff" : "#000000" }}>
-                {degree.title}
-              </h3>
-              <p className={`text-sm font-medium ${isDark ? "text-gray-400" : "text-gray-600"}`}>
-                {degree.institution}
-              </p>
-              <p className={`text-xs mb-1 ${isDark ? "text-gray-500" : "text-gray-500"}`}>
-                {degree.period}
-              </p>
-              <p className={`text-sm ${isDark ? "text-gray-300" : "text-gray-700"}`}>
-                {degree.description}
-              </p>
-            </motion.div>
+      {/* Certifications */}
+      <section>
+        <h2 className="text-[10px] font-black uppercase tracking-widest mb-1.5" style={{ color: ACCENT }}>{t.certifications.title}</h2>
+        <div className="flex flex-wrap gap-x-4 gap-y-1 text-[11px]">
+          {certificates.map(cert => (
+            <span key={cert.title} className={`${isDark ? "text-gray-300" : "text-gray-700"}`}>• {cert.title} ({cert.issueDate})</span>
           ))}
         </div>
-      </motion.section>
-
-      {/* ── CERTIFICATIONS ── */}
-      <motion.section {...fadeUp(0.48)}>
-        <h2 className="text-sm font-bold uppercase tracking-widest mb-4" style={{ color: ACCENT }}>
-          {t.certifications.title}
-        </h2>
-        <ul className={`text-sm space-y-2 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
-          {Object.values(t.certifications.certs).map((cert: string, i: number) => (
-            <motion.li key={i} {...fadeUp(0.50 + i * 0.02)} className="flex gap-2">
-              <span className="text-gray-400 mt-0.5">•</span>
-              <span>{cert}</span>
-            </motion.li>
-          ))}
-        </ul>
-      </motion.section>
+      </section>
     </div>
   );
 }
 
-/**
- * Main Resume Component with Toggle
- */
+// ─── Main Page ───────────────────────────────────────────
 export default function ResumePage() {
   const [isDark, setIsDark] = useState(() =>
     typeof window !== "undefined"
@@ -544,69 +389,32 @@ export default function ResumePage() {
 
   return (
     <div className={`min-h-screen transition-colors duration-300 ${isDark ? "dark bg-[#0f0f0f] text-gray-100" : "bg-white text-gray-900"}`}>
-      <style>{`
-        @media print {
-          .no-print { display: none !important; }
-          body { background: white !important; }
-          * { background: white !important; color: black !important; }
-        }
-      `}</style>
+      <style>{`@media print {.no-print{display:none!important}body{background:white!important}*{background:white!important;color:black!important}}`}</style>
 
       {/* ── NAV ── */}
-      <header className={`no-print sticky top-0 z-50 h-16 border-b ${isDark ? "bg-black/95 border-gray-800" : "bg-white border-gray-200"} backdrop-blur-sm`}>
-        <div className="max-w-6xl mx-auto px-6 h-full flex items-center justify-between">
+      <header className={`no-print sticky top-0 z-50 h-14 border-b ${isDark ? "bg-black/95 border-gray-800" : "bg-white border-gray-200"} backdrop-blur-sm`}>
+        <div className="max-w-[900px] mx-auto px-6 h-full flex items-center justify-between">
           <Link href="/" className={`text-xs font-semibold flex items-center gap-1.5 transition-opacity hover:opacity-70 ${isDark ? "text-gray-400" : "text-gray-600"}`}>
-            <FiArrowLeft size={14} />
-            {locale === "en" ? "Back" : "Voltar"}
+            <FiArrowLeft size={14} /> {locale === "en" ? "Back" : "Voltar"}
           </Link>
 
           {/* Format Tabs */}
           <div className={`flex items-center gap-1 rounded-lg p-1 ${isDark ? "bg-gray-900" : "bg-gray-100"}`}>
-            <button
-              onClick={() => setFormat("visual")}
-              className={`px-3 py-1.5 text-xs font-semibold rounded transition-colors ${
-                format === "visual"
-                  ? isDark
-                    ? "bg-white/10 text-white"
-                    : "bg-white text-gray-900"
-                  : isDark
-                  ? "text-gray-400 hover:text-gray-200"
-                  : "text-gray-600 hover:text-gray-900"
-              }`}
-            >
-              {locale === "en" ? "Visual" : "Visual"}
+            <button onClick={() => setFormat("visual")} className={`px-3 py-1.5 text-xs font-semibold rounded transition-colors ${format === "visual" ? (isDark ? "bg-white/10 text-white" : "bg-white text-gray-900") : (isDark ? "text-gray-400 hover:text-gray-200" : "text-gray-600 hover:text-gray-900")}`}>
+              Visual
             </button>
-            <button
-              onClick={() => setFormat("professional")}
-              className={`px-3 py-1.5 text-xs font-semibold rounded transition-colors ${
-                format === "professional"
-                  ? isDark
-                    ? "bg-white/10 text-white"
-                    : "bg-white text-gray-900"
-                  : isDark
-                  ? "text-gray-400 hover:text-gray-200"
-                  : "text-gray-600 hover:text-gray-900"
-              }`}
-            >
-              {locale === "en" ? "Professional" : "Profissional"}
+            <button onClick={() => setFormat("ats")} className={`px-3 py-1.5 text-xs font-semibold rounded transition-colors ${format === "ats" ? (isDark ? "bg-white/10 text-white" : "bg-white text-gray-900") : (isDark ? "text-gray-400 hover:text-gray-200" : "text-gray-600 hover:text-gray-900")}`}>
+              ATS
             </button>
           </div>
 
           <div className="flex items-center gap-2">
-            {/* Language Toggle */}
-            <button
-              onClick={toggleLocale}
-              className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border transition-colors ${isDark ? "text-gray-400 border-gray-700 hover:text-gray-200" : "text-gray-600 border-gray-300 hover:text-gray-900"}`}
-            >
-              <Globe size={13} />
-              <span>{locale === "en" ? "PT" : "EN"}</span>
+            <button onClick={toggleLocale} className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border transition-colors ${isDark ? "text-gray-400 border-gray-700 hover:text-gray-200" : "text-gray-600 border-gray-300 hover:text-gray-900"}`}>
+              <Globe size={13} /> <span>{locale === "en" ? "PT" : "EN"}</span>
             </button>
-
             <button onClick={() => window.print()} className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border transition-colors ${isDark ? "text-gray-400 border-gray-700 hover:text-gray-200" : "text-gray-600 border-gray-300 hover:text-gray-900"}`}>
-              <FiPrinter size={13} />
-              <span>{locale === "en" ? "Print" : "Imprimir"}</span>
+              <FiPrinter size={13} /> <span>{locale === "en" ? "Print" : "Imprimir"}</span>
             </button>
-
             <button onClick={toggleDark} className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${isDark ? "text-gray-500 hover:bg-gray-900" : "text-gray-600 hover:bg-gray-100"}`}>
               {isDark ? <Sun size={14} /> : <Moon size={14} />}
             </button>
@@ -615,24 +423,13 @@ export default function ResumePage() {
       </header>
 
       {/* ── CONTENT ── */}
-      <motion.div
-        key={format}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.3 }}
-      >
-        {format === "visual" ? (
-          <VisualCV isDark={isDark} locale={locale} />
-        ) : (
-          <ProfessionalResume isDark={isDark} locale={locale} />
-        )}
+      <motion.div key={format} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.25 }}>
+        {format === "visual" ? <VisualResume isDark={isDark} locale={locale} /> : <ATSResume isDark={isDark} locale={locale} />}
       </motion.div>
 
       {/* ── FOOTER ── */}
-      <div className={`no-print text-center text-xs py-8 border-t ${isDark ? "border-gray-800 text-gray-600" : "border-gray-200 text-gray-500"}`}>
-        <p>
-          {locale === "en" ? "Generated from" : "Gerado a partir de"} <span style={{ color: ACCENT }} className="font-semibold">lucashdo.com</span>
-        </p>
+      <div className={`no-print text-center text-[10px] py-6 border-t ${isDark ? "border-gray-800 text-gray-600" : "border-gray-200 text-gray-400"}`}>
+        {locale === "en" ? "Generated from" : "Gerado a partir de"} <span style={{ color: ACCENT }} className="font-semibold">lucashdo.com</span>
       </div>
     </div>
   );
