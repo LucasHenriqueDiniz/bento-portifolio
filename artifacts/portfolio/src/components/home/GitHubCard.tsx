@@ -47,8 +47,8 @@ const GitHubGrid = React.memo(function GitHubGrid({
     : ["#ebedf0", "#9be9a8", "#40c463", "#30a14e", "#216e39"];
 
   return (
-    <div className="w-full h-full rounded-xl border border-[#e7e7e7] dark:border-[#2a2a2a] bg-[#fbfbfb] dark:bg-[#141414] p-2 flex flex-col min-h-0">
-      <div className="pl-5 pr-0.5 pb-1 shrink-0 flex items-center text-[8px] text-[#b0b0b0] dark:text-[#5e5e5e] leading-none">
+    <div className={`w-full h-full rounded-lg border p-2 flex flex-col min-h-0 ${isDark ? "bg-white/3 border-white/8" : "bg-[#f5f5f5] border-[#ebebeb]"}`}>
+      <div className={`pl-5 pr-0.5 pb-1 shrink-0 flex items-center text-[7px] font-semibold ${isDark ? "text-white/30" : "text-[#999]"} leading-none`}>
         {MONTHS.map((month) => (
           <span key={month} className="flex-1 min-w-0 truncate">
             {month}
@@ -57,7 +57,7 @@ const GitHubGrid = React.memo(function GitHubGrid({
       </div>
 
       <div className="flex-1 min-h-0 flex gap-1.5">
-        <div className="w-4 shrink-0 grid grid-rows-7 gap-[2px] text-[8px] text-[#b0b0b0] dark:text-[#5e5e5e] leading-none">
+        <div className={`w-4 shrink-0 grid grid-rows-7 gap-[2px] text-[7px] ${isDark ? "text-white/30" : "text-[#999]"} leading-none`}>
           {DAY_LABELS.map((day, i) => (
             <div key={i} className="flex items-center justify-end">
               {day}
@@ -126,46 +126,42 @@ export const GitHubCard = React.memo(function GitHubCard({
     <WidgetCard
       tier={tier}
       isLoading={loadingStats}
-      loadingIcon={
-        <SiGithub
-          size={28}
-          className={isDark ? "text-[#c7d5e0]" : "text-[#1b2838]"}
-        />
-      }
-      className={`${CARD} overflow-hidden
-        col-span-1 order-6
-        md:col-start-2 md:col-end-4 md:row-start-9 md:row-end-13
-        lg:col-start-2 lg:col-end-4 lg:row-start-9 lg:row-end-13`}
+      loadingIcon={<SiGithub size={28} className="text-[#1b2838]" />}
+      className="h-full rounded-2xl overflow-hidden"
       style={{
-        backgroundColor: isDark ? "#181818" : "#ffffff",
-        overflow: "hidden",
+        border: isDark ? "1px solid #282828" : "1px solid #ebebeb",
       }}
+      glowColor="27, 40, 56"
     >
       <motion.div
         custom={9}
         variants={fadeUpSoft}
         initial="hidden"
         animate="show"
-        className="p-3 h-full flex flex-col"
+        className="p-3 h-full flex flex-col gap-2"
       >
-        <div ref={githubRef} className="h-full flex flex-col gap-3">
-          <CardHeader
-            icon={
-              <span className="icon-pulse">
-                <SiGithub size={10} />
+        <div ref={githubRef} className="h-full flex flex-col gap-2">
+          {/* Header */}
+          <div className="flex items-center justify-between shrink-0">
+            <div className="inline-flex items-center gap-1.5">
+              <SiGithub size={12} className="text-[#1b2838] dark:text-[#c7d5e0]" />
+              <span className={`text-[9px] font-semibold uppercase tracking-wider ${isDark ? "text-[#c7d5e0]" : "text-[#1b2838]"}`}>
+                GitHub
               </span>
-            }
-            title="GitHub Activity"
-          />
-
-          <div className="shrink-0 rounded-lg border border-[#e8e8e8] dark:border-[#2a2a2a] bg-[#fafafa] dark:bg-[#151515] px-2.5 py-2">
-            <div className="grid grid-cols-4 gap-2">
-              <StatItem label="repos" value={repos} />
-              <StatItem label="contribs" value={contributions} separator="," />
-              <StatItem label="commits" value={commits} separator="," />
-              <StatItem label="streak" value={streak} suffix="d" />
             </div>
           </div>
+
+          {/* Stats Grid */}
+          <div className={`rounded-lg p-2 border shrink-0 ${isDark ? "bg-white/3 border-white/8" : "bg-[#f5f5f5] border-[#ebebeb]"}`}>
+            <div className="grid grid-cols-4 gap-2">
+              <StatItem label="repos" value={repos} isDark={isDark} />
+              <StatItem label="contribs" value={contributions} isDark={isDark} separator="," />
+              <StatItem label="commits" value={commits} isDark={isDark} separator="," />
+              <StatItem label="streak" value={streak} isDark={isDark} suffix="d" />
+            </div>
+          </div>
+
+          {/* GitHub Grid */}
           <div className="flex-1 min-h-0">
             <GitHubGrid
               seed={stats?.totalCommitsThisYear ?? 539}
@@ -182,20 +178,22 @@ export const GitHubCard = React.memo(function GitHubCard({
 function StatItem({
   label,
   value,
+  isDark,
   separator,
   suffix,
 }: {
   label: string;
   value: number;
+  isDark: boolean;
   separator?: string;
   suffix?: string;
 }) {
   return (
     <div className="min-w-0">
-      <p className="text-[8px] uppercase tracking-wider text-[#9a9a9a] dark:text-[#6d6d6d]">
+      <p className={`text-[7px] uppercase tracking-wider font-bold ${isDark ? "text-white/40" : "text-[#999]"}`}>
         {label}
       </p>
-      <p className="text-[15px] leading-none mt-1 font-black text-[#111] dark:text-[#eee] truncate">
+      <p className={`text-[13px] leading-none mt-0.5 font-black truncate ${isDark ? "text-white" : "text-[#111]"}`}>
         <CountUp to={value} duration={0.9} separator={separator ?? ""} />
         {suffix ?? ""}
       </p>

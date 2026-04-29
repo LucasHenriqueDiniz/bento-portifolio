@@ -5,9 +5,10 @@ import {
   useMotionValue,
   useSpring,
 } from "framer-motion";
-import { BentoCard } from "@/components/BentoCard";
+import { WidgetCard } from "@/components/WidgetCard";
 import { TechIconStack } from "@/components/TechIconStack";
 import { cn } from "@/lib/utils";
+import { ExternalLink, ChevronLeft, ChevronRight } from "lucide-react";
 
 export interface Project {
   name: string;
@@ -20,14 +21,12 @@ export interface Project {
 
 interface EnhancedProjectCardProps {
   projects: Project[];
-  tier?: 1 | 2 | 3 | 4;
-  className?: string;
+  isDark?: boolean;
 }
 
 export function EnhancedProjectCard({
   projects,
-  tier = 1,
-  className,
+  isDark = false,
 }: EnhancedProjectCardProps) {
   const safeProjects = useMemo(
     () => (Array.isArray(projects) && projects.length ? projects : [emptyProject]),
@@ -42,194 +41,150 @@ export function EnhancedProjectCard({
 
     const interval = setInterval(() => {
       setActiveIndex((prev) => (prev + 1) % safeProjects.length);
-    }, 6500);
+    }, 7000);
 
     return () => clearInterval(interval);
   }, [isHovered, safeProjects.length]);
 
   const current = safeProjects[activeIndex];
+  const ACCENT = "#3d72cc";
+
+  const handlePrev = () => {
+    setActiveIndex((prev) => (prev - 1 + safeProjects.length) % safeProjects.length);
+  };
+
+  const handleNext = () => {
+    setActiveIndex((prev) => (prev + 1) % safeProjects.length);
+  };
 
   return (
-    <BentoCard
-      tier={tier}
-      className={cn(
-        "relative z-30 overflow-hidden",
-        "col-span-1 order-2",
-        "md:col-start-2 md:col-end-5 md:row-start-1 md:row-end-5",
-        "lg:col-start-3 lg:col-end-5 lg:row-start-1 lg:row-end-5",
-        className,
-      )}
+    <div
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="relative h-full overflow-hidden rounded-2xl bg-[#3d72cc] dark:bg-[#2d5aa3]">
-        <div className="absolute inset-0 opacity-[0.08]">
-          <div
-            className="absolute inset-0"
-            style={{
-              backgroundImage:
-                "radial-gradient(circle at 1px 1px, rgba(255,255,255,0.45) 1px, transparent 0)",
-              backgroundSize: "20px 20px",
-            }}
-          />
-        </div>
-
-        <div className="relative z-10 flex h-full min-h-0 flex-col p-3">
-          <div className="mb-2.5 flex items-center justify-between gap-2 shrink-0">
-            <div className="min-w-0 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/12 px-2.5 py-1 backdrop-blur-sm">
-              <svg
-                width="11"
-                height="11"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="text-white shrink-0"
-              >
-                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
-                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
-              </svg>
-              <span className="truncate text-[10px] font-semibold uppercase tracking-wider text-white">
-                Featured Projects · {current.name}
+      <WidgetCard
+        className="h-full rounded-2xl overflow-hidden"
+        style={{
+          border: isDark ? "1px solid #282828" : "1px solid #ebebeb",
+        }}
+        glowColor="61, 114, 204"
+      >
+        <div className="relative h-full flex flex-col p-3 gap-2">
+          {/* Header */}
+          <div className="flex items-center justify-between shrink-0">
+            <div className="inline-flex items-center gap-1.5">
+              <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: ACCENT }} />
+              <span className={`text-[9px] font-semibold uppercase tracking-wider ${isDark ? "text-white/70" : "text-[#666]"}`}>
+                Featured Project
               </span>
             </div>
+            <span className={`text-[8px] font-semibold ${isDark ? "text-white/40" : "text-[#999]"}`}>
+              {activeIndex + 1}/{safeProjects.length}
+            </span>
+          </div>
 
-            <div className="inline-flex shrink-0 items-center gap-1.5">
-              <span
-                className={cn(
-                  "rounded-md px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wider border",
-                  current.wip
-                    ? "border-orange-300/25 bg-orange-400/20 text-orange-100"
-                    : "border-emerald-300/25 bg-emerald-400/20 text-emerald-100",
-                )}
+          {/* Content Area */}
+          <div className="flex-1 min-h-0 relative overflow-hidden">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={`${activeIndex}-${current.name}`}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
+                className="absolute inset-0 flex flex-col gap-2"
               >
-                {current.wip ? "WIP" : "Stable"}
-              </span>
-              <span className="text-[10px] font-semibold text-white/80">
-                {activeIndex + 1}/{safeProjects.length}
-              </span>
+                {/* Project Name & Description */}
+                <div>
+                  <h3 className={`text-[14px] font-black leading-tight mb-1 ${isDark ? "text-white" : "text-[#111]"}`}>
+                    {current.name}
+                  </h3>
+                  <p className={`text-[10px] leading-snug ${isDark ? "text-white/60" : "text-[#555]"}`}>
+                    {current.description}
+                  </p>
+                </div>
+
+                {/* Highlight */}
+                <div className={`rounded-lg p-2 border text-[9px] leading-snug ${isDark ? "bg-white/3 border-white/8 text-white/70" : "bg-[#f5f5f5] border-[#ebebeb] text-[#666]"}`}>
+                  <p className="italic">"{current.highlight}"</p>
+                </div>
+
+                {/* Tech Stack */}
+                {current.techStack.length > 0 && (
+                  <div className={`rounded-lg p-2 border shrink-0 ${isDark ? "bg-white/3 border-white/8" : "bg-[#f5f5f5] border-[#ebebeb]"}`}>
+                    <p className={`text-[7px] uppercase tracking-widest font-bold mb-1.5 ${isDark ? "text-white/40" : "text-[#999]"}`}>
+                      Tech Stack
+                    </p>
+                    <TechIconStack techs={current.techStack.slice(0, 6)} className="flex-wrap" />
+                  </div>
+                )}
+
+                {/* CTA + Status */}
+                <div className="flex items-center gap-1.5 mt-auto shrink-0">
+                  {current.url && (
+                    <motion.a
+                      href={current.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className={`flex-1 flex items-center justify-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[10px] font-semibold transition-all ${isDark ? "bg-[#3d72cc] hover:bg-[#3d72cc]/90 text-white" : "bg-[#3d72cc] hover:bg-[#3d72cc]/90 text-white"}`}
+                    >
+                      View
+                      <ExternalLink size={10} />
+                    </motion.a>
+                  )}
+                  <span className={`text-[8px] font-bold rounded-md px-1.5 py-0.5 ${current.wip ? (isDark ? "bg-orange-400/20 border border-orange-300/25 text-orange-200" : "bg-orange-100 border border-orange-200 text-orange-700") : (isDark ? "bg-emerald-400/20 border border-emerald-300/25 text-emerald-200" : "bg-emerald-100 border border-emerald-200 text-emerald-700")}`}>
+                    {current.wip ? "WIP" : "Done"}
+                  </span>
+                </div>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+
+          {/* Navigation */}
+          {safeProjects.length > 1 && (
+            <div className="flex items-center justify-between gap-1 shrink-0">
               <div className="flex gap-1">
                 {safeProjects.map((_, idx) => (
                   <button
                     key={idx}
                     onClick={() => setActiveIndex(idx)}
-                    aria-label={`View project ${idx + 1}`}
-                    className={cn(
-                      "h-1.5 rounded-full transition-all duration-300",
+                    className={`h-1 rounded-full transition-all ${
                       idx === activeIndex
-                        ? "w-5 bg-white"
-                        : "w-1.5 bg-white/35 hover:bg-white/55",
-                    )}
+                        ? `w-3 ${isDark ? "bg-white" : "bg-[#111]"}`
+                        : `w-1 ${isDark ? "bg-white/20 hover:bg-white/40" : "bg-[#ddd] hover:bg-[#aaa]"}`
+                    }`}
                   />
                 ))}
               </div>
+              <div className="flex gap-1">
+                <button
+                  onClick={handlePrev}
+                  className={`p-1 rounded-md transition-all ${isDark ? "hover:bg-white/8" : "hover:bg-[#f0f0f0]"}`}
+                  title="Previous"
+                >
+                  <ChevronLeft size={14} className={isDark ? "text-white/40" : "text-[#999]"} />
+                </button>
+                <button
+                  onClick={handleNext}
+                  className={`p-1 rounded-md transition-all ${isDark ? "hover:bg-white/8" : "hover:bg-[#f0f0f0]"}`}
+                  title="Next"
+                >
+                  <ChevronRight size={14} className={isDark ? "text-white/40" : "text-[#999]"} />
+                </button>
+              </div>
             </div>
-          </div>
-
-          <div className="relative flex-1 min-h-0 overflow-hidden">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={`${activeIndex}-${current.name}`}
-                initial={{ opacity: 0, x: 14 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -14 }}
-                transition={{ duration: 0.22, ease: "easeOut" }}
-                className="absolute inset-0"
-              >
-                <ProjectPanel project={current} />
-              </motion.div>
-            </AnimatePresence>
-          </div>
+          )}
         </div>
-      </div>
-    </BentoCard>
-  );
-}
-
-function ProjectPanel({ project }: { project: Project }) {
-  const ctaRef = useRef<HTMLAnchorElement>(null);
-  const mx = useMotionValue(0);
-  const my = useMotionValue(0);
-  const tx = useSpring(mx, { stiffness: 260, damping: 22, mass: 0.25 });
-  const ty = useSpring(my, { stiffness: 260, damping: 22, mass: 0.25 });
-
-  const handleCtaMouseMove = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    if (!ctaRef.current) return;
-
-    const rect = ctaRef.current.getBoundingClientRect();
-    const px = e.clientX - rect.left;
-    const py = e.clientY - rect.top;
-
-    mx.set((px / rect.width - 0.5) * 8);
-    my.set((py / rect.height - 0.5) * 8);
-  };
-
-  const handleCtaMouseLeave = () => {
-    mx.set(0);
-    my.set(0);
-  };
-
-  return (
-    <div className="h-full min-h-0 rounded-xl border border-white/20 bg-white/10 p-2.5">
-      <div className="grid h-full min-h-0 grid-cols-1 gap-2.5 md:grid-cols-12">
-        <div className="md:col-span-7 min-h-0 flex flex-col">
-          <h3 className="text-[18px] font-black leading-tight text-white mb-1.5 line-clamp-1">
-            {project.name}
-          </h3>
-          <p className="text-[12px] leading-relaxed text-white/92 line-clamp-4">
-            {project.description}
-          </p>
-
-          <div className="mt-auto pt-2.5">
-            <p className="text-[9px] uppercase tracking-wider text-white/70 mb-1">
-              Impact
-            </p>
-            <p className="text-[11px] leading-relaxed text-white/95 line-clamp-3">
-              {project.highlight}
-            </p>
-          </div>
-        </div>
-
-        <div className="md:col-span-5 min-h-0 flex flex-col gap-2">
-          <div className="rounded-lg border border-white/20 bg-white/10 p-2">
-            <p className="text-[9px] uppercase tracking-wider text-white/70 mb-1.5">
-              Stack
-            </p>
-            <TechIconStack
-              techs={project.techStack.slice(0, 8)}
-              className="flex-wrap"
-            />
-          </div>
-
-          {project.url ? (
-            <motion.a
-              ref={ctaRef}
-              href={project.url}
-              target="_blank"
-              rel="noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              onMouseMove={handleCtaMouseMove}
-              onMouseLeave={handleCtaMouseLeave}
-              style={{ x: tx, y: ty }}
-              className="mt-auto flex items-center justify-between rounded-lg border border-white/25 bg-white/14 px-3 py-2 transition-colors hover:bg-white/20"
-            >
-              <span className="text-[12px] font-semibold text-white">
-                Open Project
-              </span>
-              <span className="text-[13px] leading-none text-white">↗</span>
-            </motion.a>
-          ) : null}
-        </div>
-      </div>
+      </WidgetCard>
     </div>
   );
 }
 
 const emptyProject: Project = {
   name: "No projects yet",
-  description: "Add featured projects to show your best work here.",
+  description: "Add featured projects to showcase your best work.",
   techStack: [],
   highlight: "Project highlights will appear in this area.",
 };

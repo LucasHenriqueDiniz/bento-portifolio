@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { BentoCard } from "@/components/BentoCard";
-import { jobExperiences, academicExperiences } from "@/constants";
+import { timelineJobExperiences, timelineAcademicExperiences } from "@/constants/timelineData";
 import {
   FiBriefcase,
   FiBook,
@@ -74,23 +74,13 @@ export const TimelineCard = React.memo(function TimelineCard({
     window.open("/cv", "_blank");
   };
 
-  // Filter experiences by showInTimeline to hide low-value items
-  const filteredJobExperiences = jobExperiences.filter(
-    (exp) => exp.showInTimeline,
-  );
-  const filteredAcademicExperiences = academicExperiences.filter(
-    (exp) => exp.showInTimeline,
-  );
+  // Use timeline-specific data
+  const filteredJobExperiences = timelineJobExperiences;
+  const filteredAcademicExperiences = timelineAcademicExperiences;
 
   return (
     <BentoCard
-      className={`cursor-pointer relative z-10 overflow-hidden
-        /* Mobile: full width, order 9 (tier-2) */
-        col-span-1 order-9
-        /* Tablet: column 4, rows 5-13 */
-        md:col-start-4 md:col-end-5 md:row-start-5 md:row-end-13
-        /* Desktop: column 5, rows 5-13 - Diminuído em 1 linha */
-        lg:col-start-5 lg:col-end-6 lg:row-start-5 lg:row-end-13`}
+      className="cursor-pointer relative z-10 overflow-hidden h-full"
       onClick={handleFlip}
       allowOverflow={true}
     >

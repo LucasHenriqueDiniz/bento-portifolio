@@ -42,17 +42,11 @@ export const WeatherClockCard = React.memo(function WeatherClockCard({
 
   return (
     <BentoCard
-      className={`cursor-pointer overflow-hidden border rounded-2xl transition-all duration-300 relative z-10 ${
+      className={`cursor-pointer overflow-hidden border rounded-2xl transition-all duration-300 relative z-10 h-full ${
         isFlipping
           ? "shadow-none border-transparent"
           : "border-[#ebebeb] dark:border-[#282828]"
-      }
-      /* Mobile: full width, order 4 */
-      col-span-1 order-4
-      /* Tablet: column 2, rows 1-3 */
-      md:col-start-2 md:col-end-3 md:row-start-1 md:row-end-3
-      /* Desktop: column 2, rows 1-3 */
-      lg:col-start-2 lg:col-end-3 lg:row-start-1 lg:row-end-3`}
+      }`}
       onClick={handleFlip}
     >
       <div

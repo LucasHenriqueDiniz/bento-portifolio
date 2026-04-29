@@ -93,13 +93,7 @@ export const TechStackCard = React.memo(function TechStackCard({
   return (
     <BentoCard
       tier={2}
-      className={`${CARD} p-3
-        /* Mobile: full width, order 5 (tier-2) */
-        col-span-1 order-5
-        /* Tablet: columns 3-5, rows 5-9 */
-        md:col-start-3 md:col-end-5 md:row-start-5 md:row-end-9
-        /* Desktop: columns 3-5, rows 5-9 */
-        lg:col-start-3 lg:col-end-5 lg:row-start-5 lg:row-end-9`}
+      className={`${CARD} p-3 h-full`}
     >
       <motion.div
         custom={11}

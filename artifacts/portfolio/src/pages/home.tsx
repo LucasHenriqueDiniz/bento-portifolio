@@ -3,7 +3,6 @@ import { motion } from "framer-motion";
 import { Link } from "wouter";
 import { Moon, Sun } from "lucide-react";
 import {
-  useGetDiscordPresence,
   useGetNowPlaying,
   useGetTopArtists,
   useGetSteamData,
@@ -21,18 +20,17 @@ import {
   TimelineCard,
   MyAnimeListCard,
   SteamCard,
-  ProjectsCard,
   TopArtistsCard,
   CVCard,
   TechStackCard,
   PolaroidStack,
   EnhancedProjectCard,
-  DiscordCard,
 } from "@/components/home";
 import { BentoSection } from "@/components/BentoCard";
-import { contacts } from "@/constants";
+import { contacts, featuredProjects } from "@/constants";
 import { SiInstagram, SiDiscord, SiGithub } from "react-icons/si";
 import { FiMail } from "react-icons/fi";
+import { Linkedin } from "lucide-react";
 
 const ACCENT = "#3d72cc";
 const CARD = "bg-white dark:bg-[#181818] border border-[#ebebeb] dark:border-[#282828] rounded-2xl";
@@ -46,37 +44,63 @@ const fadeUp = {
   }),
 };
 
-/* ─── Socials Card ────────────────────────────────── */
-function SocialsCard({ isDark }: { isDark: boolean }) {
-  const icons: Record<string, React.ReactNode> = {
-    Instagram: <SiInstagram size={14} />,
-    Discord: <SiDiscord size={14} />,
-    GitHub: <SiGithub size={14} />,
-    LinkedIn: <span className="text-[10px] font-bold">in</span>,
-    Email: <FiMail size={14} />,
-  };
+/* ─── Individual Social Cards ─────────────────────── */
+const socialIcons: Record<string, React.ReactNode> = {
+  Instagram: <SiInstagram size={14} />,
+  Discord: <SiDiscord size={14} />,
+  GitHub: <SiGithub size={14} />,
+  LinkedIn: <Linkedin size={14} />,
+  Email: <FiMail size={14} />,
+};
 
+function SocialCard({ contact, isDark }: { contact: (typeof contacts)[number]; isDark: boolean }) {
   return (
-    <div className={`${CARD} p-3.5 flex flex-col gap-3`}>
-      <p className={LABEL}>Socials</p>
-      <div className="flex flex-col gap-2">
-        {contacts.slice(0, 4).map((c) => (
-          <a
-            key={c.platform}
-            href={c.url}
-            target="_blank"
-            rel="noreferrer"
-            className="flex items-center gap-2.5 group"
-          >
-            <span style={{ color: c.color }}>{icons[c.platform]}</span>
-            <div className="flex-1 min-w-0">
-              <p className="text-[11px] font-medium text-[#111] dark:text-[#eee] truncate">{c.label}</p>
-              <p className="text-[9px] text-[#999] dark:text-[#555]">{c.description}</p>
-            </div>
-          </a>
-        ))}
+    <motion.a
+      href={contact.url}
+      target="_blank"
+      rel="noreferrer"
+      whileHover={{ scale: 1.02, y: -2 }}
+      whileTap={{ scale: 0.98 }}
+      className={`h-full rounded-2xl border overflow-hidden flex flex-col items-center justify-center gap-1.5 cursor-pointer transition-all ${isDark ? "bg-white/4 border-white/8 hover:border-white/15 hover:bg-white/6" : "bg-[#fafafa] border-[#ebebeb] hover:border-[#ddd] hover:bg-white"}`}
+      title={contact.label}
+      style={{
+        color: contact.color,
+      }}
+    >
+      <span className="text-[16px] leading-none">{socialIcons[contact.platform]}</span>
+      <span className={`text-[9px] font-bold uppercase tracking-wider text-center leading-tight ${isDark ? "text-white/70" : "text-[#666]"}`}>
+        {contact.label}
+      </span>
+    </motion.a>
+  );
+}
+
+/* ─── Projects CTA (col 6, rows 7-8) ───────────────── */
+function ProjectsCTA() {
+  return (
+    <motion.a
+      href="/projects"
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+      className="h-full rounded-2xl relative overflow-hidden cursor-pointer flex flex-col items-center justify-center gap-2"
+      style={{ backgroundColor: ACCENT }}
+    >
+      <div className="absolute inset-0 opacity-[0.12]">
+        <div className="absolute inset-0" style={{
+          backgroundImage: "radial-gradient(circle at 1px 1px, rgba(255,255,255,0.5) 1px, transparent 0)",
+          backgroundSize: "16px 16px",
+        }} />
       </div>
-    </div>
+      <div className="relative z-10 flex flex-col items-center gap-1.5">
+        <span className="w-8 h-8 rounded-full bg-white/15 flex items-center justify-center">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M7 17L17 7"/><path d="M7 7h10v10"/>
+          </svg>
+        </span>
+        <p className="text-[13px] font-black text-white tracking-tight">Projects</p>
+        <p className="text-[9px] text-white/70">View all projects</p>
+      </div>
+    </motion.a>
   );
 }
 
@@ -92,7 +116,6 @@ export default function Home() {
 
   const clock = useClock("America/Sao_Paulo");
 
-  /* Cycling indices */
   const [buildIdx, setBuildIdx] = useState(0);
   const [steamIdx, setSteamIdx] = useState(0);
 
@@ -106,19 +129,12 @@ export default function Home() {
     return () => clearInterval(id);
   }, []);
 
-  /* API hooks */
-  const { data: discordData, isLoading: loadingDiscord } = useGetDiscordPresence();
   const { data: nowPlaying, isLoading: loadingNowPlaying } = useGetNowPlaying();
   const { data: topArtists, isLoading: loadingTopArtists } = useGetTopArtists();
   const { data: steamData, isLoading: loadingSteam } = useGetSteamData();
   const { data: workout, isLoading: loadingWorkout } = useGetLastWorkout();
   const { data: stats, isLoading: loadingStats } = useGetStats();
   const { data: malData, isLoading: loadingMal } = useGetMalData();
-
-  /* Navigate helper */
-  const navigate = (path: string) => {
-    window.location.href = path;
-  };
 
   return (
     <div className={`h-screen flex flex-col font-sans overflow-hidden transition-colors duration-300 bg-[#f5f5f5] dark:bg-[#0d0d0d] text-[#111] dark:text-[#eee] ${isDark ? "dark" : ""}`}>
@@ -132,32 +148,29 @@ export default function Home() {
             <Link href="/" className="hover:text-[#111] dark:hover:text-[#eee] transition-colors">Home</Link>
             <Link href="/projects" className="hover:text-[#111] dark:hover:text-[#eee] transition-colors">Projects</Link>
             <Link href="/cv" className="hover:text-[#111] dark:hover:text-[#eee] transition-colors">CV</Link>
-            <button
-              onClick={() => setIsDark(d => !d)}
-              className="w-7 h-7 rounded-lg flex items-center justify-center border border-[#ebebeb] dark:border-[#282828] bg-white dark:bg-[#222] hover:bg-[#f0f0f0] dark:hover:bg-[#2a2a2a] transition-colors text-[#888] dark:text-[#666]"
-            >
+            <button onClick={() => setIsDark(d => !d)} className="w-7 h-7 rounded-lg flex items-center justify-center border border-[#ebebeb] dark:border-[#282828] bg-white dark:bg-[#222] hover:bg-[#f0f0f0] dark:hover:bg-[#2a2a2a] transition-colors text-[#888] dark:text-[#666]">
               {isDark ? <Sun size={13} /> : <Moon size={13} />}
             </button>
           </nav>
         </div>
       </header>
 
-      {/* ── BENTO GRID ── */}
-      <BentoSection className="flex-1 min-w-0 h-full overflow-y-auto px-4 py-3" style={{ scrollbarWidth: "none" } as React.CSSProperties}>
-        <div className="max-w-[1480px] mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 auto-rows-[160px]">
+      {/* ── BENTO GRID (6 cols × 8 rows) ── */}
+      <BentoSection className="flex-1 min-w-0 overflow-hidden">
+        <div className="w-full h-full p-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 lg:grid-rows-8 gap-2 h-full">
 
-            {/* About Me */}
-            <motion.div custom={0} variants={fadeUp} initial="hidden" animate="show" className={`${CARD} p-4 col-span-1 row-span-2 flex flex-col`}>
-              <div className="flex items-start justify-between mb-3">
-                <p className={LABEL}>About Me</p>
+            {/* ── Col 1 ── */}
+            <motion.div custom={0} variants={fadeUp} initial="hidden" animate="show" className={`${CARD} p-4 flex flex-col lg:col-start-1 lg:row-start-1 lg:row-span-2`}>
+              <div className="flex items-start justify-between mb-2">
+                <p className={LABEL}>ABOUT ME</p>
                 <div className="flex gap-2 text-[#ccc] dark:text-[#444]">
-                  <a href="https://twitter.com" target="_blank" rel="noreferrer"><SiGithub size={12} /></a>
+                  <a href="https://github.com/LucasHenriqueDiniz" target="_blank" rel="noreferrer"><SiGithub size={12} /></a>
                   <a href="https://discord.com" target="_blank" rel="noreferrer"><SiDiscord size={12} /></a>
                 </div>
               </div>
-              <div className="flex gap-3 items-center mb-3">
-                <div className="w-11 h-11 rounded-xl bg-[#f0f0f0] dark:bg-[#252525] overflow-hidden shrink-0">
+              <div className="flex gap-3 items-center mb-2">
+                <div className="w-10 h-10 rounded-xl bg-[#f0f0f0] dark:bg-[#252525] overflow-hidden shrink-0">
                   <img src="/selfie.webp" alt="avatar" className="w-full h-full object-cover" />
                 </div>
                 <div>
@@ -165,102 +178,100 @@ export default function Home() {
                   <p className="text-[11px] text-[#aaa] dark:text-[#555] mt-0.5">Developer & Designer</p>
                 </div>
               </div>
-              <p className="text-[12px] text-[#777] dark:text-[#888] leading-relaxed flex-1">Full-stack dev who loves turning ideas into real products. When I'm not coding, you'll find me at the gym, gaming, or discovering new music on Last.fm.</p>
+              <p className="text-[11px] text-[#777] dark:text-[#888] leading-relaxed flex-1">Full-stack dev who loves turning ideas into real products. When I'm not coding, you'll find me at the gym, gaming, or discovering new music on Last.fm.</p>
             </motion.div>
 
-            {/* Weather / Clock */}
-            <motion.div custom={1} variants={fadeUp} initial="hidden" animate="show" className="col-span-1 row-span-1">
-              <WeatherClockCard clock={clock} />
-            </motion.div>
-
-            {/* Projects */}
-            <motion.div custom={2} variants={fadeUp} initial="hidden" animate="show" className="col-span-1 md:col-span-1 lg:col-span-2 row-span-1">
-              <EnhancedProjectCard projects={[]} />
-            </motion.div>
-
-            {/* Now Playing */}
-            <motion.div custom={3} variants={fadeUp} initial="hidden" animate="show" className="col-span-1 row-span-2">
-              <AlbumArtCard nowPlaying={nowPlaying as any} isLoading={loadingNowPlaying} isDark={isDark} />
-            </motion.div>
-
-            {/* Fun Facts */}
-            <motion.div custom={4} variants={fadeUp} initial="hidden" animate="show" className={`${CARD} p-4 col-span-1 row-span-2 flex flex-col`}>
-              <p className={`${LABEL} mb-3`}>Fun Facts</p>
-              <ul className="space-y-2 flex-1">
+            <motion.div custom={1} variants={fadeUp} initial="hidden" animate="show" className={`${CARD} p-4 flex flex-col lg:col-start-1 lg:row-start-3 lg:row-span-2`}>
+              <p className={`${LABEL} mb-2`}>FUN FACTS</p>
+              <ul className="space-y-1.5 flex-1">
                 {["Full-stack developer","Gym rat (4x/week)","Last.fm scrobbler since 2018","Dark mode everything",`${(malData as any)?.anime?.completed ?? "…"} anime completed`].map((f,i) => (
-                  <li key={i} className="flex gap-2 text-[12px] text-[#666] dark:text-[#888]">
+                  <li key={i} className="flex gap-2 text-[11px] text-[#666] dark:text-[#888]">
                     <span className="text-[#ccc] dark:text-[#444] mt-px">•</span>{f}
                   </li>
                 ))}
               </ul>
             </motion.div>
 
-            {/* Last Workout */}
-            <motion.div custom={5} variants={fadeUp} initial="hidden" animate="show" className="col-span-1 row-span-2">
-              <WorkoutCard workout={workout as any} isLoading={loadingWorkout} isDark={isDark} />
-            </motion.div>
-
-            {/* Tech Stack */}
-            <motion.div custom={6} variants={fadeUp} initial="hidden" animate="show" className="col-span-1 md:col-span-1 lg:col-span-2 row-span-2">
-              <TechStackCard isDark={isDark} />
-            </motion.div>
-
-            {/* Top Artists */}
-            <motion.div custom={7} variants={fadeUp} initial="hidden" animate="show" className="col-span-1 row-span-2">
-              <TopArtistsCard topArtists={topArtists as any} isLoading={loadingTopArtists} isDark={isDark} />
-            </motion.div>
-
-            {/* Photos */}
-            <motion.div custom={8} variants={fadeUp} initial="hidden" animate="show" className={`${CARD} overflow-hidden col-span-1 row-span-2`}>
+            <motion.div custom={2} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-1 lg:row-start-5 lg:row-span-4 min-h-0">
               <PolaroidStack isDark={isDark} />
             </motion.div>
 
-            {/* GitHub */}
-            <motion.div custom={9} variants={fadeUp} initial="hidden" animate="show" className="col-span-1 md:col-span-1 lg:col-span-2 row-span-2">
+            {/* ── Col 2 ── */}
+            {/* Weather: half-height (row-span-1) */}
+            <motion.div custom={3} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-2 lg:row-start-1 lg:row-span-1 min-h-0">
+              <WeatherClockCard clock={clock} />
+            </motion.div>
+
+            {/* Workout: 1.5 height (row-span-3) */}
+            <motion.div custom={4} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-2 lg:row-start-2 lg:row-span-3 min-h-0">
+              <WorkoutCard workout={workout as any} isLoading={loadingWorkout} isDark={isDark} />
+            </motion.div>
+
+            {/* GitHub 2 cols wide */}
+            <motion.div custom={5} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-2 lg:row-start-5 lg:col-span-2 lg:row-span-2 min-h-0">
               <GitHubCard stats={stats as any} loadingStats={loadingStats} isDark={isDark} />
             </motion.div>
 
-            {/* Work Experience */}
-            <motion.div custom={10} variants={fadeUp} initial="hidden" animate="show" className="col-span-1 row-span-3">
-              <TimelineCard isDark={isDark} />
+            {/* MyAnimeList 2 cols wide */}
+            <motion.div custom={6} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-2 lg:row-start-7 lg:col-span-2 lg:row-span-2 min-h-0">
+              <MyAnimeListCard data={malData as any} isLoading={loadingMal} isDark={isDark} />
             </motion.div>
 
-            {/* CV */}
-            <motion.div custom={11} variants={fadeUp} initial="hidden" animate="show" className="col-span-1 row-span-1">
-              <CVCard navigate={navigate} />
+            {/* ── Col 3-4 ── */}
+            <motion.div custom={7} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-3 lg:row-start-1 lg:col-span-2 lg:row-span-2 min-h-0">
+              <EnhancedProjectCard projects={featuredProjects} isDark={isDark} />
             </motion.div>
 
-            {/* Socials */}
-            <motion.div custom={12} variants={fadeUp} initial="hidden" animate="show" className="col-span-1 row-span-1">
-              <SocialsCard isDark={isDark} />
+            <motion.div custom={8} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-3 lg:row-start-3 lg:col-span-2 lg:row-span-2 min-h-0">
+              <TechStackCard isDark={isDark} />
             </motion.div>
 
-            {/* MAL */}
-            <motion.div custom={13} variants={fadeUp} initial="hidden" animate="show" className="col-span-1 md:col-span-1 lg:col-span-2 row-span-2">
-              <MyAnimeListCard malData={malData as any} malApi={malData} isLoading={loadingMal} />
+            {/* CV to the right */}
+            <motion.div custom={9} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-4 lg:row-start-5 lg:row-span-2 min-h-0">
+              <CVCard navigate={(p) => { window.location.href = p; }} isDark={isDark} />
             </motion.div>
 
-            {/* Steam */}
-            <motion.div custom={14} variants={fadeUp} initial="hidden" animate="show" className="col-span-1 row-span-2">
-              <SteamCard steam={steamData as any} isLoading={loadingSteam} steamIdx={steamIdx} isDark={isDark} />
-            </motion.div>
-
-            {/* Building */}
-            <motion.div custom={15} variants={fadeUp} initial="hidden" animate="show" className="col-span-1 row-span-1">
+            {/* Building moved down */}
+            <motion.div custom={10} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-4 lg:row-start-7 lg:row-span-2 min-h-0">
               <BuildingCard buildIdx={buildIdx} isDark={isDark} />
             </motion.div>
 
-            {/* Discord */}
-            <motion.div custom={16} variants={fadeUp} initial="hidden" animate="show" className="col-span-1 row-span-1">
-              <DiscordCard discord={discordData as any} isLoading={loadingDiscord} isDark={isDark} />
+            {/* ── Col 5 ── */}
+            <motion.div custom={11} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-5 lg:row-start-1 lg:row-span-2 min-h-0">
+              <AlbumArtCard nowPlaying={nowPlaying as any} isLoading={loadingNowPlaying} isDark={isDark} />
             </motion.div>
 
-            {/* Contact */}
-            <motion.div custom={17} variants={fadeUp} initial="hidden" animate="show" className={`${CARD} p-4 col-span-1 row-span-1`}>
-              <p className={`${LABEL} mb-2 flex items-center gap-1`}><FiMail size={9} />Contact</p>
-              <p className="text-[12px] text-[#777] dark:text-[#888] leading-relaxed">
-                Hit me up on <a href="https://twitter.com" style={{ color: ACCENT }} className="hover:underline">Twitter</a> or email <a href="mailto:lucashdo@protonmail.com" style={{ color: ACCENT }} className="hover:underline">lucashdo@protonmail.com</a>
-              </p>
+            <motion.div custom={12} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-5 lg:row-start-3 lg:row-span-4 min-h-0">
+              <TimelineCard isDark={isDark} />
+            </motion.div>
+
+            <motion.div custom={13} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-5 lg:row-start-7 lg:row-span-2 min-h-0">
+              <SteamCard steam={steamData as any} isLoading={loadingSteam} steamIdx={steamIdx} isDark={isDark} />
+            </motion.div>
+
+            {/* ── Col 6 ── */}
+            <motion.div custom={14} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-6 lg:row-start-1 lg:row-span-2 min-h-0">
+              <TopArtistsCard topArtists={topArtists as any} isLoading={loadingTopArtists} isDark={isDark} />
+            </motion.div>
+
+            <motion.div custom={15} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-6 lg:row-start-3 lg:row-span-1 min-h-0">
+              <SocialCard contact={contacts.find(c => c.platform === "Discord")!} isDark={isDark} />
+            </motion.div>
+
+            <motion.div custom={16} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-6 lg:row-start-4 lg:row-span-1 min-h-0">
+              <SocialCard contact={contacts.find(c => c.platform === "Instagram")!} isDark={isDark} />
+            </motion.div>
+
+            <motion.div custom={17} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-6 lg:row-start-5 lg:row-span-1 min-h-0">
+              <SocialCard contact={contacts.find(c => c.platform === "GitHub")!} isDark={isDark} />
+            </motion.div>
+
+            <motion.div custom={18} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-6 lg:row-start-6 lg:row-span-1 min-h-0">
+              <SocialCard contact={contacts.find(c => c.platform === "LinkedIn")!} isDark={isDark} />
+            </motion.div>
+
+            <motion.div custom={19} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-6 lg:row-start-7 lg:row-span-2 min-h-0">
+              <ProjectsCTA />
             </motion.div>
 
           </div>

@@ -1,105 +1,124 @@
-/**
- * Job Experience data structure
- * @interface JobExperience
- * @property {string} id - Unique identifier
- * @property {string} company - Company name
- * @property {string} position - Job title/position
- * @property {string} startDate - Start date (e.g., "2023-01")
- * @property {string | null} endDate - End date or null if current
- * @property {string} location - Job location
- * @property {string} type - Employment type (full-time, part-time, contract, freelance, volunteer)
- * @property {string} description - Job description
- * @property {string[]} technologies - Technologies used
- * @property {boolean} showInTimeline - Whether to show in timeline (hide low-value experiences)
- * @property {string} [url] - Optional company URL
- * @property {string} [logo] - Optional company logo URL
- */
 export interface JobExperience {
   id: string;
-  company: string;
-  position: string;
-  startDate: string;
-  endDate: string | null;
-  location: string;
-  type: "full-time" | "part-time" | "contract" | "freelance" | "volunteer";
-  description: string;
-  technologies: string[];
-  showInTimeline: boolean;
+  title: string;
+  institution: string;
   url?: string;
-  logo?: string;
+  startDate: string; // YYYY-MM
+  endDate?: string | null; // YYYY-MM or null for current
+  showInTimeline: boolean;
+  tags: {
+    label: string;
+    value?: string;
+  }[];
+  topTags: {
+    label: string;
+    value?: string;
+  }[];
+  description: string;
 }
 
-/**
- * List of job experiences
- */
 export const jobExperiences: JobExperience[] = [
   {
     id: "eng-futuro",
-    company: "Engenharia do Futuro",
-    position: "Desenvolvedor Full Stack",
-    startDate: "2025-04",
-    endDate: null, // Current
-    location: "Remote",
-    type: "full-time",
-    description: "Arquitetei e implementei refatoração completa da plataforma e landing page, estabelecendo design system e guidelines. Desenvolvi sistema de instalação de firmware via Web Serial API, automatizando processo de flash e comunicação serial diretamente no navegador.",
-    technologies: ["React", "TypeScript", "Python", "Microcontrollers"],
-    showInTimeline: true,
+    title: "Desenvolvedor Full Stack",
+    institution: "Engenharia do Futuro",
     url: "https://engenhariadofuturo.com.br/",
-    logo: "/timeline/seu-iot-logo.jpg",
-  },
-  {
-    id: "bots-channel",
-    company: "Bots Channel",
-    position: "CTO & Co-Founder",
-    startDate: "2024-01",
-    endDate: "2024-12",
-    location: "Remote",
-    type: "full-time",
-    description: "Arquitetei plataforma SaaS serverless para automação de chatbots multi-canal (WhatsApp, Telegram, Instagram). Implementei sistema de autenticação customizado, engine de processamento de fluxos JSON-based, e infraestrutura AWS Lambda com PostgreSQL. Desenvolvi interface no-code para construção visual de automações.",
-    technologies: ["React", "Node.js", "AWS", "Prisma", "Zustand", "TypeScript"],
+    startDate: "2025-04",
+    endDate: null,
     showInTimeline: true,
-    url: "https://botschannel.com/",
-    logo: "/timeline/botschanell-logo.webp",
+    topTags: [
+      { label: "Job" },
+      { label: "Engenharia do Futuro" },
+    ],
+    tags: [
+      { label: "React" },
+      { label: "TypeScript" },
+      { label: "Python" },
+      { label: "Microcontrollers" },
+    ],
+    description: "Architected and implemented complete platform and landing page refactor, establishing design system and guidelines. Built firmware installation system using Web Serial API, automating flash process and serial communication directly in browser.",
   },
   {
     id: "eng-futuro-vol",
-    company: "Engenharia do Futuro",
-    position: "Desenvolvedor Voluntário",
+    title: "Desenvolvedor Voluntário",
+    institution: "Engenharia do Futuro",
+    url: "https://engenhariadofuturo.com.br/",
     startDate: "2023-05",
     endDate: "2024-02",
-    location: "Remote",
-    type: "volunteer",
-    description: "Conduzi workshop técnico de Front-End para a equipe, cobrindo arquitetura e padrões de código. Desenvolvi firmware embarcado, interface web e API backend, integrando hardware com aplicação fullstack.",
-    technologies: ["React", "Node.js", "Microcontrollers", "TypeScript", "Python", "C", "ViteJS"],
     showInTimeline: true,
-    url: "https://engenhariadofuturo.com.br/",
-    logo: "/timeline/seu-iot-logo.jpg",
+    topTags: [
+      { label: "Volunteer" },
+      { label: "Engenharia do Futuro" },
+    ],
+    tags: [
+      { label: "React" },
+      { label: "Node.js" },
+      { label: "Microcontrollers" },
+      { label: "TypeScript" },
+      { label: "Python" },
+      { label: "C" },
+      { label: "ViteJS" },
+    ],
+    description: "Led technical Front-End workshop covering architecture and code patterns. Developed embedded firmware, web interface, and backend API, integrating hardware with fullstack application.",
+  },
+  {
+    id: "bots-channel",
+    title: "CTO & Co-Founder",
+    institution: "Bots Channel",
+    url: "https://botschannel.com/",
+    startDate: "2024-01",
+    endDate: "2024-12",
+    showInTimeline: true,
+    topTags: [
+      { label: "Job" },
+      { label: "Bots Channel" },
+    ],
+    tags: [
+      { label: "React" },
+      { label: "Node.js" },
+      { label: "AWS" },
+      { label: "Prisma" },
+      { label: "Zustand" },
+      { label: "TypeScript" },
+    ],
+    description: "Architected serverless SaaS platform for multi-channel chatbot automation (WhatsApp, Telegram, Instagram). Implemented custom authentication system, JSON-based flow processing engine, and AWS Lambda infrastructure with PostgreSQL. Built no-code interface for visual automation workflows.",
   },
   {
     id: "freelance-design",
-    company: "Autônomo",
-    position: "Designer Freelancer",
+    title: "Designer Freelancer",
+    institution: "Autônomo",
+    url: "https://www.linkedin.com/in/lucas-diniz-ostroski/",
     startDate: "2019-01",
     endDate: "2020-12",
-    location: "Remote",
-    type: "freelance",
-    description: "Gerenciei projetos de design end-to-end para múltiplos clientes, mantendo 98.7% de satisfação. Desenvolvi identidades visuais, materiais promocionais e motion graphics, coordenando entregas e comunicação com stakeholders.",
-    technologies: ["Photoshop", "Illustrator", "After Effects", "Design Gráfico"],
     showInTimeline: true,
-    url: "https://www.linkedin.com/in/lucas-diniz-ostroski/",
-    logo: "/timeline/linkedin_logo.webp",
+    topTags: [
+      { label: "Freelance" },
+      { label: "Graphic Design" },
+    ],
+    tags: [
+      { label: "Photoshop" },
+      { label: "Illustrator" },
+      { label: "After Effects" },
+      { label: "Graphic Design" },
+    ],
+    description: "Managed end-to-end design projects for multiple clients, maintaining 98.7% satisfaction rate. Developed visual identities, promotional materials, and motion graphics, coordinating deliveries and stakeholder communication.",
   },
   {
     id: "vix-logistica",
-    company: "Vix Logística",
-    position: "Auxiliar Administrativo (Menor Aprendiz)",
+    title: "Auxiliar Administrativo (Menor Aprendiz)",
+    institution: "Vix Logística",
+    url: "https://www.linkedin.com/company/vix-logistica/",
     startDate: "2017-02",
     endDate: "2019-02",
-    location: "On-site",
-    type: "part-time",
-    description: "Exerci funções administrativas e de controle de almoxarifado, desenvolvendo planilhas de dados e gestão de estoque, demonstrando habilidades organizacionais e atenção a detalhes em ambiente corporativo.",
-    technologies: ["Excel", "Gestão de Estoque", "Administração"],
-    showInTimeline: false, // Hide low-value experience
-    url: "https://www.linkedin.com/company/vix-logistica/",
+    showInTimeline: false,
+    topTags: [
+      { label: "Job" },
+      { label: "Vix Logistics" },
+    ],
+    tags: [
+      { label: "Warehouse" },
+      { label: "Data Sheets" },
+    ],
+    description: "Performed administrative and warehouse control duties, creating data spreadsheets and managing inventory, demonstrating organizational skills and attention to detail in a corporate setting.",
   },
 ];
