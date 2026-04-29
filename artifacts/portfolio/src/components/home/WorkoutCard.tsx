@@ -208,7 +208,7 @@ export const WorkoutCard = React.memo(function WorkoutCard({
 
             {/* exercise list */}
             <div className="flex flex-col justify-between flex-1 min-h-0">
-              {(workout.exercises ?? []).slice(0, 4).map((ex, i) => (
+              {(Array.isArray(workout.exercises) ? workout.exercises : []).slice(0, 4).map((ex, i) => (
                 <motion.div
                   key={ex.name}
                   initial={{ opacity: 0, x: -8 }}

@@ -71,6 +71,7 @@ export const ProjectsCard = React.memo(function ProjectsCard({
   isDark,
   navigate,
 }: ProjectsCardProps) {
+  const safeProjects = Array.isArray(projects) ? projects : [];
   return (
     <BentoCard
       className={`${CARD} overflow-hidden group cursor-pointer`}
@@ -102,7 +103,8 @@ export const ProjectsCard = React.memo(function ProjectsCard({
         >
           <AnimatePresence mode="wait">
             {(() => {
-              const p = projects[projIdx];
+              const p = safeProjects[projIdx];
+              if (!p) return null;
               return (
                 <motion.div
                   key={projIdx}
@@ -188,7 +190,7 @@ export const ProjectsCard = React.memo(function ProjectsCard({
 
           {/* pagination dots */}
           <div className="absolute bottom-3 right-3 flex gap-1 z-20">
-            {projects.map((_, i) => (
+            {safeProjects.map((_, i) => (
               <button
                 key={i}
                 onClick={(e) => {
@@ -201,7 +203,7 @@ export const ProjectsCard = React.memo(function ProjectsCard({
                   height: 4,
                   backgroundColor:
                     i === projIdx
-                      ? projects[projIdx].color
+                      ? safeProjects[projIdx]?.color ?? "#ccc"
                       : isDark
                         ? "#333"
                         : "#ddd",
