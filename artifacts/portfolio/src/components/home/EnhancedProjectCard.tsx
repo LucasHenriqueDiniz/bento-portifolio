@@ -2,7 +2,8 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { WidgetCard } from "@/components/WidgetCard";
-import { ExternalLink, ChevronLeft, ChevronRight, Pause, Play } from "lucide-react";
+import { CardHeader } from "@/components/CardHeader";
+import { ExternalLink, ChevronLeft, ChevronRight } from "lucide-react";
 
 export interface Project {
   name: string;
@@ -34,7 +35,6 @@ export function EnhancedProjectCard({
   const projectCount = hasProjects ? projects.length : 0;
 
   const [activeIndex, setActiveIndex] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [progress, setProgress] = useState(0);
   const [direction, setDirection] = useState(1);
@@ -54,14 +54,13 @@ export function EnhancedProjectCard({
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "ArrowLeft") { e.preventDefault(); goToPrev(); }
       else if (e.key === "ArrowRight") { e.preventDefault(); goToNext(); }
-      else if (e.key === " ") { e.preventDefault(); setIsPaused(p => !p); }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [hasProjects, projectCount, activeIndex]);
 
   useEffect(() => {
-    if (!hasProjects || projectCount <= 1 || isPaused || isHovered) {
+    if (!hasProjects || projectCount <= 1 || isHovered) {
       setProgress(0); return;
     }
     setProgress(0);
@@ -73,7 +72,7 @@ export function EnhancedProjectCard({
       if (elapsed >= AUTO_ADVANCE_MS) goToNext();
     }, PROGRESS_INTERVAL);
     return () => clearInterval(interval);
-  }, [activeIndex, isPaused, isHovered, hasProjects, projectCount]);
+  }, [activeIndex, isHovered, hasProjects, projectCount]);
 
   const goTo = useCallback((index: number, dir: number) => {
     if (!hasProjects) return;
@@ -110,13 +109,7 @@ export function EnhancedProjectCard({
     exit: (dir: number) => ({ x: prefersReducedMotion ? 0 : dir > 0 ? -60 : 60, opacity: prefersReducedMotion ? 1 : 0 }),
   };
 
-  // Bento-style colors
-  const borderColor = isDark ? "#282828" : "#ebebeb";
-  const bgPrimary = isDark ? "#181818" : "#fff";
-  const bgSecondary = isDark ? "#222" : "#f5f5f5";
-  const textPrimary = isDark ? "#eee" : "#111";
-  const textSecondary = isDark ? "#888" : "#666";
-  const textTertiary = isDark ? "#555" : "#aaa";
+  const blueDot = <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: ACCENT }} />;
 
   return (
     <div
@@ -131,39 +124,26 @@ export function EnhancedProjectCard({
       className="outline-none h-full"
     >
       <WidgetCard
-        className="h-full rounded-[20px] overflow-hidden"
-        style={{ border: `0.5px solid ${borderColor}`, background: bgPrimary }}
+        className="h-full rounded-2xl overflow-hidden"
+        style={{ border: `0.5px solid ${isDark ? "#282828" : "#ebebeb"}` }}
         glowColor="61, 114, 204"
       >
-        <div className="h-full flex flex-col">
-          {/* ── Header ── */}
-          <div className="flex items-center justify-between px-5 py-3.5 border-b" style={{ borderColor: isDark ? "rgba(255,255,255,0.06)" : "#ebebeb" }}>
-            <div className="flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: ACCENT }} />
-              <span className="text-[10px] font-medium uppercase tracking-[0.08em]" style={{ color: textTertiary, fontFamily: "'DM Mono', monospace" }}>
-                {t("project.featured")}
-              </span>
-            </div>
-            <div className="flex items-center gap-2.5">
-              {hasProjects && projectCount > 1 && (
-                <button
-                  onClick={() => setIsPaused(p => !p)}
-                  className="p-1 rounded-md transition-all hover:bg-black/5 dark:hover:bg-white/5"
-                  title={isPaused ? t("project.play") : t("project.pause")}
-                >
-                  {isPaused ? <Play size={10} style={{ color: textTertiary }} /> : <Pause size={10} style={{ color: textTertiary }} />}
-                </button>
-              )}
-              {hasProjects && (
-                <span className="text-[10px] font-medium" style={{ color: textTertiary, fontFamily: "'DM Mono', monospace" }}>
+        <div className="h-full flex flex-col p-4">
+          {/* Header */}
+          <CardHeader
+            icon={blueDot}
+            title={t("project.featured")}
+            rightContent={
+              hasProjects && (
+                <span className={`text-[10px] font-medium tabular-nums ${isDark ? "text-[#555]" : "text-[#aaa]"}`}>
                   {activeIndex + 1} / {projectCount}
                 </span>
-              )}
-            </div>
-          </div>
+              )
+            }
+          />
 
-          {/* ── Body ── */}
-          <div className="flex-1 min-h-0 overflow-hidden relative px-5 pt-4 pb-3">
+          {/* Body */}
+          <div className="flex-1 min-h-0 overflow-hidden relative mt-3">
             {hasProjects && current ? (
               <AnimatePresence mode="wait" custom={direction}>
                 <motion.div
@@ -181,54 +161,31 @@ export function EnhancedProjectCard({
                   className="h-full cursor-grab active:cursor-grabbing"
                 >
                   <div className="h-full grid grid-cols-1 lg:grid-cols-2 gap-4">
-                    {/* Left: Title + Description + Highlight */}
-                    <div className="flex flex-col gap-3">
-                      <h3
-                        className="text-[22px] font-extrabold leading-[1.05] tracking-[-0.03em]"
-                        style={{ color: textPrimary, fontFamily: "'Syne', sans-serif" }}
-                      >
+                    {/* Left */}
+                    <div className="flex flex-col gap-2.5">
+                      <h3 className={`text-[18px] font-bold leading-tight tracking-tight ${isDark ? "text-white" : "text-[#111]"}`}>
                         {current.name}
                       </h3>
-                      <p
-                        className="text-[11px] leading-relaxed"
-                        style={{ color: textSecondary, fontFamily: "'DM Mono', monospace" }}
-                      >
+                      <p className={`text-[11px] leading-relaxed ${isDark ? "text-[#888]" : "text-[#666]"}`}>
                         {current.description}
                       </p>
-                      <div
-                        className="border-l-2 pl-3 py-1.5 rounded-r-md text-[10px] italic leading-relaxed"
-                        style={{
-                          borderColor: isDark ? "rgba(255,255,255,0.12)" : "#ddd",
-                          color: textTertiary,
-                          fontFamily: "'DM Mono', monospace",
-                          background: isDark ? "rgba(255,255,255,0.02)" : "#fafafa",
-                        }}
-                      >
+                      <div className={`border-l-2 pl-3 py-1.5 rounded-r-md text-[10px] italic leading-relaxed ${isDark ? "border-white/10 text-[#555] bg-white/[0.02]" : "border-[#ddd] text-[#aaa] bg-[#fafafa]"}`}>
                         &ldquo;{current.highlight}&rdquo;
                       </div>
                     </div>
 
-                    {/* Right: Stack + Meta Grid */}
+                    {/* Right */}
                     <div className="flex flex-col gap-3">
                       {/* Stack Pills */}
                       <div>
-                        <p
-                          className="text-[9px] font-medium uppercase tracking-[0.1em] mb-2"
-                          style={{ color: textTertiary, fontFamily: "'DM Mono', monospace" }}
-                        >
+                        <p className={`text-[9px] font-semibold uppercase tracking-widest mb-1.5 ${isDark ? "text-[#555]" : "text-[#aaa]"}`}>
                           {t("project.techStack")}
                         </p>
                         <div className="flex flex-wrap gap-1.5">
                           {current.techStack.slice(0, 5).map(tech => (
                             <span
                               key={tech}
-                              className="text-[10px] px-2.5 py-1 rounded-full border"
-                              style={{
-                                fontFamily: "'DM Mono', monospace",
-                                color: textSecondary,
-                                borderColor: isDark ? "rgba(255,255,255,0.1)" : "#e0e0e0",
-                                background: bgSecondary,
-                              }}
+                              className={`text-[10px] px-2.5 py-1 rounded-full border ${isDark ? "bg-white/[0.03] border-white/10 text-[#888]" : "bg-[#f5f5f5] border-[#e0e0e0] text-[#666]"}`}
                             >
                               {tech}
                             </span>
@@ -238,10 +195,7 @@ export function EnhancedProjectCard({
 
                       {/* Meta Grid */}
                       <div>
-                        <p
-                          className="text-[9px] font-medium uppercase tracking-[0.1em] mb-2"
-                          style={{ color: textTertiary, fontFamily: "'DM Mono', monospace" }}
-                        >
+                        <p className={`text-[9px] font-semibold uppercase tracking-widest mb-1.5 ${isDark ? "text-[#555]" : "text-[#aaa]"}`}>
                           {t("project.details")}
                         </p>
                         <div className="grid grid-cols-2 gap-1.5">
@@ -251,27 +205,11 @@ export function EnhancedProjectCard({
                             { key: t("project.scale"), val: current.wip ? "Solo" : "Production" },
                             { key: t("project.access"), val: current.url ? "Public" : "Private" },
                           ].map((meta, i) => (
-                            <div
-                              key={i}
-                              className="rounded-[10px] p-2 border"
-                              style={{
-                                background: bgSecondary,
-                                borderColor: isDark ? "rgba(255,255,255,0.06)" : "#f0f0f0",
-                              }}
-                            >
-                              <p
-                                className="text-[8px] uppercase tracking-[0.09em] mb-0.5"
-                                style={{ color: textTertiary, fontFamily: "'DM Mono', monospace" }}
-                              >
+                            <div key={i} className={`rounded-xl p-2 border ${isDark ? "bg-white/[0.03] border-white/[0.06]" : "bg-[#f8f8f8] border-[#f0f0f0]"}`}>
+                              <p className={`text-[8px] uppercase tracking-wider mb-0.5 ${isDark ? "text-[#555]" : "text-[#aaa]"}`}>
                                 {meta.key}
                               </p>
-                              <p
-                                className="text-[11px] font-medium"
-                                style={{
-                                  color: meta.ok ? "#22c55e" : textPrimary,
-                                  fontFamily: "'DM Mono', monospace",
-                                }}
-                              >
+                              <p className={`text-[11px] font-medium ${meta.ok ? "text-emerald-500" : (isDark ? "text-white" : "text-[#111]")}`}>
                                 {meta.val}
                               </p>
                             </div>
@@ -284,40 +222,26 @@ export function EnhancedProjectCard({
               </AnimatePresence>
             ) : (
               <div className="h-full flex flex-col items-center justify-center gap-2 text-center">
-                <p className="text-[13px] font-bold" style={{ color: textTertiary }}>{t("project.empty.title")}</p>
-                <p className="text-[10px]" style={{ color: textTertiary }}>{t("project.empty.description")}</p>
+                <p className={`text-[13px] font-bold ${isDark ? "text-[#555]" : "text-[#aaa]"}`}>{t("project.empty.title")}</p>
+                <p className={`text-[10px] ${isDark ? "text-[#555]" : "text-[#aaa]"}`}>{t("project.empty.description")}</p>
               </div>
             )}
           </div>
 
-          {/* ── Footer ── */}
-          <div
-            className="flex items-center justify-between px-5 py-3 border-t"
-            style={{ borderColor: isDark ? "rgba(255,255,255,0.06)" : "#ebebeb" }}
-          >
+          {/* Footer */}
+          <div className="flex items-center justify-between mt-3 pt-3 border-t" style={{ borderColor: isDark ? "rgba(255,255,255,0.06)" : "#ebebeb" }}>
             <div className="flex items-center gap-2">
               {/* Status Badge */}
-              <span
-                className="text-[10px] font-medium px-2 py-1 rounded-md"
-                style={{
-                  fontFamily: "'DM Mono', monospace",
-                  background: current?.wip
-                    ? (isDark ? "rgba(245,158,11,0.12)" : "#fef3c7")
-                    : (isDark ? "rgba(34,197,94,0.12)" : "#dcfce7"),
-                  color: current?.wip
-                    ? (isDark ? "#fbbf24" : "#b45309")
-                    : (isDark ? "#4ade80" : "#15803d"),
-                  border: `0.5px solid ${current?.wip
-                    ? (isDark ? "rgba(245,158,11,0.2)" : "#fde68a")
-                    : (isDark ? "rgba(34,197,94,0.2)" : "#bbf7d0")}`,
-                }}
-              >
+              <span className={`text-[10px] font-medium px-2 py-1 rounded-md border ${current?.wip
+                ? (isDark ? "bg-amber-400/10 border-amber-400/20 text-amber-300" : "bg-amber-50 border-amber-200 text-amber-700")
+                : (isDark ? "bg-emerald-400/10 border-emerald-400/20 text-emerald-300" : "bg-emerald-50 border-emerald-200 text-emerald-700")
+              }`}>
                 {current?.wip ? t("project.wip") : t("project.done")}
               </span>
 
               {/* Nav dots */}
               {hasProjects && projectCount > 1 && (
-                <div className="flex gap-1 ml-2">
+                <div className="flex gap-1 ml-1">
                   {projects.map((_, idx) => (
                     <button
                       key={idx}
@@ -334,15 +258,15 @@ export function EnhancedProjectCard({
               )}
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
               {/* Arrow nav */}
               {hasProjects && projectCount > 1 && (
-                <div className="flex gap-0.5 mr-1">
-                  <button onClick={goToPrev} className="p-1 rounded-md transition-all hover:bg-black/5 dark:hover:bg-white/5">
-                    <ChevronLeft size={14} style={{ color: textTertiary }} />
+                <div className="flex gap-0.5">
+                  <button onClick={goToPrev} className={`p-1 rounded-md transition-all ${isDark ? "hover:bg-white/5" : "hover:bg-black/5"}`}>
+                    <ChevronLeft size={14} className={isDark ? "text-[#555]" : "text-[#aaa]"} />
                   </button>
-                  <button onClick={goToNext} className="p-1 rounded-md transition-all hover:bg-black/5 dark:hover:bg-white/5">
-                    <ChevronRight size={14} style={{ color: textTertiary }} />
+                  <button onClick={goToNext} className={`p-1 rounded-md transition-all ${isDark ? "hover:bg-white/5" : "hover:bg-black/5"}`}>
+                    <ChevronRight size={14} className={isDark ? "text-[#555]" : "text-[#aaa]"} />
                   </button>
                 </div>
               )}
@@ -355,11 +279,7 @@ export function EnhancedProjectCard({
                   rel="noreferrer"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className="flex items-center gap-1.5 text-[11px] font-medium px-3 py-1.5 rounded-lg text-white"
-                  style={{
-                    background: ACCENT,
-                    fontFamily: "'DM Mono', monospace",
-                  }}
+                  className="flex items-center gap-1.5 text-[11px] font-medium px-3 py-1.5 rounded-lg text-white bg-[#3d72cc] hover:bg-[#2d62bc] transition-colors"
                 >
                   {t("project.view")}
                   <ExternalLink size={10} />
@@ -369,8 +289,8 @@ export function EnhancedProjectCard({
           </div>
 
           {/* Progress bar */}
-          {hasProjects && projectCount > 1 && !isPaused && (
-            <div className="w-full h-[2px] overflow-hidden" style={{ background: isDark ? "#222" : "#f0f0f0" }}>
+          {hasProjects && projectCount > 1 && (
+            <div className="w-full h-[2px] overflow-hidden mt-3 rounded-full" style={{ background: isDark ? "#222" : "#f0f0f0" }}>
               <motion.div
                 className="h-full rounded-full"
                 style={{ backgroundColor: ACCENT }}
