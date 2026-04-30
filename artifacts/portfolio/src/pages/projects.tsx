@@ -99,7 +99,6 @@ export default function Projects() {
             </div>
           )
         ),
-        // Pad to 28 items
         ...Array(Math.max(0, 28 - projects.length)).fill(""),
       ]
     : Array(28).fill("");
@@ -108,22 +107,48 @@ export default function Projects() {
     <>
       <style>{`
         @media print {
-          html, body { background: #fff !important; color: #000 !important; }
-          .no-print { display: none !important; }
-          .print-only { display: block !important; }
+          html, body {
+            background: #fff !important;
+            color: #000 !important;
+            height: auto !important;
+            min-height: 0 !important;
+            overflow: visible !important;
+          }
+          .for-screen,
+          .for-screen * {
+            display: none !important;
+            visibility: hidden !important;
+            height: 0 !important;
+            min-height: 0 !important;
+            max-height: 0 !important;
+            overflow: hidden !important;
+            position: absolute !important;
+            top: -9999px !important;
+            left: -9999px !important;
+          }
+          .for-print {
+            display: block !important;
+            visibility: visible !important;
+            position: static !important;
+            height: auto !important;
+            min-height: 0 !important;
+            overflow: visible !important;
+            top: auto !important;
+            left: auto !important;
+            width: 100% !important;
+          }
           a { color: #000 !important; text-decoration: none !important; }
           @page { margin: 15mm; size: auto; }
         }
         @media screen {
-          .print-only { display: none !important; }
+          .for-print { display: none !important; }
         }
       `}</style>
 
       {/* ═══════════════════════════════════════════════
-         SCREEN VIEW
+         SCREEN  —  Full visual experience
          ═══════════════════════════════════════════════ */}
-      <div className="no-print min-h-screen bg-black text-white overflow-hidden">
-        {/* Nav */}
+      <div className="for-screen min-h-screen bg-black text-white overflow-hidden">
         <header className="absolute top-0 left-0 right-0 z-50 h-12 flex items-center px-6">
           <div className="flex w-full items-center justify-between">
             <Link
@@ -139,7 +164,6 @@ export default function Projects() {
           </div>
         </header>
 
-        {/* GridMotion */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -149,7 +173,6 @@ export default function Projects() {
           <GridMotion items={gridItems} gradientColor="#111111" />
         </motion.div>
 
-        {/* Center overlay */}
         <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
@@ -166,59 +189,35 @@ export default function Projects() {
       </div>
 
       {/* ═══════════════════════════════════════════════
-         PRINT VIEW  —  Clean structured list
+         PRINT  —  Compact text-only list
          ═══════════════════════════════════════════════ */}
-      <div className="print-only font-sans text-black bg-white">
-        {/* Header */}
-        <header className="border-b-2 border-black pb-4 mb-6">
-          <h1 className="text-2xl font-black uppercase tracking-tight">{t("hero.title")}</h1>
-          <div className="flex justify-between items-center mt-1 text-sm">
-            <span className="font-semibold">Lucas Henrique Diniz</span>
-            <span className="text-gray-600">lucashdo.com/projects</span>
-          </div>
+      <div className="for-print font-sans text-black bg-white p-0">
+        <header className="border-b-2 border-black pb-3 mb-5">
+          <h1 className="text-xl font-black uppercase tracking-tight">{t("hero.title")}</h1>
+          <p className="text-sm mt-1">Lucas Henrique Diniz — lucashdo.com/projects</p>
         </header>
 
-        {/* Project List */}
-        <main className="space-y-5">
+        <main>
           {projects.map((p, i) => (
-            <article key={p.id} className="break-inside-avoid">
-              {/* Title row */}
-              <div className="flex items-baseline justify-between gap-3 mb-1">
-                <h2 className="text-base font-bold leading-tight">
-                  <span className="text-gray-500 font-normal mr-1">{i + 1}.</span>
-                  {p.title}
-                </h2>
-                {p.year && (
-                  <span className="text-xs font-semibold text-gray-500 shrink-0">{p.year}</span>
-                )}
+            <div key={p.id} className="break-inside-avoid mb-4">
+              <div className="flex items-baseline gap-2 mb-1">
+                <span className="text-sm text-gray-500 font-medium">{i + 1}.</span>
+                <h2 className="text-sm font-bold">{p.title}</h2>
+                {p.year && <span className="text-xs text-gray-500 ml-auto">{p.year}</span>}
               </div>
-
-              {/* Description */}
-              <p className="text-sm text-gray-800 leading-snug">{p.description}</p>
-
-              {/* Tags */}
-              <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1.5 text-xs text-gray-600">
-                {p.tags.map((tag) => (
-                  <span key={tag} className="font-medium">{tag}</span>
-                ))}
-              </div>
-
-              {/* Links */}
-              <div className="flex gap-4 mt-1 text-xs text-gray-700">
-                {p.liveUrl && <span>{p.liveUrl.replace(/^https:\/\//, "")}</span>}
+              <p className="text-xs text-gray-800 leading-snug">{p.description}</p>
+              <p className="text-xs text-gray-600 mt-1">{p.tags.join(" · ")}</p>
+              <div className="text-xs text-gray-700 mt-1">
+                {p.liveUrl && <span className="mr-3">{p.liveUrl.replace(/^https:\/\//, "")}</span>}
                 {p.githubUrl && <span>{p.githubUrl.replace(/^https:\/\//, "")}</span>}
               </div>
-
-              {i < projects.length - 1 && (
-                <hr className="mt-4 border-gray-200" />
-              )}
-            </article>
+              {i < projects.length - 1 && <hr className="mt-4 border-gray-200" />}
+            </div>
           ))}
         </main>
 
-        {/* Footer */}
-        <footer className="mt-8 pt-3 border-t border-gray-300 text-xs text-center text-gray-500">
-          <span className="font-semibold">lucashdo.com</span> — Lucas Henrique Diniz
+        <footer className="mt-6 pt-2 border-t border-gray-300 text-xs text-center text-gray-500">
+          lucashdo.com — Lucas Henrique Diniz
         </footer>
       </div>
     </>
