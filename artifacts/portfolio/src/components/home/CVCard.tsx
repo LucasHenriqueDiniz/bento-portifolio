@@ -1,11 +1,8 @@
 import React, { useRef, useCallback } from "react";
 import { motion, useSpring } from "framer-motion";
-import { ArrowUpRight, FileText, Briefcase, BookOpen } from "lucide-react";
+import { ArrowUpRight, FileText, Briefcase, GraduationCap } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { BentoCard } from "@/components/BentoCard";
 import { jobExperiences, academicExperiences } from "@/constants";
-
-const ACCENT = "#3d72cc";
 
 interface CVCardProps {
   navigate: (path: string) => void;
@@ -21,9 +18,9 @@ export const CVCard = React.memo(function CVCard({ navigate, isDark = false }: C
 
   const ref = useRef<HTMLDivElement>(null);
 
-  const rotateX = useSpring(0, { stiffness: 400, damping: 30 });
-  const rotateY = useSpring(0, { stiffness: 400, damping: 30 });
-  const scale = useSpring(1, { stiffness: 400, damping: 30 });
+  const rotateX = useSpring(0, { stiffness: 350, damping: 25 });
+  const rotateY = useSpring(0, { stiffness: 350, damping: 25 });
+  const scale = useSpring(1, { stiffness: 350, damping: 25 });
 
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     if (!ref.current) return;
@@ -32,9 +29,9 @@ export const CVCard = React.memo(function CVCard({ navigate, isDark = false }: C
     const centerY = rect.top + rect.height / 2;
     const mouseX = e.clientX - centerX;
     const mouseY = e.clientY - centerY;
-    rotateX.set((-mouseY / (rect.height / 2)) * 10);
-    rotateY.set((mouseX / (rect.width / 2)) * 10);
-    scale.set(1.02);
+    rotateX.set((-mouseY / (rect.height / 2)) * 12);
+    rotateY.set((mouseX / (rect.width / 2)) * 12);
+    scale.set(1.03);
   }, [rotateX, rotateY, scale]);
 
   const handleMouseLeave = useCallback(() => {
@@ -46,87 +43,95 @@ export const CVCard = React.memo(function CVCard({ navigate, isDark = false }: C
   return (
     <motion.div
       ref={ref}
-      style={{ rotateX, rotateY, scale, transformPerspective: 800 }}
+      style={{ rotateX, rotateY, scale, transformPerspective: 1000 }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
+      className="h-full cursor-pointer"
+      onClick={() => navigate("/resume")}
     >
-      <BentoCard
-        className="overflow-hidden cursor-pointer group h-full flex flex-col"
-        onClick={() => navigate("/resume")}
+      {/* Document body */}
+      <div
+        className={`h-full rounded-xl border p-3 flex flex-col relative overflow-hidden group ${
+          isDark
+            ? "bg-[#1e1e1e] border-[#333] shadow-[0_20px_60px_rgba(0,0,0,0.5)]"
+            : "bg-white border-[#e0e0e0] shadow-[0_20px_60px_rgba(0,0,0,0.12)]"
+        }`}
       >
-        <div className="relative w-full h-full flex flex-col rounded-2xl" style={{ backgroundColor: ACCENT }}>
-          {/* Background pattern */}
-          <div className="absolute inset-0 opacity-5 rounded-2xl overflow-hidden">
-            <div
-              className="absolute inset-0"
-              style={{
-                backgroundImage: "radial-gradient(circle at 2px 2px, white 1px, transparent 0)",
-                backgroundSize: "32px 32px",
-              }}
-            />
+        {/* Top bar */}
+        <div className={`flex items-center gap-1.5 mb-2.5 ${isDark ? "text-gray-500" : "text-gray-400"}`}>
+          <div className={`w-2 h-2 rounded-full ${isDark ? "bg-[#ff5f57]" : "bg-[#ff5f57]"}`} />
+          <div className={`w-2 h-2 rounded-full ${isDark ? "bg-[#febc2e]" : "bg-[#febc2e]"}`} />
+          <div className={`w-2 h-2 rounded-full ${isDark ? "bg-[#28c840]" : "bg-[#28c840]"}`} />
+          <span className="text-[8px] font-medium ml-2 flex-1 text-center truncate">
+            Lucas_Henrique_Diniz_CV.pdf
+          </span>
+          <div className="w-6" />
+        </div>
+
+        {/* Document content */}
+        <div className="flex-1 min-h-0 flex flex-col">
+          {/* Name header */}
+          <div className="mb-2">
+            <div className={`h-2.5 w-3/4 rounded ${isDark ? "bg-[#3d72cc]/60" : "bg-[#3d72cc]"}`} />
+            <div className={`h-1.5 w-1/2 rounded mt-1 ${isDark ? "bg-[#3d72cc]/30" : "bg-[#3d72cc]/40"}`} />
           </div>
 
-          {/* Content */}
-          <div className="relative z-10 flex flex-col h-full p-4 sm:p-5">
-            {/* Header */}
-            <div className="mb-4 flex items-center justify-between shrink-0">
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white/10 backdrop-blur-sm rounded-full border border-white/20">
-                <FileText size={13} className="text-white" />
-                <span className="text-[10px] font-bold text-white uppercase tracking-wider">
-                  {t("cv.title")}
-                </span>
-              </div>
-              <span className="w-7 h-7 rounded-full bg-white/10 border border-white/20 text-white/85 inline-flex items-center justify-center group-hover:scale-110 group-hover:bg-white/15 transition-all">
-                <ArrowUpRight size={12} />
-              </span>
-            </div>
+          {/* Divider */}
+          <div className={`h-px w-full mb-2 ${isDark ? "bg-[#333]" : "bg-[#e0e0e0]"}`} />
 
-            {/* Stats Grid */}
-            <div className="grid grid-cols-2 gap-3 mb-4 flex-1 min-h-0">
-              {/* Job Experience */}
-              <motion.div
-                className="flex flex-col p-3 rounded-lg bg-white/5 border border-white/10 backdrop-blur-sm"
-                whileHover={{ scale: 1.05, backgroundColor: "rgba(255,255,255,0.08)" }}
-                transition={{ type: "spring", stiffness: 200 }}
-              >
-                  <div className="flex items-center gap-2 mb-2">
-                    <Briefcase size={14} className="text-white/80" />
-                    <span className="text-[10px] font-bold text-white/70 uppercase tracking-wider">{t("cv.work")}</span>
-                  </div>
-                  <p className="text-xl font-black text-white mb-0.5">{jobCount}</p>
-                  {currentJob && (
-                    <p className="text-[9px] text-white/60 leading-tight truncate">
-                      {currentLang === "en" ? currentJob.titleEn || currentJob.title : currentJob.title}
-                    </p>
-                  )}
-                </motion.div>
-
-              {/* Education */}
-              <motion.div
-                className="flex flex-col p-3 rounded-lg bg-white/5 border border-white/10 backdrop-blur-sm"
-                whileHover={{ scale: 1.05, backgroundColor: "rgba(255,255,255,0.08)" }}
-                transition={{ type: "spring", stiffness: 200 }}
-              >
-                  <div className="flex items-center gap-2 mb-2">
-                    <BookOpen size={14} className="text-white/80" />
-                    <span className="text-[10px] font-bold text-white/70 uppercase tracking-wider">{t("cv.education")}</span>
-                  </div>
-                  <p className="text-xl font-black text-white mb-0.5">{educationCount}</p>
-                  {academicExperiences.find(exp => !exp.endDate) && (
-                    <p className="text-[9px] text-white/60 leading-tight truncate">{t("cv.studying")}</p>
-                  )}
-                </motion.div>
+          {/* Experience section */}
+          <div className="flex items-center gap-1 mb-1.5">
+            <Briefcase size={8} className={isDark ? "text-[#3d72cc]" : "text-[#3d72cc]"} />
+            <div className={`h-1.5 w-16 rounded ${isDark ? "bg-gray-600" : "bg-gray-300"}`} />
+          </div>
+          {Array.from({ length: 2 }).map((_, i) => (
+            <div key={`exp-${i}`} className="mb-1.5">
+              <div className={`h-1.5 w-2/3 rounded ${isDark ? "bg-gray-700" : "bg-gray-200"}`} />
+              <div className={`h-1 w-full rounded mt-0.5 ${isDark ? "bg-gray-800" : "bg-gray-100"}`} />
             </div>
+          ))}
 
-            {/* Footer CTA */}
-            <div className="mt-auto pt-3 border-t border-white/10 text-center">
-              <p className="text-[11px] font-semibold text-white/90 group-hover:text-white transition-colors">
-                {t("cv.viewFull")}
-              </p>
+          {/* Education section */}
+          <div className="flex items-center gap-1 mb-1.5 mt-2">
+            <GraduationCap size={8} className={isDark ? "text-[#3d72cc]" : "text-[#3d72cc]"} />
+            <div className={`h-1.5 w-14 rounded ${isDark ? "bg-gray-600" : "bg-gray-300"}`} />
+          </div>
+          {Array.from({ length: 2 }).map((_, i) => (
+            <div key={`edu-${i}`} className="mb-1.5">
+              <div className={`h-1.5 w-3/4 rounded ${isDark ? "bg-gray-700" : "bg-gray-200"}`} />
+              <div className={`h-1 w-1/2 rounded mt-0.5 ${isDark ? "bg-gray-800" : "bg-gray-100"}`} />
             </div>
+          ))}
+
+          {/* Skills */}
+          <div className="flex items-center gap-1 mb-1.5 mt-2">
+            <FileText size={8} className={isDark ? "text-[#3d72cc]" : "text-[#3d72cc]"} />
+            <div className={`h-1.5 w-12 rounded ${isDark ? "bg-gray-600" : "bg-gray-300"}`} />
+          </div>
+          <div className="flex gap-1 flex-wrap">
+            {["TS", "React", "Node", "AWS"].map(s => (
+              <span key={s} className={`text-[7px] px-1.5 py-0.5 rounded ${isDark ? "bg-[#3d72cc]/15 text-[#3d72cc]" : "bg-[#3d72cc]/10 text-[#3d72cc]"}`}>{s}</span>
+            ))}
           </div>
         </div>
-      </BentoCard>
+
+        {/* Stats footer */}
+        <div className={`flex items-center justify-between mt-2 pt-2 border-t ${isDark ? "border-[#333]" : "border-[#e0e0e0]"}`}>
+          <div className="flex gap-3">
+            <div className="text-center">
+              <p className={`text-sm font-black ${isDark ? "text-white" : "text-[#111]"}`}>{jobCount}</p>
+              <p className={`text-[7px] uppercase tracking-wider ${isDark ? "text-gray-500" : "text-gray-400"}`}>{t("cv.work")}</p>
+            </div>
+            <div className="text-center">
+              <p className={`text-sm font-black ${isDark ? "text-white" : "text-[#111]"}`}>{educationCount}</p>
+              <p className={`text-[7px] uppercase tracking-wider ${isDark ? "text-gray-500" : "text-gray-400"}`}>{t("cv.education")}</p>
+            </div>
+          </div>
+          <div className={`w-6 h-6 rounded-full flex items-center justify-center transition-all group-hover:scale-110 ${isDark ? "bg-[#3d72cc]/20 text-[#3d72cc]" : "bg-[#3d72cc]/10 text-[#3d72cc]"}`}>
+            <ArrowUpRight size={10} />
+          </div>
+        </div>
+      </div>
     </motion.div>
   );
 });
