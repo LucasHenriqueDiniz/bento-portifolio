@@ -136,7 +136,11 @@ function VisualResume({ isDark }: { isDark: boolean }) {
         </div>
       );
     }
-    return null;
+    return (
+      <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${isDark ? "bg-white/5" : "bg-gray-100"}`}>
+        <FiBriefcase size={16} style={{ color: ACCENT }} />
+      </div>
+    );
   };
 
   const getJobTitle = (job: any) => currentLang === 'en' && job.titleEn ? job.titleEn : job.title;
@@ -170,29 +174,39 @@ function VisualResume({ isDark }: { isDark: boolean }) {
       {/* ── EXPERIENCE ── */}
       <section>
         <SectionTitle icon={FiBriefcase} delay={0.05} isDark={isDark}>{t('sections.experience')}</SectionTitle>
-        <div className="relative pl-4 border-l border-dashed" style={{ borderColor: isDark ? "rgba(61,114,204,0.25)" : "rgba(61,114,204,0.2)" }}>
+        <div className="space-y-0">
           {activeJobs.map((job, i) => (
-            <motion.div key={job.id} {...fadeUp(0.08 + i * 0.03)} className="relative mb-4 last:mb-0">
-              <div className="absolute -left-[21px] top-1.5 w-2.5 h-2.5 rounded-full border-2" style={{ backgroundColor: isDark ? "#1f2937" : "#fff", borderColor: ACCENT }} />
-              <div className="flex items-start gap-3">
+            <motion.div key={job.id} {...fadeUp(0.08 + i * 0.03)} className="flex gap-3 py-3 first:pt-0 last:pb-0">
+              {/* Timeline dot column — fixed width, always aligned */}
+              <div className="relative w-4 shrink-0 flex justify-center">
+                <div className="w-2.5 h-2.5 rounded-full border-2 mt-1.5" style={{ backgroundColor: isDark ? "#1f2937" : "#fff", borderColor: ACCENT }} />
+                {i < activeJobs.length - 1 && (
+                  <div className="absolute top-4 bottom-0 left-1/2 w-px border-l border-dashed" style={{ borderColor: isDark ? "rgba(61,114,204,0.2)" : "rgba(61,114,204,0.15)" }} />
+                )}
+              </div>
+
+              {/* Logo column — fixed width, always present */}
+              <div className="w-10 shrink-0 mt-0.5">
                 {renderJobLogo(job)}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <h3 className="text-sm font-bold" style={{ color: isDark ? "#fff" : "#000" }}>{getJobTitle(job)}</h3>
-                    {!job.endDate && (
-                      <span className="text-[9px] font-bold px-1.5 py-0.5 rounded" style={{ color: ACCENT, backgroundColor: isDark ? "rgba(61,114,204,0.12)" : "rgba(61,114,204,0.08)" }}>
-                        {t('common:status.current')}
-                      </span>
-                    )}
-                  </div>
-                  {job.url ? (
-                    <a href={job.url} target="_blank" rel="noreferrer" className={`text-xs font-medium hover:underline ${isDark ? "text-gray-400" : "text-gray-500"}`}>{job.institution}</a>
-                  ) : (
-                    <p className={`text-xs font-medium ${isDark ? "text-gray-400" : "text-gray-500"}`}>{job.institution}</p>
+              </div>
+
+              {/* Content */}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h3 className="text-sm font-bold" style={{ color: isDark ? "#fff" : "#000" }}>{getJobTitle(job)}</h3>
+                  {!job.endDate && (
+                    <span className="text-[9px] font-bold px-1.5 py-0.5 rounded" style={{ color: ACCENT, backgroundColor: isDark ? "rgba(61,114,204,0.12)" : "rgba(61,114,204,0.08)" }}>
+                      {t('common:status.current')}
+                    </span>
                   )}
-                  <p className={`text-[10px] mb-1 ${isDark ? "text-gray-600" : "text-gray-400"}`}>{formatDateRange(job.startDate, job.endDate)}</p>
-                  <p className={`text-[12px] leading-relaxed ${isDark ? "text-gray-300" : "text-gray-700"}`}>{getJobDescription(job)}</p>
                 </div>
+                {job.url ? (
+                  <a href={job.url} target="_blank" rel="noreferrer" className={`text-xs font-medium hover:underline ${isDark ? "text-gray-400" : "text-gray-500"}`}>{job.institution}</a>
+                ) : (
+                  <p className={`text-xs font-medium ${isDark ? "text-gray-400" : "text-gray-500"}`}>{job.institution}</p>
+                )}
+                <p className={`text-[10px] mb-1 ${isDark ? "text-gray-600" : "text-gray-400"}`}>{formatDateRange(job.startDate, job.endDate)}</p>
+                <p className={`text-[12px] leading-relaxed ${isDark ? "text-gray-300" : "text-gray-700"}`}>{getJobDescription(job)}</p>
               </div>
             </motion.div>
           ))}
@@ -298,7 +312,7 @@ function VisualResume({ isDark }: { isDark: boolean }) {
 }
 
 // ─── ATS Resume (Print-only) ─────────────────────────────
-function ATSResume() {
+function ATSResume({ isDark = false }: { isDark?: boolean }) {
   const { t, i18n } = useTranslation(['resume', 'common']);
   const currentLang = i18n.language?.split("-")[0] || "pt";
 
@@ -336,9 +350,12 @@ function ATSResume() {
   const getJobDescription = (job: any) => currentLang === 'en' && job.descriptionEn ? job.descriptionEn : job.description;
 
   const renderBullets = (text: string) => (
-    <ul className="mt-1 space-y-0.5">
+    <ul className="mt-1 space-y-0.5 list-none pl-0">
       {text.split('\n').map((line, i) => (
-        <li key={i} className="text-[11px] leading-relaxed">{line.replace(/^•\s*/, '')}</li>
+        <li key={i} className={`text-[11px] leading-relaxed flex items-start gap-1.5 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
+          <span className="mt-1.5 w-1 h-1 rounded-full shrink-0" style={{ backgroundColor: ACCENT }} />
+          <span>{line.replace(/^•\s*/, '')}</span>
+        </li>
       ))}
     </ul>
   );
@@ -509,7 +526,7 @@ export default function ResumePage() {
       {/* Screen-only: switches between visual and ATS view */}
       <div className="screen-only">
         <motion.div key={format} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.25 }}>
-          {format === "visual" ? <VisualResume isDark={isDark} /> : <ATSResume />}
+          {format === "visual" ? <VisualResume isDark={isDark} /> : <ATSResume isDark={isDark} />}
         </motion.div>
       </div>
 
