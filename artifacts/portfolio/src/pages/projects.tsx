@@ -108,43 +108,21 @@ export default function Projects() {
     <>
       <style>{`
         @media print {
-          html, body {
-            height: auto !important;
-            overflow: visible !important;
-            background: white !important;
-          }
-          .projects-screen {
-            display: none !important;
-            visibility: hidden !important;
-            height: 0 !important;
-            overflow: hidden !important;
-            position: absolute !important;
-            left: -9999px !important;
-          }
-          .projects-screen * {
-            display: none !important;
-          }
-          .projects-print {
-            display: block !important;
-            visibility: visible !important;
-            position: static !important;
-            left: auto !important;
-            height: auto !important;
-            overflow: visible !important;
-          }
+          html, body { background: #fff !important; color: #000 !important; }
+          .no-print { display: none !important; }
+          .print-only { display: block !important; }
+          a { color: #000 !important; text-decoration: none !important; }
+          @page { margin: 15mm; size: auto; }
         }
         @media screen {
-          .projects-print {
-            display: none !important;
-            visibility: hidden !important;
-            height: 0 !important;
-            overflow: hidden !important;
-          }
+          .print-only { display: none !important; }
         }
       `}</style>
 
-      {/* ─── SCREEN VIEW ─── */}
-      <div className="projects-screen min-h-screen bg-black text-white overflow-hidden">
+      {/* ═══════════════════════════════════════════════
+         SCREEN VIEW
+         ═══════════════════════════════════════════════ */}
+      <div className="no-print min-h-screen bg-black text-white overflow-hidden">
         {/* Nav */}
         <header className="absolute top-0 left-0 right-0 z-50 h-12 flex items-center px-6">
           <div className="flex w-full items-center justify-between">
@@ -187,38 +165,60 @@ export default function Projects() {
         </div>
       </div>
 
-      {/* ─── PRINT VIEW ─── */}
-      <div className="projects-print bg-white text-black p-8">
-        <header className="mb-6 pb-4 border-b border-gray-300">
-          <h1 className="text-2xl font-black">{t("hero.title")}</h1>
-          <p className="text-sm text-gray-600 mt-1">lucashdo.com/projects</p>
+      {/* ═══════════════════════════════════════════════
+         PRINT VIEW  —  Clean structured list
+         ═══════════════════════════════════════════════ */}
+      <div className="print-only font-sans text-black bg-white">
+        {/* Header */}
+        <header className="border-b-2 border-black pb-4 mb-6">
+          <h1 className="text-2xl font-black uppercase tracking-tight">{t("hero.title")}</h1>
+          <div className="flex justify-between items-center mt-1 text-sm">
+            <span className="font-semibold">Lucas Henrique Diniz</span>
+            <span className="text-gray-600">lucashdo.com/projects</span>
+          </div>
         </header>
 
-        <div className="space-y-4">
+        {/* Project List */}
+        <main className="space-y-5">
           {projects.map((p, i) => (
-            <div key={p.id} className="break-inside-avoid">
-              <div className="flex items-baseline justify-between gap-2">
-                <h2 className="text-base font-bold">{i + 1}. {p.title}</h2>
-                {p.year && <span className="text-xs text-gray-500">{p.year}</span>}
+            <article key={p.id} className="break-inside-avoid">
+              {/* Title row */}
+              <div className="flex items-baseline justify-between gap-3 mb-1">
+                <h2 className="text-base font-bold leading-tight">
+                  <span className="text-gray-500 font-normal mr-1">{i + 1}.</span>
+                  {p.title}
+                </h2>
+                {p.year && (
+                  <span className="text-xs font-semibold text-gray-500 shrink-0">{p.year}</span>
+                )}
               </div>
-              <p className="text-sm text-gray-700 mt-1 leading-relaxed">{p.description}</p>
-              <div className="flex flex-wrap gap-1 mt-1.5">
+
+              {/* Description */}
+              <p className="text-sm text-gray-800 leading-snug">{p.description}</p>
+
+              {/* Tags */}
+              <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1.5 text-xs text-gray-600">
                 {p.tags.map((tag) => (
-                  <span key={tag} className="text-xs px-2 py-0.5 rounded bg-gray-100 text-gray-700">
-                    {tag}
-                  </span>
+                  <span key={tag} className="font-medium">{tag}</span>
                 ))}
               </div>
-              <div className="flex gap-3 mt-1.5 text-xs text-gray-600">
-                {p.githubUrl && <span>{p.githubUrl}</span>}
-                {p.liveUrl && <span>{p.liveUrl}</span>}
-              </div>
-            </div>
-          ))}
-        </div>
 
-        <footer className="mt-8 pt-4 border-t border-gray-300 text-xs text-gray-500 text-center">
-          lucashdo.com — Lucas Henrique Diniz
+              {/* Links */}
+              <div className="flex gap-4 mt-1 text-xs text-gray-700">
+                {p.liveUrl && <span>{p.liveUrl.replace(/^https:\/\//, "")}</span>}
+                {p.githubUrl && <span>{p.githubUrl.replace(/^https:\/\//, "")}</span>}
+              </div>
+
+              {i < projects.length - 1 && (
+                <hr className="mt-4 border-gray-200" />
+              )}
+            </article>
+          ))}
+        </main>
+
+        {/* Footer */}
+        <footer className="mt-8 pt-3 border-t border-gray-300 text-xs text-center text-gray-500">
+          <span className="font-semibold">lucashdo.com</span> — Lucas Henrique Diniz
         </footer>
       </div>
     </>
