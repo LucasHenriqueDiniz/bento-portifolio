@@ -84,7 +84,7 @@ function VisualResume({ isDark }: { isDark: boolean }) {
       const dateB = b.startDate ? new Date(b.startDate).getTime() : 0;
       return dateB - dateA;
     }), []);
-  const featuredProjects = useMemo(() => projects.filter(p => p.featured).slice(0, 3), []);
+  const featuredProjects = useMemo(() => projects.filter(p => p.featured).slice(0, 6), []);
 
   const skillsByCategory = useMemo(() => {
     const cats = ['frontend', 'backend', 'integration', 'automation', 'database', 'devops', 'ai'];
@@ -98,14 +98,14 @@ function VisualResume({ isDark }: { isDark: boolean }) {
     if (job.icon && job.icon.startsWith("/")) {
       return (
         <div className={`w-10 h-10 rounded-lg overflow-hidden flex items-center justify-center shrink-0 ${isDark ? "bg-white/5" : "bg-gray-100"}`}>
-          <img src={job.icon} alt="" className="w-7 h-7 object-contain" />
+          <img src={job.icon} alt="" className="w-full h-full object-cover" />
         </div>
       );
     }
     if (logoMap[job.institution]) {
       return (
         <div className={`w-10 h-10 rounded-lg overflow-hidden flex items-center justify-center shrink-0 ${isDark ? "bg-white/5" : "bg-gray-100"}`}>
-          <img src={logoMap[job.institution]} alt="" className="w-7 h-7 object-contain" />
+          <img src={logoMap[job.institution]} alt="" className="w-full h-full object-cover" />
         </div>
       );
     }
@@ -281,7 +281,7 @@ function ATSResume() {
 
   const activeJobs = useMemo(() => jobExperiences.filter(exp => exp.showInTimeline), []);
   const activeEducation = useMemo(() => academicExperiences.filter(ed => ed.showInTimeline), []);
-  const featuredProjects = useMemo(() => projects.filter(p => p.featured).slice(0, 3), []);
+  const featuredProjects = useMemo(() => projects.filter(p => p.featured).slice(0, 6), []);
 
   const getJobTitle = (job: any) => currentLang === 'en' && job.titleEn ? job.titleEn : job.title;
   const getJobDescription = (job: any) => currentLang === 'en' && job.descriptionEn ? job.descriptionEn : job.description;
