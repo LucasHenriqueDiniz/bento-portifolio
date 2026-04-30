@@ -302,13 +302,20 @@ function ATSResume() {
   const { t, i18n } = useTranslation(['resume', 'common']);
   const currentLang = i18n.language?.split("-")[0] || "pt";
 
+  // Relevance-based ordering: principal job first, then co-founder, then side projects
+  const jobPriority: Record<string, number> = {
+    "eng-futuro": 1,
+    "bots-channel": 2,
+    "comunica-mulher-work": 3,
+    "include-gurias-work": 4,
+    "eng-futuro-vol": 5,
+    "freelance-design": 6,
+  };
+
   const activeJobs = useMemo(() => jobExperiences
     .filter(exp => exp.showInTimeline)
-    .sort((a, b) => {
-      const dateA = a.startDate ? new Date(a.startDate).getTime() : 0;
-      const dateB = b.startDate ? new Date(b.startDate).getTime() : 0;
-      return dateB - dateA;
-    }), []);
+    .sort((a, b) => (jobPriority[a.id] || 99) - (jobPriority[b.id] || 99)), []);
+
   const activeEducation = useMemo(() => academicExperiences
     .filter(ed => ed.showInTimeline)
     .sort((a, b) => {
@@ -316,10 +323,25 @@ function ATSResume() {
       const dateB = b.startDate ? new Date(b.startDate).getTime() : 0;
       return dateB - dateA;
     }), []);
-  const featuredProjects = useMemo(() => projects.filter(p => p.featured).slice(0, 6), []);
+
+  // Only 4 top projects for ATS
+  const atsProjectIds = ["botschannel-platform", "heartopia-guide", "weeb-profile", "siot-web-flasher"];
+  const atsProjects = useMemo(() => atsProjectIds
+    .map(id => projects.find(p => p.id === id))
+    .filter(Boolean), []);
+
+  const topCertificates = useMemo(() => certificates.slice(0, 4), []);
 
   const getJobTitle = (job: any) => currentLang === 'en' && job.titleEn ? job.titleEn : job.title;
   const getJobDescription = (job: any) => currentLang === 'en' && job.descriptionEn ? job.descriptionEn : job.description;
+
+  const renderBullets = (text: string) => (
+    <ul className="mt-1 space-y-0.5">
+      {text.split('\n').map((line, i) => (
+        <li key={i} className="text-[11px] leading-relaxed">{line.replace(/^•\s*/, '')}</li>
+      ))}
+    </ul>
+  );
 
   return (
     <div className="max-w-[800px] mx-auto px-6 py-8 space-y-5">
@@ -347,7 +369,7 @@ function ATSResume() {
               ) : (
                 <p className="text-[11px] font-medium">{job.institution}</p>
               )}
-              <p className="text-[11px] mt-0.5 leading-relaxed">{getJobDescription(job)}</p>
+              {renderBullets(getJobDescription(job))}
             </div>
           ))}
         </div>
@@ -358,14 +380,14 @@ function ATSResume() {
           {t('sections.projects')}
         </h2>
         <div className="space-y-2.5">
-          {featuredProjects.map(proj => (
-            <div key={proj.id}>
+          {atsProjects.map(proj => (
+            <div key={proj!.id}>
               <div className="flex items-baseline justify-between">
-                <h3 className="text-xs font-bold">{proj.name}</h3>
-                {proj.url && <span className="text-[10px]">{proj.url.replace('https://', '')}</span>}
+                <h3 className="text-xs font-bold">{proj!.name}</h3>
+                {proj!.url && <span className="text-[10px]">{proj!.url.replace('https://', '')}</span>}
               </div>
-              <p className="text-[11px] leading-relaxed">{currentLang === 'en' && proj.descriptionEn ? proj.descriptionEn : proj.description}</p>
-              <p className="text-[10px]">Tech: {proj.techStack.join(", ")}</p>
+              {renderBullets(currentLang === 'en' && proj!.descriptionEn ? proj!.descriptionEn : proj!.description)}
+              <p className="text-[10px]">Tech: {proj!.techStack.join(", ")}</p>
             </div>
           ))}
         </div>
@@ -375,11 +397,12 @@ function ATSResume() {
         <h2 className="text-sm font-black uppercase tracking-widest border-b border-black pb-1 mb-2">
           {t('sections.skills')}
         </h2>
-        <div className="grid grid-cols-2 gap-x-6 gap-y-1 text-[11px]">
-          <p><span className="font-semibold">{t('categories.frontend')}:</span> TypeScript, JavaScript, Python, Go, SQL</p>
-          <p><span className="font-semibold">{t('categories.backend')}:</span> React, Next.js, React Native, Expo, Tailwind CSS</p>
-          <p><span className="font-semibold">{t('categories.integration')}:</span> Node.js, PostgreSQL, Supabase, Redis, Prisma</p>
-          <p><span className="font-semibold">{t('categories.devops')}:</span> AWS Lambda, Docker, Vercel, GitHub Actions</p>
+        <div className="space-y-1 text-[11px]">
+          <p><span className="font-semibold">Languages:</span> TypeScript, JavaScript, Python, Go, SQL</p>
+          <p><span className="font-semibold">Frontend:</span> React, Next.js, React Native, Expo, Tailwind CSS, Framer Motion</p>
+          <p><span className="font-semibold">Backend:</span> Node.js, NestJS, Prisma, REST APIs, WebSockets</p>
+          <p><span className="font-semibold">Database:</span> PostgreSQL, Supabase, Redis</p>
+          <p><span className="font-semibold">DevOps / Cloud:</span> AWS Lambda, Docker, Vercel, GitHub Actions</p>
         </div>
       </section>
 
@@ -405,7 +428,7 @@ function ATSResume() {
           {t('sections.certifications')}
         </h2>
         <div className="flex flex-wrap gap-x-4 gap-y-1 text-[11px]">
-          {certificates.map(cert => (
+          {topCertificates.map(cert => (
             <span key={cert.title}>• {cert.title} ({cert.issueDate})</span>
           ))}
         </div>
