@@ -7,6 +7,7 @@ import { Moon, Sun, Linkedin, Palette, MessageSquare } from "lucide-react";
 import { LanguageSwitcher } from "@/i18n/LanguageSwitcher";
 import { jobExperiences, academicExperiences, projects, certificates, languages, skillsData, ContactLinks } from "@/constants";
 import { formatDateRange } from "@/lib/dateFormatter";
+import { MagneticDocument } from "@/components/MagneticDocument";
 
 const ACCENT = "#3d72cc";
 type ResumeFormat = "visual" | "ats";
@@ -144,7 +145,7 @@ function VisualResume({ isDark }: { isDark: boolean }) {
   const getProjectDescription = (proj: any) => currentLang === 'en' && proj.descriptionEn ? proj.descriptionEn : proj.description;
 
   return (
-    <div className="max-w-[900px] mx-auto px-6 py-8 space-y-6">
+    <div className="px-6 py-8 space-y-6">
       {/* ── HEADER ── */}
       <motion.section {...fadeUp(0)} className="flex gap-5 items-start">
         <img src="/selfie.webp" alt="Lucas" className="w-24 h-24 rounded-xl object-cover border-2 shrink-0" style={{ borderColor: ACCENT }} />
@@ -298,7 +299,7 @@ function VisualResume({ isDark }: { isDark: boolean }) {
 }
 
 // ─── ATS Resume (Print-only) ─────────────────────────────
-function ATSResume() {
+function ATSResume({ isDark = false }: { isDark?: boolean }) {
   const { t, i18n } = useTranslation(['resume', 'common']);
   const currentLang = i18n.language?.split("-")[0] || "pt";
 
@@ -338,36 +339,36 @@ function ATSResume() {
   const renderBullets = (text: string) => (
     <ul className="mt-1 space-y-0.5">
       {text.split('\n').map((line, i) => (
-        <li key={i} className="text-[11px] leading-relaxed">{line.replace(/^•\s*/, '')}</li>
+        <li key={i} className={`text-[11px] leading-relaxed ${isDark ? "text-gray-300" : "text-gray-700"}`}>{line.replace(/^•\s*/, '')}</li>
       ))}
     </ul>
   );
 
   return (
-    <div className="max-w-[800px] mx-auto px-6 py-8 space-y-5">
+    <div className="px-6 py-8 space-y-5">
       <header>
-        <h1 className="text-2xl font-black">Lucas Henrique Diniz</h1>
-        <p className="text-sm font-bold mt-0.5">{t('header.role')}</p>
-        <p className="text-xs mt-1">
+        <h1 className={`text-2xl font-black ${isDark ? "text-white" : "text-black"}`}>Lucas Henrique Diniz</h1>
+        <p className={`text-sm font-bold mt-0.5 ${isDark ? "text-[#3d72cc]" : "text-[#3d72cc]"}`}>{t('header.role')}</p>
+        <p className={`text-xs mt-1 ${isDark ? "text-gray-400" : "text-gray-600"}`}>
           {ContactLinks.email} | github.com/LucasHenriqueDiniz | linkedin.com/in/lucas-diniz-ostroski
         </p>
       </header>
 
       <section>
-        <h2 className="text-sm font-black uppercase tracking-widest border-b border-black pb-1 mb-2">
+        <h2 className={`text-sm font-black uppercase tracking-widest pb-1 mb-2 ${isDark ? "border-white/10 text-white" : "border-black text-black"}`} style={{ borderColor: isDark ? "rgba(255,255,255,0.1)" : "black" }}>
           {t('sections.experience')}
         </h2>
         <div className="space-y-3">
           {activeJobs.map(job => (
             <div key={job.id}>
               <div className="flex items-baseline justify-between gap-2">
-                <h3 className="text-xs font-bold">{getJobTitle(job)}</h3>
-                <span className="text-[10px] shrink-0">{formatDateRange(job.startDate, job.endDate)}</span>
+                <h3 className={`text-xs font-bold ${isDark ? "text-white" : "text-black"}`}>{getJobTitle(job)}</h3>
+                <span className={`text-[10px] shrink-0 ${isDark ? "text-gray-400" : "text-gray-500"}`}>{formatDateRange(job.startDate, job.endDate)}</span>
               </div>
               {job.url ? (
-                <a href={job.url} target="_blank" rel="noreferrer" className="text-[11px] font-medium hover:underline">{job.institution}</a>
+                <a href={job.url} target="_blank" rel="noreferrer" className={`text-[11px] font-medium hover:underline ${isDark ? "text-gray-400" : "text-gray-600"}`}>{job.institution}</a>
               ) : (
-                <p className="text-[11px] font-medium">{job.institution}</p>
+                <p className={`text-[11px] font-medium ${isDark ? "text-gray-400" : "text-gray-600"}`}>{job.institution}</p>
               )}
               {renderBullets(getJobDescription(job))}
             </div>
@@ -376,28 +377,28 @@ function ATSResume() {
       </section>
 
       <section>
-        <h2 className="text-sm font-black uppercase tracking-widest border-b border-black pb-1 mb-2">
+        <h2 className={`text-sm font-black uppercase tracking-widest pb-1 mb-2 ${isDark ? "text-white" : "text-black"}`} style={{ borderColor: isDark ? "rgba(255,255,255,0.1)" : "black" }}>
           {t('sections.projects')}
         </h2>
         <div className="space-y-2.5">
           {atsProjects.map(proj => (
             <div key={proj!.id}>
               <div className="flex items-baseline justify-between">
-                <h3 className="text-xs font-bold">{proj!.name}</h3>
-                {proj!.url && <span className="text-[10px]">{proj!.url.replace('https://', '')}</span>}
+                <h3 className={`text-xs font-bold ${isDark ? "text-white" : "text-black"}`}>{proj!.name}</h3>
+                {proj!.url && <span className={`text-[10px] ${isDark ? "text-gray-400" : "text-gray-500"}`}>{proj!.url.replace('https://', '')}</span>}
               </div>
               {renderBullets(currentLang === 'en' && proj!.descriptionEn ? proj!.descriptionEn : proj!.description)}
-              <p className="text-[10px]">Tech: {proj!.techStack.join(", ")}</p>
+              <p className={`text-[10px] ${isDark ? "text-gray-500" : "text-gray-500"}`}>Tech: {proj!.techStack.join(", ")}</p>
             </div>
           ))}
         </div>
       </section>
 
       <section>
-        <h2 className="text-sm font-black uppercase tracking-widest border-b border-black pb-1 mb-2">
+        <h2 className={`text-sm font-black uppercase tracking-widest pb-1 mb-2 ${isDark ? "text-white" : "text-black"}`} style={{ borderColor: isDark ? "rgba(255,255,255,0.1)" : "black" }}>
           {t('sections.skills')}
         </h2>
-        <div className="space-y-1 text-[11px]">
+        <div className={`space-y-1 text-[11px] ${isDark ? "text-gray-300" : "text-gray-700"}`}>
           <p><span className="font-semibold">Languages:</span> TypeScript, JavaScript, Python, Go, SQL</p>
           <p><span className="font-semibold">Frontend:</span> React, Next.js, React Native, Expo, Tailwind CSS, Framer Motion</p>
           <p><span className="font-semibold">Backend:</span> Node.js, NestJS, Prisma, REST APIs, WebSockets</p>
@@ -407,27 +408,27 @@ function ATSResume() {
       </section>
 
       <section>
-        <h2 className="text-sm font-black uppercase tracking-widest border-b border-black pb-1 mb-2">
+        <h2 className={`text-sm font-black uppercase tracking-widest pb-1 mb-2 ${isDark ? "text-white" : "text-black"}`} style={{ borderColor: isDark ? "rgba(255,255,255,0.1)" : "black" }}>
           {t('sections.education')}
         </h2>
         <div className="space-y-1.5">
           {activeEducation.map(ed => (
             <div key={ed.id} className="flex items-baseline justify-between gap-2">
               <div>
-                <span className="text-xs font-bold">{currentLang === 'en' && ed.titleEn ? ed.titleEn : ed.title}</span>
-                <span className="text-[11px]"> — {ed.institution}</span>
+                <span className={`text-xs font-bold ${isDark ? "text-white" : "text-black"}`}>{currentLang === 'en' && ed.titleEn ? ed.titleEn : ed.title}</span>
+                <span className={`text-[11px] ${isDark ? "text-gray-400" : "text-gray-600"}`}> — {ed.institution}</span>
               </div>
-              <span className="text-[10px] shrink-0">{formatDateRange(ed.startDate, ed.endDate)}</span>
+              <span className={`text-[10px] shrink-0 ${isDark ? "text-gray-400" : "text-gray-500"}`}>{formatDateRange(ed.startDate, ed.endDate)}</span>
             </div>
           ))}
         </div>
       </section>
 
       <section>
-        <h2 className="text-sm font-black uppercase tracking-widest border-b border-black pb-1 mb-2">
+        <h2 className={`text-sm font-black uppercase tracking-widest pb-1 mb-2 ${isDark ? "text-white" : "text-black"}`} style={{ borderColor: isDark ? "rgba(255,255,255,0.1)" : "black" }}>
           {t('sections.certifications')}
         </h2>
-        <div className="flex flex-wrap gap-x-4 gap-y-1 text-[11px]">
+        <div className={`flex flex-wrap gap-x-4 gap-y-1 text-[11px] ${isDark ? "text-gray-300" : "text-gray-700"}`}>
           {topCertificates.map(cert => (
             <span key={cert.title}>• {cert.title} ({cert.issueDate})</span>
           ))}
@@ -464,7 +465,7 @@ export default function ResumePage() {
   };
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${isDark ? "dark bg-[#0f0f0f] text-gray-100" : "bg-white text-gray-900"}`}>
+    <div className="min-h-screen bg-[#0f0f0f] text-gray-100">
       <style>{`
         .print-only { display: none; }
         @media print {
@@ -478,47 +479,49 @@ export default function ResumePage() {
         }
       `}</style>
 
-      <header className={`no-print sticky top-0 z-50 h-14 border-b ${isDark ? "bg-black/95 border-gray-800" : "bg-white border-gray-200"} backdrop-blur-sm`}>
+      <header className="no-print sticky top-0 z-50 h-14 border-b bg-black/95 border-gray-800 backdrop-blur-sm">
         <div className="max-w-[900px] mx-auto px-6 h-full flex items-center justify-between">
-          <Link href="/" className={`text-xs font-semibold flex items-center gap-1.5 transition-opacity hover:opacity-70 ${isDark ? "text-gray-400" : "text-gray-600"}`}>
+          <Link href="/" className="text-xs font-semibold flex items-center gap-1.5 transition-opacity hover:opacity-70 text-gray-400">
             <FiArrowLeft size={14} /> {t('buttons.back')}
           </Link>
 
-          <div className={`flex items-center gap-1 rounded-lg p-1 ${isDark ? "bg-gray-900" : "bg-gray-100"}`}>
-            <button onClick={() => setFormat("visual")} className={`px-3 py-1.5 text-xs font-semibold rounded transition-colors ${format === "visual" ? (isDark ? "bg-white/10 text-white" : "bg-white text-gray-900") : (isDark ? "text-gray-400 hover:text-gray-200" : "text-gray-600 hover:text-gray-900")}`}>Visual</button>
-            <button onClick={() => setFormat("ats")} className={`px-3 py-1.5 text-xs font-semibold rounded transition-colors ${format === "ats" ? (isDark ? "bg-white/10 text-white" : "bg-white text-gray-900") : (isDark ? "text-gray-400 hover:text-gray-200" : "text-gray-600 hover:text-gray-900")}`}>ATS</button>
+          <div className="flex items-center gap-1 rounded-lg p-1 bg-gray-900">
+            <button onClick={() => setFormat("visual")} className={`px-3 py-1.5 text-xs font-semibold rounded transition-colors ${format === "visual" ? "bg-white/10 text-white" : "text-gray-400 hover:text-gray-200"}`}>Visual</button>
+            <button onClick={() => setFormat("ats")} className={`px-3 py-1.5 text-xs font-semibold rounded transition-colors ${format === "ats" ? "bg-white/10 text-white" : "text-gray-400 hover:text-gray-200"}`}>ATS</button>
           </div>
 
           <div className="flex items-center gap-2">
-            <LanguageSwitcher isDark={isDark} />
+            <LanguageSwitcher isDark={true} />
             <button
               onClick={() => window.print()}
-              className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border transition-colors ${isDark ? "text-gray-400 border-gray-700 hover:text-gray-200" : "text-gray-600 border-gray-300 hover:text-gray-900"}`}
+              className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border transition-colors text-gray-400 border-gray-700 hover:text-gray-200"
               title={currentLang === 'en' ? 'Download ATS PDF' : 'Baixar PDF ATS'}
             >
               <FiPrinter size={13} />
               <span>{currentLang === 'en' ? 'ATS PDF' : 'PDF ATS'}</span>
             </button>
-            <button onClick={toggleDark} className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${isDark ? "text-gray-500 hover:bg-gray-900" : "text-gray-600 hover:bg-gray-100"}`}>
+            <button onClick={toggleDark} className="w-8 h-8 rounded-lg flex items-center justify-center transition-colors text-gray-500 hover:bg-gray-900">
               {isDark ? <Sun size={14} /> : <Moon size={14} />}
             </button>
           </div>
         </div>
       </header>
 
-      {/* Screen-only: switches between visual and ATS view */}
+      {/* Screen-only: floating magnetic document */}
       <div className="screen-only">
-        <motion.div key={format} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.25 }}>
-          {format === "visual" ? <VisualResume isDark={isDark} /> : <ATSResume />}
-        </motion.div>
+        <MagneticDocument isDark={isDark}>
+          <motion.div key={format} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.25 }}>
+            {format === "visual" ? <VisualResume isDark={isDark} /> : <ATSResume isDark={isDark} />}
+          </motion.div>
+        </MagneticDocument>
       </div>
 
       {/* Print-only: always ATS, always in DOM */}
-      <div className="print-only">
+      <div className="print-only max-w-[800px] mx-auto px-6 py-8">
         <ATSResume />
       </div>
 
-      <div className={`no-print text-center text-[10px] py-6 border-t ${isDark ? "border-gray-800 text-gray-600" : "border-gray-200 text-gray-400"}`}>
+      <div className="no-print text-center text-[10px] py-6 border-t border-gray-800 text-gray-600">
         {t('footer.generatedFrom')} <span style={{ color: ACCENT }} className="font-semibold">lucashdo.com</span>
       </div>
     </div>
