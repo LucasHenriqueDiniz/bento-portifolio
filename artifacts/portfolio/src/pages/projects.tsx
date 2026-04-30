@@ -108,11 +108,38 @@ export default function Projects() {
     <>
       <style>{`
         @media print {
-          .projects-screen { display: none !important; }
-          .projects-print { display: block !important; }
+          html, body {
+            height: auto !important;
+            overflow: visible !important;
+            background: white !important;
+          }
+          .projects-screen {
+            display: none !important;
+            visibility: hidden !important;
+            height: 0 !important;
+            overflow: hidden !important;
+            position: absolute !important;
+            left: -9999px !important;
+          }
+          .projects-screen * {
+            display: none !important;
+          }
+          .projects-print {
+            display: block !important;
+            visibility: visible !important;
+            position: static !important;
+            left: auto !important;
+            height: auto !important;
+            overflow: visible !important;
+          }
         }
         @media screen {
-          .projects-print { display: none !important; }
+          .projects-print {
+            display: none !important;
+            visibility: hidden !important;
+            height: 0 !important;
+            overflow: hidden !important;
+          }
         }
       `}</style>
 
