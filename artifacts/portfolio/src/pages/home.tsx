@@ -141,15 +141,14 @@ export default function Home() {
   const { data: stats, isLoading: loadingStats } = useGetStats();
   const { data: malData, isLoading: loadingMal } = useGetMalData();
 
-  const localizedFeaturedProjects = useMemo(() =>
-    featuredProjects.map(p => ({
-      name: p.name,
-      description: currentLang === "en" && p.descriptionEn ? p.descriptionEn : p.description,
-      techStack: p.techStack,
-      highlight: p.highlight,
-      url: p.url,
-      wip: p.status === "workInProgress",
-    })), [currentLang]);
+  const localizedFeaturedProjects = featuredProjects.map(p => ({
+    name: p.name,
+    description: currentLang === "en" && p.descriptionEn ? p.descriptionEn : p.description,
+    techStack: p.techStack,
+    highlight: p.highlight,
+    url: p.url,
+    wip: p.status === "workInProgress",
+  }));
 
   return (
     <div className={`h-screen flex flex-col font-sans overflow-hidden transition-colors duration-300 bg-[#f5f5f5] dark:bg-[#0d0d0d] text-[#111] dark:text-[#eee] ${isDark ? "dark" : ""}`}>
