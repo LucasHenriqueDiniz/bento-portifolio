@@ -136,11 +136,11 @@ export function EnhancedProjectCard({
                 alt=""
                 className="w-full h-full object-cover"
                 style={{
-                  filter: "blur(20px) saturate(1.5) brightness(0.8)",
-                  transform: "scale(1.2)",
+                  filter: "blur(8px) saturate(1.2) brightness(0.85)",
+                  transform: "scale(1.05)",
                 }}
               />
-              <div className={`absolute inset-0 ${isDark ? "bg-black/60" : "bg-white/65"}`} />
+              <div className={`absolute inset-0 ${isDark ? "bg-black/50" : "bg-white/55"}`} />
             </div>
           )}
 
