@@ -38,7 +38,6 @@ export function EnhancedProjectCard({
   const [isHovered, setIsHovered] = useState(false);
   const [progress, setProgress] = useState(0);
   const [direction, setDirection] = useState(1);
-  const [layoutVariant, setLayoutVariant] = useState(1);
 
   const prefersReducedMotion = useMemo(() => {
     if (typeof window === "undefined") return false;
@@ -112,180 +111,6 @@ export function EnhancedProjectCard({
 
   const blueDot = <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: ACCENT }} />;
 
-  // ─── 9 Layout Variants ─────────────────────────────────
-  const renderVariant = () => {
-    if (!current) return null;
-    const img = current.image || "/logo.svg";
-
-    switch (layoutVariant) {
-      // 1: Thumbnail lateral esquerda
-      case 1:
-        return (
-          <div className="h-full flex gap-2">
-            <div className="w-[72px] h-full rounded-lg overflow-hidden shrink-0 border" style={{ borderColor: isDark ? "#333" : "#e0e0e0" }}>
-              <img src={img} alt="" className="w-full h-full object-cover" />
-            </div>
-            <div className="flex-1 min-w-0 flex flex-col justify-center">
-              <h3 className={`text-[13px] font-bold leading-tight mb-1 ${isDark ? "text-white" : "text-[#111]"}`}>{current.name}</h3>
-              <p className={`text-[10px] leading-snug line-clamp-2 ${isDark ? "text-[#888]" : "text-[#666]"}`}>{current.description}</p>
-              <div className="flex flex-wrap gap-1 mt-1.5">
-                {current.techStack.slice(0, 4).map(tech => (
-                  <span key={tech} className={`text-[8px] px-1.5 py-0.5 rounded-full border ${isDark ? "bg-white/[0.03] border-white/10 text-[#888]" : "bg-[#f5f5f5] border-[#e0e0e0] text-[#666]"}`}>{tech}</span>
-                ))}
-              </div>
-            </div>
-          </div>
-        );
-
-      // 2: Banner no topo
-      case 2:
-        return (
-          <div className="h-full flex flex-col">
-            <div className="h-[80px] rounded-lg overflow-hidden mb-2 border" style={{ borderColor: isDark ? "#333" : "#e0e0e0" }}>
-              <img src={img} alt="" className="w-full h-full object-cover" />
-            </div>
-            <h3 className={`text-[13px] font-bold leading-tight mb-1 ${isDark ? "text-white" : "text-[#111]"}`}>{current.name}</h3>
-            <p className={`text-[10px] leading-snug line-clamp-2 ${isDark ? "text-[#888]" : "text-[#666]"}`}>{current.description}</p>
-            <div className="flex flex-wrap gap-1 mt-1.5">
-              {current.techStack.slice(0, 4).map(tech => (
-                <span key={tech} className={`text-[8px] px-1.5 py-0.5 rounded-full border ${isDark ? "bg-white/[0.03] border-white/10 text-[#888]" : "bg-[#f5f5f5] border-[#e0e0e0] text-[#666]"}`}>{tech}</span>
-              ))}
-            </div>
-          </div>
-        );
-
-      // 3: Sem imagem, só texto
-      case 3:
-        return (
-          <div className="h-full flex flex-col justify-center">
-            <h3 className={`text-[14px] font-bold leading-tight mb-1 ${isDark ? "text-white" : "text-[#111]"}`}>{current.name}</h3>
-            <p className={`text-[10px] leading-snug line-clamp-3 ${isDark ? "text-[#888]" : "text-[#666]"}`}>{current.description}</p>
-            <div className={`border-l-2 pl-2 py-1 rounded-r-md text-[9px] italic mt-2 ${isDark ? "border-white/10 text-[#555]" : "border-[#ddd] text-[#aaa]"}`}>
-              &ldquo;{current.highlight}&rdquo;
-            </div>
-            <div className="flex flex-wrap gap-1 mt-2">
-              {current.techStack.slice(0, 5).map(tech => (
-                <span key={tech} className={`text-[8px] px-1.5 py-0.5 rounded-full border ${isDark ? "bg-white/[0.03] border-white/10 text-[#888]" : "bg-[#f5f5f5] border-[#e0e0e0] text-[#666]"}`}>{tech}</span>
-              ))}
-            </div>
-          </div>
-        );
-
-      // 4: Imagem de canto (top-right)
-      case 4:
-        return (
-          <div className="h-full flex flex-col relative">
-            <div className="absolute top-0 right-0 w-[56px] h-[56px] rounded-lg overflow-hidden border-2 shadow-md z-10" style={{ borderColor: ACCENT }}>
-              <img src={img} alt="" className="w-full h-full object-cover" />
-            </div>
-            <div className="flex flex-col justify-center">
-              <h3 className={`text-[14px] font-bold leading-tight mb-1 pr-[64px] ${isDark ? "text-white" : "text-[#111]"}`}>{current.name}</h3>
-              <p className={`text-[10px] leading-snug line-clamp-2 ${isDark ? "text-[#888]" : "text-[#666]"}`}>{current.description}</p>
-              <div className="flex flex-wrap gap-1 mt-2">
-                {current.techStack.slice(0, 5).map(tech => (
-                  <span key={tech} className={`text-[8px] px-1.5 py-0.5 rounded-full border ${isDark ? "bg-white/[0.03] border-white/10 text-[#888]" : "bg-[#f5f5f5] border-[#e0e0e0] text-[#666]"}`}>{tech}</span>
-                ))}
-              </div>
-            </div>
-          </div>
-        );
-
-      // 5: Full background blur
-      case 5:
-        return (
-          <div className="h-full flex flex-col justify-center relative z-10">
-            <h3 className={`text-[14px] font-bold leading-tight mb-1 drop-shadow ${isDark ? "text-white" : "text-white"}`}>{current.name}</h3>
-            <p className={`text-[10px] leading-snug line-clamp-2 drop-shadow ${isDark ? "text-white/80" : "text-white/80"}`}>{current.description}</p>
-            <div className="flex flex-wrap gap-1 mt-2">
-              {current.techStack.slice(0, 5).map(tech => (
-                <span key={tech} className="text-[8px] px-1.5 py-0.5 rounded-full bg-white/20 border border-white/30 text-white backdrop-blur-sm">{tech}</span>
-              ))}
-            </div>
-          </div>
-        );
-
-      // 6: Imagem circular no header
-      case 6:
-        return (
-          <div className="h-full flex flex-col">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-10 h-10 rounded-full overflow-hidden shrink-0 border-2" style={{ borderColor: ACCENT }}>
-                <img src={img} alt="" className="w-full h-full object-cover" />
-              </div>
-              <div>
-                <h3 className={`text-[13px] font-bold leading-tight ${isDark ? "text-white" : "text-[#111]"}`}>{current.name}</h3>
-                <p className={`text-[9px] ${isDark ? "text-[#888]" : "text-[#666]"}`}>{current.techStack.slice(0, 3).join(" · ")}</p>
-              </div>
-            </div>
-            <p className={`text-[10px] leading-snug line-clamp-3 ${isDark ? "text-[#888]" : "text-[#666]"}`}>{current.description}</p>
-            <div className={`mt-auto pt-2 border-t ${isDark ? "border-white/[0.06]" : "border-[#ebebeb]"}`}>
-              <span className={`text-[9px] font-medium px-2 py-0.5 rounded border ${current.wip ? (isDark ? "bg-amber-400/10 border-amber-400/20 text-amber-300" : "bg-amber-50 border-amber-200 text-amber-700") : (isDark ? "bg-emerald-400/10 border-emerald-400/20 text-emerald-300" : "bg-emerald-50 border-emerald-200 text-emerald-700")}`}>
-                {current.wip ? t("project.wip") : t("project.done")}
-              </span>
-            </div>
-          </div>
-        );
-
-      // 7: Split 50/50 vertical
-      case 7:
-        return (
-          <div className="h-full grid grid-cols-2 gap-0 rounded-lg overflow-hidden border" style={{ borderColor: isDark ? "#333" : "#e0e0e0" }}>
-            <div className="p-2 flex flex-col justify-center">
-              <h3 className={`text-[12px] font-bold leading-tight mb-1 ${isDark ? "text-white" : "text-[#111]"}`}>{current.name}</h3>
-              <p className={`text-[9px] leading-snug line-clamp-3 ${isDark ? "text-[#888]" : "text-[#666]"}`}>{current.description}</p>
-              <div className="flex flex-wrap gap-0.5 mt-1.5">
-                {current.techStack.slice(0, 3).map(tech => (
-                  <span key={tech} className={`text-[7px] px-1 py-0.5 rounded-full ${isDark ? "bg-white/10 text-[#888]" : "bg-[#f0f0f0] text-[#666]"}`}>{tech}</span>
-                ))}
-              </div>
-            </div>
-            <div className="relative">
-              <img src={img} alt="" className="w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-l from-transparent to-black/30" />
-            </div>
-          </div>
-        );
-
-      // 8: Imagem grande com gradiente overlay + conteúdo sobreposto
-      case 8:
-        return (
-          <div className="h-full relative rounded-lg overflow-hidden">
-            <img src={img} alt="" className="absolute inset-0 w-full h-full object-cover" />
-            <div className={`absolute inset-0 ${isDark ? "bg-gradient-to-r from-black/90 via-black/60 to-transparent" : "bg-gradient-to-r from-white/90 via-white/60 to-transparent"}`} />
-            <div className="relative z-10 p-2 flex flex-col justify-center max-w-[60%]">
-              <h3 className={`text-[14px] font-bold leading-tight mb-1 ${isDark ? "text-white" : "text-[#111]"}`}>{current.name}</h3>
-              <p className={`text-[9.5px] leading-snug line-clamp-2 ${isDark ? "text-white/70" : "text-[#555]"}`}>{current.description}</p>
-              <div className="flex flex-wrap gap-1 mt-2">
-                {current.techStack.slice(0, 4).map(tech => (
-                  <span key={tech} className={`text-[8px] px-1.5 py-0.5 rounded-full border ${isDark ? "bg-white/10 border-white/20 text-white/70" : "bg-white/60 border-white/40 text-[#555]"}`}>{tech}</span>
-                ))}
-              </div>
-            </div>
-          </div>
-        );
-
-      // 9: Imagem flutuante com sombra no canto inferior direito
-      case 9:
-        return (
-          <div className="h-full flex flex-col justify-center relative pb-1">
-            <h3 className={`text-[14px] font-bold leading-tight mb-1 ${isDark ? "text-white" : "text-[#111]"}`}>{current.name}</h3>
-            <p className={`text-[10px] leading-snug line-clamp-2 ${isDark ? "text-[#888]" : "text-[#666]"}`}>{current.description}</p>
-            <div className="flex flex-wrap gap-1 mt-2">
-              {current.techStack.slice(0, 4).map(tech => (
-                <span key={tech} className={`text-[8px] px-1.5 py-0.5 rounded-full border ${isDark ? "bg-white/[0.03] border-white/10 text-[#888]" : "bg-[#f5f5f5] border-[#e0e0e0] text-[#666]"}`}>{tech}</span>
-              ))}
-            </div>
-            <div className="absolute bottom-0 right-0 w-[64px] h-[64px] rounded-xl overflow-hidden shadow-xl border-2" style={{ borderColor: isDark ? "#282828" : "#fff" }}>
-              <img src={img} alt="" className="w-full h-full object-cover" />
-            </div>
-          </div>
-        );
-
-      default:
-        return null;
-    }
-  };
-
   return (
     <div
       onMouseEnter={() => setIsHovered(true)}
@@ -302,57 +127,28 @@ export function EnhancedProjectCard({
         className={`h-full rounded-2xl overflow-hidden ${isDark ? "bg-[#181818] border-[#282828]" : "bg-white border-[#ebebeb]"} border`}
         glowColor="61, 114, 204"
       >
-        <div className="h-full flex flex-col relative">
-          {/* Variant 5: blurred background */}
-          {layoutVariant === 5 && current?.image && (
-            <div className="absolute inset-0 overflow-hidden rounded-2xl z-0">
-              <img
-                src={current.image}
-                alt=""
-                className="w-full h-full object-cover"
-                style={{ filter: "blur(12px) saturate(1.3) brightness(0.7)", transform: "scale(1.1)" }}
-              />
-              <div className="absolute inset-0 bg-black/50" />
-            </div>
-          )}
-
-          {/* Header with variant selector */}
-          <div className="relative z-10 px-3 pt-2 pb-1">
+        <div className="h-full flex flex-col">
+          {/* Header */}
+          <div className="px-3 pt-2.5 pb-1">
             <CardHeader
               icon={blueDot}
-              title={`${t("project.featured")} #${layoutVariant}`}
+              title={t("project.featured")}
               rightContent={
-                <div className="flex items-center gap-1.5">
-                  <div className="flex gap-0.5">
-                    {Array.from({ length: 9 }, (_, i) => i + 1).map(v => (
-                      <button
-                        key={v}
-                        onClick={() => setLayoutVariant(v)}
-                        className={`w-4 h-4 rounded text-[7px] font-bold transition-all ${layoutVariant === v
-                          ? "bg-[#3d72cc] text-white"
-                          : (isDark ? "bg-white/10 text-[#555] hover:bg-white/15" : "bg-[#f0f0f0] text-[#999] hover:bg-[#e0e0e0]")
-                        }`}
-                      >
-                        {v}
-                      </button>
-                    ))}
-                  </div>
-                  {hasProjects && (
-                    <span className={`text-[9px] font-medium tabular-nums ${isDark ? "text-[#555]" : "text-[#aaa]"}`}>
-                      {activeIndex + 1}/{projectCount}
-                    </span>
-                  )}
-                </div>
+                hasProjects && (
+                  <span className={`text-[9px] font-medium tabular-nums ${isDark ? "text-[#555]" : "text-[#aaa]"}`}>
+                    {activeIndex + 1}/{projectCount}
+                  </span>
+                )
               }
             />
           </div>
 
-          {/* Body */}
-          <div className={`relative z-10 flex-1 min-h-0 overflow-hidden px-3 pb-2`}>
+          {/* Body - Split 50/50 layout */}
+          <div className="flex-1 min-h-0 overflow-hidden px-3 pb-2">
             {hasProjects && current ? (
               <AnimatePresence mode="wait" custom={direction}>
                 <motion.div
-                  key={`${activeIndex}-${current.name}-${layoutVariant}`}
+                  key={`${activeIndex}-${current.name}`}
                   custom={direction}
                   variants={slideVariants}
                   initial="enter"
@@ -365,7 +161,24 @@ export function EnhancedProjectCard({
                   onDragEnd={handleDragEnd}
                   className="h-full cursor-grab active:cursor-grabbing"
                 >
-                  {renderVariant()}
+                  <div className="h-full grid grid-cols-2 gap-0 rounded-lg overflow-hidden border" style={{ borderColor: isDark ? "#333" : "#e0e0e0" }}>
+                    {/* Left: Text content */}
+                    <div className="p-2.5 flex flex-col justify-center">
+                      <h3 className={`text-[13px] font-bold leading-tight mb-1 ${isDark ? "text-white" : "text-[#111]"}`}>{current.name}</h3>
+                      <p className={`text-[10px] leading-snug line-clamp-3 ${isDark ? "text-[#888]" : "text-[#666]"}`}>{current.description}</p>
+                      <div className="flex flex-wrap gap-1 mt-2">
+                        {current.techStack.slice(0, 4).map(tech => (
+                          <span key={tech} className={`text-[8px] px-1.5 py-0.5 rounded-full ${isDark ? "bg-white/10 text-[#888]" : "bg-[#f0f0f0] text-[#666]"}`}>{tech}</span>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Right: Image with gradient overlay */}
+                    <div className="relative">
+                      <img src={current.image || "/logo.svg"} alt="" className="w-full h-full object-cover" />
+                      <div className="absolute inset-0 bg-gradient-to-l from-transparent via-transparent to-black/40" />
+                    </div>
+                  </div>
                 </motion.div>
               </AnimatePresence>
             ) : (
@@ -376,7 +189,7 @@ export function EnhancedProjectCard({
           </div>
 
           {/* Footer */}
-          <div className={`relative z-10 flex items-center justify-between px-3 py-1.5 border-t ${isDark ? "border-white/[0.06]" : "border-[#ebebeb]"}`}>
+          <div className={`flex items-center justify-between px-3 py-1.5 border-t ${isDark ? "border-white/[0.06]" : "border-[#ebebeb]"}`}>
             <div className="flex items-center gap-1.5">
               {hasProjects && projectCount > 1 && (
                 <div className="flex gap-0.5">
@@ -426,7 +239,7 @@ export function EnhancedProjectCard({
 
           {/* Progress bar */}
           {hasProjects && projectCount > 1 && (
-            <div className="relative z-10 w-full h-[2px]" style={{ background: isDark ? "#222" : "#f0f0f0" }}>
+            <div className="w-full h-[2px]" style={{ background: isDark ? "#222" : "#f0f0f0" }}>
               <motion.div
                 className="h-full"
                 style={{ backgroundColor: ACCENT }}
