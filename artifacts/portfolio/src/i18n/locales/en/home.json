@@ -150,6 +150,9 @@
     "done": "Done",
     "previous": "Previous",
     "next": "Next",
+    "pause": "Pause",
+    "play": "Play",
+    "goTo": "Go to",
     "empty": {
       "title": "No projects yet",
       "subtitle": "Add featured projects...",

@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { motion, AnimatePresence, useAnimation } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { WidgetCard } from "@/components/WidgetCard";
 import { TechIconStack } from "@/components/TechIconStack";
-import { ExternalLink, ChevronLeft, ChevronRight } from "lucide-react";
+import { ExternalLink, ChevronLeft, ChevronRight, Pause, Play } from "lucide-react";
 
 export interface Project {
   name: string;
@@ -19,50 +19,155 @@ interface EnhancedProjectCardProps {
   isDark?: boolean;
 }
 
+const AUTO_ADVANCE_MS = 7000;
+const PROGRESS_INTERVAL = 50;
+
 export function EnhancedProjectCard({
   projects,
   isDark = false,
 }: EnhancedProjectCardProps) {
   const { t } = useTranslation("home");
+  const controls = useAnimation();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
 
   const hasProjects = Array.isArray(projects) && projects.length > 0;
+  const projectCount = hasProjects ? projects.length : 0;
 
   const [activeIndex, setActiveIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [direction, setDirection] = useState(1);
 
-  // Reset index when projects change
+  // Respect reduced motion preference
+  const prefersReducedMotion = useMemo(() => {
+    if (typeof window === "undefined") return false;
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  }, []);
+
+  // Reset when projects change
   useEffect(() => {
     setActiveIndex(0);
+    setProgress(0);
   }, [projects?.length]);
 
-  // Auto-advance carousel
+  // Keyboard navigation
   useEffect(() => {
-    if (isHovered || !hasProjects || projects.length <= 1) return;
+    if (!hasProjects || projectCount <= 1) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        goToPrev();
+      } else if (e.key === "ArrowRight") {
+        e.preventDefault();
+        goToNext();
+      } else if (e.key === " ") {
+        e.preventDefault();
+        setIsPaused((p) => !p);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [hasProjects, projectCount, activeIndex]);
+
+  // Auto-advance + progress bar
+  useEffect(() => {
+    if (!hasProjects || projectCount <= 1 || isPaused || isHovered) {
+      setProgress(0);
+      return;
+    }
+
+    setProgress(0);
+    const startTime = Date.now();
 
     const interval = setInterval(() => {
-      setActiveIndex((prev) => (prev + 1) % projects.length);
-    }, 7000);
+      const elapsed = Date.now() - startTime;
+      const pct = Math.min((elapsed / AUTO_ADVANCE_MS) * 100, 100);
+      setProgress(pct);
+
+      if (elapsed >= AUTO_ADVANCE_MS) {
+        goToNext();
+      }
+    }, PROGRESS_INTERVAL);
 
     return () => clearInterval(interval);
-  }, [isHovered, hasProjects, projects?.length]);
+  }, [activeIndex, isPaused, isHovered, hasProjects, projectCount]);
+
+  const goTo = useCallback((index: number, dir: number) => {
+    if (!hasProjects) return;
+    setDirection(dir);
+    setActiveIndex(((index % projectCount) + projectCount) % projectCount);
+    setProgress(0);
+  }, [hasProjects, projectCount]);
+
+  const goToNext = useCallback(() => {
+    goTo(activeIndex + 1, 1);
+  }, [activeIndex, goTo]);
+
+  const goToPrev = useCallback(() => {
+    goTo(activeIndex - 1, -1);
+  }, [activeIndex, goTo]);
+
+  // Touch / swipe handlers
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.changedTouches[0].screenX;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    touchEndX.current = e.changedTouches[0].screenX;
+    const diff = touchStartX.current - touchEndX.current;
+    if (Math.abs(diff) > 50) {
+      if (diff > 0) goToNext();
+      else goToPrev();
+    }
+  };
+
+  // Drag end handler
+  const handleDragEnd = (_: any, info: { offset: { x: number }; velocity: { x: number } }) => {
+    const swipeThreshold = 50;
+    const velocityThreshold = 500;
+
+    if (info.offset.x < -swipeThreshold || info.velocity.x < -velocityThreshold) {
+      goToNext();
+    } else if (info.offset.x > swipeThreshold || info.velocity.x > velocityThreshold) {
+      goToPrev();
+    }
+  };
 
   const current = hasProjects ? projects[activeIndex] : null;
   const ACCENT = "#3d72cc";
 
-  const handlePrev = () => {
-    if (!hasProjects) return;
-    setActiveIndex((prev) => (prev - 1 + projects.length) % projects.length);
-  };
-
-  const handleNext = () => {
-    if (!hasProjects) return;
-    setActiveIndex((prev) => (prev + 1) % projects.length);
+  const slideVariants = {
+    enter: (dir: number) => ({
+      x: prefersReducedMotion ? 0 : dir > 0 ? 60 : -60,
+      opacity: prefersReducedMotion ? 1 : 0,
+    }),
+    center: {
+      x: 0,
+      opacity: 1,
+    },
+    exit: (dir: number) => ({
+      x: prefersReducedMotion ? 0 : dir > 0 ? -60 : 60,
+      opacity: prefersReducedMotion ? 1 : 0,
+    }),
   };
 
   return (
     <div
+      ref={containerRef}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+      tabIndex={0}
+      role="region"
+      aria-roledescription="carousel"
+      aria-label={t("project.featured")}
+      className="outline-none"
     >
       <WidgetCard
         className="h-full rounded-2xl overflow-hidden"
@@ -80,24 +185,46 @@ export function EnhancedProjectCard({
                 {t("project.featured")}
               </span>
             </div>
-            {hasProjects && (
-              <span className={`text-[8px] font-semibold ${isDark ? "text-white/40" : "text-[#999]"}`}>
-                {activeIndex + 1}/{projects.length}
-              </span>
-            )}
+            <div className="flex items-center gap-2">
+              {/* Pause toggle */}
+              {hasProjects && projectCount > 1 && (
+                <button
+                  onClick={() => setIsPaused((p) => !p)}
+                  className={`p-1 rounded-md transition-all ${isDark ? "hover:bg-white/8 text-white/40" : "hover:bg-[#f0f0f0] text-[#999]"}`}
+                  title={isPaused ? t("project.play") : t("project.pause")}
+                  aria-label={isPaused ? t("project.play") : t("project.pause")}
+                >
+                  {isPaused ? <Play size={10} /> : <Pause size={10} />}
+                </button>
+              )}
+              {hasProjects && (
+                <span className={`text-[8px] font-semibold ${isDark ? "text-white/40" : "text-[#999]"}`}>
+                  {activeIndex + 1}/{projectCount}
+                </span>
+              )}
+            </div>
           </div>
 
           {/* Content Area */}
-          <div className="flex-1 min-h-0 overflow-hidden">
+          <div className="flex-1 min-h-0 overflow-hidden relative">
             {hasProjects && current ? (
-              <AnimatePresence mode="wait">
+              <AnimatePresence mode="wait" custom={direction}>
                 <motion.div
                   key={`${activeIndex}-${current.name}`}
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.25, ease: "easeOut" }}
-                  className="h-full flex flex-col gap-2"
+                  custom={direction}
+                  variants={slideVariants}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  transition={{
+                    duration: prefersReducedMotion ? 0 : 0.3,
+                    ease: [0.32, 0.72, 0, 1],
+                  }}
+                  drag={projectCount > 1 ? "x" : false}
+                  dragConstraints={{ left: 0, right: 0 }}
+                  dragElastic={0.15}
+                  onDragEnd={handleDragEnd}
+                  className="h-full flex flex-col gap-2 cursor-grab active:cursor-grabbing"
                 >
                   {/* Project Name & Description */}
                   <div className="shrink-0">
@@ -157,34 +284,57 @@ export function EnhancedProjectCard({
             )}
           </div>
 
+          {/* Progress Bar */}
+          {hasProjects && projectCount > 1 && !isPaused && (
+            <div className="w-full h-[2px] rounded-full overflow-hidden shrink-0 bg-[#ebebeb] dark:bg-[#333]">
+              <motion.div
+                className="h-full rounded-full"
+                style={{ backgroundColor: ACCENT }}
+                animate={{ width: `${progress}%` }}
+                transition={{ duration: 0.05, ease: "linear" }}
+              />
+            </div>
+          )}
+
           {/* Navigation */}
-          {hasProjects && projects.length > 1 && (
+          {hasProjects && projectCount > 1 && (
             <div className="flex items-center justify-between gap-1 shrink-0">
-              <div className="flex gap-1">
-                {projects.map((_, idx) => (
+              {/* Dots with progress */}
+              <div className="flex gap-1.5">
+                {projects.map((p, idx) => (
                   <button
                     key={idx}
-                    onClick={() => setActiveIndex(idx)}
-                    className={`h-1 rounded-full transition-all ${
-                      idx === activeIndex
-                        ? `w-3 ${isDark ? "bg-white" : "bg-[#111]"}`
-                        : `w-1 ${isDark ? "bg-white/20 hover:bg-white/40" : "bg-[#ddd] hover:bg-[#aaa]"}`
-                    }`}
-                  />
+                    onClick={() => goTo(idx, idx > activeIndex ? 1 : -1)}
+                    className="group relative flex items-center justify-center"
+                    aria-label={`${t("project.goTo")} ${p.name}`}
+                    aria-current={idx === activeIndex ? "true" : undefined}
+                  >
+                    <div
+                      className={`rounded-full transition-all duration-300 ${
+                        idx === activeIndex
+                          ? `w-4 h-1.5 ${isDark ? "bg-white" : "bg-[#111]"}`
+                          : `w-1.5 h-1.5 ${isDark ? "bg-white/20 group-hover:bg-white/40" : "bg-[#ddd] group-hover:bg-[#aaa]"}`
+                      }`}
+                    />
+                  </button>
                 ))}
               </div>
+
+              {/* Arrow buttons */}
               <div className="flex gap-1">
                 <button
-                  onClick={handlePrev}
+                  onClick={goToPrev}
                   className={`p-1 rounded-md transition-all ${isDark ? "hover:bg-white/8" : "hover:bg-[#f0f0f0]"}`}
                   title={t("project.previous")}
+                  aria-label={t("project.previous")}
                 >
                   <ChevronLeft size={14} className={isDark ? "text-white/40" : "text-[#999]"} />
                 </button>
                 <button
-                  onClick={handleNext}
+                  onClick={goToNext}
                   className={`p-1 rounded-md transition-all ${isDark ? "hover:bg-white/8" : "hover:bg-[#f0f0f0]"}`}
                   title={t("project.next")}
+                  aria-label={t("project.next")}
                 >
                   <ChevronRight size={14} className={isDark ? "text-white/40" : "text-[#999]"} />
                 </button>

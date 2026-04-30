@@ -150,6 +150,9 @@
     "done": "Pronto",
     "previous": "Anterior",
     "next": "Próximo",
+    "pause": "Pausar",
+    "play": "Reproduzir",
+    "goTo": "Ir para",
     "empty": {
       "title": "Sem projetos ainda",
       "subtitle": "Adicione projetos em destaque...",
