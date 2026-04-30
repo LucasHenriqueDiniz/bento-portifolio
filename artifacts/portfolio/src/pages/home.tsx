@@ -15,7 +15,6 @@ import {
 import { useClock } from "@/hooks/useClock";
 import {
   WeatherClockCard,
-  BuildingCard,
   AlbumArtCard,
   WorkoutCard,
   GitHubCard,
@@ -122,13 +121,7 @@ export default function Home() {
 
   const clock = useClock("America/Sao_Paulo");
 
-  const [buildIdx, setBuildIdx] = useState(0);
   const [steamIdx, setSteamIdx] = useState(0);
-
-  useEffect(() => {
-    const id = setInterval(() => setBuildIdx(i => (i + 1) % 3), 3000);
-    return () => clearInterval(id);
-  }, []);
 
   useEffect(() => {
     const id = setInterval(() => setSteamIdx(i => (i + 1) % 3), 5000);
@@ -238,22 +231,18 @@ export default function Home() {
               <EnhancedProjectCard projects={localizedFeaturedProjects} isDark={isDark} />
             </motion.div>
 
-            <motion.div custom={8} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-3 lg:row-start-3 lg:col-span-1 lg:row-span-2 min-h-0">
-              <CurrentlyWorkingCard isDark={isDark} />
-            </motion.div>
-
-            <motion.div custom={9} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-4 lg:row-start-3 lg:col-span-1 lg:row-span-2 min-h-0">
+            <motion.div custom={8} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-3 lg:row-start-3 lg:col-span-2 lg:row-span-2 min-h-0">
               <TechStackCard isDark={isDark} />
             </motion.div>
 
             {/* CV to the right */}
-            <motion.div custom={10} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-4 lg:row-start-5 lg:row-span-2 min-h-0">
+            <motion.div custom={9} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-4 lg:row-start-5 lg:row-span-2 min-h-0">
               <CVCard navigate={(p) => { window.location.href = p; }} isDark={isDark} />
             </motion.div>
 
-            {/* Building moved down */}
-            <motion.div custom={11} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-4 lg:row-start-7 lg:row-span-2 min-h-0">
-              <BuildingCard buildIdx={buildIdx} isDark={isDark} />
+            {/* Currently Working — bottom right */}
+            <motion.div custom={10} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-4 lg:row-start-7 lg:row-span-2 min-h-0">
+              <CurrentlyWorkingCard isDark={isDark} />
             </motion.div>
 
             {/* ── Col 5 ── */}

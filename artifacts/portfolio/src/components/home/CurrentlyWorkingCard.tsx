@@ -13,7 +13,6 @@ export const CurrentlyWorkingCard = React.memo(function CurrentlyWorkingCard({
 }: CurrentlyWorkingCardProps) {
   const { t } = useTranslation("home");
 
-  const borderColor = isDark ? "rgba(255,255,255,0.06)" : "#ebebeb";
   const bgSecondary = isDark ? "#222" : "#f5f5f5";
   const textPrimary = isDark ? "#eee" : "#111";
   const textSecondary = isDark ? "#888" : "#666";
@@ -40,7 +39,6 @@ export const CurrentlyWorkingCard = React.memo(function CurrentlyWorkingCard({
   return (
     <WidgetCard
       className="h-full rounded-2xl overflow-hidden"
-      style={{ border: `0.5px solid ${borderColor}` }}
       glowColor="245, 158, 11"
     >
       <div className="h-full flex flex-col p-4">

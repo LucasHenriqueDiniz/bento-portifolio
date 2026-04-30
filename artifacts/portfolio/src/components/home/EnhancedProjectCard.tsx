@@ -125,7 +125,6 @@ export function EnhancedProjectCard({
     >
       <WidgetCard
         className="h-full rounded-2xl overflow-hidden"
-        style={{ border: `0.5px solid ${isDark ? "#282828" : "#ebebeb"}` }}
         glowColor="61, 114, 204"
       >
         <div className="h-full flex flex-col p-4">
