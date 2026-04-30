@@ -23,7 +23,7 @@ export const projects: Project[] = [
     repoUrl: "https://github.com/LucasHenriqueDiniz/windowx-xp-online",
     featured: true,
     status: "experimental",
-    image: "/projects/windows-xp-online.webp",
+    image: "/projects/windows_xp_online.webp",
   },
   {
     id: "weeb-profile",
@@ -35,7 +35,7 @@ export const projects: Project[] = [
     repoUrl: "https://github.com/LucasHenriqueDiniz/WeebProfile",
     featured: true,
     status: "workInProgress",
-    image: "/projects/weeb-profile.webp",
+    image: "/projects/weebprofile.webp",
   },
   {
     id: "heartopia-guide",
@@ -47,7 +47,7 @@ export const projects: Project[] = [
     repoUrl: "https://github.com/LucasHenriqueDiniz/heartopia-guide",
     featured: true,
     status: "completed",
-    image: "/projects/heartopia-guide.webp",
+    image: "/projects/heartopiaguide.webp",
   },
   {
     id: "include-gurias",
@@ -59,7 +59,7 @@ export const projects: Project[] = [
     repoUrl: "https://github.com/include-gurias/includegurias-website",
     featured: true,
     status: "completed",
-    image: "/projects/include-gurias.webp",
+    image: "/projects/include_gurias.webp",
   },
   {
     id: "botschannel-platform",
@@ -71,7 +71,7 @@ export const projects: Project[] = [
     repoUrl: "https://github.com/BotsChannel",
     featured: true,
     status: "discontinued",
-    image: "/projects/botschannel.webp",
+    image: "/projects/botschannel_plataform.webp",
   },
   {
     id: "resgate-rs",
@@ -119,7 +119,7 @@ export const projects: Project[] = [
     repoUrl: "https://github.com/LucasHenriqueDiniz/reclame-mulher",
     featured: true,
     status: "workInProgress",
-    image: "/projects/comunica-mulher.webp",
+    image: "/projects/comunicamulher.webp",
   },
   {
     id: "quizhub",
@@ -131,7 +131,7 @@ export const projects: Project[] = [
     repoUrl: "https://github.com/LucasHenriqueDiniz/quizhub",
     featured: true,
     status: "workInProgress",
-    image: "/projects/quizhub.webp",
+    image: "/projects/quizhub-thumbnail.webp",
   },
   {
     id: "context-tools",
@@ -142,7 +142,7 @@ export const projects: Project[] = [
     url: "https://marketplace.visualstudio.com/items?itemName=lucashenriquediniz.vscode-context-tools",
     repoUrl: "https://github.com/LucasHenriqueDiniz/vscode-context-tools",
     status: "completed",
-    image: "/projects/context-tools.webp",
+    image: "/projects/contexttools.webp",
   },
   {
     id: "siot-web-flasher",
