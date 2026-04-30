@@ -144,9 +144,12 @@
   },
   "project": {
     "featured": "Featured Project",
+    "techStack": "Tech Stack",
     "view": "View",
     "wip": "WIP",
     "done": "Done",
+    "previous": "Previous",
+    "next": "Next",
     "empty": {
       "title": "No projects yet",
       "subtitle": "Add featured projects...",

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
 import { Link } from "wouter";
 import { useTranslation } from 'react-i18next';
@@ -109,7 +109,8 @@ function ProjectsCTA() {
 
 /* ─── Home Page ───────────────────────────────────── */
 export default function Home() {
-  const { t } = useTranslation('home');
+  const { t, i18n } = useTranslation('home');
+  const currentLang = i18n.language?.split("-")[0] || "pt";
   const [isDark, setIsDark] = useState(() =>
     typeof window !== "undefined" && document.documentElement.classList.contains("dark")
   );
@@ -139,6 +140,16 @@ export default function Home() {
   const { data: workout, isLoading: loadingWorkout } = useGetLastWorkout();
   const { data: stats, isLoading: loadingStats } = useGetStats();
   const { data: malData, isLoading: loadingMal } = useGetMalData();
+
+  const localizedFeaturedProjects = useMemo(() =>
+    featuredProjects.map(p => ({
+      name: p.name,
+      description: currentLang === "en" && p.descriptionEn ? p.descriptionEn : p.description,
+      techStack: p.techStack,
+      highlight: p.highlight,
+      url: p.url,
+      wip: p.status === "workInProgress",
+    })), [currentLang]);
 
   return (
     <div className={`h-screen flex flex-col font-sans overflow-hidden transition-colors duration-300 bg-[#f5f5f5] dark:bg-[#0d0d0d] text-[#111] dark:text-[#eee] ${isDark ? "dark" : ""}`}>
@@ -224,7 +235,7 @@ export default function Home() {
 
             {/* ── Col 3-4 ── */}
             <motion.div custom={7} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-3 lg:row-start-1 lg:col-span-2 lg:row-span-2 min-h-0">
-              <EnhancedProjectCard projects={featuredProjects} isDark={isDark} />
+              <EnhancedProjectCard projects={localizedFeaturedProjects} isDark={isDark} />
             </motion.div>
 
             <motion.div custom={8} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-3 lg:row-start-3 lg:col-span-2 lg:row-span-2 min-h-0">
