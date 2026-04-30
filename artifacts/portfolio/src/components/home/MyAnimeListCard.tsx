@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { SiMyanimelist } from "react-icons/si";
 import { Star } from "lucide-react";
 import { WidgetCard } from "@/components/WidgetCard";
@@ -102,6 +103,7 @@ export const MyAnimeListCard = React.memo(function MyAnimeListCard({
   isLoading,
   isDark,
 }: MyAnimeListCardProps) {
+  const { t } = useTranslation("home");
   const [flipped, setFlipped] = useState(false);
   const [hoveredMalId, setHoveredMalId] = useState<number | null>(null);
   const { isFlipping, runWithFlipLock } = useFlipLock(700);
@@ -120,10 +122,10 @@ export const MyAnimeListCard = React.memo(function MyAnimeListCard({
   return (
     <WidgetCard
       isLoading={isLoading}
-      error={!hasData && !isLoading ? "Dados do MyAnimeList indisponíveis" : null}
+      error={!hasData && !isLoading ? t("mal.error") : null}
       loadingIcon={<SiMyanimelist size={28} style={{ color: "#2e51a2" }} />}
       emptyIcon={<SiMyanimelist size={24} style={{ color: "#2e51a2" }} />}
-      emptyMessage="Dados do MyAnimeList indisponíveis"
+      emptyMessage={t("mal.error")}
       className="h-full cursor-pointer rounded-2xl overflow-hidden"
       style={{
         border: isDark ? "1px solid #282828" : "1px solid #ebebeb",
@@ -148,13 +150,13 @@ export const MyAnimeListCard = React.memo(function MyAnimeListCard({
             <div className="flex items-center justify-between shrink-0">
               <div className="inline-flex items-center gap-1.5">
                 <SiMyanimelist size={12} className="text-[#2e51a2]" />
-                <span className="text-[9px] font-semibold text-[#2e51a2] uppercase tracking-wider">Anime</span>
+                <span className="text-[9px] font-semibold text-[#2e51a2] uppercase tracking-wider">{t("mal.anime")}</span>
               </div>
               <button
                 onClick={(e) => { e.stopPropagation(); handleFlip(); }}
                 className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-[#f5f5f5] dark:bg-[#252525] hover:bg-[#ebebeb] dark:hover:bg-[#2a2a2a] transition-colors"
               >
-                <span className="text-[8px] font-medium text-[#666] dark:text-[#888]">manga</span>
+                <span className="text-[8px] font-medium text-[#666] dark:text-[#888]">{t("mal.flipManga")}</span>
                 <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#666] dark:text-[#888]">
                   <polyline points="9 18 15 12 9 6"></polyline>
                 </svg>
@@ -164,9 +166,9 @@ export const MyAnimeListCard = React.memo(function MyAnimeListCard({
             {anime && (
               <div className="flex gap-3 shrink-0">
                 {[
-                  { to: anime.completed, label: "completed", dur: 1.0 },
-                  { to: anime.watching, label: "watching", dur: 0.6 },
-                  { to: anime.episodesWatched, label: "episodes", dur: 1.4, sep: "," },
+                  { to: anime.completed, label: t("mal.completed"), dur: 1.0 },
+                  { to: anime.watching, label: t("mal.watching"), dur: 0.6 },
+                  { to: anime.episodesWatched, label: t("mal.episodes"), dur: 1.4, sep: "," },
                 ].map((s, i) => (
                   <div key={s.label} className={i > 0 ? "border-l border-[#ebebeb] dark:border-[#282828] pl-3" : ""}>
                     <p className="text-[18px] font-black leading-none text-[#111] dark:text-[#eee]">
@@ -221,13 +223,13 @@ export const MyAnimeListCard = React.memo(function MyAnimeListCard({
             <div className="flex items-center justify-between shrink-0">
               <div className="inline-flex items-center gap-1.5">
                 <SiMyanimelist size={12} className="text-[#2e51a2]" />
-                <span className="text-[9px] font-semibold text-[#2e51a2] uppercase tracking-wider">Manga</span>
+                <span className="text-[9px] font-semibold text-[#2e51a2] uppercase tracking-wider">{t("mal.manga")}</span>
               </div>
               <button
                 onClick={(e) => { e.stopPropagation(); handleFlip(); }}
                 className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-[#f5f5f5] dark:bg-[#252525] hover:bg-[#ebebeb] dark:hover:bg-[#2a2a2a] transition-colors"
               >
-                <span className="text-[8px] font-medium text-[#666] dark:text-[#888]">anime</span>
+                <span className="text-[8px] font-medium text-[#666] dark:text-[#888]">{t("mal.flipAnime")}</span>
                 <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#666] dark:text-[#888]">
                   <polyline points="15 18 9 12 15 6"></polyline>
                 </svg>
@@ -237,9 +239,9 @@ export const MyAnimeListCard = React.memo(function MyAnimeListCard({
             {manga && (
               <div className="flex gap-3 shrink-0">
                 {[
-                  { to: manga.completed, label: "completed", dur: 1.0 },
-                  { to: manga.reading, label: "reading", dur: 0.6 },
-                  { to: manga.chaptersRead, label: "chapters", dur: 1.4, sep: "," },
+                  { to: manga.completed, label: t("mal.completed"), dur: 1.0 },
+                  { to: manga.reading, label: t("mal.reading"), dur: 0.6 },
+                  { to: manga.chaptersRead, label: t("mal.chapters"), dur: 1.4, sep: "," },
                 ].map((s, i) => (
                   <div key={s.label} className={i > 0 ? "border-l border-[#ebebeb] dark:border-[#282828] pl-3" : ""}>
                     <p className="text-[18px] font-black leading-none text-[#111] dark:text-[#eee]">

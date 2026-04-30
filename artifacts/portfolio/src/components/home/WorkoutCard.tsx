@@ -1,5 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { Dumbbell, Flame, Clock, Target } from "lucide-react";
 import { WidgetCard } from "@/components/WidgetCard";
 import CountUp from "@/components/CountUp";
@@ -65,12 +66,13 @@ export const WorkoutCard = React.memo(function WorkoutCard({
   isLoading,
   isDark,
 }: WorkoutCardProps) {
+  const { t } = useTranslation("home");
   const exercises = Array.isArray(workout?.exercises) ? workout.exercises : [];
   
   return (
     <WidgetCard
       isLoading={isLoading}
-      error={!workout ? "Dados de treino indisponíveis" : null}
+      error={!workout ? t("workout.error") : null}
       loadingIcon={<Dumbbell size={28} className="text-[#ff6b6b]" />}
       emptyIcon={<Dumbbell size={24} className="text-[#ccc] dark:text-[#444]" />}
       className="h-full rounded-2xl overflow-hidden"
@@ -85,7 +87,7 @@ export const WorkoutCard = React.memo(function WorkoutCard({
           <div className="flex items-center justify-between shrink-0">
             <div className="inline-flex items-center gap-1.5">
               <Dumbbell size={12} className="text-[#ff6b6b]" />
-              <span className={`text-[9px] font-semibold text-[#ff6b6b] uppercase tracking-wider`}>Last Workout</span>
+              <span className={`text-[9px] font-semibold text-[#ff6b6b] uppercase tracking-wider`}>{t("workout.title")}</span>
             </div>
           </div>
 
@@ -97,7 +99,7 @@ export const WorkoutCard = React.memo(function WorkoutCard({
                 <CountUp to={workout.totalVolume ?? 0} separator="," duration={1.4} />
               </p>
               <p className={`text-[7px] uppercase tracking-wider mt-0.5 font-semibold ${isDark ? "text-white/40" : "text-[#999]"}`}>
-                Volume (kg)
+                {t("workout.volume")}
               </p>
             </div>
 
@@ -107,7 +109,7 @@ export const WorkoutCard = React.memo(function WorkoutCard({
                 <CountUp to={workout.weeklyStats?.streak ?? 0} duration={0.8} />
               </p>
               <p className={`text-[7px] uppercase tracking-wider mt-0.5 font-semibold ${isDark ? "text-white/40" : "text-[#999]"}`}>
-                Day Streak
+                {t("workout.streak")}
               </p>
             </div>
 
@@ -117,7 +119,7 @@ export const WorkoutCard = React.memo(function WorkoutCard({
                 <CountUp to={workout.duration ?? 0} duration={1.0} />
               </p>
               <p className={`text-[7px] uppercase tracking-wider mt-0.5 font-semibold ${isDark ? "text-white/40" : "text-[#999]"}`}>
-                Minutes
+                {t("workout.minutes")}
               </p>
             </div>
 
@@ -127,7 +129,7 @@ export const WorkoutCard = React.memo(function WorkoutCard({
                 <CountUp to={workout.weeklyStats?.workoutsThisWeek ?? 0} duration={0.7} />
               </p>
               <p className={`text-[7px] uppercase tracking-wider mt-0.5 font-semibold ${isDark ? "text-white/40" : "text-[#999]"}`}>
-                This Week
+                {t("workout.thisWeek")}
               </p>
             </div>
           </div>

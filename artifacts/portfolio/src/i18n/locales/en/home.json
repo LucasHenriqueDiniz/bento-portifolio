@@ -24,10 +24,42 @@
     "title": "Weather",
     "location": "Brasilia",
     "loading": "Loading weather...",
+    "unavailable": "Weather unavailable",
     "timezone": "Brasilia (BRT, UTC-3)",
     "timeLabel": "Time",
     "localTime": "Local time",
-    "flipLabel": "weather"
+    "flipLabel": "weather",
+    "codes": {
+      "0": "Clear sky",
+      "1": "Mostly clear",
+      "2": "Partly cloudy",
+      "3": "Overcast",
+      "45": "Fog",
+      "48": "Rime fog",
+      "51": "Light drizzle",
+      "53": "Moderate drizzle",
+      "55": "Dense drizzle",
+      "56": "Light freezing drizzle",
+      "57": "Dense freezing drizzle",
+      "61": "Light rain",
+      "63": "Moderate rain",
+      "65": "Heavy rain",
+      "66": "Light freezing rain",
+      "67": "Heavy freezing rain",
+      "71": "Light snow",
+      "73": "Moderate snow",
+      "75": "Heavy snow",
+      "77": "Snow grains",
+      "80": "Light rain showers",
+      "81": "Moderate rain showers",
+      "82": "Violent rain showers",
+      "85": "Light snow showers",
+      "86": "Heavy snow showers",
+      "95": "Thunderstorm",
+      "96": "Thunderstorm with light hail",
+      "99": "Thunderstorm with heavy hail",
+      "default": "Variable weather"
+    }
   },
   "building": {
     "label": "In development",
@@ -52,6 +84,7 @@
     "contribs": "contribs",
     "commits": "commits",
     "streak": "streak",
+    "daysSuffix": "d",
     "days": {
       "mon": "mon",
       "wed": "wed",
@@ -87,6 +120,7 @@
   },
   "artists": {
     "title": "Top Artists",
+    "topTracks": "Top Tracks",
     "subtitle": "· last 90 days",
     "tracks": "tracks",
     "flipTracks": "tracks",
@@ -118,6 +152,12 @@
       "subtitle": "Add featured projects...",
       "description": "Project highlights will appear here"
     }
+  },
+  "projects": {
+    "stars": "stars"
+  },
+  "photos": {
+    "goTo": "Go to photo {{index}}"
   },
   "album": {
     "listening": "Listening",
