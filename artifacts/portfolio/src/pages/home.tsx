@@ -142,6 +142,7 @@ export default function Home() {
     highlight: p.highlight,
     url: p.url,
     wip: p.status === "workInProgress",
+    image: p.image,
   }));
 
   return (

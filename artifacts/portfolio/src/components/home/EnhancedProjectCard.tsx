@@ -127,9 +127,25 @@ export function EnhancedProjectCard({
         className={`h-full rounded-2xl overflow-hidden ${isDark ? "bg-[#181818] border-[#282828]" : "bg-white border-[#ebebeb]"} border`}
         glowColor="61, 114, 204"
       >
-        <div className="h-full flex flex-col">
+        <div className="h-full flex flex-col relative">
+          {/* Blurred background image */}
+          {current?.image && (
+            <div className="absolute inset-0 overflow-hidden rounded-2xl">
+              <img
+                src={current.image}
+                alt=""
+                className="w-full h-full object-cover scale-110"
+                style={{
+                  filter: "blur(24px) saturate(1.3)",
+                  transform: "scale(1.15)",
+                }}
+              />
+              <div className={`absolute inset-0 ${isDark ? "bg-black/75" : "bg-white/80"}`} />
+            </div>
+          )}
+
           {/* Header */}
-          <div className="px-3 pt-2.5 pb-1">
+          <div className="relative px-3 pt-2.5 pb-1">
             <CardHeader
               icon={blueDot}
               title={t("project.featured")}
@@ -144,7 +160,7 @@ export function EnhancedProjectCard({
           </div>
 
           {/* Body */}
-          <div className="flex-1 min-h-0 overflow-hidden relative px-3 pb-2">
+          <div className="relative flex-1 min-h-0 overflow-hidden px-3 pb-2">
             {hasProjects && current ? (
               <AnimatePresence mode="wait" custom={direction}>
                 <motion.div
@@ -230,7 +246,7 @@ export function EnhancedProjectCard({
           </div>
 
           {/* Footer */}
-          <div className={`flex items-center justify-between px-3 py-1.5 border-t ${isDark ? "border-white/[0.06]" : "border-[#ebebeb]"}`}>
+          <div className={`relative flex items-center justify-between px-3 py-1.5 border-t ${isDark ? "border-white/[0.06]" : "border-[#ebebeb]"}`}>
             <div className="flex items-center gap-1.5">
               {/* Nav dots */}
               {hasProjects && projectCount > 1 && (
@@ -283,7 +299,7 @@ export function EnhancedProjectCard({
 
           {/* Progress bar - edge to edge */}
           {hasProjects && projectCount > 1 && (
-            <div className="w-full h-[2px]" style={{ background: isDark ? "#222" : "#f0f0f0" }}>
+            <div className="relative w-full h-[2px]" style={{ background: isDark ? "#222" : "#f0f0f0" }}>
               <motion.div
                 className="h-full"
                 style={{ backgroundColor: ACCENT }}
