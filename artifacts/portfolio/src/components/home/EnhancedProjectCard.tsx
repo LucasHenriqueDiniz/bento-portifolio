@@ -129,14 +129,14 @@ export function EnhancedProjectCard({
       >
         <div className="h-full flex flex-col">
           {/* Header */}
-          <div className="px-4 pt-3 pb-2.5">
+          <div className="px-3 pt-2.5 pb-1">
             <CardHeader
               icon={blueDot}
               title={t("project.featured")}
               rightContent={
                 hasProjects && (
-                  <span className={`text-[10px] font-medium tabular-nums ${isDark ? "text-[#555]" : "text-[#aaa]"}`}>
-                    {activeIndex + 1} / {projectCount}
+                  <span className={`text-[9px] font-medium tabular-nums ${isDark ? "text-[#555]" : "text-[#aaa]"}`}>
+                    {activeIndex + 1}/{projectCount}
                   </span>
                 )
               }
@@ -144,7 +144,7 @@ export function EnhancedProjectCard({
           </div>
 
           {/* Body */}
-          <div className="flex-1 min-h-0 overflow-hidden relative px-4 pb-3">
+          <div className="flex-1 min-h-0 overflow-hidden relative px-3 pb-2">
             {hasProjects && current ? (
               <AnimatePresence mode="wait" custom={direction}>
                 <motion.div
@@ -161,79 +161,47 @@ export function EnhancedProjectCard({
                   onDragEnd={handleDragEnd}
                   className="h-full cursor-grab active:cursor-grabbing"
                 >
-                  <div className="h-full grid grid-cols-1 lg:grid-cols-2 gap-4">
-                    {/* Left */}
-                    <div className="flex flex-col gap-2">
-                      <h3 className={`text-[16px] font-bold leading-tight tracking-tight ${isDark ? "text-white" : "text-[#111]"}`}>
+                  <div className="h-full flex flex-col justify-between">
+                    <div>
+                      <h3 className={`text-[14px] font-bold leading-tight tracking-tight mb-1 ${isDark ? "text-white" : "text-[#111]"}`}>
                         {current.name}
                       </h3>
-                      <p className={`text-[10.5px] leading-relaxed ${isDark ? "text-[#888]" : "text-[#666]"}`}>
+                      <p className={`text-[10px] leading-snug line-clamp-2 ${isDark ? "text-[#888]" : "text-[#666]"}`}>
                         {current.description}
                       </p>
-                      <div className={`border-l-2 pl-2.5 py-1 rounded-r-md text-[9.5px] italic leading-relaxed ${isDark ? "border-white/10 text-[#555] bg-white/[0.02]" : "border-[#ddd] text-[#aaa] bg-[#fafafa]"}`}>
-                        &ldquo;{current.highlight}&rdquo;
-                      </div>
                     </div>
 
-                    {/* Right */}
-                    <div className="flex flex-col gap-3">
-                      {/* Stack Pills */}
-                      <div>
-                        <p className={`text-[9px] font-semibold uppercase tracking-widest mb-1.5 ${isDark ? "text-[#555]" : "text-[#aaa]"}`}>
-                          {t("project.techStack")}
-                        </p>
-                        <div className="flex flex-wrap gap-1.5">
-                          {current.techStack.slice(0, 5).map(tech => (
-                            <span
-                              key={tech}
-                              className={`text-[10px] px-2 py-0.5 rounded-full border ${isDark ? "bg-white/[0.03] border-white/10 text-[#888]" : "bg-[#f5f5f5] border-[#e0e0e0] text-[#666]"}`}
-                            >
-                              {tech}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Meta Grid */}
-                      <div>
-                        <p className={`text-[9px] font-semibold uppercase tracking-widest mb-1.5 ${isDark ? "text-[#555]" : "text-[#aaa]"}`}>
-                          {t("project.details")}
-                        </p>
-                        <div className="grid grid-cols-2 gap-1.5">
-                          {[
-                            { key: t("project.type"), val: "Web App" },
-                            { key: t("project.status"), val: current.wip ? t("project.wip") : t("project.done"), ok: !current.wip },
-                            { key: t("project.scale"), val: current.wip ? "Solo" : "Production" },
-                            { key: t("project.access"), val: current.url ? "Public" : "Private" },
-                          ].map((meta, i) => (
-                            <div key={i} className={`rounded-lg p-1.5 border ${isDark ? "bg-white/[0.03] border-white/[0.06]" : "bg-[#f8f8f8] border-[#f0f0f0]"}`}>
-                              <p className={`text-[7px] uppercase tracking-wider mb-0.5 ${isDark ? "text-[#555]" : "text-[#aaa]"}`}>
-                                {meta.key}
-                              </p>
-                              <p className={`text-[10px] font-medium ${meta.ok ? "text-emerald-500" : (isDark ? "text-white" : "text-[#111]")}`}>
-                                {meta.val}
-                              </p>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
+                    {/* Single line of tech pills */}
+                    <div className="flex flex-wrap gap-1 overflow-hidden">
+                      {current.techStack.slice(0, 4).map(tech => (
+                        <span
+                          key={tech}
+                          className={`text-[9px] px-1.5 py-0.5 rounded-full border whitespace-nowrap ${isDark ? "bg-white/[0.03] border-white/10 text-[#888]" : "bg-[#f5f5f5] border-[#e0e0e0] text-[#666]"}`}
+                        >
+                          {tech}
+                        </span>
+                      ))}
+                      {current.techStack.length > 4 && (
+                        <span className={`text-[9px] px-1 py-0.5 ${isDark ? "text-[#555]" : "text-[#aaa]"}`}>
+                          +{current.techStack.length - 4}
+                        </span>
+                      )}
                     </div>
                   </div>
                 </motion.div>
               </AnimatePresence>
             ) : (
               <div className="h-full flex flex-col items-center justify-center gap-2 text-center">
-                <p className={`text-[13px] font-bold ${isDark ? "text-[#555]" : "text-[#aaa]"}`}>{t("project.empty.title")}</p>
-                <p className={`text-[10px] ${isDark ? "text-[#555]" : "text-[#aaa]"}`}>{t("project.empty.description")}</p>
+                <p className={`text-[12px] font-bold ${isDark ? "text-[#555]" : "text-[#aaa]"}`}>{t("project.empty.title")}</p>
               </div>
             )}
           </div>
 
           {/* Footer */}
-          <div className={`flex items-center justify-between px-4 py-2 border-t ${isDark ? "border-white/[0.06]" : "border-[#ebebeb]"}`}>
-            <div className="flex items-center gap-2">
+          <div className={`flex items-center justify-between px-3 py-1.5 border-t ${isDark ? "border-white/[0.06]" : "border-[#ebebeb]"}`}>
+            <div className="flex items-center gap-1.5">
               {/* Status Badge */}
-              <span className={`text-[9.5px] font-medium px-1.5 py-0.5 rounded-md border ${current?.wip
+              <span className={`text-[9px] font-medium px-1.5 py-0.5 rounded border ${current?.wip
                 ? (isDark ? "bg-amber-400/10 border-amber-400/20 text-amber-300" : "bg-amber-50 border-amber-200 text-amber-700")
                 : (isDark ? "bg-emerald-400/10 border-emerald-400/20 text-emerald-300" : "bg-emerald-50 border-emerald-200 text-emerald-700")
               }`}>
@@ -242,15 +210,15 @@ export function EnhancedProjectCard({
 
               {/* Nav dots */}
               {hasProjects && projectCount > 1 && (
-                <div className="flex gap-1 ml-1">
+                <div className="flex gap-0.5">
                   {projects.map((_, idx) => (
                     <button
                       key={idx}
                       onClick={() => goTo(idx, idx > activeIndex ? 1 : -1)}
                       className="rounded-full transition-all duration-300"
                       style={{
-                        width: idx === activeIndex ? 12 : 4,
-                        height: 4,
+                        width: idx === activeIndex ? 10 : 3,
+                        height: 3,
                         backgroundColor: idx === activeIndex ? ACCENT : isDark ? "#333" : "#ddd",
                       }}
                     />
@@ -259,15 +227,15 @@ export function EnhancedProjectCard({
               )}
             </div>
 
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1">
               {/* Arrow nav */}
               {hasProjects && projectCount > 1 && (
-                <div className="flex gap-0.5">
-                  <button onClick={goToPrev} className={`p-1 rounded-md transition-all ${isDark ? "hover:bg-white/5" : "hover:bg-black/5"}`}>
-                    <ChevronLeft size={13} className={isDark ? "text-[#555]" : "text-[#aaa]"} />
+                <div className="flex gap-0">
+                  <button onClick={goToPrev} className={`p-0.5 rounded transition-all ${isDark ? "hover:bg-white/5" : "hover:bg-black/5"}`}>
+                    <ChevronLeft size={12} className={isDark ? "text-[#555]" : "text-[#aaa]"} />
                   </button>
-                  <button onClick={goToNext} className={`p-1 rounded-md transition-all ${isDark ? "hover:bg-white/5" : "hover:bg-black/5"}`}>
-                    <ChevronRight size={13} className={isDark ? "text-[#555]" : "text-[#aaa]"} />
+                  <button onClick={goToNext} className={`p-0.5 rounded transition-all ${isDark ? "hover:bg-white/5" : "hover:bg-black/5"}`}>
+                    <ChevronRight size={12} className={isDark ? "text-[#555]" : "text-[#aaa]"} />
                   </button>
                 </div>
               )}
@@ -280,7 +248,7 @@ export function EnhancedProjectCard({
                   rel="noreferrer"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className="flex items-center gap-1 text-[10.5px] font-medium px-2.5 py-1 rounded-lg text-white bg-[#3d72cc] hover:bg-[#2d62bc] transition-colors"
+                  className="flex items-center gap-1 text-[10px] font-medium px-2 py-1 rounded-md text-white bg-[#3d72cc] hover:bg-[#2d62bc] transition-colors"
                 >
                   {t("project.view")}
                   <ExternalLink size={9} />
