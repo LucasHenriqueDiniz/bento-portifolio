@@ -74,7 +74,7 @@ function SkillTag({ name, isDark }: { name: string; isDark: boolean }) {
 // ─── Visual Resume ───────────────────────────────────────
 function VisualResume({ isDark }: { isDark: boolean }) {
   const { t, i18n } = useTranslation(['resume', 'common']);
-  const currentLang = i18n.language;
+  const currentLang = i18n.language?.split("-")[0] || "pt";
 
   const activeJobs = useMemo(() => jobExperiences.filter(exp => exp.showInTimeline), []);
   const activeEducation = useMemo(() => academicExperiences
@@ -277,7 +277,7 @@ function VisualResume({ isDark }: { isDark: boolean }) {
 // ─── ATS Resume ──────────────────────────────────────────
 function ATSResume({ isDark }: { isDark: boolean }) {
   const { t, i18n } = useTranslation(['resume', 'common']);
-  const currentLang = i18n.language;
+  const currentLang = i18n.language?.split("-")[0] || "pt";
 
   const activeJobs = useMemo(() => jobExperiences.filter(exp => exp.showInTimeline), []);
   const activeEducation = useMemo(() => academicExperiences.filter(ed => ed.showInTimeline), []);

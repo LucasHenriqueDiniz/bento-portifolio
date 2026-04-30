@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { BentoCard } from "@/components/BentoCard";
 import { timelineJobExperiences, timelineAcademicExperiences } from "@/constants/timelineData";
 import {
@@ -27,18 +28,18 @@ interface TimelineCardProps {
 /**
  * Format date range for display
  */
-const formatDateRange = (startDate: string, endDate: string | null): string => {
+const formatDateRange = (startDate: string, endDate: string | null, locale: string, presentLabel: string): string => {
   const start = new Date(startDate);
   const startYear = start.getFullYear();
-  const startMonth = start.toLocaleDateString("en-US", { month: "short" });
+  const startMonth = start.toLocaleDateString(locale, { month: "short" });
 
   if (!endDate) {
-    return `${startMonth} ${startYear} - Present`;
+    return `${startMonth} ${startYear} - ${presentLabel}`;
   }
 
   const end = new Date(endDate);
   const endYear = end.getFullYear();
-  const endMonth = end.toLocaleDateString("en-US", { month: "short" });
+  const endMonth = end.toLocaleDateString(locale, { month: "short" });
 
   if (startYear === endYear) {
     return `${startMonth} - ${endMonth} ${startYear}`;
@@ -58,6 +59,9 @@ const formatDateRange = (startDate: string, endDate: string | null): string => {
 export const TimelineCard = React.memo(function TimelineCard({
   isDark,
 }: TimelineCardProps) {
+  const { t, i18n } = useTranslation("home");
+  const currentLang = i18n.language?.split("-")[0] || "pt";
+  const dateLocale = currentLang === "en" ? "en-US" : "pt-BR";
   const [showAcademic, setShowAcademic] = useState(false);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const { runWithFlipLock } = useFlipLock(700);
@@ -71,7 +75,7 @@ export const TimelineCard = React.memo(function TimelineCard({
 
   const handleViewCV = (e: React.MouseEvent) => {
     e.stopPropagation();
-    window.open("/cv", "_blank");
+    window.open("/resume", "_blank");
   };
 
   // Use timeline-specific data
@@ -105,12 +109,12 @@ export const TimelineCard = React.memo(function TimelineCard({
           >
             {/* Header */}
             <div className="mb-3 shrink-0" onClick={handleFlip}>
-              <CardHeader
-                icon={<FiBriefcase size={11} style={{ color: ACCENT }} />}
-                title="Work Experience"
-                flipLabel="education"
-                onFlip={handleFlip}
-              />
+                <CardHeader
+                  icon={<FiBriefcase size={11} style={{ color: ACCENT }} />}
+                  title={t("timeline.workTitle")}
+                  flipLabel={t("timeline.flipEducation")}
+                  onFlip={handleFlip}
+                />
             </div>
 
             {/* Timeline */}
@@ -184,7 +188,7 @@ export const TimelineCard = React.memo(function TimelineCard({
                                 backgroundColor: `${ACCENT}15`,
                               }}
                             >
-                              Current
+                              {t("timeline.present")}
                             </span>
                           )}
                         </div>
@@ -194,7 +198,7 @@ export const TimelineCard = React.memo(function TimelineCard({
                         <div className="flex items-center gap-2 text-[10px] text-[#aaa] dark:text-[#555]">
                           <span className="flex items-center gap-1">
                             <FiCalendar size={8} />
-                            {formatDateRange(job.startDate, job.endDate)}
+                            {formatDateRange(job.startDate, job.endDate, dateLocale, t("timeline.present"))}
                           </span>
                         </div>
                       </div>
@@ -282,11 +286,11 @@ export const TimelineCard = React.memo(function TimelineCard({
                     color: ACCENT,
                     border: `1.5px solid ${ACCENT}35`,
                   }}
-                  title="Ver CV completo"
+                  title={t("timeline.viewFullCV")}
                 >
                   <span className="inline-flex items-center gap-2">
                     <FiFileText size={12} />
-                    Ver CV Completo
+                    {t("timeline.viewFullCV")}
                   </span>
                   <span className="text-[12px] leading-none">→</span>
                 </button>
@@ -309,13 +313,13 @@ export const TimelineCard = React.memo(function TimelineCard({
           >
             {/* Header */}
             <div className="mb-3 shrink-0" onClick={handleFlip}>
-              <CardHeader
-                icon={<FiBook size={11} style={{ color: "#22c55e" }} />}
-                title="Education"
-                flipLabel="work"
-                flipDirection="left"
-                onFlip={handleFlip}
-              />
+                <CardHeader
+                  icon={<FiBook size={11} style={{ color: "#22c55e" }} />}
+                  title={t("timeline.educationTitle")}
+                  flipLabel={t("timeline.flipWork")}
+                  flipDirection="left"
+                  onFlip={handleFlip}
+                />
             </div>
 
             {/* Timeline */}
@@ -389,7 +393,7 @@ export const TimelineCard = React.memo(function TimelineCard({
                                 backgroundColor: "#22c55e15",
                               }}
                             >
-                              Current
+                              {t("timeline.present")}
                             </span>
                           )}
                         </div>
@@ -399,7 +403,7 @@ export const TimelineCard = React.memo(function TimelineCard({
                         <div className="flex items-center gap-2 text-[10px] text-[#aaa] dark:text-[#555]">
                           <span className="flex items-center gap-1">
                             <FiCalendar size={8} />
-                            {formatDateRange(edu.startDate, edu.endDate)}
+                            {formatDateRange(edu.startDate, edu.endDate, dateLocale, t("timeline.present"))}
                           </span>
                         </div>
                       </div>
@@ -493,11 +497,11 @@ export const TimelineCard = React.memo(function TimelineCard({
                     color: "#22c55e",
                     border: "1.5px solid #22c55e35",
                   }}
-                  title="Ver CV completo"
+                  title={t("timeline.viewFullCV")}
                 >
                   <span className="inline-flex items-center gap-2">
                     <FiFileText size={12} />
-                    Ver CV Completo
+                    {t("timeline.viewFullCV")}
                   </span>
                   <span className="text-[12px] leading-none">→</span>
                 </button>

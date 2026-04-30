@@ -8,7 +8,8 @@ interface LanguageSwitcherProps {
 
 export function LanguageSwitcher({ isDark = false, className = '' }: LanguageSwitcherProps) {
   const { i18n } = useTranslation();
-  const currentLang = i18n.language;
+  // Normalize language code (pt-BR -> pt, en-US -> en)
+  const currentLang = i18n.language?.split('-')[0] || 'pt';
 
   const toggleLanguage = () => {
     const newLang = currentLang === 'pt' ? 'en' : 'pt';

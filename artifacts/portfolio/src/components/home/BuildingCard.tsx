@@ -1,8 +1,9 @@
 import { memo } from "react";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { BentoCard } from "@/components/BentoCard";
 import { fadeUpSoft } from "@/lib/animations";
-import { Sparkles, ArrowRight } from "lucide-react";
+import { Sparkles } from "lucide-react";
 
 const ACCENT = "#3d72cc";
 
@@ -27,13 +28,14 @@ export const BuildingCard = memo(function BuildingCard({
   buildIdx: _buildIdx,
   isDark,
 }: BuildingCardProps) {
+  const { t } = useTranslation("home");
   const projects = [
     {
-      name: "Pingo Concursos",
-      description: "Plataforma educacional mobile para preparação de concursos públicos",
-      focus: "Mobile app com offline-first, real-time sync e UI polida",
+      name: t("building.project"),
+      description: t("building.description"),
+      focus: t("building.focus"),
       tech: ["React Native", "Expo", "Supabase", "TypeScript"],
-      status: "Em desenvolvimento ativo"
+      status: t("building.status")
     }
   ];
 
@@ -68,7 +70,7 @@ export const BuildingCard = memo(function BuildingCard({
             />
           </span>
           <span className="text-xs font-bold uppercase tracking-widest" style={{ color: ACCENT }}>
-            Em desenvolvimento
+            {t("building.label")}
           </span>
         </div>
 
@@ -81,13 +83,13 @@ export const BuildingCard = memo(function BuildingCard({
             {current.description}
           </p>
           <p className={`text-xs leading-relaxed mb-3 px-3 py-2 rounded ${isDark ? "bg-white/5 text-gray-400" : "bg-gray-100 text-gray-600"}`}>
-            <span className="font-semibold">Foco atual:</span> {current.focus}
+            <span className="font-semibold">{t("building.focusLabel")}</span> {current.focus}
           </p>
           
           {/* Tech Stack */}
           <div>
             <p className={`text-xs font-bold uppercase tracking-widest mb-2 ${isDark ? "text-gray-500" : "text-gray-600"}`}>
-              Stack de tecnologias
+              {t("building.stackLabel")}
             </p>
             <div className="flex flex-wrap gap-1.5">
               {current.tech.map((tech) => (

@@ -43,6 +43,10 @@ i18n
     },
     ns: ['common', 'home', 'resume', 'projects'],
     defaultNS: 'common',
+    react: {
+      useSuspense: false,
+    },
+    returnObjects: true,
   });
 
 export default i18n;
