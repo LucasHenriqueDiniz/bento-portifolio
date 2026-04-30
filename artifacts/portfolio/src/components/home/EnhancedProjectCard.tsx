@@ -1,8 +1,5 @@
-import React, { useEffect, useMemo, useState } from "react";
-import {
-  motion,
-  AnimatePresence,
-} from "framer-motion";
+import React, { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { WidgetCard } from "@/components/WidgetCard";
 import { TechIconStack } from "@/components/TechIconStack";
@@ -28,15 +25,17 @@ export function EnhancedProjectCard({
 }: EnhancedProjectCardProps) {
   const { t } = useTranslation("home");
 
-  const safeProjects = useMemo(
-    () => (Array.isArray(projects) && projects.length ? projects : []),
-    [projects],
-  );
-
+  // Direct array check without useMemo to avoid any memoization issues
+  const safeProjects = Array.isArray(projects) && projects.length > 0 ? projects : [];
   const hasProjects = safeProjects.length > 0;
 
   const [activeIndex, setActiveIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
+
+  // Reset active index when projects change
+  useEffect(() => {
+    setActiveIndex(0);
+  }, [projects.length]);
 
   useEffect(() => {
     if (isHovered || safeProjects.length <= 1) return;
@@ -113,11 +112,11 @@ export function EnhancedProjectCard({
 
                   {/* Highlight */}
                   <div className={`rounded-lg p-2 border text-[9px] leading-snug ${isDark ? "bg-white/3 border-white/8 text-white/70" : "bg-[#f5f5f5] border-[#ebebeb] text-[#666]"}`}>
-                    <p className="italic">"{current.highlight}"</p>
+                    <p className="italic">&ldquo;{current.highlight}&rdquo;</p>
                   </div>
 
                   {/* Tech Stack */}
-                  {current.techStack.length > 0 && (
+                  {current.techStack && current.techStack.length > 0 && (
                     <div className={`rounded-lg p-2 border shrink-0 ${isDark ? "bg-white/3 border-white/8" : "bg-[#f5f5f5] border-[#ebebeb]"}`}>
                       <p className={`text-[7px] uppercase tracking-widest font-bold mb-1.5 ${isDark ? "text-white/40" : "text-[#999]"}`}>
                         {t("project.techStack")}
