@@ -1,15 +1,50 @@
 import GridMotion from "@/components/GridMotion";
 import { useGetProjectsCached as useGetProjects } from "@/hooks/usePortfolioQueries";
+import { projects as constantProjects } from "@/constants";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { Link } from "wouter";
 import { FiArrowLeft, FiGithub, FiExternalLink } from "react-icons/fi";
 
+interface DisplayProject {
+  id: string;
+  title: string;
+  description: string;
+  tags: string[];
+  imageUrl: string | null;
+  githubUrl: string | null;
+  liveUrl: string | null;
+  year?: number | null;
+}
+
 export default function Projects() {
   const { t } = useTranslation(["projects", "common"]);
-  const { data: projects } = useGetProjects();
+  const { data: apiProjects } = useGetProjects();
 
-  const gridItems = projects
+  const projects: DisplayProject[] =
+    apiProjects && apiProjects.length > 0
+      ? apiProjects.map((p) => ({
+          id: p.id,
+          title: p.title,
+          description: p.description,
+          tags: p.tags,
+          imageUrl: p.imageUrl ?? null,
+          githubUrl: p.githubUrl ?? null,
+          liveUrl: p.liveUrl ?? null,
+          year: p.year ?? null,
+        }))
+      : constantProjects.map((p) => ({
+          id: p.id,
+          title: p.name,
+          description: p.description,
+          tags: p.techStack,
+          imageUrl: p.image ?? null,
+          githubUrl: p.repoUrl ?? null,
+          liveUrl: p.url ?? null,
+          year: null,
+        }));
+
+  const gridItems = projects.length
     ? [
         ...projects.map((p) =>
           p.imageUrl ? (
@@ -22,12 +57,12 @@ export default function Projects() {
             >
               <div>
                 <div className="flex flex-wrap gap-1 mb-3">
-                  {p.tags.slice(0, 2).map((t) => (
+                  {p.tags.slice(0, 2).map((tag) => (
                     <span
-                      key={t}
+                      key={tag}
                       className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-white/70"
                     >
-                      {t}
+                      {tag}
                     </span>
                   ))}
                 </div>
@@ -57,13 +92,15 @@ export default function Projects() {
                     <FiExternalLink size={14} />
                   </a>
                 )}
-                <span className="text-[10px] text-white/30 ml-auto">{p.year}</span>
+                {p.year && (
+                  <span className="text-[10px] text-white/30 ml-auto">{p.year}</span>
+                )}
               </div>
             </div>
           )
         ),
         // Pad to 28 items
-        ...Array(Math.max(0, 28 - (projects?.length ?? 0))).fill(""),
+        ...Array(Math.max(0, 28 - projects.length)).fill(""),
       ]
     : Array(28).fill("");
 
@@ -81,7 +118,7 @@ export default function Projects() {
             {t("buttons.back", { ns: "common" })}
           </Link>
           <span className="font-bold text-sm tracking-tight text-white/80">{t("title")}</span>
-          <span className="text-white/40 text-sm">{projects?.length ?? 0} {t("countSuffix")}</span>
+          <span className="text-white/40 text-sm">{projects.length} {t("countSuffix")}</span>
         </div>
       </header>
 

@@ -144,9 +144,12 @@
   },
   "project": {
     "featured": "Projeto em Destaque",
+    "techStack": "Stack",
     "view": "Ver",
     "wip": "WIP",
-    "done": "Done",
+    "done": "Pronto",
+    "previous": "Anterior",
+    "next": "Próximo",
     "empty": {
       "title": "Sem projetos ainda",
       "subtitle": "Adicione projetos em destaque...",
