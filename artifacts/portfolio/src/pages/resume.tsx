@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { useState, useMemo, useEffect } from "react";
 import { useTranslation } from 'react-i18next';
 import { FiArrowLeft, FiPrinter, FiGithub, FiMail, FiExternalLink, FiAward, FiBriefcase, FiCode, FiLayout } from "react-icons/fi";
-import { Moon, Sun, Globe, GraduationCap, MapPin, Linkedin } from "lucide-react";
+import { Moon, Sun, Linkedin } from "lucide-react";
 import { LanguageSwitcher } from "@/i18n/LanguageSwitcher";
 import { jobExperiences, academicExperiences, projects, certificates, languages, skillsData, ContactLinks } from "@/constants";
 import { formatDateRange } from "@/lib/dateFormatter";
@@ -218,7 +218,7 @@ function VisualResume({ isDark }: { isDark: boolean }) {
 
       {/* ── EDUCATION ── */}
       <section>
-        <SectionTitle icon={GraduationCap} delay={0.28} isDark={isDark}>{t('sections.education')}</SectionTitle>
+        <SectionTitle icon={FiAward} delay={0.28} isDark={isDark}>{t('sections.education')}</SectionTitle>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {activeEducation.map((ed, i) => (
             <motion.div key={ed.id} {...fadeUp(0.30 + i * 0.03)} className={`flex gap-3 p-3 rounded-xl border ${isDark ? "bg-white/[0.02] border-white/8" : "bg-white border-gray-200"}`}>
@@ -228,7 +228,7 @@ function VisualResume({ isDark }: { isDark: boolean }) {
                 </div>
               ) : (
                 <div className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 border-2 ${isDark ? "bg-white/5" : "bg-gray-100"}`} style={{ borderColor: isDark ? "rgba(61,114,204,0.3)" : "rgba(61,114,204,0.2)" }}>
-                  <GraduationCap size={20} style={{ color: ACCENT }} />
+                  <FiAward size={20} style={{ color: ACCENT }} />
                 </div>
               )}
               <div className="min-w-0 flex-1">
@@ -243,7 +243,7 @@ function VisualResume({ isDark }: { isDark: boolean }) {
 
       {/* ── LANGUAGES ── */}
       <section>
-        <SectionTitle icon={MapPin} delay={0.35} isDark={isDark}>{t('sections.languages')}</SectionTitle>
+        <SectionTitle icon={FiCode} delay={0.35} isDark={isDark}>{t('sections.languages')}</SectionTitle>
         <div className="flex gap-4">
           {languages.map((lang) => (
             <div key={lang.name} className="flex items-center gap-2">
@@ -274,8 +274,8 @@ function VisualResume({ isDark }: { isDark: boolean }) {
   );
 }
 
-// ─── ATS Resume ──────────────────────────────────────────
-function ATSResume({ isDark }: { isDark: boolean }) {
+// ─── ATS Resume (Print-only) ─────────────────────────────
+function ATSResume() {
   const { t, i18n } = useTranslation(['resume', 'common']);
   const currentLang = i18n.language?.split("-")[0] || "pt";
 
@@ -288,79 +288,93 @@ function ATSResume({ isDark }: { isDark: boolean }) {
 
   return (
     <div className="max-w-[800px] mx-auto px-6 py-8 space-y-5">
+      <header>
+        <h1 className="text-2xl font-black">Lucas Henrique Diniz</h1>
+        <p className="text-sm font-bold mt-0.5">{t('header.role')}</p>
+        <p className="text-xs mt-1">
+          {ContactLinks.email} | github.com/LucasHenriqueDiniz | linkedin.com/in/lucas-diniz-ostroski
+        </p>
+      </header>
+
       <section>
-        <h1 className="text-2xl font-black" style={{ color: isDark ? "#fff" : "#000" }}>Lucas Henrique Diniz</h1>
-        <p className="text-sm font-bold mt-0.5" style={{ color: ACCENT }}>{t('header.role')}</p>
-        <p className={`text-xs mt-1 ${isDark ? "text-gray-400" : "text-gray-600"}`}>{ContactLinks.email} | github.com/LucasHenriqueDiniz | linkedin.com/in/lucas-diniz-ostroski</p>
+        <h2 className="text-sm font-black uppercase tracking-widest border-b border-black pb-1 mb-2">
+          {t('header.summary')}
+        </h2>
+        <p className="text-xs leading-relaxed">{t('header.summary')}</p>
       </section>
 
       <section>
-        <h2 className="text-[10px] font-black uppercase tracking-widest mb-1.5" style={{ color: ACCENT }}>{t('header.role')}</h2>
-        <p className={`text-xs leading-relaxed ${isDark ? "text-gray-300" : "text-gray-700"}`}>{t('header.summary')}</p>
-      </section>
-
-      <section>
-        <h2 className="text-[10px] font-black uppercase tracking-widest mb-2" style={{ color: ACCENT }}>{t('sections.experience')}</h2>
+        <h2 className="text-sm font-black uppercase tracking-widest border-b border-black pb-1 mb-2">
+          {t('sections.experience')}
+        </h2>
         <div className="space-y-3">
           {activeJobs.map(job => (
             <div key={job.id}>
               <div className="flex items-baseline justify-between gap-2">
-                <h3 className="text-xs font-bold" style={{ color: isDark ? "#fff" : "#000" }}>{getJobTitle(job)}</h3>
-                <span className={`text-[10px] shrink-0 ${isDark ? "text-gray-500" : "text-gray-500"}`}>{formatDateRange(job.startDate, job.endDate)}</span>
+                <h3 className="text-xs font-bold">{getJobTitle(job)}</h3>
+                <span className="text-[10px] shrink-0">{formatDateRange(job.startDate, job.endDate)}</span>
               </div>
-              <p className={`text-[11px] font-medium ${isDark ? "text-gray-400" : "text-gray-600"}`}>{job.institution}</p>
-              <p className={`text-[11px] mt-0.5 leading-relaxed ${isDark ? "text-gray-300" : "text-gray-700"}`}>{getJobDescription(job)}</p>
+              <p className="text-[11px] font-medium">{job.institution}</p>
+              <p className="text-[11px] mt-0.5 leading-relaxed">{getJobDescription(job)}</p>
             </div>
           ))}
         </div>
       </section>
 
       <section>
-        <h2 className="text-[10px] font-black uppercase tracking-widest mb-2" style={{ color: ACCENT }}>{t('sections.projects')}</h2>
+        <h2 className="text-sm font-black uppercase tracking-widest border-b border-black pb-1 mb-2">
+          {t('sections.projects')}
+        </h2>
         <div className="space-y-2.5">
           {featuredProjects.map(proj => (
             <div key={proj.id}>
               <div className="flex items-baseline justify-between">
-                <h3 className="text-xs font-bold" style={{ color: isDark ? "#fff" : "#000" }}>{proj.name}</h3>
-                {proj.url && <span className={`text-[10px] ${isDark ? "text-gray-500" : "text-gray-400"}`}>{proj.url.replace('https://', '')}</span>}
+                <h3 className="text-xs font-bold">{proj.name}</h3>
+                {proj.url && <span className="text-[10px]">{proj.url.replace('https://', '')}</span>}
               </div>
-              <p className={`text-[11px] leading-relaxed ${isDark ? "text-gray-300" : "text-gray-700"}`}>{currentLang === 'en' && proj.descriptionEn ? proj.descriptionEn : proj.description}</p>
-              <p className={`text-[10px] ${isDark ? "text-gray-500" : "text-gray-500"}`}>Tech: {proj.techStack.join(", ")}</p>
+              <p className="text-[11px] leading-relaxed">{currentLang === 'en' && proj.descriptionEn ? proj.descriptionEn : proj.description}</p>
+              <p className="text-[10px]">Tech: {proj.techStack.join(", ")}</p>
             </div>
           ))}
         </div>
       </section>
 
       <section>
-        <h2 className="text-[10px] font-black uppercase tracking-widest mb-2" style={{ color: ACCENT }}>{t('sections.skills')}</h2>
+        <h2 className="text-sm font-black uppercase tracking-widest border-b border-black pb-1 mb-2">
+          {t('sections.skills')}
+        </h2>
         <div className="grid grid-cols-2 gap-x-6 gap-y-1 text-[11px]">
-          <p className={isDark ? "text-gray-300" : "text-gray-700"}><span className="font-semibold" style={{ color: isDark ? "#fff" : "#000" }}>{t('categories.frontend')}:</span> TypeScript, JavaScript, Python, Go, SQL</p>
-          <p className={isDark ? "text-gray-300" : "text-gray-700"}><span className="font-semibold" style={{ color: isDark ? "#fff" : "#000" }}>{t('categories.backend')}:</span> React, Next.js, React Native, Expo, Tailwind CSS</p>
-          <p className={isDark ? "text-gray-300" : "text-gray-700"}><span className="font-semibold" style={{ color: isDark ? "#fff" : "#000" }}>{t('categories.integration')}:</span> Node.js, PostgreSQL, Supabase, Redis, Prisma</p>
-          <p className={isDark ? "text-gray-300" : "text-gray-700"}><span className="font-semibold" style={{ color: isDark ? "#fff" : "#000" }}>{t('categories.devops')}:</span> AWS Lambda, Docker, Vercel, GitHub Actions</p>
+          <p><span className="font-semibold">{t('categories.frontend')}:</span> TypeScript, JavaScript, Python, Go, SQL</p>
+          <p><span className="font-semibold">{t('categories.backend')}:</span> React, Next.js, React Native, Expo, Tailwind CSS</p>
+          <p><span className="font-semibold">{t('categories.integration')}:</span> Node.js, PostgreSQL, Supabase, Redis, Prisma</p>
+          <p><span className="font-semibold">{t('categories.devops')}:</span> AWS Lambda, Docker, Vercel, GitHub Actions</p>
         </div>
       </section>
 
       <section>
-        <h2 className="text-[10px] font-black uppercase tracking-widest mb-2" style={{ color: ACCENT }}>{t('sections.education')}</h2>
+        <h2 className="text-sm font-black uppercase tracking-widest border-b border-black pb-1 mb-2">
+          {t('sections.education')}
+        </h2>
         <div className="space-y-1.5">
           {activeEducation.map(ed => (
             <div key={ed.id} className="flex items-baseline justify-between gap-2">
               <div>
-                <span className="text-xs font-bold" style={{ color: isDark ? "#fff" : "#000" }}>{currentLang === 'en' && ed.titleEn ? ed.titleEn : ed.title}</span>
-                <span className={`text-[11px] ${isDark ? "text-gray-400" : "text-gray-600"}`}> — {ed.institution}</span>
+                <span className="text-xs font-bold">{currentLang === 'en' && ed.titleEn ? ed.titleEn : ed.title}</span>
+                <span className="text-[11px]"> — {ed.institution}</span>
               </div>
-              <span className={`text-[10px] shrink-0 ${isDark ? "text-gray-500" : "text-gray-500"}`}>{formatDateRange(ed.startDate, ed.endDate)}</span>
+              <span className="text-[10px] shrink-0">{formatDateRange(ed.startDate, ed.endDate)}</span>
             </div>
           ))}
         </div>
       </section>
 
       <section>
-        <h2 className="text-[10px] font-black uppercase tracking-widest mb-1.5" style={{ color: ACCENT }}>{t('sections.certifications')}</h2>
+        <h2 className="text-sm font-black uppercase tracking-widest border-b border-black pb-1 mb-2">
+          {t('sections.certifications')}
+        </h2>
         <div className="flex flex-wrap gap-x-4 gap-y-1 text-[11px]">
           {certificates.map(cert => (
-            <span key={cert.title} className={`${isDark ? "text-gray-300" : "text-gray-700"}`}>• {cert.title} ({cert.issueDate})</span>
+            <span key={cert.title}>• {cert.title} ({cert.issueDate})</span>
           ))}
         </div>
       </section>
@@ -376,7 +390,6 @@ export default function ResumePage() {
       : false
   );
   const [format, setFormat] = useState<ResumeFormat>("visual");
-  const [isPrinting, setIsPrinting] = useState(false);
   const { t, i18n } = useTranslation('common');
   const currentLang = i18n.language?.split("-")[0] || "pt";
 
@@ -395,33 +408,15 @@ export default function ResumePage() {
     });
   };
 
-  const handlePrint = () => {
-    const originalFormat = format;
-    if (originalFormat !== "ats") {
-      setFormat("ats");
-      setIsPrinting(true);
-      // Wait for React re-render + Framer Motion animation to complete
-      setTimeout(() => {
-        window.print();
-        // Restore after print dialog closes
-        const onAfter = () => {
-          setFormat(originalFormat);
-          setIsPrinting(false);
-          window.removeEventListener("afterprint", onAfter);
-        };
-        window.addEventListener("afterprint", onAfter);
-      }, 500);
-    } else {
-      window.print();
-    }
-  };
-
   return (
     <div className={`min-h-screen transition-colors duration-300 ${isDark ? "dark bg-[#0f0f0f] text-gray-100" : "bg-white text-gray-900"}`}>
       <style>{`
+        .print-only { display: none; }
         @media print {
           .no-print { display: none !important; }
-          html, body { background: white !important; }
+          .screen-only { display: none !important; }
+          .print-only { display: block !important; }
+          html, body { background: white !important; color: black !important; }
           * { color: black !important; background: transparent !important; opacity: 1 !important; }
           a { text-decoration: none !important; color: black !important; }
           @page { margin: 1.5cm; }
@@ -441,8 +436,13 @@ export default function ResumePage() {
 
           <div className="flex items-center gap-2">
             <LanguageSwitcher isDark={isDark} />
-            <button onClick={handlePrint} className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border transition-colors ${isDark ? "text-gray-400 border-gray-700 hover:text-gray-200" : "text-gray-600 border-gray-300 hover:text-gray-900"}`}>
-              <FiPrinter size={13} /> <span>{t('buttons.print')}</span>
+            <button
+              onClick={() => window.print()}
+              className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border transition-colors ${isDark ? "text-gray-400 border-gray-700 hover:text-gray-200" : "text-gray-600 border-gray-300 hover:text-gray-900"}`}
+              title={currentLang === 'en' ? 'Download ATS PDF' : 'Baixar PDF ATS'}
+            >
+              <FiPrinter size={13} />
+              <span>{currentLang === 'en' ? 'ATS PDF' : 'PDF ATS'}</span>
             </button>
             <button onClick={toggleDark} className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${isDark ? "text-gray-500 hover:bg-gray-900" : "text-gray-600 hover:bg-gray-100"}`}>
               {isDark ? <Sun size={14} /> : <Moon size={14} />}
@@ -451,15 +451,17 @@ export default function ResumePage() {
         </div>
       </header>
 
-      {isPrinting ? (
-        <div>
-          <ATSResume isDark={isDark} />
-        </div>
-      ) : (
+      {/* Screen-only: switches between visual and ATS view */}
+      <div className="screen-only">
         <motion.div key={format} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.25 }}>
-          {format === "visual" ? <VisualResume isDark={isDark} /> : <ATSResume isDark={isDark} />}
+          {format === "visual" ? <VisualResume isDark={isDark} /> : <ATSResume />}
         </motion.div>
-      )}
+      </div>
+
+      {/* Print-only: always ATS, always in DOM */}
+      <div className="print-only">
+        <ATSResume />
+      </div>
 
       <div className={`no-print text-center text-[10px] py-6 border-t ${isDark ? "border-gray-800 text-gray-600" : "border-gray-200 text-gray-400"}`}>
         {t('footer.generatedFrom')} <span style={{ color: ACCENT }} className="font-semibold">lucashdo.com</span>
