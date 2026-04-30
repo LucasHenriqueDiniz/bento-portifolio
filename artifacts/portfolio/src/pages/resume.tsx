@@ -7,6 +7,7 @@ import { Moon, Sun, Linkedin, Palette, MessageSquare } from "lucide-react";
 import { LanguageSwitcher } from "@/i18n/LanguageSwitcher";
 import { jobExperiences, academicExperiences, projects, certificates, languages, skillsData, ContactLinks } from "@/constants";
 import { formatDateRange } from "@/lib/dateFormatter";
+import { MagneticCard } from "@/components/MagneticCard";
 
 const ACCENT = "#3d72cc";
 type ResumeFormat = "visual" | "ats";
@@ -144,7 +145,7 @@ function VisualResume({ isDark }: { isDark: boolean }) {
   const getProjectDescription = (proj: any) => currentLang === 'en' && proj.descriptionEn ? proj.descriptionEn : proj.description;
 
   return (
-    <div className="max-w-[900px] mx-auto px-6 py-8 space-y-6">
+    <div className="space-y-6">
       {/* ── HEADER ── */}
       <motion.section {...fadeUp(0)} className="flex gap-5 items-start">
         <img src="/selfie.webp" alt="Lucas" className="w-24 h-24 rounded-xl object-cover border-2 shrink-0" style={{ borderColor: ACCENT }} />
@@ -344,7 +345,7 @@ function ATSResume() {
   );
 
   return (
-    <div className="max-w-[800px] mx-auto px-6 py-8 space-y-5">
+    <div className="space-y-5">
       <header>
         <h1 className="text-2xl font-black">Lucas Henrique Diniz</h1>
         <p className="text-sm font-bold mt-0.5">{t('header.role')}</p>
@@ -449,8 +450,8 @@ export default function ResumePage() {
   const currentLang = i18n.language?.split("-")[0] || "pt";
 
   useEffect(() => {
-    const suffix = currentLang === "en" ? "Resume" : "Curriculo";
-    document.title = `Lucas-Henrique-Diniz-${suffix}`;
+    const suffix = currentLang === "en" ? "Resume" : "Currículo";
+    document.title = `Lucas Diniz — ${suffix}`;
     return () => {
       document.title = "lucashdo — Lucas Henrique Diniz";
     };
@@ -507,14 +508,19 @@ export default function ResumePage() {
       </header>
 
       {/* Screen-only: switches between visual and ATS view */}
-      <div className="screen-only">
-        <motion.div key={format} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.25 }}>
-          {format === "visual" ? <VisualResume isDark={isDark} /> : <ATSResume />}
-        </motion.div>
+      <div className="screen-only flex justify-center py-8 px-4">
+        <MagneticCard
+          intensity={8}
+          className={`w-full max-w-[900px] rounded-2xl border p-6 ${isDark ? "bg-[#181818] border-[#282828] shadow-2xl shadow-blue-500/5" : "bg-white border-[#ebebeb] shadow-2xl shadow-gray-200"}`}
+        >
+          <motion.div key={format} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.25 }}>
+            {format === "visual" ? <VisualResume isDark={isDark} /> : <ATSResume />}
+          </motion.div>
+        </MagneticCard>
       </div>
 
       {/* Print-only: always ATS, always in DOM */}
-      <div className="print-only">
+      <div className="print-only max-w-[800px] mx-auto px-6 py-8">
         <ATSResume />
       </div>
 
