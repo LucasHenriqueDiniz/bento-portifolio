@@ -1,10 +1,12 @@
 import GridMotion from "@/components/GridMotion";
 import { useGetProjects } from "@workspace/api-client-react";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { Link } from "wouter";
 import { FiArrowLeft, FiGithub, FiExternalLink } from "react-icons/fi";
 
 export default function Projects() {
+  const { t } = useTranslation(["projects", "common"]);
   const { data: projects } = useGetProjects();
 
   const gridItems = projects
@@ -76,10 +78,10 @@ export default function Projects() {
             className="flex items-center gap-2 text-white/60 hover:text-white transition-colors text-sm"
           >
             <FiArrowLeft size={14} />
-            Back
+            {t("buttons.back", { ns: "common" })}
           </Link>
-          <span className="font-bold text-sm tracking-tight text-white/80">Projects</span>
-          <span className="text-white/40 text-sm">{projects?.length ?? 0} works</span>
+          <span className="font-bold text-sm tracking-tight text-white/80">{t("title")}</span>
+          <span className="text-white/40 text-sm">{projects?.length ?? 0} {t("countSuffix")}</span>
         </div>
       </header>
 
@@ -102,9 +104,9 @@ export default function Projects() {
           className="text-center"
         >
           <h1 className="text-5xl font-black tracking-tight mb-2 text-white drop-shadow-2xl">
-            Selected Works
+            {t("hero.title")}
           </h1>
-          <p className="text-white/50 text-sm">Move your mouse to explore</p>
+          <p className="text-white/50 text-sm">{t("hero.subtitle")}</p>
         </motion.div>
       </div>
     </div>
