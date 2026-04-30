@@ -1,5 +1,4 @@
 import React from "react";
-import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { WidgetCard } from "@/components/WidgetCard";
 import { CardHeader } from "@/components/CardHeader";
@@ -38,7 +37,7 @@ export const CurrentlyWorkingCard = React.memo(function CurrentlyWorkingCard({
 
   return (
     <WidgetCard
-      className="h-full rounded-2xl overflow-hidden"
+      className={`h-full rounded-2xl overflow-hidden ${isDark ? "bg-[#181818] border-[#282828]" : "bg-white border-[#ebebeb]"} border`}
       glowColor="245, 158, 11"
     >
       <div className="h-full flex flex-col p-4">
@@ -91,18 +90,6 @@ export const CurrentlyWorkingCard = React.memo(function CurrentlyWorkingCard({
           </div>
         </div>
 
-        {/* Progress bar */}
-        <div className="mt-3">
-          <div className={`h-[2px] rounded-full overflow-hidden ${isDark ? "bg-[#333]" : "bg-[#eee]"}`}>
-            <motion.div
-              className="h-full rounded-full"
-              style={{ background: "#f59e0b" }}
-              initial={{ width: 0 }}
-              animate={{ width: `${project.progress}%` }}
-              transition={{ duration: 1, ease: "easeOut" }}
-            />
-          </div>
-        </div>
       </div>
     </WidgetCard>
   );
