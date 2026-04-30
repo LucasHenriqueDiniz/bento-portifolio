@@ -1,81 +1,118 @@
-You are a senior technical recruiter and resume optimizer.
+seria melhor quando clicar para imprimir na /resume ele imprimir em ATS version?
 
-Your task is to generate a HIGH-IMPACT, ATS-friendly resume using the provided structured data (TypeScript files).
+Sim — essa é a decisão correta. E mais: deveria ser o comportamento padrão.
 
-STRICT CONSTRAINTS (MANDATORY):
+Mas tem um detalhe importante: não basta “mudar o visual”, tem que mudar a estrutura do DOM e do conteúdo.
 
-* Maximum 1 page (ideal) or 2 pages (hard limit)
-* Bullet points MUST be 1 line each
-* No fluff, no generic phrases (e.g., "passionate", "team player")
-* No repetition
-* No long paragraphs
-* No invented metrics
-* Use ONLY real data from input
-* Output must be concise and dense
+🧠 Por que imprimir em versão ATS é melhor
+1. PDF gerado = versão final do CV
 
-STRUCTURE (ENFORCED):
+Quando você imprime /resume, o que você gera é exatamente isso aqui 👇
 
-1. Header (name + role + contacts)
-2. Summary (max 2 lines, technical only)
-3. Experience (MOST IMPORTANT)
-4. Selected Projects (max 3–4)
-5. Skills (grouped, no ratings like "2.5 years")
-6. Education (minimal)
 
-EXPERIENCE RULES:
+Problemas:
 
-* Rewrite each experience using this format:
-  • Action + Technology + Outcome
+layout visual bonito → pode quebrar parsing
+colunas, ícones, etc → ATS sofre
+texto não linear
 
-Example:
-BAD:
-"Developed a system using Web Serial API..."
+👉 ATS não “vê bonito”, ele “vê texto”.
 
-GOOD:
-• Built Web Serial-based firmware installer, automating device flashing via browser
+2. Seu CV atual já tem sinais de problema
 
-PROJECT RULES:
+Exemplo real do seu PDF:
 
-* Select ONLY high-impact projects:
+Frontend: TypeScript, JavaScript, Python, Go, SQL
+Backend: React, Next.js...
 
-  * Heartopia Guide
-  * BotsChannel
-  * WeebProfile
-  * 1 optional (if space allows)
-* Each project: max 2 bullets
+Isso está invertido semanticamente
 
-SKILLS RULES:
+👉 Um humano ignora.
+👉 ATS pode interpretar errado.
 
-* Convert structured skill data into grouped categories:
-  Languages / Frontend / Backend / Infra / Automation
-* REMOVE any numeric proficiency (exp, proexp)
+3. Layout visual ≠ layout lógico
 
-REMOVE:
+Seu /resume atual (visual):
 
-* Certifications (unless space available)
-* Old/irrelevant roles (e.g., early non-tech jobs)
-* Duplicate education entries (UNICV appears multiple times)
+timeline
+cards
+separações visuais
 
-LANGUAGE:
+ATS precisa:
 
-* Output MUST be in English
-* Consistent language (no mixing PT/EN)
+fluxo linear
+headings claros
+sem elementos decorativos
+⚙️ Como implementar (correto)
+✔️ Estratégia ideal
+1. Duas versões no mesmo código
+Resume (visual)
+Resume (ATS / print)
+2. Detectar print via CSS
+@media print {
+  .visual-resume {
+    display: none;
+  }
 
-INPUT DATA:
-Use the provided TypeScript files as source of truth:
+  .ats-resume {
+    display: block;
+  }
+}
+3. Estrutura ATS (HTML simples)
 
-* jobExperiences.ts
-* projects.ts
-* skillsData.ts
-* academicExperiences.ts
-* contacts.ts
+Exemplo:
 
-GOAL:
-Produce a resume that:
+<div class="ats-resume">
+  <h1>Lucas Henrique Diniz</h1>
+  <p>Full Stack Engineer | IoT & Automation</p>
 
-* passes ATS filters
-* is readable in <30 seconds
-* highlights technical depth (automation, IoT, integrations)
+  <h2>Experience</h2>
+  <p>Full Stack Developer — Engenharia do Futuro</p>
+  <ul>
+    <li>Built Web Serial firmware installer...</li>
+  </ul>
+</div>
+🚨 Importante (muita gente erra aqui)
+❌ NÃO faça:
+só esconder CSS
+usar o mesmo layout “simplificado”
+✔️ FAÇA:
+DOM separado
+estrutura linear
+headings reais (h1, h2, etc)
+🎯 UX ideal
+Botões:
+[ View Resume ] → versão bonita
+[ Download PDF ] → versão ATS
 
-Do NOT exceed space limits.
-If needed, CUT content aggressively.
+OU
+
+Ctrl+P → automaticamente ATS
+📊 Benefício real
+Critério	Visual	ATS
+Leitura humana	excelente	boa
+ATS parsing	ruim	excelente
+Impressão	meh	ideal
+Recrutador técnico	ok	melhor
+🔥 Recomendação final
+
+👉 Sim, implemente isso. É uma das melhores melhorias que você pode fazer no portfólio.
+
+Mas faça direito:
+
+✔️ Checklist
+ versão ATS separada
+ 1 coluna
+ sem ícones
+ sem grids
+ headings semânticos
+ bullets curtos
+ ordem linear correta
+Se quiser ir nível acima
+
+Posso te mandar:
+
+estrutura TS → HTML ATS automática
+ou um componente React pronto (clean, print-safe)
+
+Só dizer 👍
