@@ -376,6 +376,7 @@ export default function ResumePage() {
       : false
   );
   const [format, setFormat] = useState<ResumeFormat>("visual");
+  const [isPrinting, setIsPrinting] = useState(false);
   const { t, i18n } = useTranslation('common');
   const currentLang = i18n.language?.split("-")[0] || "pt";
 
@@ -394,13 +395,36 @@ export default function ResumePage() {
     });
   };
 
+  const handlePrint = () => {
+    const originalFormat = format;
+    if (originalFormat !== "ats") {
+      setFormat("ats");
+      setIsPrinting(true);
+      // Wait for React to re-render ATS view before printing
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          window.print();
+          // Restore after print dialog closes
+          const onAfter = () => {
+            setFormat(originalFormat);
+            setIsPrinting(false);
+            window.removeEventListener("afterprint", onAfter);
+          };
+          window.addEventListener("afterprint", onAfter);
+        });
+      });
+    } else {
+      window.print();
+    }
+  };
+
   return (
     <div className={`min-h-screen transition-colors duration-300 ${isDark ? "dark bg-[#0f0f0f] text-gray-100" : "bg-white text-gray-900"}`}>
       <style>{`
         @media print {
           .no-print { display: none !important; }
-          body { background: white !important; }
-          .print-black { color: black !important; }
+          body { background: white !important; color: black !important; }
+          * { background: white !important; }
           a { text-decoration: none !important; color: black !important; }
           @page { margin: 1.5cm; }
         }
@@ -419,7 +443,7 @@ export default function ResumePage() {
 
           <div className="flex items-center gap-2">
             <LanguageSwitcher isDark={isDark} />
-            <button onClick={() => window.print()} className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border transition-colors ${isDark ? "text-gray-400 border-gray-700 hover:text-gray-200" : "text-gray-600 border-gray-300 hover:text-gray-900"}`}>
+            <button onClick={handlePrint} className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border transition-colors ${isDark ? "text-gray-400 border-gray-700 hover:text-gray-200" : "text-gray-600 border-gray-300 hover:text-gray-900"}`}>
               <FiPrinter size={13} /> <span>{t('buttons.print')}</span>
             </button>
             <button onClick={toggleDark} className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${isDark ? "text-gray-500 hover:bg-gray-900" : "text-gray-600 hover:bg-gray-100"}`}>
