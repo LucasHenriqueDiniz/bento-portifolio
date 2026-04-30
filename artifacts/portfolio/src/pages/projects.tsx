@@ -105,47 +105,95 @@ export default function Projects() {
     : Array(28).fill("");
 
   return (
-    <div className="min-h-screen bg-black text-white overflow-hidden">
-      {/* Nav */}
-      <header className="absolute top-0 left-0 right-0 z-50 h-12 flex items-center px-6">
-        <div className="flex w-full items-center justify-between">
-          <Link
-            href="/"
-            data-testid="link-back-home"
-            className="flex items-center gap-2 text-white/60 hover:text-white transition-colors text-sm"
-          >
-            <FiArrowLeft size={14} />
-            {t("buttons.back", { ns: "common" })}
-          </Link>
-          <span className="font-bold text-sm tracking-tight text-white/80">{t("title")}</span>
-          <span className="text-white/40 text-sm">{projects.length} {t("countSuffix")}</span>
-        </div>
-      </header>
+    <>
+      <style>{`
+        @media print {
+          .projects-screen { display: none !important; }
+          .projects-print { display: block !important; }
+        }
+        @media screen {
+          .projects-print { display: none !important; }
+        }
+      `}</style>
 
-      {/* GridMotion */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.8 }}
-        className="w-full h-screen"
-      >
-        <GridMotion items={gridItems} gradientColor="#111111" />
-      </motion.div>
+      {/* ─── SCREEN VIEW ─── */}
+      <div className="projects-screen min-h-screen bg-black text-white overflow-hidden">
+        {/* Nav */}
+        <header className="absolute top-0 left-0 right-0 z-50 h-12 flex items-center px-6">
+          <div className="flex w-full items-center justify-between">
+            <Link
+              href="/"
+              data-testid="link-back-home"
+              className="flex items-center gap-2 text-white/60 hover:text-white transition-colors text-sm"
+            >
+              <FiArrowLeft size={14} />
+              {t("buttons.back", { ns: "common" })}
+            </Link>
+            <span className="font-bold text-sm tracking-tight text-white/80">{t("title")}</span>
+            <span className="text-white/40 text-sm">{projects.length} {t("countSuffix")}</span>
+          </div>
+        </header>
 
-      {/* Center overlay */}
-      <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
+        {/* GridMotion */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.3, duration: 0.5 }}
-          className="text-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8 }}
+          className="w-full h-screen"
         >
-          <h1 className="text-5xl font-black tracking-tight mb-2 text-white drop-shadow-2xl">
-            {t("hero.title")}
-          </h1>
-          <p className="text-white/50 text-sm">{t("hero.subtitle")}</p>
+          <GridMotion items={gridItems} gradientColor="#111111" />
         </motion.div>
+
+        {/* Center overlay */}
+        <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.3, duration: 0.5 }}
+            className="text-center"
+          >
+            <h1 className="text-5xl font-black tracking-tight mb-2 text-white drop-shadow-2xl">
+              {t("hero.title")}
+            </h1>
+            <p className="text-white/50 text-sm">{t("hero.subtitle")}</p>
+          </motion.div>
+        </div>
       </div>
-    </div>
+
+      {/* ─── PRINT VIEW ─── */}
+      <div className="projects-print bg-white text-black p-8">
+        <header className="mb-6 pb-4 border-b border-gray-300">
+          <h1 className="text-2xl font-black">{t("hero.title")}</h1>
+          <p className="text-sm text-gray-600 mt-1">lucashdo.com/projects</p>
+        </header>
+
+        <div className="space-y-4">
+          {projects.map((p, i) => (
+            <div key={p.id} className="break-inside-avoid">
+              <div className="flex items-baseline justify-between gap-2">
+                <h2 className="text-base font-bold">{i + 1}. {p.title}</h2>
+                {p.year && <span className="text-xs text-gray-500">{p.year}</span>}
+              </div>
+              <p className="text-sm text-gray-700 mt-1 leading-relaxed">{p.description}</p>
+              <div className="flex flex-wrap gap-1 mt-1.5">
+                {p.tags.map((tag) => (
+                  <span key={tag} className="text-xs px-2 py-0.5 rounded bg-gray-100 text-gray-700">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+              <div className="flex gap-3 mt-1.5 text-xs text-gray-600">
+                {p.githubUrl && <span>{p.githubUrl}</span>}
+                {p.liveUrl && <span>{p.liveUrl}</span>}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <footer className="mt-8 pt-4 border-t border-gray-300 text-xs text-gray-500 text-center">
+          lucashdo.com — Lucas Henrique Diniz
+        </footer>
+      </div>
+    </>
   );
 }

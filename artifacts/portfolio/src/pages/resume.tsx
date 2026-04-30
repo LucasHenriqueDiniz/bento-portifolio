@@ -1,6 +1,6 @@
 import { Link } from "wouter";
 import { motion } from "framer-motion";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useTranslation } from 'react-i18next';
 import { FiArrowLeft, FiPrinter, FiGithub, FiMail, FiExternalLink, FiAward, FiBriefcase, FiCode, FiLayout } from "react-icons/fi";
 import { Moon, Sun, Globe, GraduationCap, MapPin, Linkedin } from "lucide-react";
@@ -376,7 +376,16 @@ export default function ResumePage() {
       : false
   );
   const [format, setFormat] = useState<ResumeFormat>("visual");
-  const { t } = useTranslation('common');
+  const { t, i18n } = useTranslation('common');
+  const currentLang = i18n.language?.split("-")[0] || "pt";
+
+  useEffect(() => {
+    const suffix = currentLang === "en" ? "Resume" : "Curriculo";
+    document.title = `Lucas-Henrique-Diniz-${suffix}`;
+    return () => {
+      document.title = "lucashdo — Lucas Henrique Diniz";
+    };
+  }, [currentLang]);
 
   const toggleDark = () => {
     setIsDark(d => {
@@ -387,7 +396,15 @@ export default function ResumePage() {
 
   return (
     <div className={`min-h-screen transition-colors duration-300 ${isDark ? "dark bg-[#0f0f0f] text-gray-100" : "bg-white text-gray-900"}`}>
-      <style>{`@media print {.no-print{display:none!important}body{background:white!important}*{background:white!important;color:black!important}}`}</style>
+      <style>{`
+        @media print {
+          .no-print { display: none !important; }
+          body { background: white !important; }
+          .print-black { color: black !important; }
+          a { text-decoration: none !important; color: black !important; }
+          @page { margin: 1.5cm; }
+        }
+      `}</style>
 
       <header className={`no-print sticky top-0 z-50 h-14 border-b ${isDark ? "bg-black/95 border-gray-800" : "bg-white border-gray-200"} backdrop-blur-sm`}>
         <div className="max-w-[900px] mx-auto px-6 h-full flex items-center justify-between">
