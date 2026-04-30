@@ -1,0 +1,450 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Syne:wght@400;500;600;700;800&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  .wrapper {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 16px;
+    padding: 1rem 0;
+    font-family: 'Syne', sans-serif;
+  }
+
+  .card {
+    background: var(--color-background-primary);
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: 20px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .card-header {
+    padding: 14px 20px;
+    border-bottom: 0.5px solid var(--color-border-tertiary);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .tag-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #3B82F6;
+    flex-shrink: 0;
+  }
+
+  .tag-dot-amber {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #F59E0B;
+    flex-shrink: 0;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .nav-hint {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--color-text-tertiary);
+  }
+
+  /* ── PROJETO EM DESTAQUE ── */
+  .project-body {
+    padding: 24px 24px 20px;
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+
+  .project-title {
+    font-size: 30px;
+    font-weight: 800;
+    color: var(--color-text-primary);
+    line-height: 1.05;
+    letter-spacing: -0.04em;
+    margin-bottom: 12px;
+  }
+
+  .project-desc {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    line-height: 1.7;
+    font-family: 'DM Mono', monospace;
+    margin-bottom: 16px;
+  }
+
+  .quote-line {
+    border-left: 2px solid var(--color-border-secondary);
+    padding: 7px 11px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10.5px;
+    font-style: italic;
+    color: var(--color-text-tertiary);
+    border-radius: 0 6px 6px 0;
+  }
+
+  .project-right {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-text-tertiary);
+    margin-bottom: 8px;
+  }
+
+  .stack-pills {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .pill {
+    font-family: 'DM Mono', monospace;
+    font-size: 10.5px;
+    padding: 4px 10px;
+    border-radius: 99px;
+    border: 0.5px solid var(--color-border-secondary);
+    color: var(--color-text-secondary);
+    background: var(--color-background-secondary);
+  }
+
+  .meta-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 7px;
+  }
+
+  .meta-item {
+    background: var(--color-background-secondary);
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: 10px;
+    padding: 9px 11px;
+  }
+
+  .meta-key {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--color-text-tertiary);
+    margin-bottom: 3px;
+  }
+
+  .meta-val {
+    font-family: 'DM Mono', monospace;
+    font-size: 11.5px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+  }
+
+  .meta-val.ok {
+    color: var(--color-text-success);
+  }
+
+  .project-footer {
+    padding: 12px 24px;
+    border-top: 0.5px solid var(--color-border-tertiary);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .badge-done {
+    font-family: 'DM Mono', monospace;
+    font-size: 10.5px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    background: var(--color-background-success);
+    color: var(--color-text-success);
+    border: 0.5px solid var(--color-border-success);
+  }
+
+  .view-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    padding: 7px 14px;
+    border-radius: 8px;
+    background: #3B82F6;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.15s;
+  }
+  .view-btn:hover { background: #2563EB; }
+  .view-btn svg { width: 11px; height: 11px; }
+
+  /* ── EM DESENVOLVIMENTO ── */
+  .dev-body {
+    padding: 20px 20px 16px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .dev-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--color-text-primary);
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    margin-bottom: 7px;
+  }
+
+  .dev-subtitle {
+    font-size: 11.5px;
+    color: var(--color-text-secondary);
+    font-family: 'DM Mono', monospace;
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+
+  .focus-block {
+    background: var(--color-background-secondary);
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: 10px;
+    padding: 11px 13px;
+    margin-bottom: 14px;
+  }
+
+  .focus-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-text-tertiary);
+    margin-bottom: 7px;
+  }
+
+  .focus-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+    margin-bottom: 5px;
+  }
+  .focus-item:last-child { margin-bottom: 0; }
+  .focus-icon { color: var(--color-text-tertiary); }
+
+  .tech-grid {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+    margin-top: auto;
+  }
+
+  .tech-chip {
+    font-family: 'DM Mono', monospace;
+    font-size: 10.5px;
+    padding: 4px 9px;
+    border-radius: 7px;
+    border: 0.5px solid var(--color-border-secondary);
+    color: var(--color-text-secondary);
+    background: var(--color-background-secondary);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .chip-dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background: var(--color-border-secondary);
+  }
+
+  .progress-section {
+    padding: 11px 20px;
+    border-top: 0.5px solid var(--color-border-tertiary);
+  }
+
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+
+  .progress-text {
+    font-family: 'DM Mono', monospace;
+    font-size: 9.5px;
+    color: var(--color-text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .progress-pct {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+  }
+
+  .progress-track {
+    height: 2px;
+    background: var(--color-border-tertiary);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    width: 40%;
+    background: var(--color-text-secondary);
+    border-radius: 99px;
+  }
+</style>
+
+<h2 class="sr-only">Cards do portfólio bento: Projeto em Destaque e Em Desenvolvimento</h2>
+
+<div class="wrapper">
+
+  <!-- PROJETO EM DESTAQUE -->
+  <div class="card">
+    <div class="card-header">
+      <span class="tag">
+        <span class="tag-dot"></span>
+        projeto em destaque
+      </span>
+      <span class="nav-hint">1 / 9</span>
+    </div>
+
+    <div class="project-body">
+      <div>
+        <div class="project-title">Windows XP<br>Online</div>
+        <p class="project-desc">
+          Recriação fiel do Windows XP no browser com multitarefa real, janelas arrastáveis, temas clássicos e jogos. Multiplayer em tempo real via WebSockets e React.
+        </p>
+        <div class="quote-line">
+          "Faithful Windows XP recreation in browser with WebSockets multiplayer"
+        </div>
+      </div>
+
+      <div class="project-right">
+        <div>
+          <div class="section-label">stack</div>
+          <div class="stack-pills">
+            <span class="pill">React</span>
+            <span class="pill">TypeScript</span>
+            <span class="pill">WebSockets</span>
+          </div>
+        </div>
+        <div>
+          <div class="section-label">detalhes</div>
+          <div class="meta-grid">
+            <div class="meta-item">
+              <div class="meta-key">tipo</div>
+              <div class="meta-val">Web App</div>
+            </div>
+            <div class="meta-item">
+              <div class="meta-key">status</div>
+              <div class="meta-val ok">Pronto</div>
+            </div>
+            <div class="meta-item">
+              <div class="meta-key">usuários</div>
+              <div class="meta-val">Multi</div>
+            </div>
+            <div class="meta-item">
+              <div class="meta-key">acesso</div>
+              <div class="meta-val">Público</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="project-footer">
+      <span class="badge-done">Pronto</span>
+      <button class="view-btn">
+        ver projeto
+        <svg viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M2.5 9.5L9.5 2.5M9.5 2.5H4.5M9.5 2.5V7.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- EM DESENVOLVIMENTO -->
+  <div class="card">
+    <div class="card-header">
+      <span class="tag">
+        <span class="tag-dot-amber"></span>
+        em desenvolvimento
+      </span>
+    </div>
+
+    <div class="dev-body">
+      <div class="dev-title">Pingo<br>Concursos</div>
+      <p class="dev-subtitle">Plataforma mobile educacional para concursos públicos</p>
+
+      <div class="focus-block">
+        <div class="focus-label">foco atual</div>
+        <div class="focus-item">
+          <span class="focus-icon">◎</span>
+          Offline-first com sync em tempo real
+        </div>
+        <div class="focus-item">
+          <span class="focus-icon">◈</span>
+          UI polida e acessível
+        </div>
+      </div>
+
+      <div class="tech-grid">
+        <span class="tech-chip">
+          <span class="chip-dot"></span>
+          React Native
+        </span>
+        <span class="tech-chip">
+          <span class="chip-dot"></span>
+          Supabase
+        </span>
+        <span class="tech-chip">
+          <span class="chip-dot"></span>
+          TypeScript
+        </span>
+      </div>
+    </div>
+
+    <div class="progress-section">
+      <div class="progress-label">
+        <span class="progress-text">progresso</span>
+        <span class="progress-pct">40%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill"></div>
+      </div>
+    </div>
+  </div>
+
+</div>

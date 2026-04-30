@@ -145,7 +145,12 @@
   "project": {
     "featured": "Featured Project",
     "techStack": "Tech Stack",
-    "view": "View",
+    "details": "Details",
+    "type": "Type",
+    "status": "Status",
+    "scale": "Scale",
+    "access": "Access",
+    "view": "View project",
     "wip": "WIP",
     "done": "Done",
     "previous": "Previous",
@@ -158,6 +163,14 @@
       "subtitle": "Add featured projects...",
       "description": "Project highlights will appear here"
     }
+  },
+  "currentlyWorking": {
+    "label": "In development",
+    "subtitle": "Mobile educational platform for public competitions",
+    "focusLabel": "Current focus",
+    "focus1": "Offline-first with real-time sync",
+    "focus2": "Polished and accessible UI",
+    "progress": "Progress"
   },
   "projects": {
     "stars": "stars"
