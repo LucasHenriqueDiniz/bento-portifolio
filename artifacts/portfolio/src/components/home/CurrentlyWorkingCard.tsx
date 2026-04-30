@@ -12,11 +12,6 @@ export const CurrentlyWorkingCard = React.memo(function CurrentlyWorkingCard({
 }: CurrentlyWorkingCardProps) {
   const { t } = useTranslation("home");
 
-  const bgSecondary = isDark ? "#222" : "#f5f5f5";
-  const textPrimary = isDark ? "#eee" : "#111";
-  const textSecondary = isDark ? "#888" : "#666";
-  const textTertiary = isDark ? "#555" : "#aaa";
-
   const project = {
     name: "Pingo Concursos",
     subtitle: t("currentlyWorking.subtitle", "Plataforma mobile educacional para concursos públicos"),
@@ -29,9 +24,9 @@ export const CurrentlyWorkingCard = React.memo(function CurrentlyWorkingCard({
   };
 
   const amberDot = (
-    <span className="relative flex h-2 w-2">
+    <span className="relative flex h-1.5 w-1.5">
       <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{ backgroundColor: "#f59e0b" }} />
-      <span className="relative inline-flex rounded-full h-2 w-2" style={{ backgroundColor: "#f59e0b" }} />
+      <span className="relative inline-flex rounded-full h-1.5 w-1.5" style={{ backgroundColor: "#f59e0b" }} />
     </span>
   );
 
@@ -40,48 +35,50 @@ export const CurrentlyWorkingCard = React.memo(function CurrentlyWorkingCard({
       className={`h-full rounded-2xl overflow-hidden ${isDark ? "bg-[#181818] border-[#282828]" : "bg-white border-[#ebebeb]"} border`}
       glowColor="245, 158, 11"
     >
-      <div className="h-full flex flex-col p-4">
+      <div className="h-full flex flex-col p-3">
         <CardHeader
           icon={amberDot}
           title={t("currentlyWorking.label", "em desenvolvimento")}
           rightContent={
-            <span className="text-[11px] font-medium tabular-nums" style={{ color: textSecondary }}>
+            <span className={`text-[10px] font-medium tabular-nums ${isDark ? "text-[#888]" : "text-[#666]"}`}>
               {project.progress}%
             </span>
           }
         />
 
-        <div className="flex-1 flex flex-col mt-3 min-h-0">
-          <h3 className={`text-[18px] font-bold leading-tight tracking-tight mb-1 ${isDark ? "text-white" : "text-[#111]"}`}>
-            {project.name}
-          </h3>
-          <p className={`text-[11px] leading-relaxed mb-3 ${isDark ? "text-[#888]" : "text-[#666]"}`}>
-            {project.subtitle}
-          </p>
-
-          {/* Focus block */}
-          <div className={`rounded-xl p-2.5 border mb-3 ${isDark ? "bg-white/[0.03] border-white/[0.06]" : "bg-[#f8f8f8] border-[#f0f0f0]"}`}>
-            <p className={`text-[9px] font-semibold uppercase tracking-widest mb-1.5 ${isDark ? "text-[#555]" : "text-[#aaa]"}`}>
-              {t("currentlyWorking.focusLabel", "foco atual")}
+        <div className="flex-1 flex flex-col justify-between mt-1.5 min-h-0 overflow-hidden">
+          <div>
+            <h3 className={`text-[14px] font-bold leading-tight tracking-tight mb-0.5 ${isDark ? "text-white" : "text-[#111]"}`}>
+              {project.name}
+            </h3>
+            <p className={`text-[10px] leading-snug mb-1.5 ${isDark ? "text-[#888]" : "text-[#666]"}`}>
+              {project.subtitle}
             </p>
-            <div className="space-y-1">
-              {project.focus.map((item, i) => (
-                <div key={i} className="flex items-start gap-1.5">
-                  <span className={`text-[10px] mt-0.5 ${isDark ? "text-[#555]" : "text-[#aaa]"}`}>◎</span>
-                  <span className={`text-[10.5px] leading-snug ${isDark ? "text-[#888]" : "text-[#666]"}`}>
-                    {item}
-                  </span>
-                </div>
-              ))}
+
+            {/* Focus block */}
+            <div className={`rounded-lg p-2 border mb-1.5 ${isDark ? "bg-white/[0.03] border-white/[0.06]" : "bg-[#f8f8f8] border-[#f0f0f0]"}`}>
+              <p className={`text-[8px] font-semibold uppercase tracking-widest mb-1 ${isDark ? "text-[#555]" : "text-[#aaa]"}`}>
+                {t("currentlyWorking.focusLabel", "foco atual")}
+              </p>
+              <div className="space-y-0.5">
+                {project.focus.map((item, i) => (
+                  <div key={i} className="flex items-start gap-1">
+                    <span className={`text-[9px] mt-0.5 ${isDark ? "text-[#555]" : "text-[#aaa]"}`}>◎</span>
+                    <span className={`text-[10px] leading-snug ${isDark ? "text-[#888]" : "text-[#666]"}`}>
+                      {item}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
           {/* Tech chips */}
-          <div className="flex flex-wrap gap-1.5 mt-auto">
+          <div className="flex flex-wrap gap-1">
             {project.tech.map(tech => (
               <span
                 key={tech}
-                className={`text-[10px] px-2 py-1 rounded-full border flex items-center gap-1 ${isDark ? "bg-white/[0.03] border-white/10 text-[#888]" : "bg-white border-[#e0e0e0] text-[#666]"}`}
+                className={`text-[9px] px-1.5 py-0.5 rounded-full border flex items-center gap-1 ${isDark ? "bg-white/[0.03] border-white/10 text-[#888]" : "bg-white border-[#e0e0e0] text-[#666]"}`}
               >
                 <span className={`w-1 h-1 rounded-full shrink-0 ${isDark ? "bg-[#555]" : "bg-[#ccc]"}`} />
                 {tech}
@@ -89,7 +86,6 @@ export const CurrentlyWorkingCard = React.memo(function CurrentlyWorkingCard({
             ))}
           </div>
         </div>
-
       </div>
     </WidgetCard>
   );

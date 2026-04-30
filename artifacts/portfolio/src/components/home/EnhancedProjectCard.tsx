@@ -127,22 +127,24 @@ export function EnhancedProjectCard({
         className={`h-full rounded-2xl overflow-hidden ${isDark ? "bg-[#181818] border-[#282828]" : "bg-white border-[#ebebeb]"} border`}
         glowColor="61, 114, 204"
       >
-        <div className="h-full flex flex-col p-4">
+        <div className="h-full flex flex-col">
           {/* Header */}
-          <CardHeader
-            icon={blueDot}
-            title={t("project.featured")}
-            rightContent={
-              hasProjects && (
-                <span className={`text-[10px] font-medium tabular-nums ${isDark ? "text-[#555]" : "text-[#aaa]"}`}>
-                  {activeIndex + 1} / {projectCount}
-                </span>
-              )
-            }
-          />
+          <div className="px-4 pt-3 pb-2.5">
+            <CardHeader
+              icon={blueDot}
+              title={t("project.featured")}
+              rightContent={
+                hasProjects && (
+                  <span className={`text-[10px] font-medium tabular-nums ${isDark ? "text-[#555]" : "text-[#aaa]"}`}>
+                    {activeIndex + 1} / {projectCount}
+                  </span>
+                )
+              }
+            />
+          </div>
 
           {/* Body */}
-          <div className="flex-1 min-h-0 overflow-hidden relative mt-3">
+          <div className="flex-1 min-h-0 overflow-hidden relative px-4 pb-3">
             {hasProjects && current ? (
               <AnimatePresence mode="wait" custom={direction}>
                 <motion.div
@@ -161,14 +163,14 @@ export function EnhancedProjectCard({
                 >
                   <div className="h-full grid grid-cols-1 lg:grid-cols-2 gap-4">
                     {/* Left */}
-                    <div className="flex flex-col gap-2.5">
-                      <h3 className={`text-[18px] font-bold leading-tight tracking-tight ${isDark ? "text-white" : "text-[#111]"}`}>
+                    <div className="flex flex-col gap-2">
+                      <h3 className={`text-[16px] font-bold leading-tight tracking-tight ${isDark ? "text-white" : "text-[#111]"}`}>
                         {current.name}
                       </h3>
-                      <p className={`text-[11px] leading-relaxed ${isDark ? "text-[#888]" : "text-[#666]"}`}>
+                      <p className={`text-[10.5px] leading-relaxed ${isDark ? "text-[#888]" : "text-[#666]"}`}>
                         {current.description}
                       </p>
-                      <div className={`border-l-2 pl-3 py-1.5 rounded-r-md text-[10px] italic leading-relaxed ${isDark ? "border-white/10 text-[#555] bg-white/[0.02]" : "border-[#ddd] text-[#aaa] bg-[#fafafa]"}`}>
+                      <div className={`border-l-2 pl-2.5 py-1 rounded-r-md text-[9.5px] italic leading-relaxed ${isDark ? "border-white/10 text-[#555] bg-white/[0.02]" : "border-[#ddd] text-[#aaa] bg-[#fafafa]"}`}>
                         &ldquo;{current.highlight}&rdquo;
                       </div>
                     </div>
@@ -184,7 +186,7 @@ export function EnhancedProjectCard({
                           {current.techStack.slice(0, 5).map(tech => (
                             <span
                               key={tech}
-                              className={`text-[10px] px-2.5 py-1 rounded-full border ${isDark ? "bg-white/[0.03] border-white/10 text-[#888]" : "bg-[#f5f5f5] border-[#e0e0e0] text-[#666]"}`}
+                              className={`text-[10px] px-2 py-0.5 rounded-full border ${isDark ? "bg-white/[0.03] border-white/10 text-[#888]" : "bg-[#f5f5f5] border-[#e0e0e0] text-[#666]"}`}
                             >
                               {tech}
                             </span>
@@ -204,11 +206,11 @@ export function EnhancedProjectCard({
                             { key: t("project.scale"), val: current.wip ? "Solo" : "Production" },
                             { key: t("project.access"), val: current.url ? "Public" : "Private" },
                           ].map((meta, i) => (
-                            <div key={i} className={`rounded-xl p-2 border ${isDark ? "bg-white/[0.03] border-white/[0.06]" : "bg-[#f8f8f8] border-[#f0f0f0]"}`}>
-                              <p className={`text-[8px] uppercase tracking-wider mb-0.5 ${isDark ? "text-[#555]" : "text-[#aaa]"}`}>
+                            <div key={i} className={`rounded-lg p-1.5 border ${isDark ? "bg-white/[0.03] border-white/[0.06]" : "bg-[#f8f8f8] border-[#f0f0f0]"}`}>
+                              <p className={`text-[7px] uppercase tracking-wider mb-0.5 ${isDark ? "text-[#555]" : "text-[#aaa]"}`}>
                                 {meta.key}
                               </p>
-                              <p className={`text-[11px] font-medium ${meta.ok ? "text-emerald-500" : (isDark ? "text-white" : "text-[#111]")}`}>
+                              <p className={`text-[10px] font-medium ${meta.ok ? "text-emerald-500" : (isDark ? "text-white" : "text-[#111]")}`}>
                                 {meta.val}
                               </p>
                             </div>
@@ -228,10 +230,10 @@ export function EnhancedProjectCard({
           </div>
 
           {/* Footer */}
-          <div className="flex items-center justify-between mt-3 pt-3 border-t" style={{ borderColor: isDark ? "rgba(255,255,255,0.06)" : "#ebebeb" }}>
+          <div className={`flex items-center justify-between px-4 py-2 border-t ${isDark ? "border-white/[0.06]" : "border-[#ebebeb]"}`}>
             <div className="flex items-center gap-2">
               {/* Status Badge */}
-              <span className={`text-[10px] font-medium px-2 py-1 rounded-md border ${current?.wip
+              <span className={`text-[9.5px] font-medium px-1.5 py-0.5 rounded-md border ${current?.wip
                 ? (isDark ? "bg-amber-400/10 border-amber-400/20 text-amber-300" : "bg-amber-50 border-amber-200 text-amber-700")
                 : (isDark ? "bg-emerald-400/10 border-emerald-400/20 text-emerald-300" : "bg-emerald-50 border-emerald-200 text-emerald-700")
               }`}>
@@ -247,7 +249,7 @@ export function EnhancedProjectCard({
                       onClick={() => goTo(idx, idx > activeIndex ? 1 : -1)}
                       className="rounded-full transition-all duration-300"
                       style={{
-                        width: idx === activeIndex ? 14 : 4,
+                        width: idx === activeIndex ? 12 : 4,
                         height: 4,
                         backgroundColor: idx === activeIndex ? ACCENT : isDark ? "#333" : "#ddd",
                       }}
@@ -262,10 +264,10 @@ export function EnhancedProjectCard({
               {hasProjects && projectCount > 1 && (
                 <div className="flex gap-0.5">
                   <button onClick={goToPrev} className={`p-1 rounded-md transition-all ${isDark ? "hover:bg-white/5" : "hover:bg-black/5"}`}>
-                    <ChevronLeft size={14} className={isDark ? "text-[#555]" : "text-[#aaa]"} />
+                    <ChevronLeft size={13} className={isDark ? "text-[#555]" : "text-[#aaa]"} />
                   </button>
                   <button onClick={goToNext} className={`p-1 rounded-md transition-all ${isDark ? "hover:bg-white/5" : "hover:bg-black/5"}`}>
-                    <ChevronRight size={14} className={isDark ? "text-[#555]" : "text-[#aaa]"} />
+                    <ChevronRight size={13} className={isDark ? "text-[#555]" : "text-[#aaa]"} />
                   </button>
                 </div>
               )}
@@ -278,20 +280,20 @@ export function EnhancedProjectCard({
                   rel="noreferrer"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className="flex items-center gap-1.5 text-[11px] font-medium px-3 py-1.5 rounded-lg text-white bg-[#3d72cc] hover:bg-[#2d62bc] transition-colors"
+                  className="flex items-center gap-1 text-[10.5px] font-medium px-2.5 py-1 rounded-lg text-white bg-[#3d72cc] hover:bg-[#2d62bc] transition-colors"
                 >
                   {t("project.view")}
-                  <ExternalLink size={10} />
+                  <ExternalLink size={9} />
                 </motion.a>
               )}
             </div>
           </div>
 
-          {/* Progress bar */}
+          {/* Progress bar - edge to edge */}
           {hasProjects && projectCount > 1 && (
-            <div className="w-full h-[2px] overflow-hidden mt-3 rounded-full" style={{ background: isDark ? "#222" : "#f0f0f0" }}>
+            <div className="w-full h-[2px]" style={{ background: isDark ? "#222" : "#f0f0f0" }}>
               <motion.div
-                className="h-full rounded-full"
+                className="h-full"
                 style={{ backgroundColor: ACCENT }}
                 animate={{ width: `${progress}%` }}
                 transition={{ duration: 0.05, ease: "linear" }}
