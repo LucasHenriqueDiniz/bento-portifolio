@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { useState, useMemo, useEffect } from "react";
 import { useTranslation } from 'react-i18next';
 import { FiArrowLeft, FiPrinter, FiGithub, FiMail, FiExternalLink, FiAward, FiBriefcase, FiCode, FiLayout } from "react-icons/fi";
-import { Moon, Sun, Linkedin } from "lucide-react";
+import { Moon, Sun, Linkedin, Palette, MessageSquare } from "lucide-react";
 import { LanguageSwitcher } from "@/i18n/LanguageSwitcher";
 import { jobExperiences, academicExperiences, projects, certificates, languages, skillsData, ContactLinks } from "@/constants";
 import { formatDateRange } from "@/lib/dateFormatter";
@@ -49,6 +49,11 @@ const jobFallbackIcons: Record<string, any> = {
   "Autônomo": FiLayout,
 };
 
+const lucideIconMap: Record<string, any> = {
+  "Palette": Palette,
+  "MessageSquare": MessageSquare,
+};
+
 // ─── Section Title Component ─────────────────────────────
 function SectionTitle({ children, icon: Icon, delay = 0, isDark }: { children: React.ReactNode; icon?: any; delay?: number; isDark: boolean }) {
   return (
@@ -76,7 +81,13 @@ function VisualResume({ isDark }: { isDark: boolean }) {
   const { t, i18n } = useTranslation(['resume', 'common']);
   const currentLang = i18n.language?.split("-")[0] || "pt";
 
-  const activeJobs = useMemo(() => jobExperiences.filter(exp => exp.showInTimeline), []);
+  const activeJobs = useMemo(() => jobExperiences
+    .filter(exp => exp.showInTimeline)
+    .sort((a, b) => {
+      const dateA = a.startDate ? new Date(a.startDate).getTime() : 0;
+      const dateB = b.startDate ? new Date(b.startDate).getTime() : 0;
+      return dateB - dateA;
+    }), []);
   const activeEducation = useMemo(() => academicExperiences
     .filter(ed => ed.showInTimeline)
     .sort((a, b) => {
@@ -106,6 +117,14 @@ function VisualResume({ isDark }: { isDark: boolean }) {
       return (
         <div className={`w-10 h-10 rounded-lg overflow-hidden flex items-center justify-center shrink-0 ${isDark ? "bg-white/5" : "bg-gray-100"}`}>
           <img src={logoMap[job.institution]} alt="" className="w-full h-full object-cover" />
+        </div>
+      );
+    }
+    const LucideIcon = job.icon && lucideIconMap[job.icon];
+    if (LucideIcon) {
+      return (
+        <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${isDark ? "bg-white/5" : "bg-gray-100"}`}>
+          <LucideIcon size={20} style={{ color: ACCENT }} />
         </div>
       );
     }
@@ -166,7 +185,11 @@ function VisualResume({ isDark }: { isDark: boolean }) {
                       </span>
                     )}
                   </div>
-                  <p className={`text-xs font-medium ${isDark ? "text-gray-400" : "text-gray-500"}`}>{job.institution}</p>
+                  {job.url ? (
+                    <a href={job.url} target="_blank" rel="noreferrer" className={`text-xs font-medium hover:underline ${isDark ? "text-gray-400" : "text-gray-500"}`}>{job.institution}</a>
+                  ) : (
+                    <p className={`text-xs font-medium ${isDark ? "text-gray-400" : "text-gray-500"}`}>{job.institution}</p>
+                  )}
                   <p className={`text-[10px] mb-1 ${isDark ? "text-gray-600" : "text-gray-400"}`}>{formatDateRange(job.startDate, job.endDate)}</p>
                   <p className={`text-[12px] leading-relaxed ${isDark ? "text-gray-300" : "text-gray-700"}`}>{getJobDescription(job)}</p>
                 </div>
@@ -279,8 +302,20 @@ function ATSResume() {
   const { t, i18n } = useTranslation(['resume', 'common']);
   const currentLang = i18n.language?.split("-")[0] || "pt";
 
-  const activeJobs = useMemo(() => jobExperiences.filter(exp => exp.showInTimeline), []);
-  const activeEducation = useMemo(() => academicExperiences.filter(ed => ed.showInTimeline), []);
+  const activeJobs = useMemo(() => jobExperiences
+    .filter(exp => exp.showInTimeline)
+    .sort((a, b) => {
+      const dateA = a.startDate ? new Date(a.startDate).getTime() : 0;
+      const dateB = b.startDate ? new Date(b.startDate).getTime() : 0;
+      return dateB - dateA;
+    }), []);
+  const activeEducation = useMemo(() => academicExperiences
+    .filter(ed => ed.showInTimeline)
+    .sort((a, b) => {
+      const dateA = a.startDate ? new Date(a.startDate).getTime() : 0;
+      const dateB = b.startDate ? new Date(b.startDate).getTime() : 0;
+      return dateB - dateA;
+    }), []);
   const featuredProjects = useMemo(() => projects.filter(p => p.featured).slice(0, 6), []);
 
   const getJobTitle = (job: any) => currentLang === 'en' && job.titleEn ? job.titleEn : job.title;
@@ -298,13 +333,6 @@ function ATSResume() {
 
       <section>
         <h2 className="text-sm font-black uppercase tracking-widest border-b border-black pb-1 mb-2">
-          {t('header.summary')}
-        </h2>
-        <p className="text-xs leading-relaxed">{t('header.summary')}</p>
-      </section>
-
-      <section>
-        <h2 className="text-sm font-black uppercase tracking-widest border-b border-black pb-1 mb-2">
           {t('sections.experience')}
         </h2>
         <div className="space-y-3">
@@ -314,7 +342,11 @@ function ATSResume() {
                 <h3 className="text-xs font-bold">{getJobTitle(job)}</h3>
                 <span className="text-[10px] shrink-0">{formatDateRange(job.startDate, job.endDate)}</span>
               </div>
-              <p className="text-[11px] font-medium">{job.institution}</p>
+              {job.url ? (
+                <a href={job.url} target="_blank" rel="noreferrer" className="text-[11px] font-medium hover:underline">{job.institution}</a>
+              ) : (
+                <p className="text-[11px] font-medium">{job.institution}</p>
+              )}
               <p className="text-[11px] mt-0.5 leading-relaxed">{getJobDescription(job)}</p>
             </div>
           ))}
