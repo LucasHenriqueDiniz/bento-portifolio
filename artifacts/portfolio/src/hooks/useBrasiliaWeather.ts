@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { getCache, setCache } from "@/lib/queryCache";
 
 type WeatherState = {
   temperature: number | null;
@@ -8,51 +10,25 @@ type WeatherState = {
 
 const BRASILIA_LAT = -15.793889;
 const BRASILIA_LON = -47.882778;
+const CACHE_KEY = "weather:brasilia";
 
-function mapWeatherCodeToDescription(code: number): string {
-  if (code === 0) return "Ceu limpo";
-  if (code === 1) return "Predominantemente limpo";
-  if (code === 2) return "Parcialmente nublado";
-  if (code === 3) return "Nublado";
-
-  if (code === 45) return "Neblina";
-  if (code === 48) return "Neblina com geada";
-
-  if (code === 51) return "Garoa fraca";
-  if (code === 53) return "Garoa moderada";
-  if (code === 55) return "Garoa intensa";
-  if (code === 56) return "Garoa congelante fraca";
-  if (code === 57) return "Garoa congelante intensa";
-
-  if (code === 61) return "Chuva fraca";
-  if (code === 63) return "Chuva moderada";
-  if (code === 65) return "Chuva forte";
-  if (code === 66) return "Chuva congelante fraca";
-  if (code === 67) return "Chuva congelante forte";
-
-  if (code === 71) return "Neve fraca";
-  if (code === 73) return "Neve moderada";
-  if (code === 75) return "Neve forte";
-  if (code === 77) return "Graos de neve";
-
-  if (code === 80) return "Pancadas de chuva fracas";
-  if (code === 81) return "Pancadas de chuva moderadas";
-  if (code === 82) return "Pancadas de chuva fortes";
-  if (code === 85) return "Pancadas de neve fracas";
-  if (code === 86) return "Pancadas de neve fortes";
-
-  if (code === 95) return "Tempestade";
-  if (code === 96) return "Tempestade com granizo fraco";
-  if (code === 99) return "Tempestade com granizo forte";
-
-  return "Clima variavel";
+function mapWeatherCodeToDescription(code: number, t: (key: string) => string): string {
+  const allowedCodes = new Set([
+    0, 1, 2, 3, 45, 48, 51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 71, 73, 75,
+    77, 80, 81, 82, 85, 86, 95, 96, 99,
+  ]);
+  const key = allowedCodes.has(code) ? `weather.codes.${code}` : "weather.codes.default";
+  return t(key);
 }
 
 export function useBrasiliaWeather() {
+  const { t } = useTranslation("home");
+  const cached = getCache<{ temperature: number | null; description: string }>(CACHE_KEY);
+
   const [state, setState] = useState<WeatherState>({
-    temperature: null,
-    description: "Carregando...",
-    isLoading: true,
+    temperature: cached?.temperature ?? null,
+    description: cached?.description ?? t("weather.loading"),
+    isLoading: !cached,
   });
 
   useEffect(() => {
@@ -79,20 +55,20 @@ export function useBrasiliaWeather() {
 
         const temperature = data.current?.temperature_2m ?? null;
         const weatherCode = data.current?.weather_code ?? -1;
+        const description = mapWeatherCodeToDescription(weatherCode, t);
 
-        setState({
-          temperature,
-          description: mapWeatherCodeToDescription(weatherCode),
-          isLoading: false,
-        });
+        const next = { temperature, description, isLoading: false };
+        setState(next);
+        setCache(CACHE_KEY, { temperature, description });
       } catch {
         if (!isMounted) return;
 
-        setState({
-          temperature: null,
-          description: "Tempo indisponivel",
+        // Keep cached data if available, otherwise show unavailable
+        setState((prev) => ({
+          temperature: prev.temperature,
+          description: prev.description === t("weather.loading") ? t("weather.unavailable") : prev.description,
           isLoading: false,
-        });
+        }));
       }
     };
 
@@ -103,7 +79,7 @@ export function useBrasiliaWeather() {
       isMounted = false;
       clearInterval(intervalId);
     };
-  }, []);
+  }, [t]);
 
   return state;
 }

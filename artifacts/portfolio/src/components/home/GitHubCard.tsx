@@ -1,5 +1,6 @@
 import React, { useMemo, useRef } from "react";
 import { motion, useInView } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { SiGithub } from "react-icons/si";
 import { WidgetCard } from "@/components/WidgetCard";
 import CountUp from "@/components/CountUp";
@@ -13,25 +14,28 @@ interface GitHubGridProps {
   seed: number;
   inView: boolean;
   isDark: boolean;
+  locale: string;
+  dayLabels: string[];
 }
 
 const GitHubGrid = React.memo(function GitHubGrid({
   seed,
   inView,
   isDark,
+  locale,
+  dayLabels,
 }: GitHubGridProps) {
   const WEEKS = 52;
   const DAYS = 7;
   const MONTHS = useMemo(() => {
-    const formatter = new Intl.DateTimeFormat("en-US", { month: "short" });
+    const formatter = new Intl.DateTimeFormat(locale, { month: "short" });
     const now = new Date();
 
     return Array.from({ length: 12 }, (_, i) => {
       const d = new Date(now.getFullYear(), now.getMonth() - (11 - i), 1);
       return formatter.format(d);
     });
-  }, []);
-  const DAY_LABELS = ["", "seg", "", "qua", "", "sex", ""];
+  }, [locale]);
 
   const cells = useMemo(
     () =>
@@ -58,7 +62,7 @@ const GitHubGrid = React.memo(function GitHubGrid({
 
       <div className="flex-1 min-h-0 flex gap-1.5">
         <div className={`w-4 shrink-0 grid grid-rows-7 gap-[2px] text-[7px] ${isDark ? "text-white/30" : "text-[#999]"} leading-none`}>
-          {DAY_LABELS.map((day, i) => (
+          {dayLabels.map((day, i) => (
             <div key={i} className="flex items-center justify-end">
               {day}
             </div>
@@ -114,6 +118,10 @@ export const GitHubCard = React.memo(function GitHubCard({
   isDark,
   tier = 2,
 }: GitHubCardProps) {
+  const { t, i18n } = useTranslation("home");
+  const currentLang = i18n.language?.split("-")[0] || "pt";
+  const locale = currentLang === "en" ? "en-US" : "pt-BR";
+  const dayLabels = ["", t("github.days.mon"), "", t("github.days.wed"), "", t("github.days.fri"), ""];
   const githubRef = useRef<HTMLDivElement>(null);
   const githubInView = useInView(githubRef, { once: true, margin: "-50px" });
 
@@ -144,20 +152,20 @@ export const GitHubCard = React.memo(function GitHubCard({
           {/* Header */}
           <div className="flex items-center justify-between shrink-0">
             <div className="inline-flex items-center gap-1.5">
-              <SiGithub size={12} className="text-[#1b2838] dark:text-[#c7d5e0]" />
-              <span className={`text-[9px] font-semibold uppercase tracking-wider ${isDark ? "text-[#c7d5e0]" : "text-[#1b2838]"}`}>
-                GitHub
-              </span>
-            </div>
+                <SiGithub size={12} className="text-[#1b2838] dark:text-[#c7d5e0]" />
+                <span className={`text-[9px] font-semibold uppercase tracking-wider ${isDark ? "text-[#c7d5e0]" : "text-[#1b2838]"}`}>
+                  {t("github.title")}
+                </span>
+              </div>
           </div>
 
           {/* Stats Grid */}
           <div className={`rounded-lg p-2 border shrink-0 ${isDark ? "bg-white/3 border-white/8" : "bg-[#f5f5f5] border-[#ebebeb]"}`}>
             <div className="grid grid-cols-4 gap-2">
-              <StatItem label="repos" value={repos} isDark={isDark} />
-              <StatItem label="contribs" value={contributions} isDark={isDark} separator="," />
-              <StatItem label="commits" value={commits} isDark={isDark} separator="," />
-              <StatItem label="streak" value={streak} isDark={isDark} suffix="d" />
+              <StatItem label={t("github.repos")} value={repos} isDark={isDark} />
+              <StatItem label={t("github.contribs")} value={contributions} isDark={isDark} separator="," />
+              <StatItem label={t("github.commits")} value={commits} isDark={isDark} separator="," />
+              <StatItem label={t("github.streak")} value={streak} isDark={isDark} suffix={t("github.daysSuffix")} />
             </div>
           </div>
 
@@ -167,6 +175,8 @@ export const GitHubCard = React.memo(function GitHubCard({
               seed={stats?.totalCommitsThisYear ?? 539}
               inView={githubInView}
               isDark={isDark}
+              locale={locale}
+              dayLabels={dayLabels}
             />
           </div>
         </div>

@@ -1,5 +1,6 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { SiSteam } from "react-icons/si";
 import { WidgetCard } from "@/components/WidgetCard";
 import { fadeUpSoft } from "@/lib/animations";
@@ -65,6 +66,7 @@ export const SteamCard = React.memo(function SteamCard({
   steamIdx,
   isDark,
 }: SteamCardProps) {
+  const { t } = useTranslation("home");
   const [imageErrors, setImageErrors] = React.useState<Set<string>>(new Set());
   const [currentImageType, setCurrentImageType] = React.useState<
     Map<string, "hero" | "capsule" | "header" | "icon" | "none">
@@ -136,7 +138,7 @@ export const SteamCard = React.memo(function SteamCard({
       isLoading={isLoading}
       error={
         !steam || !steam.recentGames || steam.recentGames.length === 0
-          ? "Nenhum jogo recente"
+          ? t("steam.error")
           : null
       }
       loadingIcon={
@@ -205,13 +207,13 @@ export const SteamCard = React.memo(function SteamCard({
                   <div className="absolute bottom-0 left-0 right-0 p-2.5">
                     <p className="text-white/60 text-[7px] uppercase tracking-widest font-bold mb-1 flex items-center gap-1 drop-shadow-lg">
                       <SiSteam size={7} />
-                      Steam
+                      {t("steam.title")}
                     </p>
                     <p className="text-white text-[11px] font-bold leading-tight truncate drop-shadow-lg">
                       {game.name}
                     </p>
                     <p className="text-white/75 text-[9px] font-medium drop-shadow-lg mt-0.5">
-                      {game.hoursPlayed}h played
+                      {game.hoursPlayed}{t("steam.hours")}
                     </p>
                   </div>
                 </motion.div>
@@ -222,7 +224,7 @@ export const SteamCard = React.memo(function SteamCard({
           {/* game count badge */}
           <div className="absolute top-2.5 right-2.5 flex items-center gap-1.5 px-2 py-1.5 rounded-lg bg-black/70 backdrop-blur-sm border border-white/15 z-10 shadow-lg">
             <SiSteam size={10} className="text-white/90" />
-            <span className="text-[9px] text-white font-bold">{steam.totalGames ?? 0} games</span>
+            <span className="text-[9px] text-white font-bold">{steam.totalGames ?? 0} {t("steam.games")}</span>
           </div>
         </motion.div>
       )}

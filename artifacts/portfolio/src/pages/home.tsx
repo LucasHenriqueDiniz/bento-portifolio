@@ -5,13 +5,13 @@ import { useTranslation } from 'react-i18next';
 import { Moon, Sun } from "lucide-react";
 import { LanguageSwitcher } from "@/i18n/LanguageSwitcher";
 import {
-  useGetNowPlaying,
-  useGetTopArtists,
-  useGetSteamData,
-  useGetLastWorkout,
-  useGetStats,
-  useGetMalData,
-} from "@workspace/api-client-react";
+  useGetNowPlayingCached as useGetNowPlaying,
+  useGetTopArtistsCached as useGetTopArtists,
+  useGetSteamDataCached as useGetSteamData,
+  useGetLastWorkoutCached as useGetLastWorkout,
+  useGetStatsCached as useGetStats,
+  useGetMalDataCached as useGetMalData,
+} from "@/hooks/usePortfolioQueries";
 import { useClock } from "@/hooks/useClock";
 import {
   WeatherClockCard,
@@ -79,6 +79,7 @@ function SocialCard({ contact, isDark }: { contact: typeof contacts[number]; isD
 
 /* ─── Projects CTA (col 6, rows 7-8) ───────────────── */
 function ProjectsCTA() {
+  const { t } = useTranslation("home");
   return (
     <motion.a
       href="/projects"
@@ -99,8 +100,8 @@ function ProjectsCTA() {
             <path d="M7 17L17 7"/><path d="M7 7h10v10"/>
           </svg>
         </span>
-      <p className="text-[13px] font-black text-white tracking-tight">Projects</p>
-      <p className="text-[9px] text-white/70">View all projects</p>
+      <p className="text-[13px] font-black text-white tracking-tight">{t("projectsCta.title")}</p>
+      <p className="text-[9px] text-white/70">{t("projectsCta.subtitle")}</p>
       </div>
     </motion.a>
   );

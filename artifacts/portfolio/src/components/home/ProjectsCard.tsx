@@ -1,5 +1,6 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { SiGithub } from "react-icons/si";
 import { FiArrowUpRight } from "react-icons/fi";
 import { BentoCard } from "@/components/BentoCard";
@@ -71,6 +72,7 @@ export const ProjectsCard = React.memo(function ProjectsCard({
   isDark,
   navigate,
 }: ProjectsCardProps) {
+  const { t } = useTranslation("home");
   const safeProjects = Array.isArray(projects) ? projects : [];
   return (
     <BentoCard
@@ -89,7 +91,7 @@ export const ProjectsCard = React.memo(function ProjectsCard({
         <div className="flex items-center justify-between shrink-0">
           <p className={`${LABEL} flex items-center gap-1.5`}>
             <SiGithub size={9} />
-            Projects
+            {t("projectsCta.title")}
           </p>
           <FiArrowUpRight
             size={13}
@@ -140,7 +142,7 @@ export const ProjectsCard = React.memo(function ProjectsCard({
                                 backgroundColor: `${ACCENT}12`,
                               }}
                             >
-                              WIP
+                              {t("project.wip")}
                             </span>
                           )}
                         </div>
@@ -221,7 +223,7 @@ export const ProjectsCard = React.memo(function ProjectsCard({
                 <CountUp to={stats?.githubRepos ?? 28} duration={1.0} />
               </p>
               <p className="text-[10px] text-[#bbb] dark:text-[#555] mt-0.5">
-                repos
+                {t("github.repos")}
               </p>
             </div>
             <div
@@ -234,7 +236,7 @@ export const ProjectsCard = React.memo(function ProjectsCard({
                 <CountUp to={totalStars} duration={1.2} />
               </p>
               <p className="text-[10px] text-[#bbb] dark:text-[#555] mt-0.5">
-                stars
+                {t("projects.stars")}
               </p>
             </div>
           </div>
@@ -243,7 +245,7 @@ export const ProjectsCard = React.memo(function ProjectsCard({
               className="text-[11px] font-semibold"
               style={{ color: ACCENT }}
             >
-              View all
+              {t("projectsCta.subtitle")}
             </span>
             <FiArrowUpRight
               size={11}

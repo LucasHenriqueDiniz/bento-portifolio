@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { BentoCard } from "@/components/BentoCard";
 import { fadeUpSoft } from "@/lib/animations";
 
@@ -15,11 +16,22 @@ const POLAROID_PHOTOS = [
   "/photos/portugal-2.jpeg",
 ];
 
-const POLAROID_CAPTIONS = [
+const POLAROID_CAPTIONS_PT = [
   "hana",
   "hana, take two",
   "poca",
   "jardim botanico",
+  "curitiba morning",
+  "curitiba afternoon",
+  "portugal",
+  "portugal coast",
+];
+
+const POLAROID_CAPTIONS_EN = [
+  "hana",
+  "hana, take two",
+  "poca",
+  "botanical garden",
   "curitiba morning",
   "curitiba afternoon",
   "portugal",
@@ -54,9 +66,12 @@ export const PolaroidStack = React.memo(function PolaroidStack({
   isDark,
   tier = 2,
 }: PolaroidStackProps) {
+  const { t, i18n } = useTranslation("home");
+  const currentLang = i18n.language?.split("-")[0] || "pt";
   const [current, setCurrent] = useState(0);
   const [dir, setDir] = useState(1);
   const n = POLAROID_PHOTOS.length;
+  const captions = currentLang === "en" ? POLAROID_CAPTIONS_EN : POLAROID_CAPTIONS_PT;
 
   const goTo = (idx: number) => {
     setDir(idx >= current ? 1 : -1);
@@ -96,7 +111,7 @@ export const PolaroidStack = React.memo(function PolaroidStack({
               key={current}
               custom={dir}
               src={POLAROID_PHOTOS[current]}
-              alt={POLAROID_CAPTIONS[current]}
+              alt={captions[current]}
               draggable={false}
               className="absolute inset-0 w-full h-full object-cover"
               style={{
@@ -127,7 +142,7 @@ export const PolaroidStack = React.memo(function PolaroidStack({
               exit={{ opacity: 0, y: -4 }}
               transition={{ duration: 0.2 }} // Faster caption animation
             >
-              {POLAROID_CAPTIONS[current]}
+              {captions[current]}
             </motion.p>
           </AnimatePresence>
         </div>
@@ -151,7 +166,7 @@ export const PolaroidStack = React.memo(function PolaroidStack({
                       ? "#333"
                       : "#ddd",
               }}
-              aria-label={`Go to photo ${i + 1}`}
+              aria-label={t("photos.goTo", { index: i + 1 })}
             />
           ))}
         </div>

@@ -1,5 +1,6 @@
 import { memo } from "react";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { SiLastdotfm } from "react-icons/si";
 import { WidgetCard } from "@/components/WidgetCard";
 import { fadeUpSoft } from "@/lib/animations";
@@ -34,10 +35,11 @@ export const AlbumArtCard = memo(function AlbumArtCard({
   isLoading,
   isDark,
 }: AlbumArtCardProps) {
+  const { t } = useTranslation("home");
   return (
     <WidgetCard
       isLoading={isLoading}
-      error={!nowPlaying?.albumArt ? "Nenhuma música tocando" : null}
+      error={!nowPlaying?.albumArt ? t("album.empty") : null}
       loadingIcon={
         <SiLastdotfm size={28} className="text-[#ccc] dark:text-[#444]" />
       }
@@ -66,7 +68,7 @@ export const AlbumArtCard = memo(function AlbumArtCard({
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
           <div className="absolute bottom-3 left-3 right-3">
             <p className="text-white/70 text-[9px] uppercase tracking-widest font-semibold mb-0.5">
-              Listening
+              {t("album.listening")}
             </p>
             <p className="text-white text-[13px] font-bold leading-tight truncate">
               {nowPlaying.track}

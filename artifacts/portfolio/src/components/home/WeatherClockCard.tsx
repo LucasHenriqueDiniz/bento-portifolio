@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { FiClock } from "react-icons/fi";
+import { useTranslation } from "react-i18next";
 import { BentoCard } from "@/components/BentoCard";
 import { useFlipLock } from "@/hooks/useFlipLock";
 import { useBrasiliaWeather } from "@/hooks/useBrasiliaWeather";
@@ -27,6 +28,7 @@ interface WeatherClockCardProps {
 export const WeatherClockCard = React.memo(function WeatherClockCard({
   clock,
 }: WeatherClockCardProps) {
+  const { t } = useTranslation("home");
   const [flipped, setFlipped] = useState(false);
   const { isFlipping, runWithFlipLock } = useFlipLock(600);
   const weather = useBrasiliaWeather();
@@ -64,9 +66,9 @@ export const WeatherClockCard = React.memo(function WeatherClockCard({
           style={{ backfaceVisibility: "hidden" }}
         >
           <CardHeader
-            title="Weather"
+            title={t("weather.title")}
             icon={<span>☁</span>}
-            flipLabel="horario"
+            flipLabel={t("weather.timeLabel")}
             onFlip={handleFlip}
           />
           <div>
@@ -76,8 +78,8 @@ export const WeatherClockCard = React.memo(function WeatherClockCard({
                 : `${Math.round(weather.temperature)}°C`}
             </p>
             <p className="text-[11px] text-[#aaa] dark:text-[#555] mt-1">
-              {weather.isLoading ? "Carregando clima..." : weather.description}{" "}
-              · Brasilia
+              {weather.isLoading ? t("weather.loading") : weather.description}{" "}
+              · {t("weather.location")}
             </p>
           </div>
         </div>
@@ -88,9 +90,9 @@ export const WeatherClockCard = React.memo(function WeatherClockCard({
           style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
         >
           <CardHeader
-            title="Horario local"
+            title={t("weather.localTime")}
             icon={<FiClock size={9} />}
-            flipLabel="clima"
+            flipLabel={t("weather.flipLabel")}
             flipDirection="left"
             onFlip={handleFlip}
           />
@@ -134,7 +136,7 @@ export const WeatherClockCard = React.memo(function WeatherClockCard({
               </span>
             </div>
             <p className="text-[11px] text-[#aaa] dark:text-[#555] mt-1">
-              Brasilia (BRT, UTC-3)
+              {t("weather.timezone")}
             </p>
           </div>
         </div>

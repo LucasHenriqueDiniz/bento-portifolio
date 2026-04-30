@@ -1,5 +1,5 @@
 import GridMotion from "@/components/GridMotion";
-import { useGetProjects } from "@workspace/api-client-react";
+import { useGetProjectsCached as useGetProjects } from "@/hooks/usePortfolioQueries";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { Link } from "wouter";
