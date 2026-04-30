@@ -400,19 +400,17 @@ export default function ResumePage() {
     if (originalFormat !== "ats") {
       setFormat("ats");
       setIsPrinting(true);
-      // Wait for React to re-render ATS view before printing
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          window.print();
-          // Restore after print dialog closes
-          const onAfter = () => {
-            setFormat(originalFormat);
-            setIsPrinting(false);
-            window.removeEventListener("afterprint", onAfter);
-          };
-          window.addEventListener("afterprint", onAfter);
-        });
-      });
+      // Wait for React re-render + Framer Motion animation to complete
+      setTimeout(() => {
+        window.print();
+        // Restore after print dialog closes
+        const onAfter = () => {
+          setFormat(originalFormat);
+          setIsPrinting(false);
+          window.removeEventListener("afterprint", onAfter);
+        };
+        window.addEventListener("afterprint", onAfter);
+      }, 500);
     } else {
       window.print();
     }
@@ -423,8 +421,8 @@ export default function ResumePage() {
       <style>{`
         @media print {
           .no-print { display: none !important; }
-          body { background: white !important; color: black !important; }
-          * { background: white !important; }
+          html, body { background: white !important; }
+          * { color: black !important; background: transparent !important; opacity: 1 !important; }
           a { text-decoration: none !important; color: black !important; }
           @page { margin: 1.5cm; }
         }
@@ -453,9 +451,15 @@ export default function ResumePage() {
         </div>
       </header>
 
-      <motion.div key={format} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.25 }}>
-        {format === "visual" ? <VisualResume isDark={isDark} /> : <ATSResume isDark={isDark} />}
-      </motion.div>
+      {isPrinting ? (
+        <div>
+          <ATSResume isDark={isDark} />
+        </div>
+      ) : (
+        <motion.div key={format} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.25 }}>
+          {format === "visual" ? <VisualResume isDark={isDark} /> : <ATSResume isDark={isDark} />}
+        </motion.div>
+      )}
 
       <div className={`no-print text-center text-[10px] py-6 border-t ${isDark ? "border-gray-800 text-gray-600" : "border-gray-200 text-gray-400"}`}>
         {t('footer.generatedFrom')} <span style={{ color: ACCENT }} className="font-semibold">lucashdo.com</span>
