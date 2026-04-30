@@ -161,31 +161,63 @@ export function EnhancedProjectCard({
                   onDragEnd={handleDragEnd}
                   className="h-full cursor-grab active:cursor-grabbing"
                 >
-                  <div className="h-full flex flex-col justify-between">
-                    <div>
-                      <h3 className={`text-[14px] font-bold leading-tight tracking-tight mb-1 ${isDark ? "text-white" : "text-[#111]"}`}>
+                  <div className="h-full grid grid-cols-1 lg:grid-cols-2 gap-3">
+                    {/* Left: Info */}
+                    <div className="flex flex-col gap-1.5">
+                      <h3 className={`text-[14px] font-bold leading-tight tracking-tight ${isDark ? "text-white" : "text-[#111]"}`}>
                         {current.name}
                       </h3>
                       <p className={`text-[10px] leading-snug line-clamp-2 ${isDark ? "text-[#888]" : "text-[#666]"}`}>
                         {current.description}
                       </p>
+                      <div className={`border-l-2 pl-2 py-1 rounded-r-md text-[9px] italic leading-relaxed ${isDark ? "border-white/10 text-[#555] bg-white/[0.02]" : "border-[#ddd] text-[#aaa] bg-[#fafafa]"}`}>
+                        &ldquo;{current.highlight}&rdquo;
+                      </div>
                     </div>
 
-                    {/* Single line of tech pills */}
-                    <div className="flex flex-wrap gap-1 overflow-hidden">
-                      {current.techStack.slice(0, 4).map(tech => (
-                        <span
-                          key={tech}
-                          className={`text-[9px] px-1.5 py-0.5 rounded-full border whitespace-nowrap ${isDark ? "bg-white/[0.03] border-white/10 text-[#888]" : "bg-[#f5f5f5] border-[#e0e0e0] text-[#666]"}`}
-                        >
-                          {tech}
-                        </span>
-                      ))}
-                      {current.techStack.length > 4 && (
-                        <span className={`text-[9px] px-1 py-0.5 ${isDark ? "text-[#555]" : "text-[#aaa]"}`}>
-                          +{current.techStack.length - 4}
-                        </span>
-                      )}
+                    {/* Right: Stack + Meta */}
+                    <div className="flex flex-col gap-2">
+                      {/* Tech pills */}
+                      <div>
+                        <p className={`text-[8px] font-semibold uppercase tracking-widest mb-1 ${isDark ? "text-[#555]" : "text-[#aaa]"}`}>
+                          {t("project.techStack")}
+                        </p>
+                        <div className="flex flex-wrap gap-1">
+                          {current.techStack.slice(0, 6).map(tech => (
+                            <span
+                              key={tech}
+                              className={`text-[9px] px-1.5 py-0.5 rounded-full border whitespace-nowrap ${isDark ? "bg-white/[0.03] border-white/10 text-[#888]" : "bg-[#f5f5f5] border-[#e0e0e0] text-[#666]"}`}
+                            >
+                              {tech}
+                            </span>
+                          ))}
+                          {current.techStack.length > 6 && (
+                            <span className={`text-[9px] px-1 py-0.5 ${isDark ? "text-[#555]" : "text-[#aaa]"}`}>
+                              +{current.techStack.length - 6}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Compact meta */}
+                      <div className="grid grid-cols-2 gap-1">
+                        <div className={`rounded-lg p-1.5 border ${isDark ? "bg-white/[0.03] border-white/[0.06]" : "bg-[#f8f8f8] border-[#f0f0f0]"}`}>
+                          <p className={`text-[7px] uppercase tracking-wider mb-0.5 ${isDark ? "text-[#555]" : "text-[#aaa]"}`}>
+                            {t("project.type")}
+                          </p>
+                          <p className={`text-[10px] font-medium ${isDark ? "text-white" : "text-[#111]"}`}>
+                            Web App
+                          </p>
+                        </div>
+                        <div className={`rounded-lg p-1.5 border ${isDark ? "bg-white/[0.03] border-white/[0.06]" : "bg-[#f8f8f8] border-[#f0f0f0]"}`}>
+                          <p className={`text-[7px] uppercase tracking-wider mb-0.5 ${isDark ? "text-[#555]" : "text-[#aaa]"}`}>
+                            {t("project.status")}
+                          </p>
+                          <p className={`text-[10px] font-medium ${current.wip ? "text-amber-500" : "text-emerald-500"}`}>
+                            {current.wip ? t("project.wip") : t("project.done")}
+                          </p>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </motion.div>
@@ -200,14 +232,6 @@ export function EnhancedProjectCard({
           {/* Footer */}
           <div className={`flex items-center justify-between px-3 py-1.5 border-t ${isDark ? "border-white/[0.06]" : "border-[#ebebeb]"}`}>
             <div className="flex items-center gap-1.5">
-              {/* Status Badge */}
-              <span className={`text-[9px] font-medium px-1.5 py-0.5 rounded border ${current?.wip
-                ? (isDark ? "bg-amber-400/10 border-amber-400/20 text-amber-300" : "bg-amber-50 border-amber-200 text-amber-700")
-                : (isDark ? "bg-emerald-400/10 border-emerald-400/20 text-emerald-300" : "bg-emerald-50 border-emerald-200 text-emerald-700")
-              }`}>
-                {current?.wip ? t("project.wip") : t("project.done")}
-              </span>
-
               {/* Nav dots */}
               {hasProjects && projectCount > 1 && (
                 <div className="flex gap-0.5">
