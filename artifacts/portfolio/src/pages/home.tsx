@@ -27,6 +27,7 @@ import {
   TechStackCard,
   PolaroidStack,
   EnhancedProjectCard,
+  CurrentlyWorkingCard,
 } from "@/components/home";
 import { BentoSection } from "@/components/BentoCard";
 import { contacts, featuredProjects } from "@/constants";
@@ -237,55 +238,59 @@ export default function Home() {
               <EnhancedProjectCard projects={localizedFeaturedProjects} isDark={isDark} />
             </motion.div>
 
-            <motion.div custom={8} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-3 lg:row-start-3 lg:col-span-2 lg:row-span-2 min-h-0">
+            <motion.div custom={8} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-3 lg:row-start-3 lg:col-span-1 lg:row-span-2 min-h-0">
+              <CurrentlyWorkingCard isDark={isDark} />
+            </motion.div>
+
+            <motion.div custom={9} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-4 lg:row-start-3 lg:col-span-1 lg:row-span-2 min-h-0">
               <TechStackCard isDark={isDark} />
             </motion.div>
 
             {/* CV to the right */}
-            <motion.div custom={9} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-4 lg:row-start-5 lg:row-span-2 min-h-0">
+            <motion.div custom={10} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-4 lg:row-start-5 lg:row-span-2 min-h-0">
               <CVCard navigate={(p) => { window.location.href = p; }} isDark={isDark} />
             </motion.div>
 
             {/* Building moved down */}
-            <motion.div custom={10} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-4 lg:row-start-7 lg:row-span-2 min-h-0">
+            <motion.div custom={11} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-4 lg:row-start-7 lg:row-span-2 min-h-0">
               <BuildingCard buildIdx={buildIdx} isDark={isDark} />
             </motion.div>
 
             {/* ── Col 5 ── */}
-            <motion.div custom={11} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-5 lg:row-start-1 lg:row-span-2 min-h-0">
+            <motion.div custom={12} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-5 lg:row-start-1 lg:row-span-2 min-h-0">
               <AlbumArtCard nowPlaying={nowPlaying as any} isLoading={loadingNowPlaying} isDark={isDark} />
             </motion.div>
 
-            <motion.div custom={12} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-5 lg:row-start-3 lg:row-span-4 min-h-0">
+            <motion.div custom={13} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-5 lg:row-start-3 lg:row-span-4 min-h-0">
               <TimelineCard isDark={isDark} />
             </motion.div>
 
-            <motion.div custom={13} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-5 lg:row-start-7 lg:row-span-2 min-h-0">
+            <motion.div custom={14} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-5 lg:row-start-7 lg:row-span-2 min-h-0">
               <SteamCard steam={steamData as any} isLoading={loadingSteam} steamIdx={steamIdx} isDark={isDark} />
             </motion.div>
 
             {/* ── Col 6 ── */}
-            <motion.div custom={14} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-6 lg:row-start-1 lg:row-span-2 min-h-0">
+            <motion.div custom={15} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-6 lg:row-start-1 lg:row-span-2 min-h-0">
               <TopArtistsCard topArtists={topArtists as any} isLoading={loadingTopArtists} isDark={isDark} />
             </motion.div>
 
-            <motion.div custom={15} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-6 lg:row-start-3 lg:row-span-1 min-h-0">
+            <motion.div custom={16} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-6 lg:row-start-3 lg:row-span-1 min-h-0">
               <SocialCard contact={contacts.find(c => c.platform === "Discord")!} isDark={isDark} />
             </motion.div>
 
-            <motion.div custom={16} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-6 lg:row-start-4 lg:row-span-1 min-h-0">
+            <motion.div custom={17} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-6 lg:row-start-4 lg:row-span-1 min-h-0">
               <SocialCard contact={contacts.find(c => c.platform === "Instagram")!} isDark={isDark} />
             </motion.div>
 
-            <motion.div custom={17} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-6 lg:row-start-5 lg:row-span-1 min-h-0">
+            <motion.div custom={18} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-6 lg:row-start-5 lg:row-span-1 min-h-0">
               <SocialCard contact={contacts.find(c => c.platform === "GitHub")!} isDark={isDark} />
             </motion.div>
 
-            <motion.div custom={18} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-6 lg:row-start-6 lg:row-span-1 min-h-0">
+            <motion.div custom={19} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-6 lg:row-start-6 lg:row-span-1 min-h-0">
               <SocialCard contact={contacts.find(c => c.platform === "LinkedIn")!} isDark={isDark} />
             </motion.div>
 
-            <motion.div custom={19} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-6 lg:row-start-7 lg:row-span-2 min-h-0">
+            <motion.div custom={20} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-6 lg:row-start-7 lg:row-span-2 min-h-0">
               <ProjectsCTA />
             </motion.div>
 

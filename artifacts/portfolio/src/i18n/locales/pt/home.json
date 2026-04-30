@@ -145,7 +145,12 @@
   "project": {
     "featured": "Projeto em Destaque",
     "techStack": "Stack",
-    "view": "Ver",
+    "details": "Detalhes",
+    "type": "Tipo",
+    "status": "Status",
+    "scale": "Escala",
+    "access": "Acesso",
+    "view": "Ver projeto",
     "wip": "WIP",
     "done": "Pronto",
     "previous": "Anterior",
@@ -158,6 +163,14 @@
       "subtitle": "Adicione projetos em destaque...",
       "description": "Os destaques do projeto aparecerão aqui"
     }
+  },
+  "currentlyWorking": {
+    "label": "Em desenvolvimento",
+    "subtitle": "Plataforma mobile educacional para concursos públicos",
+    "focusLabel": "Foco atual",
+    "focus1": "Offline-first com sync em tempo real",
+    "focus2": "UI polida e acessível",
+    "progress": "Progresso"
   },
   "projects": {
     "stars": "stars"

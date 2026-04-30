@@ -11,3 +11,4 @@ export { CVCard } from "./CVCard";
 export { TechStackCard } from "./TechStackCard";
 export { PolaroidStack } from "./PolaroidStack";
 export { EnhancedProjectCard } from "./EnhancedProjectCard";
+export { CurrentlyWorkingCard } from "./CurrentlyWorkingCard";
