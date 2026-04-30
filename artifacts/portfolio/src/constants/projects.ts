@@ -16,7 +16,7 @@ export const projects: Project[] = [
   {
     id: "windows-xp-online",
     name: "Windows XP Online",
-    description: "A faithful Windows XP recreation in the browser, featuring multitasking, draggable windows, classic themes, sounds, and even games. Real-time for multiple users via WebSockets and React.",
+    description: "• Built browser-based OS simulation with real-time multi-user sync (WebSockets)\n• Implemented window manager and state synchronization layer\n• Recreated classic UI with multitasking, draggable windows, themes and sounds",
     techStack: ["React", "TypeScript", "WebSockets"],
     highlight: "Faithful Windows XP recreation in browser with WebSockets multiplayer",
     url: "https://w-xp-online.web.app/",
@@ -28,7 +28,7 @@ export const projects: Project[] = [
   {
     id: "weeb-profile",
     name: "Weeb Profile",
-    description: "Dynamic SVG generation system for GitHub with multi-API integration (Last.fm, MyAnimeList, GitHub). Automated pipeline via GitHub Actions for real-time data collection, processing, and rendering.",
+    description: "• Built dynamic SVG generation system with multi-API integration (Last.fm, MyAnimeList, GitHub)\n• Automated data pipeline via GitHub Actions for real-time collection and rendering\n• Implemented GitHub profile README widgets with live statistics",
     techStack: ["Node.js", "TypeScript", "API Integration", "Automation"],
     highlight: "Dynamic SVG generation with multi-API integration and GitHub Actions pipeline",
     url: "https://weeb-profile-web-client.vercel.app/",
@@ -40,7 +40,7 @@ export const projects: Project[] = [
   {
     id: "heartopia-guide",
     name: "Heartopia Guide",
-    description: "Production-grade content platform using Next.js (App Router) with dynamic routing and data-driven pages. Structured content ingestion, caching strategies and SEO-focused architecture.",
+    description: "• Built production-grade content platform with Next.js App Router and dynamic routing\n• Implemented structured content ingestion and SEO-focused architecture\n• Designed caching strategies for data-driven pages",
     techStack: ["Next.js", "TypeScript", "SEO", "App Router"],
     highlight: "Production-grade content platform with SEO-focused architecture",
     url: "https://heartopia.guide/en",
@@ -52,7 +52,7 @@ export const projects: Project[] = [
   {
     id: "include-gurias",
     name: "Include Gurias",
-    description: "Fullstack institutional platform with custom headless CMS. Authentication system, admin dashboard with full CRUD, and content pipeline with validations. Supabase RLS policies and strategic caching.",
+    description: "• Built fullstack institutional platform with custom headless CMS\n• Implemented authentication system and admin dashboard with full CRUD\n• Designed Supabase RLS policies and strategic caching layer",
     techStack: ["Next.js", "TypeScript", "Supabase", "PostgreSQL"],
     highlight: "Fullstack institutional platform with custom headless CMS",
     url: "https://www.includegurias.com.br",
@@ -64,7 +64,7 @@ export const projects: Project[] = [
   {
     id: "botschannel-platform",
     name: "BotsChannel Platform",
-    description: "Serverless SaaS platform for multi-channel chatbot automation. Microservices architecture with AWS Lambda, asynchronous message processing, and integration with WhatsApp, Telegram, and Instagram APIs.",
+    description: "• Built serverless SaaS for multi-channel chatbot automation (WhatsApp, Telegram, Instagram)\n• Architected microservices with AWS Lambda and async message processing\n• Integrated third-party messaging APIs with custom webhook handlers",
     techStack: ["Node.js", "TypeScript", "AWS Lambda", "PostgreSQL", "API Integration"],
     highlight: "Serverless SaaS for multi-channel chatbot automation with AWS Lambda",
     url: "https://platform.botschannel.com/en",
@@ -76,7 +76,7 @@ export const projects: Project[] = [
   {
     id: "resgate-rs",
     name: "Resgate RS",
-    description: "Platform created in response to the RS tragedy for registering and searching missing people. Uses Next.js, Supabase, and PostgreSQL. Open source out of respect for the victims.",
+    description: "• Built missing people registration platform in response to RS tragedy\n• Implemented real-time search and registration with Next.js and Supabase\n• Open-sourced project for community emergency response coordination",
     techStack: ["Next.js", "TypeScript", "Supabase"],
     highlight: "Missing people registration platform built for RS tragedy response",
     url: "https://resgate-rs.vercel.app",
@@ -88,7 +88,7 @@ export const projects: Project[] = [
   {
     id: "autowabba",
     name: "AutoWabba",
-    description: "Desktop automation application for bulk downloads via Playwright. Browser automation, state management, and parallel request processing. Electron architecture with IPC and intelligent retry system.",
+    description: "• Built desktop automation app for bulk downloads via Playwright\n• Implemented parallel request processing with intelligent retry system\n• Designed Electron architecture with IPC for state management",
     techStack: ["Electron", "Node.js", "Playwright", "Automation"],
     highlight: "Desktop automation for bulk downloads with Playwright and Electron",
     url: "https://github.com/LucasHenriqueDiniz/AutoWabba",
@@ -100,7 +100,7 @@ export const projects: Project[] = [
   {
     id: "itemmarketcap",
     name: "ItemMarketCap",
-    description: "Real-time analytics platform with multi-API Steam integration. Market data collection and normalization pipeline, Redis caching system, and aggregated metrics processing.",
+    description: "• Built real-time Steam market analytics with multi-API integration\n• Implemented data collection and normalization pipeline\n• Designed Redis caching system for aggregated metrics processing",
     techStack: ["Next.js", "TypeScript", "API Integration", "Redis", "Data Processing"],
     highlight: "Real-time Steam market analytics with Redis caching",
     url: "https://item-marketcap.vercel.app/",
@@ -112,7 +112,7 @@ export const projects: Project[] = [
   {
     id: "comunica-mulher",
     name: "ComunicaMulher",
-    description: "Complaint management system with moderation workflow and validations. Intake pipeline with data sanitization, granular Supabase RLS policies, and admin dashboard with advanced filters.",
+    description: "• Built complaint management system with moderation workflow\n• Implemented intake pipeline with validation and data sanitization\n• Designed granular Supabase RLS policies and admin dashboard with filters",
     techStack: ["Next.js", "TypeScript", "Supabase", "PostgreSQL"],
     highlight: "Complaint management system with moderation workflow",
     url: "https://reclame-mulher.vercel.app/",
@@ -124,7 +124,7 @@ export const projects: Project[] = [
   {
     id: "quizhub",
     name: "QuizHub",
-    description: "Quiz platform with real-time ranking system and collaborative editor. Question ingestion pipeline with LLM-assisted processing. Complex relational data modeling with PostgreSQL.",
+    description: "• Built quiz platform with real-time ranking and collaborative editor\n• Implemented question ingestion pipeline with LLM-assisted processing\n• Designed complex relational data modeling with PostgreSQL",
     techStack: ["Next.js", "TypeScript", "Supabase", "PostgreSQL", "LLM Integration"],
     highlight: "Quiz platform with real-time ranking and LLM-assisted processing",
     url: "https://quizhub.com.br/",
@@ -136,7 +136,7 @@ export const projects: Project[] = [
   {
     id: "context-tools",
     name: "Context Tools",
-    description: "VS Code extension that copies files, selections, project tree, and diagnostics into formatted blocks optimized for sharing with LLMs and issue trackers.",
+    description: "• Built VS Code extension for LLM-friendly context copying\n• Implemented file, selection, and project tree extraction\n• Generated formatted blocks optimized for LLMs and issue trackers",
     techStack: ["TypeScript", "VS Code", "Extension"],
     highlight: "VS Code extension for LLM-friendly context copying",
     url: "https://marketplace.visualstudio.com/items?itemName=lucashenriquediniz.vscode-context-tools",
@@ -147,7 +147,7 @@ export const projects: Project[] = [
   {
     id: "siot-web-flasher",
     name: "SIOT Web Flasher",
-    description: "Flash firmware and monitor serial of ESP32/ESP8266 directly from the browser. Supports Web Serial API, modern UI, and Electron desktop integration. Essential tool for makers and IoT.",
+    description: "• Built web-based ESP32/ESP8266 firmware flasher using Web Serial API\n• Implemented serial monitoring and Electron desktop integration\n• Designed modern UI for browser-based IoT device management",
     techStack: ["TypeScript", "Electron", "Web Serial"],
     highlight: "Web-based ESP32/ESP8266 firmware flasher with serial monitoring",
     url: "https://siot-web-flasher.vercel.app/",
