@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useCallback } from "react";
 import { gsap } from "gsap";
+import BorderGlow from "./BorderGlow";
 
 const DEFAULT_GLOW_COLOR = "99, 102, 241";
 const PARTICLE_COUNT = 8;
@@ -15,36 +16,31 @@ function createParticle(x: number, y: number, glowColor: string): HTMLDivElement
   return el;
 }
 
-/* ─── Effects ─────────────────────────────────────── */
-
-function useTiltEffect(ref: React.RefObject<HTMLDivElement | null>, enabled: boolean) {
-  useEffect(() => {
-    if (!enabled || !ref.current) return;
-    const el = ref.current;
-
-    const onMove = (e: MouseEvent) => {
-      const rect = el.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      const cx = rect.width / 2;
-      const cy = rect.height / 2;
-      const rx = ((y - cy) / cy) * -6;
-      const ry = ((x - cx) / cx) * 6;
-      gsap.to(el, { rotateX: rx, rotateY: ry, duration: 0.15, ease: "power2.out", transformPerspective: 900 });
-    };
-
-    const onLeave = () => {
-      gsap.to(el, { rotateX: 0, rotateY: 0, duration: 0.4, ease: "power2.out" });
-    };
-
-    el.addEventListener("mousemove", onMove);
-    el.addEventListener("mouseleave", onLeave);
-    return () => {
-      el.removeEventListener("mousemove", onMove);
-      el.removeEventListener("mouseleave", onLeave);
-    };
-  }, [enabled, ref]);
+function rgbToHsl(rgbStr: string): string {
+  const [r, g, b] = rgbStr.split(",").map((v) => parseFloat(v.trim()));
+  if ([r, g, b].some((v) => Number.isNaN(v))) return "235 80 70";
+  const rn = r / 255;
+  const gn = g / 255;
+  const bn = b / 255;
+  const max = Math.max(rn, gn, bn);
+  const min = Math.min(rn, gn, bn);
+  let h = 0;
+  let s = 0;
+  const l = (max + min) / 2;
+  if (max !== min) {
+    const d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    switch (max) {
+      case rn: h = (gn - bn) / d + (gn < bn ? 6 : 0); break;
+      case gn: h = (bn - rn) / d + 2; break;
+      case bn: h = (rn - gn) / d + 4; break;
+    }
+    h /= 6;
+  }
+  return `${Math.round(h * 360)} ${Math.round(s * 100)} ${Math.round(l * 100)}`;
 }
+
+/* ─── Effects ─────────────────────────────────────── */
 
 function useParticleEffect(ref: React.RefObject<HTMLDivElement | null>, enabled: boolean, glowColor: string) {
   const particlesRef = useRef<HTMLDivElement[]>([]);
@@ -123,33 +119,6 @@ function useRippleEffect(ref: React.RefObject<HTMLDivElement | null>, enabled: b
   }, [enabled, glowColor, ref]);
 }
 
-function useGlowEffect(ref: React.RefObject<HTMLDivElement | null>, enabled: boolean) {
-  useEffect(() => {
-    if (!enabled || !ref.current) return;
-    const el = ref.current;
-
-    const onMove = (e: MouseEvent) => {
-      const rect = el.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      el.style.setProperty("--glow-x", `${(x / rect.width) * 100}%`);
-      el.style.setProperty("--glow-y", `${(y / rect.height) * 100}%`);
-      el.style.setProperty("--glow-intensity", "1");
-    };
-
-    const onLeave = () => {
-      el.style.setProperty("--glow-intensity", "0");
-    };
-
-    el.addEventListener("mousemove", onMove);
-    el.addEventListener("mouseleave", onLeave);
-    return () => {
-      el.removeEventListener("mousemove", onMove);
-      el.removeEventListener("mouseleave", onLeave);
-    };
-  }, [enabled, ref]);
-}
-
 /* ─── BentoCard ───────────────────────────────────── */
 
 export interface BentoCardProps {
@@ -163,9 +132,7 @@ export interface BentoCardProps {
   onMouseEnter?: React.MouseEventHandler<HTMLDivElement>;
   tier?: number;
   allowOverflow?: boolean;
-  enableTilt?: boolean;
   enableBorderGlow?: boolean;
-  enableMagnetism?: boolean;
   clickEffect?: boolean;
 }
 
@@ -180,38 +147,43 @@ export function BentoCard({
   onMouseEnter,
   tier,
   allowOverflow = false,
-  enableTilt = false,
-  enableBorderGlow = false,
-  enableMagnetism = false,
+  enableBorderGlow = true,
   clickEffect = false,
 }: BentoCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
 
-  useTiltEffect(cardRef, enableTilt || enableMagnetism);
   useParticleEffect(cardRef, enableBorderGlow, glowColor);
   useRippleEffect(cardRef, clickEffect, glowColor);
-  useGlowEffect(cardRef, enableBorderGlow);
 
   return (
-    <div
-      ref={cardRef}
-      className={`bento-card ${className}`}
-      onClick={onClick}
-      onMouseMove={onMouseMove}
-      onMouseLeave={onMouseLeave}
-      onMouseEnter={onMouseEnter}
-      style={{
-        "--glow-x": "50%",
-        "--glow-y": "50%",
-        "--glow-intensity": "0",
-        "--glow-color": glowColor,
-        position: "relative",
-        overflow: allowOverflow ? "visible" : "hidden",
-        ...style,
-      } as React.CSSProperties}
+    <BorderGlow
+      className={className}
+      style={style}
+      glowColor={rgbToHsl(glowColor)}
+      backgroundColor=""
+      borderRadius={16}
+      glowRadius={0}
+      glowIntensity={1.2}
+      edgeSensitivity={25}
+      coneSpread={20}
+      animated={false}
+      colors={["#c084fc", "#f472b6", "#38bdf8"]}
     >
-      {children}
-    </div>
+      <div
+        ref={cardRef}
+        className="bento-card-base h-full"
+        onClick={onClick}
+        onMouseMove={onMouseMove}
+        onMouseLeave={onMouseLeave}
+        onMouseEnter={onMouseEnter}
+        style={{
+          position: "relative",
+          overflow: allowOverflow ? "visible" : "hidden",
+        }}
+      >
+        {children}
+      </div>
+    </BorderGlow>
   );
 }
 

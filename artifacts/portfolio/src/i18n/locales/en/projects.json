@@ -1,9 +1,17 @@
 {
   "title": "Projects",
-  "subtitle": "Explore my work",
-  "countSuffix": "works",
+  "subtitle": "A collection of things I've built, from experiments to production systems.",
+  "archive": "Archive",
+  "searching": "Searching \"{{query}}\"",
+  "countSuffix": "projects",
   "hero": {
+    "prefix": "My",
+    "viewAll": "View all",
     "title": "Selected Works",
     "subtitle": "Move your mouse to explore"
+  },
+  "search": {
+    "placeholder": "Search projects, tech, keywords...",
+    "clear": "Clear"
   }
 }

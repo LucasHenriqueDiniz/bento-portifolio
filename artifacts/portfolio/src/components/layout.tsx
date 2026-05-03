@@ -17,6 +17,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <Link href="/projects" className="transition-colors hover:text-foreground/80 text-foreground/60">
               Projects
             </Link>
+            <Link href="/donate" className="transition-colors hover:text-foreground/80 text-foreground/60">
+              Donate
+            </Link>
           </nav>
         </div>
       </header>

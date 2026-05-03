@@ -15,12 +15,12 @@ import {
   SiFigma,
 } from "react-icons/si";
 import { FiCode } from "react-icons/fi";
-import { BentoCard } from "@/components/BentoCard";
+import { Card } from "@/components/Card";
 import { CardHeader } from "@/components/CardHeader";
 import { fadeUpSoft } from "@/lib/animations";
 
 const CARD =
-  "bg-white dark:bg-[#181818] border border-[#ebebeb] dark:border-[#282828] rounded-2xl";
+  "bg-panel border border-base rounded-2xl";
 
 /**
  * Props for TechStackCard component
@@ -91,9 +91,9 @@ export const TechStackCard = React.memo(function TechStackCard({
   ];
 
   return (
-    <BentoCard
-      tier={2}
+    <Card
       className={`${CARD} p-3 h-full`}
+      glowColor="var(--accent-glow)"
     >
       <motion.div
         custom={11}
@@ -108,17 +108,17 @@ export const TechStackCard = React.memo(function TechStackCard({
           {techGroups.map((group, groupIdx) => (
             <div
               key={group.group}
-              className="rounded-xl border border-[#e6e6e6] dark:border-[#2a2a2a] bg-[#fafafa] dark:bg-[#1a1a1a] p-2 flex flex-col min-h-0"
+              className="rounded-xl border border-base bg-field p-2 flex flex-col min-h-0"
             >
               <div className="mb-1.5 flex items-center justify-between">
-                <p className="text-[9px] font-bold uppercase tracking-wider text-[#888] dark:text-[#666] inline-flex items-center gap-1">
+                <p className="text-[9px] font-bold uppercase tracking-wider text-faint inline-flex items-center gap-1">
                   <span
                     className="w-1.5 h-1.5 rounded-full"
                     style={{ backgroundColor: group.accent }}
                   />
                   {group.group}
                 </p>
-                <span className="text-[8px] px-1 py-0.5 rounded-md bg-white dark:bg-[#222] border border-[#ececec] dark:border-[#2d2d2d] text-[#9a9a9a] dark:text-[#6f6f6f]">
+                <span className="text-[8px] px-1 py-0.5 rounded-md bg-panel border border-base text-faint">
                   {group.items.length}
                 </span>
               </div>
@@ -133,12 +133,12 @@ export const TechStackCard = React.memo(function TechStackCard({
                       delay: 0.08 + groupIdx * 0.08 + i * 0.03,
                       duration: 0.24,
                     }}
-                    className="flex items-center gap-1.5 px-1.5 py-1 rounded-md border border-transparent hover:border-[#e8e8e8] dark:hover:border-[#2f2f2f] hover:bg-white dark:hover:bg-[#222] transition-colors"
+                    className="flex items-center gap-1.5 px-1.5 py-1 rounded-md border border-transparent hover:border-base hover:bg-panel transition-colors"
                   >
                     <span style={{ color: tech.color }} className="shrink-0">
                       {tech.icon}
                     </span>
-                    <span className="text-[10px] font-medium text-[#555] dark:text-[#aaa] truncate">
+                    <span className="text-[10px] font-medium text-main truncate">
                       {tech.name}
                     </span>
                   </motion.div>
@@ -148,6 +148,6 @@ export const TechStackCard = React.memo(function TechStackCard({
           ))}
         </div>
       </motion.div>
-    </BentoCard>
+    </Card>
   );
 });

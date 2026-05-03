@@ -55,10 +55,178 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
+/* ─── Tailwind Custom Utilities (Design Tokens) ───── */
+/* Nomes escolhidos para NÃO conflitar com o tema shadcn/Tailwind v4 */
+@utility bg-canvas       { background-color: var(--bg-canvas); }
+@utility bg-panel        { background-color: var(--bg-panel); }
+@utility bg-panel-hover  { background-color: var(--bg-panel-hover); }
+@utility bg-raised       { background-color: var(--bg-elevated); }
+@utility bg-field        { background-color: var(--bg-field); }
+@utility bg-header       { background-color: var(--bg-header); }
+@utility bg-overlay      { background-color: var(--bg-overlay); }
+@utility bg-inverse      { background-color: var(--bg-inverse); }
+
+@utility border-base     { border-color: var(--border-base); }
+@utility border-ghost    { border-color: var(--border-ghost); }
+@utility border-hovered  { border-color: var(--border-hover); }
+@utility border-inverse  { border-color: var(--border-inverse); }
+
+@utility text-main       { color: var(--text-main); }
+@utility text-sub        { color: var(--text-sub); }
+@utility text-faint      { color: var(--text-faint); }
+@utility text-dim        { color: var(--text-placeholder); }
+@utility text-inverse    { color: var(--text-inverse); }
+
+@utility text-brand      { color: var(--accent); }
+@utility bg-brand        { background-color: var(--accent); }
+@utility bg-brand-hover  { background-color: var(--accent-hover); }
+@utility bg-brand-subtle { background-color: var(--accent-subtle); }
+@utility border-brand    { border-color: var(--accent); }
+
+@utility shadow-token-xs  { box-shadow: var(--shadow-xs); }
+@utility shadow-token-sm  { box-shadow: var(--shadow-sm); }
+@utility shadow-token     { box-shadow: var(--shadow); }
+@utility shadow-token-md  { box-shadow: var(--shadow-md); }
+@utility shadow-token-lg  { box-shadow: var(--shadow-lg); }
+@utility shadow-token-xl  { box-shadow: var(--shadow-xl); }
+
+/* ─── Design Tokens ───────────────────────────────── */
 :root {
+  /* Accent — trocar aqui para mudar a cor principal */
+  /* Tema Caranguejo (Crab) — tom suave para light mode */
+  --accent: #E07A5F;
+  --accent-hover: #C96A50;
+  --accent-subtle: rgba(224, 122, 95, 0.10);
+  --accent-glow: 224, 122, 95;
+
+  /* Backgrounds */
+  --bg-canvas: #f5f5f5;
+  --bg-panel: #ffffff;
+  --bg-panel-hover: #fafafa;
+  --bg-elevated: #ffffff;
+  --bg-field: #fafafa;
+  --bg-header: rgba(255, 255, 255, 0.85);
+  --bg-overlay: rgba(0, 0, 0, 0.5);
+  --bg-inverse: #0d0d0d;
+
+  /* Borders */
+  --border-base: #ebebeb;
+  --border-ghost: rgba(0, 0, 0, 0.06);
+  --border-hover: #ddd;
+  --border-inverse: #282828;
+
+  /* Text */
+  --text-main: #111111;
+  --text-sub: #666666;
+  --text-faint: #888888;
+  --text-placeholder: #aaaaaa;
+  --text-inverse: #eeeeee;
+
+  /* Status */
+  --status-completed: #22c55e;
+  --status-progress: #f59e0b;
+  --status-experimental: #8b5cf6;
+  --status-discontinued: #ef4444;
+
+  /* Legacy shadcn tokens (mantidas para compatibilidade) */
+  --button-outline: rgba(0,0,0, .08);
+  --badge-outline: rgba(0,0,0, .04);
+  --opaque-button-border-intensity: 9;
+  --elevate-1: rgba(0,0,0, .03);
+  --elevate-2: rgba(0,0,0, .06);
+
+  --background: 0 0% 96%;
+  --foreground: 0 0% 7%;
+  --border: 0 0% 92%;
+  --card: 0 0% 100%;
+  --card-foreground: 0 0% 7%;
+  --card-border: 0 0% 92%;
+
+  --sidebar: 0 0% 100%;
+  --sidebar-foreground: 0 0% 7%;
+  --sidebar-border: 0 0% 92%;
+  --sidebar-primary: 0 0% 7%;
+  --sidebar-primary-foreground: 0 0% 98%;
+  --sidebar-accent: 0 0% 96%;
+  --sidebar-accent-foreground: 0 0% 7%;
+  --sidebar-ring: 0 0% 80%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 0 0% 7%;
+  --popover-border: 0 0% 92%;
+
+  --primary: 217 60% 53%;
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 0 0% 96%;
+  --secondary-foreground: 0 0% 7%;
+
+  --muted: 0 0% 96%;
+  --muted-foreground: 0 0% 45%;
+
+  --accent-hsl: 217 60% 53%;
+  --accent-foreground: 0 0% 100%;
+
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 98%;
+
+  --input: 0 0% 92%;
+  --ring: 217 60% 53%;
+
+  --chart-1: 217 60% 53%;
+  --chart-2: 217 50% 45%;
+  --chart-3: 217 40% 35%;
+  --chart-4: 217 30% 25%;
+  --chart-5: 217 20% 15%;
+
+  --app-font-sans: 'Inter', sans-serif;
+  --app-font-serif: Georgia, serif;
+  --app-font-mono: 'JetBrains Mono', monospace;
+  --radius: 1rem;
+
+  --shadow-2xs: 0px 1px 2px 0px rgba(0,0,0,0.04);
+  --shadow-xs: 0px 1px 3px 0px rgba(0,0,0,0.06);
+  --shadow-sm: 0px 2px 4px -1px rgba(0,0,0,0.06), 0px 1px 2px -1px rgba(0,0,0,0.04);
+  --shadow: 0px 4px 6px -1px rgba(0,0,0,0.06), 0px 2px 4px -2px rgba(0,0,0,0.04);
+  --shadow-md: 0px 6px 10px -2px rgba(0,0,0,0.06), 0px 4px 6px -2px rgba(0,0,0,0.04);
+  --shadow-lg: 0px 10px 15px -3px rgba(0,0,0,0.06), 0px 4px 6px -4px rgba(0,0,0,0.04);
+  --shadow-xl: 0px 20px 25px -5px rgba(0,0,0,0.06), 0px 8px 10px -6px rgba(0,0,0,0.04);
+  --shadow-2xl: 0px 25px 50px -12px rgba(0,0,0,0.12);
+}
+
+.dark {
+  /* Accent — trocar aqui também para dark */
+  --accent: #FF7A5C;
+  --accent-hover: #FF6A4C;
+  --accent-subtle: rgba(255, 122, 92, 0.1);
+  --accent-glow: 255, 122, 92;
+
+  /* Backgrounds */
+  --bg-canvas: #0d0d0d;
+  --bg-panel: #181818;
+  --bg-panel-hover: #1f1f1f;
+  --bg-elevated: #222222;
+  --bg-field: #1a1a1a;
+  --bg-header: rgba(13, 13, 13, 0.85);
+  --bg-overlay: rgba(0, 0, 0, 0.7);
+  --bg-inverse: #ffffff;
+
+  /* Borders */
+  --border-base: #282828;
+  --border-ghost: rgba(255, 255, 255, 0.06);
+  --border-hover: #333333;
+  --border-inverse: #ebebeb;
+
+  /* Text */
+  --text-main: #eeeeee;
+  --text-sub: #aaaaaa;
+  --text-faint: #666666;
+  --text-placeholder: #444444;
+  --text-inverse: #111111;
+
+  /* Legacy shadcn */
   --button-outline: rgba(255,255,255, .10);
   --badge-outline: rgba(255,255,255, .05);
-  --opaque-button-border-intensity: 9;
   --elevate-1: rgba(255,255,255, .04);
   --elevate-2: rgba(255,255,255, .09);
 
@@ -68,7 +236,7 @@
   --card: 0 0% 6%;
   --card-foreground: 0 0% 98%;
   --card-border: 0 0% 12%;
-  
+
   --sidebar: 0 0% 6%;
   --sidebar-foreground: 0 0% 98%;
   --sidebar-border: 0 0% 12%;
@@ -77,52 +245,43 @@
   --sidebar-accent: 0 0% 12%;
   --sidebar-accent-foreground: 0 0% 98%;
   --sidebar-ring: 0 0% 20%;
-  
+
   --popover: 0 0% 6%;
   --popover-foreground: 0 0% 98%;
   --popover-border: 0 0% 12%;
-  
-  --primary: 0 0% 98%;
-  --primary-foreground: 0 0% 4%;
-  
+
+  --primary: 217 70% 60%;
+  --primary-foreground: 0 0% 100%;
+
   --secondary: 0 0% 12%;
   --secondary-foreground: 0 0% 98%;
-  
+
   --muted: 0 0% 12%;
   --muted-foreground: 0 0% 65%;
-  
-  --accent: 0 0% 12%;
-  --accent-foreground: 0 0% 98%;
-  
+
+  --accent-hsl: 217 70% 60%;
+  --accent-foreground: 0 0% 100%;
+
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 98%;
-  
+
   --input: 0 0% 12%;
-  --ring: 0 0% 20%;
-  
-  --chart-1: 0 0% 80%;
-  --chart-2: 0 0% 60%;
-  --chart-3: 0 0% 40%;
-  --chart-4: 0 0% 20%;
-  --chart-5: 0 0% 10%;
+  --ring: 217 70% 60%;
 
-  --app-font-sans: 'Inter', sans-serif;
-  --app-font-serif: Georgia, serif;
-  --app-font-mono: 'JetBrains Mono', monospace;
-  --radius: 1rem;
-  
-  --shadow-2xs: 0px 2px 0px 0px rgba(0,0,0,0.2);
-  --shadow-xs: 0px 2px 0px 0px rgba(0,0,0,0.2);
-  --shadow-sm: 0px 2px 0px 0px rgba(0,0,0,0.2), 0px 1px 2px -1px rgba(0,0,0,0.2);
-  --shadow: 0px 2px 0px 0px rgba(0,0,0,0.2), 0px 1px 2px -1px rgba(0,0,0,0.2);
-  --shadow-md: 0px 2px 0px 0px rgba(0,0,0,0.2), 0px 2px 4px -1px rgba(0,0,0,0.2);
-  --shadow-lg: 0px 2px 0px 0px rgba(0,0,0,0.2), 0px 4px 6px -1px rgba(0,0,0,0.2);
-  --shadow-xl: 0px 2px 0px 0px rgba(0,0,0,0.2), 0px 8px 10px -1px rgba(0,0,0,0.2);
-  --shadow-2xl: 0px 2px 0px 0px rgba(0,0,0,0.2);
-}
+  --chart-1: 217 70% 60%;
+  --chart-2: 217 60% 55%;
+  --chart-3: 217 50% 45%;
+  --chart-4: 217 40% 35%;
+  --chart-5: 217 30% 25%;
 
-.dark {
-  /* Same as root since we default to dark */
+  --shadow-2xs: 0px 1px 2px 0px rgba(0,0,0,0.3);
+  --shadow-xs: 0px 1px 3px 0px rgba(0,0,0,0.4);
+  --shadow-sm: 0px 2px 4px -1px rgba(0,0,0,0.3), 0px 1px 2px -1px rgba(0,0,0,0.2);
+  --shadow: 0px 4px 6px -1px rgba(0,0,0,0.3), 0px 2px 4px -2px rgba(0,0,0,0.2);
+  --shadow-md: 0px 6px 10px -2px rgba(0,0,0,0.3), 0px 4px 6px -2px rgba(0,0,0,0.2);
+  --shadow-lg: 0px 10px 15px -3px rgba(0,0,0,0.3), 0px 4px 6px -4px rgba(0,0,0,0.2);
+  --shadow-xl: 0px 20px 25px -5px rgba(0,0,0,0.3), 0px 8px 10px -6px rgba(0,0,0,0.2);
+  --shadow-2xl: 0px 25px 50px -12px rgba(0,0,0,0.4);
 }
 
 @layer base {
@@ -134,12 +293,17 @@
   }
 }
 
-/* ── Magic Bento card glow ── */
-.bento-card {
+/* ── Magic Bento card base ── */
+.bento-card-base {
   transform-style: preserve-3d;
   transition: box-shadow 0.25s ease;
 }
-.bento-card::after {
+.bento-card-base:hover {
+  box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+}
+
+/* ── Legacy Bento card glow (used when BorderGlow component is disabled) ── */
+.bento-card-glow::after {
   content: '';
   position: absolute;
   inset: 0;
@@ -158,9 +322,6 @@
   pointer-events: none;
   z-index: 2;
   transition: opacity 0.3s;
-}
-.bento-card:hover {
-  box-shadow: 0 8px 32px rgba(0,0,0,0.08);
 }
 
 /* ── Animated counters ── */
@@ -239,4 +400,95 @@
   animation: icon-pulse 2.2s ease-in-out infinite;
   display: inline-flex;
   transform-origin: center;
+}
+
+/* ── Hide scrollbar (for horizontal scroll sections) ── */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── Custom scrollbar ── */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 4px 0;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(150,150,150,0.45);
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background-clip: content-box;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(150,150,150,0.7);
+  background-clip: content-box;
+}
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.22);
+  background-clip: content-box;
+}
+.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,0.38);
+  background-clip: content-box;
+}
+
+/* Firefox */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(150,150,150,0.45) transparent;
+}
+.dark .custom-scrollbar {
+  scrollbar-color: rgba(255,255,255,0.22) transparent;
+}
+
+/* ── Global subtle scrollbar ── */
+::-webkit-scrollbar {
+  width: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(128,128,128,0.2);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(128,128,128,0.4);
+}
+
+/* ── CTA shimmer overlay ── */
+@keyframes cta-shimmer-move {
+  0%   { transform: translateX(-100%) skewX(-20deg); }
+  100% { transform: translateX(200%) skewX(-20deg); }
+}
+.cta-shimmer-overlay {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+}
+.cta-shimmer-overlay::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+  animation: cta-shimmer-move 3s infinite ease-in-out;
+}
+
+/* ── Card hover scale ── */
+.card-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card-hover:hover {
+  transform: scale(1.008);
+  box-shadow: var(--shadow-sm);
 }

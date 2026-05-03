@@ -1,14 +1,14 @@
-import { Link } from "wouter";
 import { motion } from "framer-motion";
 import { useState, useMemo, useEffect } from "react";
 import { useTranslation } from 'react-i18next';
-import { FiArrowLeft, FiPrinter, FiGithub, FiMail, FiExternalLink, FiAward, FiBriefcase, FiCode, FiLayout } from "react-icons/fi";
-import { Moon, Sun, Linkedin, Palette, MessageSquare } from "lucide-react";
-import { LanguageSwitcher } from "@/i18n/LanguageSwitcher";
+import { FiPrinter, FiGithub, FiMail, FiExternalLink, FiAward, FiBriefcase, FiCode, FiLayout } from "react-icons/fi";
+import { Linkedin, Palette, MessageSquare } from "lucide-react";
+import SiteHeader from "@/components/SiteHeader";
+import { useTheme } from "@/hooks/useTheme";
+import { MagneticDocument } from "@/components/MagneticDocument";
 import { jobExperiences, academicExperiences, projects, certificates, languages, skillsData, ContactLinks } from "@/constants";
 import { formatDateRange } from "@/lib/dateFormatter";
 
-const ACCENT = "#3d72cc";
 type ResumeFormat = "visual" | "ats";
 
 const fadeUp = (delay = 0) => ({
@@ -36,13 +36,18 @@ const projectImageMap: Record<string, string> = {
   "heartopia-guide": "/projects/heartopiaguide.webp",
   "weeb-profile": "/projects/weebprofile.webp",
   "windows-xp-online": "/projects/windows_xp_online.webp",
-  "include-gurias": "/projects/include_gurias.webp",
-  "botschannel-platform": "/projects/botschannel_plataform.webp",
-  "resgate-rs": "/projects/rs_resgate.webp",
+  "include-gurias": "/projects/include-gurias.webp",
+  "botschannel": "/projects/bots-channel.webp",
+  "resgate-rs": "/projects/resgate-rs.webp",
   "autowabba": "/projects/autowabba.webp",
   "itemmarketcap": "/projects/itemmarketcap.webp",
   "comunica-mulher": "/projects/comunicamulher.webp",
   "quizhub": "/projects/quizhub-thumbnail.webp",
+  "mannco-enhancer": "/projects/mannco-enhancer.webp",
+  "hypixel-daily-skip": "/projects/hypixel-auto-join.webp",
+  "basicao-workshop": "/projects/basicao-workshop.webp",
+  "clearcut": "/projects/clearcut.webp",
+  "instagram-enhancer": "/projects/instagram-enhancer.webp",
 };
 
 const jobFallbackIcons: Record<string, any> = {
@@ -58,11 +63,11 @@ const lucideIconMap: Record<string, any> = {
 function SectionTitle({ children, icon: Icon, delay = 0, isDark }: { children: React.ReactNode; icon?: any; delay?: number; isDark: boolean }) {
   return (
     <motion.div {...fadeUp(delay)} className="flex items-center gap-2 mb-3">
-      {Icon && <Icon size={14} style={{ color: ACCENT }} />}
-      <h2 className="text-[11px] font-black uppercase tracking-[0.15em]" style={{ color: ACCENT }}>
+      {Icon && <Icon size={14} className="text-brand" />}
+      <h2 className="text-[11px] font-black uppercase tracking-[0.15em] text-brand">
         {children}
       </h2>
-      <div className="flex-1 h-px ml-2" style={{ backgroundColor: isDark ? "rgba(61,114,204,0.2)" : "rgba(61,114,204,0.15)" }} />
+      <div className="flex-1 h-px ml-2" style={{ backgroundColor: isDark ? "var(--accent-subtle)" : "var(--accent-subtle)" }} />
     </motion.div>
   );
 }
@@ -124,7 +129,7 @@ function VisualResume({ isDark }: { isDark: boolean }) {
     if (LucideIcon) {
       return (
         <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${isDark ? "bg-white/5" : "bg-gray-100"}`}>
-          <LucideIcon size={20} style={{ color: ACCENT }} />
+          <LucideIcon size={20} className="text-brand" />
         </div>
       );
     }
@@ -132,13 +137,13 @@ function VisualResume({ isDark }: { isDark: boolean }) {
     if (FallbackIcon) {
       return (
         <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${isDark ? "bg-white/5" : "bg-gray-100"}`}>
-          <FallbackIcon size={20} style={{ color: ACCENT }} />
+          <FallbackIcon size={20} className="text-brand" />
         </div>
       );
     }
     return (
       <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${isDark ? "bg-white/5" : "bg-gray-100"}`}>
-        <FiBriefcase size={16} style={{ color: ACCENT }} />
+        <FiBriefcase size={16} className="text-brand" />
       </div>
     );
   };
@@ -151,10 +156,10 @@ function VisualResume({ isDark }: { isDark: boolean }) {
     <div className="max-w-[900px] mx-auto px-6 py-8 space-y-6">
       {/* ── HEADER ── */}
       <motion.section {...fadeUp(0)} className="flex gap-5 items-start">
-        <img src="/selfie.webp" alt="Lucas" className="w-24 h-24 rounded-xl object-cover border-2 shrink-0" style={{ borderColor: ACCENT }} />
+        <img src="/selfie.webp" alt="Lucas" className="w-24 h-24 rounded-xl object-cover border-2 shrink-0 border-brand" />
         <div className="flex-1 min-w-0">
           <h1 className="text-3xl font-black tracking-tight" style={{ color: isDark ? "#fff" : "#000" }}>Lucas Henrique Diniz</h1>
-          <p className="text-sm font-bold mt-1" style={{ color: ACCENT }}>{t('header.role')}</p>
+          <p className="text-sm font-bold mt-1 text-brand">{t('header.role')}</p>
           <p className={`text-[13px] leading-relaxed mt-2 ${isDark ? "text-gray-400" : "text-gray-600"}`}>{t('header.summary')}</p>
           
           <div className="flex flex-wrap gap-4 mt-3 text-xs">
@@ -179,9 +184,9 @@ function VisualResume({ isDark }: { isDark: boolean }) {
             <motion.div key={job.id} {...fadeUp(0.08 + i * 0.03)} className="flex gap-3 py-3 first:pt-0 last:pb-0">
               {/* Timeline dot column — fixed width, always aligned */}
               <div className="relative w-4 shrink-0 flex justify-center">
-                <div className="w-2.5 h-2.5 rounded-full border-2 mt-1.5" style={{ backgroundColor: isDark ? "#1f2937" : "#fff", borderColor: ACCENT }} />
+                <div className="w-2.5 h-2.5 rounded-full border-2 mt-1.5 border-brand" style={{ backgroundColor: isDark ? "#1f2937" : "#fff" }} />
                 {i < activeJobs.length - 1 && (
-                  <div className="absolute top-4 bottom-0 left-1/2 w-px border-l border-dashed" style={{ borderColor: isDark ? "rgba(61,114,204,0.2)" : "rgba(61,114,204,0.15)" }} />
+                  <div className="absolute top-4 bottom-0 left-1/2 w-px border-l border-dashed border-brand/20" />
                 )}
               </div>
 
@@ -195,7 +200,7 @@ function VisualResume({ isDark }: { isDark: boolean }) {
                 <div className="flex items-center gap-2 flex-wrap">
                   <h3 className="text-sm font-bold" style={{ color: isDark ? "#fff" : "#000" }}>{getJobTitle(job)}</h3>
                   {!job.endDate && (
-                    <span className="text-[9px] font-bold px-1.5 py-0.5 rounded" style={{ color: ACCENT, backgroundColor: isDark ? "rgba(61,114,204,0.12)" : "rgba(61,114,204,0.08)" }}>
+                    <span className="text-[9px] font-bold px-1.5 py-0.5 rounded text-brand bg-brand/10">
                       {t('common:status.current')}
                     </span>
                   )}
@@ -220,7 +225,7 @@ function VisualResume({ isDark }: { isDark: boolean }) {
           {featuredProjects.map((proj, i) => {
             const imageSrc = projectImageMap[proj.id] || proj.image || "/logo.svg";
             return (
-              <motion.a key={proj.id} href={proj.url} target="_blank" rel="noreferrer" {...fadeUp(0.18 + i * 0.04)} className={`group block rounded-xl border overflow-hidden transition-all hover:scale-[1.02] hover:shadow-lg ${isDark ? "bg-white/[0.02] border-white/8 hover:border-[#3d72cc]/30" : "bg-white border-gray-200 hover:border-[#3d72cc]/30"}`}>
+              <motion.a key={proj.id} href={proj.url} target="_blank" rel="noreferrer" {...fadeUp(0.18 + i * 0.04)} className={`group block rounded-xl border overflow-hidden transition-all hover:scale-[1.02] hover:shadow-lg ${isDark ? "bg-white/[0.02] border-white/8 hover:border-brand/30" : "bg-white border-gray-200 hover:border-brand/30"}`}>
                 <div className="relative h-28 overflow-hidden bg-gray-100 dark:bg-gray-800">
                   <img src={imageSrc} alt={proj.name} className="w-full h-full object-cover transition-transform group-hover:scale-110" onError={(e) => { (e.target as HTMLImageElement).src = "/logo.svg"; }} />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
@@ -265,7 +270,7 @@ function VisualResume({ isDark }: { isDark: boolean }) {
                 </div>
               ) : (
                 <div className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 border-2 ${isDark ? "bg-white/5" : "bg-gray-100"}`} style={{ borderColor: isDark ? "rgba(61,114,204,0.3)" : "rgba(61,114,204,0.2)" }}>
-                  <FiAward size={20} style={{ color: ACCENT }} />
+                  <FiAward size={20} className="text-brand" />
                 </div>
               )}
               <div className="min-w-0 flex-1">
@@ -299,10 +304,10 @@ function VisualResume({ isDark }: { isDark: boolean }) {
         <div className="grid grid-cols-1 gap-y-1">
           {certificates.map((cert) => (
             <a key={cert.title} href={cert.url} target="_blank" rel="noreferrer" className={`flex items-center gap-2 text-[11px] py-1 hover:opacity-70 transition-opacity group ${isDark ? "text-gray-300" : "text-gray-700"}`}>
-              <span style={{ color: ACCENT }}>•</span>
+              <span className="text-brand">•</span>
               <span className="flex-1 truncate">{cert.title}</span>
               <span className={`text-[10px] shrink-0 ${isDark ? "text-gray-600" : "text-gray-400"}`}>({cert.issueDate})</span>
-              {cert.url && <FiExternalLink size={10} className="opacity-0 group-hover:opacity-100 transition-opacity shrink-0" style={{ color: ACCENT }} />}
+              {cert.url && <FiExternalLink size={10} className="opacity-0 group-hover:opacity-100 transition-opacity shrink-0 text-brand" />}
             </a>
           ))}
         </div>
@@ -339,7 +344,7 @@ function ATSResume({ isDark = false }: { isDark?: boolean }) {
     }), []);
 
   // Only 4 top projects for ATS
-  const atsProjectIds = ["botschannel-platform", "heartopia-guide", "weeb-profile", "siot-web-flasher"];
+  const atsProjectIds = ["botschannel", "heartopia-guide", "weeb-profile", "context-tools"];
   const atsProjects = useMemo(() => atsProjectIds
     .map(id => projects.find(p => p.id === id))
     .filter(Boolean), []);
@@ -353,7 +358,7 @@ function ATSResume({ isDark = false }: { isDark?: boolean }) {
     <ul className="mt-1 space-y-0.5 list-none pl-0">
       {text.split('\n').map((line, i) => (
         <li key={i} className={`text-[11px] leading-relaxed flex items-start gap-1.5 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
-          <span className="mt-1.5 w-1 h-1 rounded-full shrink-0" style={{ backgroundColor: ACCENT }} />
+          <span className="mt-1.5 w-1 h-1 rounded-full shrink-0 bg-brand" />
           <span>{line.replace(/^•\s*/, '')}</span>
         </li>
       ))}
@@ -456,11 +461,7 @@ function ATSResume({ isDark = false }: { isDark?: boolean }) {
 
 // ─── Main Page ───────────────────────────────────────────
 export default function ResumePage() {
-  const [isDark, setIsDark] = useState(() =>
-    typeof window !== "undefined"
-      ? localStorage.getItem("portfolio-theme") === "dark"
-      : false
-  );
+  const { isDark, toggleTheme } = useTheme();
   const [format, setFormat] = useState<ResumeFormat>("visual");
   const { t, i18n } = useTranslation('common');
   const currentLang = i18n.language?.split("-")[0] || "pt";
@@ -473,15 +474,8 @@ export default function ResumePage() {
     };
   }, [currentLang]);
 
-  const toggleDark = () => {
-    setIsDark(d => {
-      localStorage.setItem("portfolio-theme", !d ? "dark" : "light");
-      return !d;
-    });
-  };
-
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${isDark ? "dark bg-[#0f0f0f] text-gray-100" : "bg-white text-gray-900"}`}>
+    <div className={`min-h-screen transition-colors duration-300 ${isDark ? "dark bg-canvas text-main" : "bg-canvas text-main"}`}>
       <style>{`
         .print-only { display: none; }
         @media print {
@@ -495,39 +489,55 @@ export default function ResumePage() {
         }
       `}</style>
 
-      <header className={`no-print sticky top-0 z-50 h-14 border-b ${isDark ? "bg-black/95 border-gray-800" : "bg-white border-gray-200"} backdrop-blur-sm`}>
+      <SiteHeader isDark={isDark} onToggleTheme={toggleTheme} />
+
+      <header className={`no-print mt-14 sticky top-14 z-40 h-14 border-b border-base bg-header/95 backdrop-blur-sm`}>
         <div className="max-w-[900px] mx-auto px-6 h-full flex items-center justify-between">
-          <Link href="/" className={`text-xs font-semibold flex items-center gap-1.5 transition-opacity hover:opacity-70 ${isDark ? "text-gray-400" : "text-gray-600"}`}>
-            <FiArrowLeft size={14} /> {t('buttons.back')}
-          </Link>
-
-          <div className={`flex items-center gap-1 rounded-lg p-1 ${isDark ? "bg-gray-900" : "bg-gray-100"}`}>
-            <button onClick={() => setFormat("visual")} className={`px-3 py-1.5 text-xs font-semibold rounded transition-colors ${format === "visual" ? (isDark ? "bg-white/10 text-white" : "bg-white text-gray-900") : (isDark ? "text-gray-400 hover:text-gray-200" : "text-gray-600 hover:text-gray-900")}`}>Visual</button>
-            <button onClick={() => setFormat("ats")} className={`px-3 py-1.5 text-xs font-semibold rounded transition-colors ${format === "ats" ? (isDark ? "bg-white/10 text-white" : "bg-white text-gray-900") : (isDark ? "text-gray-400 hover:text-gray-200" : "text-gray-600 hover:text-gray-900")}`}>ATS</button>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <LanguageSwitcher isDark={isDark} />
+          <div className={`flex items-center gap-1 p-1 rounded-xl border border-base ${isDark ? "bg-panel" : "bg-panel"}`}>
             <button
-              onClick={() => window.print()}
-              className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border transition-colors ${isDark ? "text-gray-400 border-gray-700 hover:text-gray-200" : "text-gray-600 border-gray-300 hover:text-gray-900"}`}
-              title={currentLang === 'en' ? 'Download ATS PDF' : 'Baixar PDF ATS'}
+              onClick={() => setFormat("visual")}
+              className={`px-3 py-1.5 text-xs font-semibold border transition-colors rounded-l-xl rounded-r-md ${
+                format === "visual"
+                  ? "bg-brand text-white border-brand"
+                  : isDark
+                    ? "text-gray-300 border-transparent hover:text-white"
+                    : "text-gray-700 border-transparent hover:text-gray-900"
+              }`}
             >
-              <FiPrinter size={13} />
-              <span>{currentLang === 'en' ? 'ATS PDF' : 'PDF ATS'}</span>
+              Visual
             </button>
-            <button onClick={toggleDark} className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${isDark ? "text-gray-500 hover:bg-gray-900" : "text-gray-600 hover:bg-gray-100"}`}>
-              {isDark ? <Sun size={14} /> : <Moon size={14} />}
+            <button
+              onClick={() => setFormat("ats")}
+              className={`px-3 py-1.5 text-xs font-semibold border transition-colors rounded-r-xl rounded-l-md ${
+                format === "ats"
+                  ? "bg-brand text-white border-brand"
+                  : isDark
+                    ? "text-gray-300 border-transparent hover:text-white"
+                    : "text-gray-700 border-transparent hover:text-gray-900"
+              }`}
+            >
+              ATS
             </button>
           </div>
+
+          <button
+            onClick={() => window.print()}
+            className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border transition-colors ${isDark ? "text-gray-300 border-base hover:text-white" : "text-gray-700 border-base hover:text-gray-900"}`}
+            title={currentLang === 'en' ? 'Download ATS PDF' : 'Baixar PDF ATS'}
+          >
+            <FiPrinter size={13} />
+            <span>{currentLang === 'en' ? 'ATS PDF' : 'PDF ATS'}</span>
+          </button>
         </div>
       </header>
 
       {/* Screen-only: switches between visual and ATS view */}
       <div className="screen-only">
-        <motion.div key={format} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.25 }}>
-          {format === "visual" ? <VisualResume isDark={isDark} /> : <ATSResume isDark={isDark} />}
-        </motion.div>
+        <MagneticDocument>
+          <motion.div key={format} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.25 }}>
+            {format === "visual" ? <VisualResume isDark={isDark} /> : <ATSResume isDark={isDark} />}
+          </motion.div>
+        </MagneticDocument>
       </div>
 
       {/* Print-only: always ATS, always in DOM */}
@@ -536,7 +546,7 @@ export default function ResumePage() {
       </div>
 
       <div className={`no-print text-center text-[10px] py-6 border-t ${isDark ? "border-gray-800 text-gray-600" : "border-gray-200 text-gray-400"}`}>
-        {t('footer.generatedFrom')} <span style={{ color: ACCENT }} className="font-semibold">lucashdo.com</span>
+        {t('footer.generatedFrom')} <span className="font-semibold text-brand">lucashdo.com</span>
       </div>
     </div>
   );

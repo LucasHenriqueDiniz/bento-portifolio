@@ -513,6 +513,31 @@ router.get("/portfolio/projects", async (_req, res): Promise<void> => {
 const MAL_USER = process.env.MAL_USERNAME ?? "Amayacrab";
 const JIKAN_BASE = "https://api.jikan.moe/v4";
 
+function isMalPayloadEmpty(payload: ReturnType<typeof GetMalDataResponse.parse>) {
+  const animeEmpty = payload.animeStats.completed === 0 && payload.animeStats.watching === 0 && payload.animeStats.episodesWatched === 0;
+  const mangaEmpty = payload.mangaStats.completed === 0 && payload.mangaStats.reading === 0 && payload.mangaStats.chaptersRead === 0;
+  return animeEmpty && mangaEmpty && payload.animeFavorites.length === 0 && payload.mangaFavorites.length === 0;
+}
+
+async function fetchJikanUserResource<T>(resource: "statistics" | "favorites", retries = 2): Promise<T> {
+  for (let i = 0; i <= retries; i++) {
+    const res = await fetch(`${JIKAN_BASE}/users/${MAL_USER}/${resource}`);
+
+    if (res.status === 429) {
+      await delay(1000 + i * 500);
+      continue;
+    }
+
+    if (!res.ok) {
+      throw new Error(`Jikan ${resource} request failed (${res.status}) for user '${MAL_USER}'`);
+    }
+
+    return res.json() as Promise<T>;
+  }
+
+  throw new Error(`Jikan ${resource} request rate-limited for user '${MAL_USER}'`);
+}
+
 const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 async function fetchJikanDetails(type: "anime" | "manga", id: number, retries = 2): Promise<any> {
@@ -536,17 +561,12 @@ async function fetchJikanDetails(type: "anime" | "manga", id: number, retries = 
 
 router.get("/portfolio/mal", async (_req, res): Promise<void> => {
   const cached = fromCache<ReturnType<typeof GetMalDataResponse.parse>>("mal");
-  if (cached) { res.json(cached); return; }
+  if (cached && !isMalPayloadEmpty(cached)) { res.json(cached); return; }
 
   try {
-    const [statsRes, favsRes] = await Promise.all([
-      fetch(`${JIKAN_BASE}/users/${MAL_USER}/statistics`),
-      fetch(`${JIKAN_BASE}/users/${MAL_USER}/favorites`),
-    ]);
-
     const [statsJson, favsJson] = await Promise.all([
-      statsRes.json() as Promise<{ data?: { anime?: { completed?: number; watching?: number; episodes_watched?: number }; manga?: { completed?: number; reading?: number; chapters_read?: number } } }>,
-      favsRes.json() as Promise<{ data?: { anime?: Array<{ mal_id: number; title: string; start_year?: number | null; images?: { jpg?: { image_url?: string } } }>; manga?: Array<{ mal_id: number; title: string; start_year?: number | null; images?: { jpg?: { image_url?: string } } }> } }>,
+      fetchJikanUserResource<{ data?: { anime?: { completed?: number; watching?: number; episodes_watched?: number }; manga?: { completed?: number; reading?: number; chapters_read?: number } } }>("statistics"),
+      fetchJikanUserResource<{ data?: { anime?: Array<{ mal_id: number; title: string; start_year?: number | null; images?: { jpg?: { image_url?: string } } }>; manga?: Array<{ mal_id: number; title: string; start_year?: number | null; images?: { jpg?: { image_url?: string } } }> } }>("favorites"),
     ]);
 
     const anime = statsJson.data?.anime;
@@ -555,6 +575,10 @@ router.get("/portfolio/mal", async (_req, res): Promise<void> => {
     const rawFavManga = favsJson.data?.manga ?? [];
     const favAnime = Array.isArray(rawFavAnime) ? rawFavAnime : [rawFavAnime];
     const favManga = Array.isArray(rawFavManga) ? rawFavManga : [rawFavManga];
+
+    if (!anime && !manga && favAnime.length === 0 && favManga.length === 0) {
+      throw new Error(`Empty MAL payload from Jikan for user '${MAL_USER}'`);
+    }
 
     // Fetch details for each favorite with delay to respect Jikan rate limit (~3 req/s)
     const animeDetails: any[] = [];

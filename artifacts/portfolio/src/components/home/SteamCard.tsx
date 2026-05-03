@@ -144,20 +144,20 @@ export const SteamCard = React.memo(function SteamCard({
       loadingIcon={
         <SiSteam
           size={28}
-          className={isDark ? "text-[#1b2838]" : "text-[#1b2838]"}
+          className="text-brand"
         />
       }
       emptyIcon={
         <SiSteam
           size={24}
-          className={isDark ? "text-[#1b2838]" : "text-[#1b2838]"}
+          className="text-brand"
         />
       }
       className="h-full rounded-2xl overflow-hidden"
       style={{
-        border: isDark ? "1px solid #282828" : "1px solid #ebebeb",
+        border: `1px solid var(--border-base)`,
       }}
-      glowColor="27, 40, 56"
+      glowColor="var(--accent-glow)"
     >
       {steam?.recentGames && steam.recentGames.length > 0 && (
         <motion.div

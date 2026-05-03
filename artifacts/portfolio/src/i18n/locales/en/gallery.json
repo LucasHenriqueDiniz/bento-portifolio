@@ -1,0 +1,20 @@
+{
+  "label": "Gallery",
+  "title": "Drawings & Art",
+  "subtitle": "A place to share personal illustrations, studies, and experiments.",
+  "nsfwOverlay": "NSFW - click to view",
+  "nsfwWarning": {
+    "title": "Sensitive content",
+    "description": "This image may contain nudity or adult themes. Do you want to continue?",
+    "remember": "Do not show this warning again in this session",
+    "cancel": "Cancel",
+    "confirm": "View image"
+  },
+  "viewer": {
+    "close": "Close",
+    "openOriginal": "Open original"
+  },
+  "legend": {
+    "nsfw": "NSFW items are blurred in the grid"
+  }
+}

@@ -59,21 +59,21 @@ export const DiscordCard = React.memo(function DiscordCard({
     <WidgetCard
       isLoading={isLoading}
       error={!discord ? "Status indisponível" : null}
-      loadingIcon={<SiDiscord size={28} className="text-[#5865f2]" />}
-      emptyIcon={<SiDiscord size={24} className="text-[#5865f2]" />}
+      loadingIcon={<SiDiscord size={28} className="text-brand" />}
+      emptyIcon={<SiDiscord size={24} className="text-brand" />}
       className="h-full rounded-2xl overflow-hidden"
       style={{
-        border: isDark ? "1px solid #282828" : "1px solid #ebebeb",
+        border: `1px solid var(--border-base)`,
       }}
-      glowColor="88, 101, 242"
+      glowColor="var(--accent-glow)"
     >
       {discord && (
         <div className="p-3 h-full flex flex-col gap-2">
           {/* Header */}
           <div className="flex items-center justify-between shrink-0">
             <div className="inline-flex items-center gap-1.5">
-              <SiDiscord size={12} className="text-[#5865f2]" />
-              <span className="text-[9px] font-semibold text-[#5865f2] uppercase tracking-wider">Discord</span>
+              <SiDiscord size={12} className="text-brand" />
+              <span className="text-[9px] font-semibold text-brand uppercase tracking-wider">Discord</span>
             </div>
           </div>
 
@@ -88,23 +88,23 @@ export const DiscordCard = React.memo(function DiscordCard({
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <div className="w-full h-full bg-[#5865f2] flex items-center justify-center">
+                  <div className="w-full h-full bg-brand flex items-center justify-center">
                     <SiDiscord size={18} className="text-white" />
                   </div>
                 )}
               </div>
               <span
-                className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-[2px] ring-1 ring-[#5865f2]/20 ${isDark ? "border-[#181818]" : "border-white"}`}
+                className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-[2px] ring-1 ring-[#5865f2]/20 border-card"
                 style={{ backgroundColor: statusColor }}
               />
             </div>
             <div className="flex-1 min-w-0">
-              <p className={`font-bold text-[11px] leading-tight truncate ${isDark ? "text-white" : "text-[#111]"}`}>
+              <p className="font-bold text-[11px] leading-tight truncate text-main">
                 {discord.displayName ?? "lucashdo"}
               </p>
               <div className="flex items-center gap-1 mt-0.5">
                 <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: statusColor }} />
-                <p className={`text-[8px] capitalize font-medium ${isDark ? "text-white/50" : "text-[#666]"}`}>
+                <p className="text-[8px] capitalize font-medium text-sub">
                   {discord.status ?? "online"}
                 </p>
               </div>
@@ -112,20 +112,20 @@ export const DiscordCard = React.memo(function DiscordCard({
           </div>
 
           {/* Divider */}
-          <div className={`border-t ${isDark ? "border-white/[0.08]" : "border-[#ebebeb]"}`} />
+          <div className="border-t border-base" />
 
           {/* Activity Section */}
           <div className="flex-1 min-h-0 flex flex-col justify-between">
             <div>
-              <p className={`text-[7px] uppercase tracking-widest font-bold mb-1 ${isDark ? "text-[#5865f2]/60" : "text-[#5865f2]/70"}`}>
+              <p className="text-[7px] uppercase tracking-widest font-bold mb-1 text-brand/70">
                 {discord.activity ? "Activity" : "Status"}
               </p>
-              <div className={`rounded-lg p-2 border ${isDark ? "bg-white/3 border-white/8" : "bg-[#f5f5ff] border-[#e0e0ff]"}`}>
-                <p className={`text-[10px] font-semibold truncate ${isDark ? "text-white" : "text-[#111]"}`}>
+              <div className={`rounded-lg p-2 border ${isDark ? "bg-white/3 border-white/8" : "bg-brand/5 border-brand/10"}`}>
+                <p className="text-[10px] font-semibold truncate text-main">
                   {discord.activity ?? discord.customStatus ?? "Idle"}
                 </p>
                 {discord.activityDetail && (
-                  <p className={`text-[8px] truncate mt-0.5 ${isDark ? "text-white/40" : "text-[#666]"}`}>
+                  <p className="text-[8px] truncate mt-0.5 text-faint">
                     {discord.activityDetail}
                   </p>
                 )}
@@ -133,8 +133,8 @@ export const DiscordCard = React.memo(function DiscordCard({
             </div>
             
             {discord.customStatus && (
-              <div className={`rounded-lg p-2 border text-center ${isDark ? "bg-white/3 border-white/8" : "bg-[#f5f5ff] border-[#e0e0ff]"}`}>
-                <p className={`text-[8px] italic ${isDark ? "text-white/60" : "text-[#555]"}`}>
+              <div className={`rounded-lg p-2 border text-center ${isDark ? "bg-white/3 border-white/8" : "bg-brand/5 border-brand/10"}`}>
+                <p className="text-[8px] italic text-sub">
                   "{discord.customStatus}"
                 </p>
               </div>
