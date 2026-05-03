@@ -41,16 +41,16 @@ export const AlbumArtCard = memo(function AlbumArtCard({
       isLoading={isLoading}
       error={!nowPlaying?.albumArt ? t("album.empty") : null}
       loadingIcon={
-        <SiLastdotfm size={28} className="text-[#ccc] dark:text-[#444]" />
+        <SiLastdotfm size={28} className="text-brand" />
       }
       emptyIcon={
-        <SiLastdotfm size={24} className="text-[#ccc] dark:text-[#444]" />
+        <SiLastdotfm size={24} className="text-brand" />
       }
       className="rounded-2xl overflow-hidden relative h-full"
       style={{
-        border: "1px solid",
-        borderColor: isDark ? "#282828" : "#ebebeb",
+        border: "1px solid var(--border-base)",
       }}
+      glowColor="var(--accent-glow)"
     >
       {nowPlaying?.albumArt && (
         <motion.div

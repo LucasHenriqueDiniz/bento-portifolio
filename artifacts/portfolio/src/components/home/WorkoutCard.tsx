@@ -1,7 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
-import { Dumbbell, Flame, Clock, Target } from "lucide-react";
+import { Dumbbell, TrendingUp } from "lucide-react";
 import { WidgetCard } from "@/components/WidgetCard";
 import CountUp from "@/components/CountUp";
 
@@ -68,101 +68,91 @@ export const WorkoutCard = React.memo(function WorkoutCard({
 }: WorkoutCardProps) {
   const { t } = useTranslation("home");
   const exercises = Array.isArray(workout?.exercises) ? workout.exercises : [];
+  const hasExercises = exercises.length > 0;
   
   return (
     <WidgetCard
       isLoading={isLoading}
       error={!workout ? t("workout.error") : null}
-      loadingIcon={<Dumbbell size={28} className="text-[#ff6b6b]" />}
-      emptyIcon={<Dumbbell size={24} className="text-[#ccc] dark:text-[#444]" />}
+      loadingIcon={<Dumbbell size={28} className="text-brand" />}
+      emptyIcon={<Dumbbell size={24} className="text-faint" />}
       className="h-full rounded-2xl overflow-hidden"
       style={{
-        border: isDark ? "1px solid #282828" : "1px solid #ebebeb",
+        border: `1px solid var(--border-base)`,
       }}
-      glowColor="255, 107, 107"
+      glowColor="var(--accent-glow)"
     >
       {workout && (
-        <div className="p-3 h-full flex flex-col gap-2">
+        <div className="p-3 h-full flex flex-col gap-2 bg-panel">
           {/* Header */}
           <div className="flex items-center justify-between shrink-0">
             <div className="inline-flex items-center gap-1.5">
-              <Dumbbell size={12} className="text-[#ff6b6b]" />
-              <span className={`text-[9px] font-semibold text-[#ff6b6b] uppercase tracking-wider`}>{t("workout.title")}</span>
+              <Dumbbell size={12} className="text-brand" />
+              <span className="text-[9px] font-semibold text-brand uppercase tracking-wider">{t("workout.title")}</span>
             </div>
+            <span className={`text-[8px] px-1.5 py-0.5 rounded-full border ${isDark ? "bg-white/5 border-white/10 text-white/60" : "bg-field border-base text-faint"}`}>
+              {workout.type ?? "Workout"}
+            </span>
           </div>
 
-          {/* Stats Grid 2×2 */}
+          {/* Stats */}
           <div className="grid grid-cols-2 gap-1.5 shrink-0">
             {/* Total Volume */}
-            <div className={`rounded-lg p-2 border ${isDark ? "bg-white/3 border-white/8" : "bg-white border-[#ebebeb]"}`}>
-              <p className={`text-[14px] font-black leading-none ${isDark ? "text-white" : "text-[#111]"}`}>
-                <CountUp to={workout.totalVolume ?? 0} separator="," duration={1.4} />
-              </p>
-              <p className={`text-[7px] uppercase tracking-wider mt-0.5 font-semibold ${isDark ? "text-white/40" : "text-[#999]"}`}>
-                {t("workout.volume")}
-              </p>
-            </div>
-
-            {/* Streak */}
-            <div className={`rounded-lg p-2 border ${isDark ? "bg-white/3 border-white/8" : "bg-white border-[#ebebeb]"}`}>
-              <p className={`text-[14px] font-black leading-none ${isDark ? "text-white" : "text-[#111]"}`}>
-                <CountUp to={workout.weeklyStats?.streak ?? 0} duration={0.8} />
-              </p>
-              <p className={`text-[7px] uppercase tracking-wider mt-0.5 font-semibold ${isDark ? "text-white/40" : "text-[#999]"}`}>
-                {t("workout.streak")}
-              </p>
-            </div>
-
-            {/* Duration */}
-            <div className={`rounded-lg p-2 border ${isDark ? "bg-white/3 border-white/8" : "bg-white border-[#ebebeb]"}`}>
-              <p className={`text-[14px] font-black leading-none ${isDark ? "text-white" : "text-[#111]"}`}>
-                <CountUp to={workout.duration ?? 0} duration={1.0} />
-              </p>
-              <p className={`text-[7px] uppercase tracking-wider mt-0.5 font-semibold ${isDark ? "text-white/40" : "text-[#999]"}`}>
-                {t("workout.minutes")}
-              </p>
+            <div className={`rounded-lg p-2 border ${isDark ? "bg-white/4 border-white/10" : "bg-panel border-base"}`}>
+              <div className="flex items-start justify-between">
+                <p className="text-[14px] font-black leading-none text-main">
+                  <CountUp to={workout.totalVolume ?? 0} separator="," duration={1.4} />
+                </p>
+                <TrendingUp size={10} className="text-brand/70" />
+              </div>
+              <p className="text-[7px] uppercase tracking-wider mt-0.5 font-semibold text-faint">{t("workout.volume")}</p>
             </div>
 
             {/* Workouts This Week */}
-            <div className={`rounded-lg p-2 border ${isDark ? "bg-white/3 border-white/8" : "bg-white border-[#ebebeb]"}`}>
-              <p className={`text-[14px] font-black leading-none ${isDark ? "text-white" : "text-[#111]"}`}>
+            <div className={`rounded-lg p-2 border ${isDark ? "bg-white/4 border-white/10" : "bg-panel border-base"}`}>
+              <p className="text-[14px] font-black leading-none text-main">
                 <CountUp to={workout.weeklyStats?.workoutsThisWeek ?? 0} duration={0.7} />
               </p>
-              <p className={`text-[7px] uppercase tracking-wider mt-0.5 font-semibold ${isDark ? "text-white/40" : "text-[#999]"}`}>
-                {t("workout.thisWeek")}
-              </p>
+              <p className="text-[7px] uppercase tracking-wider mt-0.5 font-semibold text-faint">{t("workout.thisWeek")}</p>
             </div>
           </div>
 
-          {/* Divider */}
-          <div className={`border-t ${isDark ? "border-white/[0.08]" : "border-[#ebebeb]"}`} />
+          <div className="flex items-center justify-between mt-0.5 shrink-0">
+            <p className="text-[8px] uppercase tracking-[0.18em] font-semibold text-faint">{t("workout.exercises")}</p>
+            <p className="text-[8px] text-faint">{t("workout.items", { count: exercises.length })}</p>
+          </div>
 
-          {/* Exercise List */}
-          <div className="flex-1 flex flex-col justify-between min-h-0 gap-1">
-            {exercises.slice(0, 4).map((ex, i) => (
-              <motion.div
-                key={ex.name}
-                initial={{ opacity: 0, x: -6 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.12 + i * 0.05, duration: 0.28 }}
-                className="flex items-center justify-between gap-2 py-0.5 group"
-              >
-                <div className="flex items-center gap-1.5 flex-1 min-w-0">
-                  <Dumbbell size={9} className="text-[#ff6b6b]/40 shrink-0" />
-                  <p className={`text-[10px] font-medium truncate ${isDark ? "text-white/70" : "text-[#555]"}`}>
-                    {ex.name}
-                  </p>
-                </div>
-                <div className="flex items-center gap-1 shrink-0">
-                  <span className={`text-[8px] font-semibold px-1.5 py-0.5 rounded-md ${isDark ? "bg-white/5 border border-white/10 text-white/50" : "bg-[#f5f5f5] border border-[#e0e0e0] text-[#666]"}`}>
-                    {ex.sets}×{ex.reps}
-                  </span>
-                  <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded-md ${isDark ? "bg-[#ff6b6b]/15 text-[#ff9999]" : "bg-[#fff5f5] border border-[#ffe0e0] text-[#ff6b6b]"}`}>
-                    {ex.weight}kg
-                  </span>
-                </div>
-              </motion.div>
-            ))}
+          <div className={`rounded-lg border ${isDark ? "border-white/10 bg-white/3" : "border-base bg-field/40"} p-1.5 flex-1 min-h-0`}>
+            {hasExercises ? (
+              <div className="h-full overflow-y-auto custom-scrollbar pr-1 space-y-1">
+                {exercises.map((ex, i) => (
+                  <motion.div
+                    key={`${ex.name}-${i}`}
+                    initial={{ opacity: 0, x: -6 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.08 + i * 0.03, duration: 0.24 }}
+                    className={`flex items-center justify-between gap-2 rounded-md px-1.5 py-1 ${isDark ? "hover:bg-white/5" : "hover:bg-panel"}`}
+                  >
+                    <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                      <Dumbbell size={9} className="text-brand/45 shrink-0" />
+                      <p className="text-[10px] font-medium truncate text-sub">{ex.name}</p>
+                    </div>
+                    <div className="flex items-center gap-1 shrink-0">
+                      <span className={`text-[8px] font-semibold px-1.5 py-0.5 rounded-md ${isDark ? "bg-white/5 border border-white/10 text-white/65" : "bg-panel border border-base text-faint"}`}>
+                        {ex.sets}x{ex.reps}
+                      </span>
+                      <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded-md ${isDark ? "bg-brand/15 text-brand" : "bg-brand-subtle border border-brand/20 text-brand"}`}>
+                        {ex.weight}kg
+                      </span>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            ) : (
+              <div className="h-full flex items-center justify-center">
+                <p className="text-[10px] text-faint">{t("workout.empty")}</p>
+              </div>
+            )}
           </div>
         </div>
       )}

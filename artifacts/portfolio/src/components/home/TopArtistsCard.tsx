@@ -4,8 +4,9 @@ import { useTranslation } from "react-i18next";
 import { SiLastdotfm } from "react-icons/si";
 import { WidgetCard } from "@/components/WidgetCard";
 import { useFlipLock } from "@/hooks/useFlipLock";
+import CountUp from "@/components/CountUp";
 
-const ACCENT = "#d51007";
+const ACCENT = "var(--accent)";
 
 interface Artist {
   name: string;
@@ -53,18 +54,22 @@ export const TopArtistsCard = React.memo(function TopArtistsCard({
   const artists = Array.isArray(topArtists) ? topArtists : [];
 
   useEffect(() => {
+    let mounted = true;
     artists.slice(0, 5).forEach(async (artist) => {
       const img = await fetchArtistImage(artist.name);
-      if (img) setImages(prev => ({ ...prev, [artist.name]: img }));
+      if (img && mounted) setImages(prev => ({ ...prev, [artist.name]: img }));
     });
+    return () => { mounted = false; };
   }, [artists]);
 
   useEffect(() => {
     if (!flipped || tracks.length > 0) return;
+    let mounted = true;
     setLoadingTracks(true);
     fetch(`${import.meta.env.VITE_API_URL || ""}/api/portfolio/top-tracks`)
       .then(r => r.json())
       .then((data) => {
+        if (!mounted) return;
         const arr = Array.isArray(data) ? data : [];
         setTracks(arr);
         setLoadingTracks(false);
@@ -72,13 +77,16 @@ export const TopArtistsCard = React.memo(function TopArtistsCard({
         arr.slice(0, 5).forEach(async (track: Track) => {
           const query = `${track.artist} ${track.name}`;
           const img = await fetchArtistImage(query);
-          if (img) setImages(prev => ({ ...prev, [`${track.artist}-${track.name}`]: img }));
+          if (img && mounted) setImages(prev => ({ ...prev, [`${track.artist}-${track.name}`]: img }));
         });
       })
       .catch(() => {
-        setTracks([]);
-        setLoadingTracks(false);
+        if (mounted) {
+          setTracks([]);
+          setLoadingTracks(false);
+        }
       });
+    return () => { mounted = false; };
   }, [flipped, tracks.length]);
 
   const handleFlip = () => {
@@ -104,12 +112,12 @@ export const TopArtistsCard = React.memo(function TopArtistsCard({
     <WidgetCard
       isLoading={isLoading && !flipped}
       error={!flipped && artists.length === 0 ? t("artists.error") : null}
-      loadingIcon={<SiLastdotfm size={28} className="text-[#d51007]" />}
-      emptyIcon={<SiLastdotfm size={24} className="text-[#ccc] dark:text-[#444]" />}
+      loadingIcon={<SiLastdotfm size={28} className="text-brand" />}
+      emptyIcon={<SiLastdotfm size={24} className="text-faint" />}
       emptyMessage={t("artists.empty")}
       className="h-full cursor-pointer rounded-2xl overflow-hidden"
       style={{
-        border: isDark ? "1px solid #282828" : "1px solid #ebebeb",
+        border: `1px solid var(--border-base)`,
       }}
       glowColor="213, 16, 7"
       onClick={handleFlip}
@@ -124,21 +132,21 @@ export const TopArtistsCard = React.memo(function TopArtistsCard({
       >
         {/* FRONT — Artists */}
         <div
-          className="absolute inset-0 flex flex-col gap-2 p-3 bg-white dark:bg-[#181818] rounded-2xl"
+          className="absolute inset-0 flex flex-col gap-2 p-3 bg-panel rounded-2xl"
           style={{ backfaceVisibility: "hidden" }}
         >
           <div className="flex items-center justify-between shrink-0">
             <div className="inline-flex items-center gap-1.5">
-              <SiLastdotfm size={12} className="text-[#d51007]" />
-              <span className="text-[9px] font-semibold text-[#d51007] uppercase tracking-wider">{t("artists.title")}</span>
-              <span className="text-[8px] text-[#aaa] dark:text-[#555] ml-1">{t("artists.subtitle")}</span>
+              <SiLastdotfm size={12} className="text-brand" />
+              <span className="text-[9px] font-semibold text-brand uppercase tracking-wider">{t("artists.title")}</span>
+              <span className="text-[8px] text-faint ml-1">{t("artists.subtitle")}</span>
             </div>
             <button
               onClick={(e) => { e.stopPropagation(); handleFlip(); }}
-              className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-[#f5f5f5] dark:bg-[#252525] hover:bg-[#ebebeb] dark:hover:bg-[#2a2a2a] transition-colors"
+              className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-field hover:bg-panel-hover transition-colors"
             >
-              <span className="text-[8px] font-medium text-[#666] dark:text-[#888]">{t("artists.flipTracks")}</span>
-              <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#666] dark:text-[#888]">
+              <span className="text-[8px] font-medium text-faint">{t("artists.flipTracks")}</span>
+              <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-faint">
                 <polyline points="9 18 15 12 9 6"></polyline>
               </svg>
             </button>
@@ -156,21 +164,24 @@ export const TopArtistsCard = React.memo(function TopArtistsCard({
                   target="_blank"
                   rel="noreferrer"
                   onClick={(e) => e.stopPropagation()}
-                  className="flex items-center gap-2 group hover:bg-[#f5f5f5] dark:hover:bg-[#222] rounded-lg p-1.5 -m-1.5 transition-colors"
+                  className="flex items-center gap-2 group hover:bg-panel-hover rounded-lg py-0.5 px-1 transition-colors"
                 >
-                  <span className="text-[11px] font-bold w-4 shrink-0 text-center" style={{ color: i === 0 ? ACCENT : isDark ? "#666" : "#ccc" }}>
+                  <span className="text-[10px] font-bold w-3.5 shrink-0 text-center tabular-nums" style={{ color: i === 0 ? ACCENT : isDark ? "#555" : "#bbb" }}>
                     {i + 1}
                   </span>
-                  <div className="w-7 h-7 rounded-full overflow-hidden shrink-0 flex items-center justify-center" style={{ background: imgUrl ? undefined : `linear-gradient(135deg, ${gradient.from}, ${gradient.to})`, border: imgUrl ? undefined : `2px solid ${gradient.from}30` }}>
+                  <div className="w-6 h-6 rounded-full overflow-hidden shrink-0 flex items-center justify-center" style={{ background: imgUrl ? undefined : `linear-gradient(135deg, ${gradient.from}, ${gradient.to})`, border: imgUrl ? undefined : `1.5px solid ${gradient.from}30` }}>
                     {imgUrl ? (
                       <img src={imgUrl} alt={artist.name} className="w-full h-full object-cover" />
                     ) : (
-                      <span className="text-[9px] font-bold text-white drop-shadow-sm">{initials}</span>
+                      <span className="text-[8px] font-bold text-white drop-shadow-sm">{initials}</span>
                     )}
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[11px] font-semibold truncate text-[#111] dark:text-[#eee] group-hover:text-[#d51007] transition-colors">{artist.name}</p>
-                    <p className="text-[9px] text-[#888] dark:text-[#666]">{Number(artist.playcount).toLocaleString()} {t("artists.tracks")}</p>
+                  <div className="flex flex-col">
+                    <p className="text-[10px] font-semibold truncate text-main group-hover:text-brand transition-colors leading-tight">{artist.name}</p>
+                    <p className="text-[8px] text-faint inline-flex items-center gap-0.5 leading-tight">
+                      <CountUp to={Number(artist.playcount) || 0} separator="," duration={0.9} />
+                      <span>{t("artists.tracks")}</span>
+                    </p>
                   </div>
                 </a>
               );
@@ -180,21 +191,21 @@ export const TopArtistsCard = React.memo(function TopArtistsCard({
 
         {/* BACK — Tracks */}
         <div
-          className="absolute inset-0 flex flex-col gap-2 p-3 bg-white dark:bg-[#181818] rounded-2xl"
+          className="absolute inset-0 flex flex-col gap-2 p-3 bg-panel rounded-2xl"
           style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
         >
           <div className="flex items-center justify-between shrink-0">
             <div className="inline-flex items-center gap-1.5">
-              <SiLastdotfm size={12} className="text-[#d51007]" />
-              <span className="text-[9px] font-semibold text-[#d51007] uppercase tracking-wider">{t("artists.topTracks")}</span>
-              <span className="text-[8px] text-[#aaa] dark:text-[#555] ml-1">{t("artists.subtitle")}</span>
+              <SiLastdotfm size={12} className="text-brand" />
+              <span className="text-[9px] font-semibold text-brand uppercase tracking-wider">{t("artists.topTracks")}</span>
+              <span className="text-[8px] text-faint ml-1">{t("artists.subtitle")}</span>
             </div>
             <button
               onClick={(e) => { e.stopPropagation(); handleFlip(); }}
-              className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-[#f5f5f5] dark:bg-[#252525] hover:bg-[#ebebeb] dark:hover:bg-[#2a2a2a] transition-colors"
+              className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-field hover:bg-panel-hover transition-colors"
             >
-              <span className="text-[8px] font-medium text-[#666] dark:text-[#888]">{t("artists.flipArtists")}</span>
-              <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#666] dark:text-[#888]">
+              <span className="text-[8px] font-medium text-faint">{t("artists.flipArtists")}</span>
+              <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-faint">
                 <polyline points="15 18 9 12 15 6"></polyline>
               </svg>
             </button>
@@ -203,11 +214,11 @@ export const TopArtistsCard = React.memo(function TopArtistsCard({
           <div className="flex-1 flex flex-col justify-between">
             {loadingTracks ? (
               <div className="flex-1 flex items-center justify-center">
-                <SiLastdotfm size={20} className="text-[#d51007] animate-pulse" />
+                <SiLastdotfm size={20} className="text-brand animate-pulse" />
               </div>
             ) : tracks.length === 0 ? (
               <div className="flex-1 flex items-center justify-center">
-                 <span className="text-[10px] text-[#999] dark:text-[#555]">{t("artists.noTracks")}</span>
+                 <span className="text-[10px] text-faint">{t("artists.noTracks")}</span>
               </div>
             ) : (
               tracks.slice(0, 5).map((track, i) => {
@@ -221,21 +232,25 @@ export const TopArtistsCard = React.memo(function TopArtistsCard({
                     target="_blank"
                     rel="noreferrer"
                     onClick={(e) => e.stopPropagation()}
-                    className="flex items-center gap-2 group hover:bg-[#f5f5f5] dark:hover:bg-[#222] rounded-lg p-1.5 -m-1.5 transition-colors"
+                    className="flex items-center gap-2 group hover:bg-panel-hover rounded-lg py-0.5 px-1 transition-colors"
                   >
-                    <span className="text-[11px] font-bold w-4 shrink-0 text-center" style={{ color: i === 0 ? ACCENT : isDark ? "#666" : "#ccc" }}>
+                    <span className="text-[10px] font-bold w-3.5 shrink-0 text-center tabular-nums" style={{ color: i === 0 ? ACCENT : isDark ? "#555" : "#bbb" }}>
                       {i + 1}
                     </span>
-                    <div className="w-7 h-7 rounded-lg overflow-hidden shrink-0 flex items-center justify-center" style={{ background: imgUrl ? undefined : `linear-gradient(135deg, ${gradient.from}, ${gradient.to})`, border: imgUrl ? undefined : `2px solid ${gradient.from}30` }}>
+                    <div className="w-6 h-6 rounded-lg overflow-hidden shrink-0 flex items-center justify-center" style={{ background: imgUrl ? undefined : `linear-gradient(135deg, ${gradient.from}, ${gradient.to})`, border: imgUrl ? undefined : `1.5px solid ${gradient.from}30` }}>
                       {imgUrl ? (
                         <img src={imgUrl} alt={track.name} className="w-full h-full object-cover" />
                       ) : (
                         <span className="text-[8px] font-bold text-white drop-shadow-sm">{initials}</span>
                       )}
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-[11px] font-semibold truncate text-[#111] dark:text-[#eee] group-hover:text-[#d51007] transition-colors">{track.name}</p>
-                      <p className="text-[9px] text-[#888] dark:text-[#666]">{track.artist} · {Number(track.playcount).toLocaleString()} {t("artists.tracks")}</p>
+                    <div className="flex flex-col">
+                      <p className="text-[10px] font-semibold truncate text-main group-hover:text-brand transition-colors leading-tight">{track.name}</p>
+                      <p className="text-[8px] text-faint inline-flex items-center gap-0.5 leading-tight">
+                        <span>{track.artist} ·</span>
+                        <CountUp to={Number(track.playcount) || 0} separator="," duration={0.9} />
+                        <span>{t("artists.tracks")}</span>
+                      </p>
                     </div>
                   </a>
                 );

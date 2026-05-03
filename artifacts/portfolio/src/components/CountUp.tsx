@@ -1,4 +1,4 @@
-import { useInView, useMotionValue, useSpring } from "framer-motion";
+import { useInView, useMotionValue, useSpring } from "motion/react";
 import { useCallback, useEffect, useRef } from "react";
 
 interface CountUpProps {
@@ -13,15 +13,7 @@ interface CountUpProps {
   onStart?: () => void;
   onEnd?: () => void;
   minDigits?: number;
-  springProfile?: "digital" | "smooth" | "bouncy";
-  animationMode?: "step" | "smooth";
 }
-
-const SPRING_PROFILES = {
-  digital: { damping: 30, stiffness: 200 },
-  smooth: { damping: 20, stiffness: 100 },
-  bouncy: { damping: 10, stiffness: 150 },
-};
 
 export default function CountUp({
   to,
@@ -35,14 +27,17 @@ export default function CountUp({
   onStart,
   onEnd,
   minDigits,
-  springProfile = "smooth",
-  animationMode = "smooth",
 }: CountUpProps) {
   const ref = useRef<HTMLSpanElement>(null);
   const motionValue = useMotionValue(direction === "down" ? to : from);
 
-  const springConfig = SPRING_PROFILES[springProfile] || SPRING_PROFILES.smooth;
-  const springValue = useSpring(motionValue, springConfig);
+  const damping = 20 + 40 * (1 / duration);
+  const stiffness = 100 * (1 / duration);
+
+  const springValue = useSpring(motionValue, {
+    damping,
+    stiffness,
+  });
 
   const isInView = useInView(ref, { once: true, margin: "0px" });
 
@@ -87,36 +82,27 @@ export default function CountUp({
 
   useEffect(() => {
     if (isInView && startWhen) {
-      if (typeof onStart === "function") onStart();
-
-      if (animationMode === "step") {
-        // Step animation: update immediately without spring
-        const timeoutId = setTimeout(() => {
-          motionValue.set(direction === "down" ? from : to);
-        }, delay * 1000);
-        const durationTimeoutId = setTimeout(() => {
-          if (typeof onEnd === "function") onEnd();
-        }, delay * 1000 + duration * 1000);
-        return () => {
-          clearTimeout(timeoutId);
-          clearTimeout(durationTimeoutId);
-        };
-      } else {
-        // Smooth spring animation
-        const timeoutId = setTimeout(() => {
-          motionValue.set(direction === "down" ? from : to);
-        }, delay * 1000);
-        const durationTimeoutId = setTimeout(() => {
-          if (typeof onEnd === "function") onEnd();
-        }, delay * 1000 + duration * 1000);
-        return () => {
-          clearTimeout(timeoutId);
-          clearTimeout(durationTimeoutId);
-        };
+      if (typeof onStart === "function") {
+        onStart();
       }
+
+      const timeoutId = setTimeout(() => {
+        motionValue.set(direction === "down" ? from : to);
+      }, delay * 1000);
+
+      const durationTimeoutId = setTimeout(() => {
+        if (typeof onEnd === "function") {
+          onEnd();
+        }
+      }, delay * 1000 + duration * 1000);
+
+      return () => {
+        clearTimeout(timeoutId);
+        clearTimeout(durationTimeoutId);
+      };
     }
     return undefined;
-  }, [isInView, startWhen, motionValue, direction, from, to, delay, onStart, onEnd, duration, animationMode]);
+  }, [isInView, startWhen, motionValue, direction, from, to, delay, onStart, onEnd, duration]);
 
   useEffect(() => {
     const unsubscribe = springValue.on("change", (latest: number) => {

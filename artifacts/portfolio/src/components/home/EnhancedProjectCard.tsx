@@ -101,7 +101,6 @@ export function EnhancedProjectCard({
   };
 
   const current = hasProjects ? projects[activeIndex] : null;
-  const ACCENT = "#3d72cc";
 
   const slideVariants = {
     enter: (dir: number) => ({ x: prefersReducedMotion ? 0 : dir > 0 ? 60 : -60, opacity: prefersReducedMotion ? 1 : 0 }),
@@ -109,7 +108,7 @@ export function EnhancedProjectCard({
     exit: (dir: number) => ({ x: prefersReducedMotion ? 0 : dir > 0 ? -60 : 60, opacity: prefersReducedMotion ? 1 : 0 }),
   };
 
-  const blueDot = <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: ACCENT }} />;
+  const blueDot = <span className="w-1.5 h-1.5 rounded-full bg-brand" />;
 
   return (
     <div
@@ -124,18 +123,17 @@ export function EnhancedProjectCard({
       className="outline-none h-full"
     >
       <WidgetCard
-        className={`h-full rounded-2xl overflow-hidden ${isDark ? "bg-[#181818] border-[#282828]" : "bg-white border-[#ebebeb]"} border`}
-        glowColor="61, 114, 204"
+        className="h-full rounded-2xl overflow-hidden bg-panel border border-base"
+        glowColor="var(--accent-glow)"
       >
         <div className="h-full flex flex-col">
-          {/* Header */}
           <div className="px-3 pt-2.5 pb-1">
             <CardHeader
               icon={blueDot}
               title={t("project.featured")}
               rightContent={
                 hasProjects && (
-                  <span className={`text-[9px] font-medium tabular-nums ${isDark ? "text-[#555]" : "text-[#aaa]"}`}>
+                  <span className="text-[9px] font-medium tabular-nums text-faint">
                     {activeIndex + 1}/{projectCount}
                   </span>
                 )
@@ -143,7 +141,6 @@ export function EnhancedProjectCard({
             />
           </div>
 
-          {/* Body - Split 50/50 layout */}
           <div className="flex-1 min-h-0 overflow-hidden px-3 pb-2">
             {hasProjects && current ? (
               <AnimatePresence mode="wait" custom={direction}>
@@ -161,20 +158,18 @@ export function EnhancedProjectCard({
                   onDragEnd={handleDragEnd}
                   className="h-full cursor-grab active:cursor-grabbing"
                 >
-                  <div className="h-full grid grid-cols-2 gap-0 rounded-lg overflow-hidden border" style={{ borderColor: isDark ? "#333" : "#e0e0e0" }}>
-                    {/* Left: Text content */}
-                    <div className="p-2.5 flex flex-col justify-center">
-                      <h3 className={`text-[13px] font-bold leading-tight mb-1 ${isDark ? "text-white" : "text-[#111]"}`}>{current.name}</h3>
-                      <p className={`text-[10px] leading-snug line-clamp-3 ${isDark ? "text-[#888]" : "text-[#666]"}`}>{current.description}</p>
-                      <div className="flex flex-wrap gap-1 mt-2">
+                    <div className="h-full grid grid-cols-2 gap-0 rounded-lg overflow-hidden border border-base">
+                    <div className="p-2.5 flex flex-col justify-start gap-2">
+                      <h3 className="text-[13px] font-bold leading-tight text-main">{current.name}</h3>
+                      <p className="text-[10px] leading-snug line-clamp-3 text-sub">{current.description}</p>
+                      <div className="flex flex-wrap gap-1 mt-auto">
                         {current.techStack.slice(0, 4).map(tech => (
-                          <span key={tech} className={`text-[8px] px-1.5 py-0.5 rounded-full ${isDark ? "bg-white/10 text-[#888]" : "bg-[#f0f0f0] text-[#666]"}`}>{tech}</span>
+                          <span key={tech} className="text-[8px] px-1.5 py-0.5 rounded-full bg-field text-faint">{tech}</span>
                         ))}
                       </div>
                     </div>
 
-                    {/* Right: Image with gradient overlay */}
-                    <div className="relative">
+                    <div className="relative h-full">
                       <img src={current.image || "/logo.svg"} alt="" className="w-full h-full object-cover" />
                       <div className="absolute inset-0 bg-gradient-to-l from-transparent via-transparent to-black/40" />
                     </div>
@@ -183,13 +178,12 @@ export function EnhancedProjectCard({
               </AnimatePresence>
             ) : (
               <div className="h-full flex flex-col items-center justify-center gap-2 text-center">
-                <p className={`text-[12px] font-bold ${isDark ? "text-[#555]" : "text-[#aaa]"}`}>{t("project.empty.title")}</p>
+                <p className="text-[12px] font-bold text-faint">{t("project.empty.title")}</p>
               </div>
             )}
           </div>
 
-          {/* Footer */}
-          <div className={`flex items-center justify-between px-3 py-1.5 border-t ${isDark ? "border-white/[0.06]" : "border-[#ebebeb]"}`}>
+          <div className="flex items-center justify-between px-3 py-1.5 border-t border-base">
             <div className="flex items-center gap-1.5">
               {hasProjects && projectCount > 1 && (
                 <div className="flex gap-0.5">
@@ -201,7 +195,7 @@ export function EnhancedProjectCard({
                       style={{
                         width: idx === activeIndex ? 10 : 3,
                         height: 3,
-                        backgroundColor: idx === activeIndex ? ACCENT : isDark ? "#333" : "#ddd",
+                        backgroundColor: idx === activeIndex ? `var(--accent)` : `var(--border-base)`,
                       }}
                     />
                   ))}
@@ -212,11 +206,11 @@ export function EnhancedProjectCard({
             <div className="flex items-center gap-1">
               {hasProjects && projectCount > 1 && (
                 <div className="flex gap-0">
-                  <button onClick={goToPrev} className={`p-0.5 rounded transition-all ${isDark ? "hover:bg-white/5" : "hover:bg-black/5"}`}>
-                    <ChevronLeft size={12} className={isDark ? "text-[#555]" : "text-[#aaa]"} />
+                  <button onClick={goToPrev} className="p-0.5 rounded transition-all hover:bg-black/5 dark:hover:bg-white/5">
+                    <ChevronLeft size={12} className="text-faint" />
                   </button>
-                  <button onClick={goToNext} className={`p-0.5 rounded transition-all ${isDark ? "hover:bg-white/5" : "hover:bg-black/5"}`}>
-                    <ChevronRight size={12} className={isDark ? "text-[#555]" : "text-[#aaa]"} />
+                  <button onClick={goToNext} className="p-0.5 rounded transition-all hover:bg-black/5 dark:hover:bg-white/5">
+                    <ChevronRight size={12} className="text-faint" />
                   </button>
                 </div>
               )}
@@ -228,7 +222,7 @@ export function EnhancedProjectCard({
                   rel="noreferrer"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className="flex items-center gap-1 text-[10px] font-medium px-2 py-1 rounded-md text-white bg-[#3d72cc] hover:bg-[#2d62bc] transition-colors"
+                  className="flex items-center gap-1 text-[10px] font-medium px-2 py-1 rounded-md text-white bg-brand hover:bg-brand-hover transition-colors"
                 >
                   {t("project.view")}
                   <ExternalLink size={9} />
@@ -237,12 +231,11 @@ export function EnhancedProjectCard({
             </div>
           </div>
 
-          {/* Progress bar */}
           {hasProjects && projectCount > 1 && (
-            <div className="w-full h-[2px]" style={{ background: isDark ? "#222" : "#f0f0f0" }}>
+            <div className="w-full h-[2px] bg-field">
               <motion.div
                 className="h-full"
-                style={{ backgroundColor: ACCENT }}
+                style={{ backgroundColor: `var(--accent)` }}
                 animate={{ width: `${progress}%` }}
                 transition={{ duration: 0.05, ease: "linear" }}
               />

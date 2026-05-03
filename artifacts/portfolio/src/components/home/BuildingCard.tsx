@@ -1,11 +1,9 @@
 import { memo } from "react";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
-import { BentoCard } from "@/components/BentoCard";
+import { Card } from "@/components/Card";
 import { fadeUpSoft } from "@/lib/animations";
 import { Sparkles } from "lucide-react";
-
-const ACCENT = "#3d72cc";
 
 /**
  * Props for BuildingCard component
@@ -42,13 +40,14 @@ export const BuildingCard = memo(function BuildingCard({
   const current = projects[0];
 
   return (
-    <BentoCard
-      className="h-full overflow-hidden"
+    <Card
+      className="h-full"
       style={{
         background: isDark 
           ? `linear-gradient(135deg, rgba(45,45,45,0.5) 0%, rgba(25,25,25,0.8) 100%)`
           : `linear-gradient(135deg, rgba(250,250,255,0.8) 0%, rgba(245,245,255,0.5) 100%)`,
       }}
+      glowColor="var(--accent-glow)"
     >
       <motion.div
         custom={3}
@@ -61,15 +60,13 @@ export const BuildingCard = memo(function BuildingCard({
         <div className="flex items-center gap-2">
           <span className="relative flex h-2 w-2 shrink-0">
             <span
-              className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"
-              style={{ backgroundColor: ACCENT }}
+              className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 bg-brand"
             />
             <span
-              className="relative inline-flex h-2 w-2 rounded-full"
-              style={{ backgroundColor: ACCENT }}
+              className="relative inline-flex h-2 w-2 rounded-full bg-brand"
             />
           </span>
-          <span className="text-xs font-bold uppercase tracking-widest" style={{ color: ACCENT }}>
+          <span className="text-xs font-bold uppercase tracking-widest text-brand">
             {t("building.label")}
           </span>
         </div>
@@ -109,9 +106,9 @@ export const BuildingCard = memo(function BuildingCard({
           <span className={`text-xs font-medium ${isDark ? "text-gray-400" : "text-gray-600"}`}>
             {current.status}
           </span>
-          <Sparkles size={14} style={{ color: ACCENT }} />
+          <Sparkles size={14} className="text-brand" />
         </div>
       </motion.div>
-    </BentoCard>
+    </Card>
   );
 });

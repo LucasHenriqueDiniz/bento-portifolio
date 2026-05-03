@@ -24,7 +24,7 @@ export function CardHeader({
 
   return (
     <div className="flex items-center justify-between gap-2">
-      <p className="text-[10px] font-semibold uppercase tracking-widest text-[#aaa] dark:text-[#555] inline-flex items-center gap-1.5">
+      <p className="text-[10px] font-semibold uppercase tracking-widest text-faint inline-flex items-center gap-1.5">
         {icon}
         {title}
       </p>
@@ -34,7 +34,7 @@ export function CardHeader({
       {flipLabel ? (
         <motion.button
           type="button"
-          className="shrink-0 flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-[#f5f5f5] dark:bg-[#252525] hover:bg-[#ebebeb] dark:hover:bg-[#2a2a2a] transition-colors"
+          className="shrink-0 flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-field hover:bg-panel-hover transition-colors"
           whileHover={{ x: isLeft ? -2 : 2 }}
           onClick={(e) => {
             e.stopPropagation();
@@ -51,13 +51,13 @@ export function CardHeader({
               strokeWidth="2.5"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="text-[#666] dark:text-[#888]"
+              className="text-faint"
             >
               <polyline points="15 18 9 12 15 6"></polyline>
             </svg>
           ) : null}
 
-          <span className="text-[8px] font-medium text-[#666] dark:text-[#888]">
+          <span className="text-[8px] font-medium text-faint">
             {flipLabel}
           </span>
 
@@ -71,7 +71,7 @@ export function CardHeader({
               strokeWidth="2.5"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="text-[#666] dark:text-[#888]"
+              className="text-faint"
             >
               <polyline points="9 18 15 12 9 6"></polyline>
             </svg>

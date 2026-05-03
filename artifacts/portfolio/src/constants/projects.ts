@@ -10,6 +10,8 @@ export interface Project {
   featured?: boolean;
   status?: 'workInProgress' | 'discontinued' | 'experimental' | 'completed';
   image?: string;
+  images?: string[];
+  showInDonate?: boolean;
 }
 
 export const projects: Project[] = [
@@ -36,6 +38,7 @@ export const projects: Project[] = [
     featured: true,
     status: "workInProgress",
     image: "/projects/weebprofile.webp",
+    showInDonate: true,
   },
   {
     id: "heartopia-guide",
@@ -48,6 +51,13 @@ export const projects: Project[] = [
     featured: true,
     status: "completed",
     image: "/projects/heartopiaguide.webp",
+    showInDonate: true,
+    images: [
+      "/projects/heartopiaguide.webp",
+      "/projects/heartopia-guide-2.webp",
+      "/projects/heartopia-guide-3.webp",
+      "/projects/heartopia-guide-4.webp",
+    ],
   },
   {
     id: "include-gurias",
@@ -59,11 +69,16 @@ export const projects: Project[] = [
     repoUrl: "https://github.com/include-gurias/includegurias-website",
     featured: true,
     status: "completed",
-    image: "/projects/include_gurias.webp",
+    image: "/projects/include-gurias.webp",
+    images: [
+      "/projects/include-gurias.webp",
+      "/projects/include-gurias-2.webp",
+      "/projects/include-gurias-3.webp",
+    ],
   },
   {
-    id: "botschannel-platform",
-    name: "BotsChannel Platform",
+    id: "botschannel",
+    name: "BotsChannel",
     description: "• Built serverless SaaS for multi-channel chatbot automation (WhatsApp, Telegram, Instagram)\n• Architected microservices with AWS Lambda and async message processing\n• Integrated third-party messaging APIs with custom webhook handlers",
     techStack: ["Node.js", "TypeScript", "AWS Lambda", "PostgreSQL", "API Integration"],
     highlight: "Serverless SaaS for multi-channel chatbot automation with AWS Lambda",
@@ -71,7 +86,11 @@ export const projects: Project[] = [
     repoUrl: "https://github.com/BotsChannel",
     featured: true,
     status: "discontinued",
-    image: "/projects/botschannel_plataform.webp",
+    image: "/projects/bots-channel.webp",
+    images: [
+      "/projects/bots-channel.webp",
+      "/projects/bots-channel-2.webp",
+    ],
   },
   {
     id: "resgate-rs",
@@ -84,6 +103,10 @@ export const projects: Project[] = [
     featured: true,
     status: "completed",
     image: "/projects/resgate-rs.webp",
+    images: [
+      "/projects/resgate-rs.webp",
+      "/projects/resgate-rs-2.webp",
+    ],
   },
   {
     id: "autowabba",
@@ -108,6 +131,11 @@ export const projects: Project[] = [
     featured: true,
     status: "workInProgress",
     image: "/projects/itemmarketcap.webp",
+    images: [
+      "/projects/itemmarketcap.webp",
+      "/projects/item-market-cap-2.webp",
+      "/projects/item-market-cap-3.webp",
+    ],
   },
   {
     id: "comunica-mulher",
@@ -120,6 +148,11 @@ export const projects: Project[] = [
     featured: true,
     status: "workInProgress",
     image: "/projects/comunicamulher.webp",
+    images: [
+      "/projects/comunicamulher.webp",
+      "/projects/comunica-mulher-2.webp",
+      "/projects/comunica-mulher-3.webp",
+    ],
   },
   {
     id: "quizhub",
@@ -132,6 +165,12 @@ export const projects: Project[] = [
     featured: true,
     status: "workInProgress",
     image: "/projects/quizhub-thumbnail.webp",
+    images: [
+      "/projects/quizhub-thumbnail.webp",
+      "/projects/quizhub.webp",
+      "/projects/quizhub-2.webp",
+      "/projects/quizhub-3.webp",
+    ],
   },
   {
     id: "context-tools",
@@ -143,17 +182,61 @@ export const projects: Project[] = [
     repoUrl: "https://github.com/LucasHenriqueDiniz/vscode-context-tools",
     status: "completed",
     image: "/projects/contexttools.webp",
+    showInDonate: true,
   },
   {
-    id: "siot-web-flasher",
-    name: "SIOT Web Flasher",
-    description: "• Built web-based ESP32/ESP8266 firmware flasher using Web Serial API\n• Implemented serial monitoring and Electron desktop integration\n• Designed modern UI for browser-based IoT device management",
-    techStack: ["TypeScript", "Electron", "Web Serial"],
-    highlight: "Web-based ESP32/ESP8266 firmware flasher with serial monitoring",
-    url: "https://siot-web-flasher.vercel.app/",
-    repoUrl: "https://github.com/LucasHenriqueDiniz/siot-web-flasher",
+    id: "mannco-enhancer",
+    name: "Mannco Enhancer",
+    description: "• Built browser extension for enhanced trading experience on Mannco.store\n• Implemented UI overlays, price tracking and inventory shortcuts\n• Published to Chrome Web Store with auto-update pipeline",
+    techStack: ["TypeScript", "Browser Extension", "Chrome API"],
+    highlight: "Browser extension enhancing Team Fortress 2 trading platform",
+    url: "https://github.com/LucasHenriqueDiniz/mannco-enhancer",
+    repoUrl: "https://github.com/LucasHenriqueDiniz/mannco-enhancer",
     status: "completed",
-    image: "/projects/siot-web-flasher.webp",
+    image: "/projects/mannco-enhancer.webp",
+    showInDonate: true,
+  },
+  {
+    id: "instagram-enhancer",
+    name: "Instagram Enhancer",
+    description: "• Built browser extension for Instagram power users\n• Added bulk download, story analytics and UI customization features\n• Implemented content script injection with performance-first architecture",
+    techStack: ["TypeScript", "Browser Extension", "Chrome API"],
+    highlight: "Browser extension adding advanced features to Instagram",
+    repoUrl: "https://github.com/LucasHenriqueDiniz/instagram-enhancer",
+    status: "completed",
+    image: "/projects/instagram-enhancer.webp",
+    showInDonate: true,
+  },
+  {
+    id: "hypixel-daily-skip",
+    name: "Hypixel Daily Skip",
+    description: "• Built automation tool for Hypixel daily reward claiming\n• Implemented headless browser flow with session persistence\n• Designed scheduling system with retry logic and notification hooks",
+    techStack: ["Node.js", "Automation", "Puppeteer"],
+    highlight: "Automation tool for Hypixel Minecraft server daily rewards",
+    repoUrl: "https://github.com/LucasHenriqueDiniz/hypixel-daily-skip",
+    status: "completed",
+    image: "/projects/hypixel-auto-join.webp",
+  },
+  {
+    id: "basicao-workshop",
+    name: "Basicão Workshop",
+    description: "• Built educational platform for programming fundamentals workshops\n• Implemented interactive lessons with live code execution\n• Designed progress tracking and certificate generation system",
+    techStack: ["Next.js", "TypeScript", "Supabase"],
+    highlight: "Educational platform for hands-on programming workshops",
+    url: "https://basicao-workshop.vercel.app/",
+    repoUrl: "https://github.com/LucasHenriqueDiniz/basicao-workshop",
+    status: "workInProgress",
+    image: "/projects/basicao-workshop.webp",
+  },
+  {
+    id: "clearcut",
+    name: "ClearCut",
+    description: "• Built video clipping and sharing tool with precise timestamp controls\n• Implemented canvas-based preview rendering and export pipeline\n• Designed shareable link system with embedded player",
+    techStack: ["React", "TypeScript", "Canvas API", "FFmpeg"],
+    highlight: "Video clipping tool with precise controls and shareable exports",
+    repoUrl: "https://github.com/LucasHenriqueDiniz/clearcut",
+    status: "experimental",
+    image: "/projects/clearcut.webp",
   },
 ];
 

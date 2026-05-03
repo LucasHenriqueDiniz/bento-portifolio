@@ -3,8 +3,12 @@
     "label": "ABOUT ME",
     "greeting": "Hey, I'm",
     "name": "Lucas",
-    "role": "Developer & Designer",
-    "description": "Full-stack dev who loves turning ideas into real products. When I'm not coding, you'll find me at the gym, gaming, or discovering new music on Last.fm."
+    "role": "Full-stack developer",
+    "descriptionPrefix": "For me, creating is routine: I like ",
+    "codingLabel": "coding",
+    "descriptionMiddle": ", ",
+    "drawingLabel": "drawing",
+    "descriptionSuffix": " and turning ideas into real things. I like building carefully, paying attention to details, and giving each project its own personality instead of making it feel like a template."
   },
   "funFacts": {
     "label": "FUN FACTS",
@@ -19,6 +23,25 @@
   "projectsCta": {
     "title": "Projects",
     "subtitle": "View all projects"
+  },
+  "galleryCta": {
+    "title": "Gallery",
+    "subtitle": "View drawings and art"
+  },
+  "projectsPage": {
+    "back": "Back",
+    "title": "Projects",
+    "selectedWorks": "Selected",
+    "subtitle": "A collection of things I've built, from experiments to production systems.",
+    "scrollHint": "Scroll to explore",
+    "visit": "Visit",
+    "code": "Code",
+    "status": {
+      "completed": "Completed",
+      "workInProgress": "In Progress",
+      "experimental": "Experimental",
+      "discontinued": "Discontinued"
+    }
   },
   "weather": {
     "title": "Weather",
@@ -76,7 +99,10 @@
     "volume": "Volume (kg)",
     "streak": "Day Streak",
     "minutes": "Minutes",
-    "thisWeek": "This Week"
+    "thisWeek": "This Week",
+    "exercises": "Exercises",
+    "items": "{{count}} items",
+    "empty": "No exercises logged"
   },
   "github": {
     "title": "GitHub",
@@ -97,7 +123,8 @@
     "flipWork": "work",
     "flipEducation": "education",
     "viewFullCV": "View Full CV",
-    "present": "Present"
+    "present": "Present",
+    "certificates": "Certifications"
   },
   "mal": {
     "anime": "Anime",

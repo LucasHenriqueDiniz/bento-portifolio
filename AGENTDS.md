@@ -19,7 +19,6 @@ lib/
   api-client-react/
   api-spec/
   api-zod/
-  db/
 scripts/
 ```
 

@@ -8,7 +8,7 @@ import { fadeUpSoft } from "@/lib/animations";
 import { CardHeader } from "@/components/CardHeader";
 
 const CARD =
-  "bg-white dark:bg-[#181818] border border-[#ebebeb] dark:border-[#282828] rounded-2xl";
+  "bg-panel border border-base rounded-2xl";
 
 interface GitHubGridProps {
   seed: number;
@@ -51,8 +51,8 @@ const GitHubGrid = React.memo(function GitHubGrid({
     : ["#ebedf0", "#9be9a8", "#40c463", "#30a14e", "#216e39"];
 
   return (
-    <div className={`w-full h-full rounded-lg border p-2 flex flex-col min-h-0 ${isDark ? "bg-white/3 border-white/8" : "bg-[#f5f5f5] border-[#ebebeb]"}`}>
-      <div className={`pl-5 pr-0.5 pb-1 shrink-0 flex items-center text-[7px] font-semibold ${isDark ? "text-white/30" : "text-[#999]"} leading-none`}>
+    <div className={`w-full h-full rounded-lg border p-2 flex flex-col min-h-0 ${isDark ? "bg-white/3 border-white/8" : "bg-field border-base"}`}>
+      <div className={`pl-5 pr-0.5 pb-1 shrink-0 flex items-center text-[7px] font-semibold text-faint leading-none`}>
         {MONTHS.map((month) => (
           <span key={month} className="flex-1 min-w-0 truncate">
             {month}
@@ -61,7 +61,7 @@ const GitHubGrid = React.memo(function GitHubGrid({
       </div>
 
       <div className="flex-1 min-h-0 flex gap-1.5">
-        <div className={`w-4 shrink-0 grid grid-rows-7 gap-[2px] text-[7px] ${isDark ? "text-white/30" : "text-[#999]"} leading-none`}>
+        <div className={`w-4 shrink-0 grid grid-rows-7 gap-[2px] text-[7px] text-faint leading-none`}>
           {dayLabels.map((day, i) => (
             <div key={i} className="flex items-center justify-end">
               {day}
@@ -109,14 +109,12 @@ interface GitHubCardProps {
   stats: StatsData | undefined;
   loadingStats: boolean;
   isDark: boolean;
-  tier?: 1 | 2 | 3 | 4;
 }
 
 export const GitHubCard = React.memo(function GitHubCard({
   stats,
   loadingStats,
   isDark,
-  tier = 2,
 }: GitHubCardProps) {
   const { t, i18n } = useTranslation("home");
   const currentLang = i18n.language?.split("-")[0] || "pt";
@@ -132,35 +130,34 @@ export const GitHubCard = React.memo(function GitHubCard({
 
   return (
     <WidgetCard
-      tier={tier}
       isLoading={loadingStats}
-      loadingIcon={<SiGithub size={28} className="text-[#1b2838]" />}
+      loadingIcon={<SiGithub size={28} className="text-brand" />}
       className="h-full rounded-2xl overflow-hidden"
       style={{
-        border: isDark ? "1px solid #282828" : "1px solid #ebebeb",
+        border: `1px solid var(--border-base)`,
       }}
-      glowColor="27, 40, 56"
+      glowColor="var(--accent-glow)"
     >
       <motion.div
         custom={9}
         variants={fadeUpSoft}
         initial="hidden"
         animate="show"
-        className="p-3 h-full flex flex-col gap-2"
+        className="p-3 h-full flex flex-col gap-2 bg-panel"
       >
         <div ref={githubRef} className="h-full flex flex-col gap-2">
           {/* Header */}
           <div className="flex items-center justify-between shrink-0">
             <div className="inline-flex items-center gap-1.5">
-                <SiGithub size={12} className="text-[#1b2838] dark:text-[#c7d5e0]" />
-                <span className={`text-[9px] font-semibold uppercase tracking-wider ${isDark ? "text-[#c7d5e0]" : "text-[#1b2838]"}`}>
+                <SiGithub size={12} className="text-brand" />
+                <span className="text-[9px] font-semibold uppercase tracking-wider text-brand">
                   {t("github.title")}
                 </span>
               </div>
           </div>
 
           {/* Stats Grid */}
-          <div className={`rounded-lg p-2 border shrink-0 ${isDark ? "bg-white/3 border-white/8" : "bg-[#f5f5f5] border-[#ebebeb]"}`}>
+          <div className={`rounded-lg p-2 border shrink-0 ${isDark ? "bg-white/3 border-white/8" : "bg-field border-base"}`}>
             <div className="grid grid-cols-4 gap-2">
               <StatItem label={t("github.repos")} value={repos} isDark={isDark} />
               <StatItem label={t("github.contribs")} value={contributions} isDark={isDark} separator="," />
@@ -200,10 +197,10 @@ function StatItem({
 }) {
   return (
     <div className="min-w-0">
-      <p className={`text-[7px] uppercase tracking-wider font-bold ${isDark ? "text-white/40" : "text-[#999]"}`}>
+      <p className="text-[7px] uppercase tracking-wider font-bold text-faint">
         {label}
       </p>
-      <p className={`text-[13px] leading-none mt-0.5 font-black truncate ${isDark ? "text-white" : "text-[#111]"}`}>
+      <p className="text-[13px] leading-none mt-0.5 font-black truncate text-main">
         <CountUp to={value} duration={0.9} separator={separator ?? ""} />
         {suffix ?? ""}
       </p>

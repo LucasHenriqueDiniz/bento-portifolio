@@ -3,15 +3,15 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { SiGithub } from "react-icons/si";
 import { FiArrowUpRight } from "react-icons/fi";
-import { BentoCard } from "@/components/BentoCard";
+import { Card } from "@/components/Card";
 import CountUp from "@/components/CountUp";
 import { fadeUpSoft } from "@/lib/animations";
 
 const LABEL =
-  "text-[10px] font-semibold uppercase tracking-widest text-[#aaa] dark:text-[#555]";
+  "text-[10px] font-semibold uppercase tracking-widest text-faint";
 const CARD =
-  "bg-white dark:bg-[#181818] border border-[#ebebeb] dark:border-[#282828] rounded-2xl";
-const ACCENT = "#3d72cc";
+  "bg-panel border border-base rounded-2xl";
+const ACCENT = "var(--accent)";
 
 /**
  * Project data structure
@@ -75,10 +75,11 @@ export const ProjectsCard = React.memo(function ProjectsCard({
   const { t } = useTranslation("home");
   const safeProjects = Array.isArray(projects) ? projects : [];
   return (
-    <BentoCard
-      className={`${CARD} overflow-hidden group cursor-pointer`}
+    <Card
+      className={`${CARD} group cursor-pointer h-full`}
       style={{ gridColumn: "3 / 5", gridRow: "1 / 5" }}
       onClick={() => navigate("/projects")}
+      glowColor="61, 114, 204"
     >
       <motion.div
         custom={12}
@@ -95,13 +96,13 @@ export const ProjectsCard = React.memo(function ProjectsCard({
           </p>
           <FiArrowUpRight
             size={13}
-            className="text-[#ccc] dark:text-[#444] group-hover:text-[#999] dark:group-hover:text-[#666] transition-colors"
+            className="text-faint group-hover:text-sub transition-colors"
           />
         </div>
 
         {/* cycling project card */}
         <div
-          className={`flex-1 min-h-0 relative overflow-hidden rounded-xl border ${isDark ? "border-white/[0.07]" : "border-[#ebebeb]"}`}
+          className={`flex-1 min-h-0 relative overflow-hidden rounded-xl border ${isDark ? "border-white/[0.07]" : "border-base"}`}
         >
           <AnimatePresence mode="wait">
             {(() => {
@@ -129,9 +130,9 @@ export const ProjectsCard = React.memo(function ProjectsCard({
                         <div className="flex items-center gap-1.5 mb-2">
                           <SiGithub
                             size={11}
-                            className="text-[#999] dark:text-[#555] shrink-0"
+                            className="text-faint shrink-0"
                           />
-                          <h3 className="text-[13px] font-bold truncate text-[#111] dark:text-[#eee]">
+                          <h3 className="text-[13px] font-bold truncate text-main">
                             {p.name}
                           </h3>
                           {p.wip && (
@@ -146,14 +147,14 @@ export const ProjectsCard = React.memo(function ProjectsCard({
                             </span>
                           )}
                         </div>
-                        <p className="text-[11px] text-[#888] dark:text-[#555] leading-snug">
+                        <p className="text-[11px] text-faint leading-snug">
                           {p.description}
                         </p>
                       </div>
                       <a
                         href={p.url}
                         onClick={(e) => e.stopPropagation()}
-                        className="shrink-0 text-[#ccc] dark:text-[#444] hover:text-[#888] transition-colors"
+                        className="shrink-0 text-faint hover:text-sub transition-colors"
                       >
                         <FiArrowUpRight size={12} />
                       </a>
@@ -166,11 +167,11 @@ export const ProjectsCard = React.memo(function ProjectsCard({
                           className="w-2.5 h-2.5 rounded-full shrink-0"
                           style={{ backgroundColor: p.color }}
                         />
-                        <span className="text-[10px] text-[#999] dark:text-[#555]">
+                        <span className="text-[10px] text-faint">
                           {p.language}
                         </span>
                       </div>
-                      <div className="flex items-center gap-1 text-[#bbb] dark:text-[#444]">
+                      <div className="flex items-center gap-1 text-faint">
                         <svg
                           width="10"
                           height="10"
@@ -219,15 +220,15 @@ export const ProjectsCard = React.memo(function ProjectsCard({
         <div className="flex items-end justify-between shrink-0">
           <div className="flex gap-5">
             <div>
-              <p className="text-[22px] font-black text-[#111] dark:text-[#eee] leading-none tabular-nums">
+              <p className="text-[22px] font-black text-main leading-none tabular-nums">
                 <CountUp to={stats?.githubRepos ?? 28} duration={1.0} />
               </p>
-              <p className="text-[10px] text-[#bbb] dark:text-[#555] mt-0.5">
+              <p className="text-[10px] text-faint mt-0.5">
                 {t("github.repos")}
               </p>
             </div>
             <div
-              className={`border-l ${isDark ? "border-white/10" : "border-[#ebebeb]"} pl-5`}
+              className={`border-l ${isDark ? "border-white/10" : "border-base"} pl-5`}
             >
               <p
                 className="text-[22px] font-black leading-none tabular-nums"
@@ -235,7 +236,7 @@ export const ProjectsCard = React.memo(function ProjectsCard({
               >
                 <CountUp to={totalStars} duration={1.2} />
               </p>
-              <p className="text-[10px] text-[#bbb] dark:text-[#555] mt-0.5">
+              <p className="text-[10px] text-faint mt-0.5">
                 {t("projects.stars")}
               </p>
             </div>
@@ -255,6 +256,6 @@ export const ProjectsCard = React.memo(function ProjectsCard({
           </div>
         </div>
       </motion.div>
-    </BentoCard>
+    </Card>
   );
 });
