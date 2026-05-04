@@ -23,34 +23,43 @@ export const PortalTooltip: React.FC<PortalTooltipProps> = ({
 }) => {
   const [show, setShow] = useState(false);
   const triggerRef = useRef<HTMLDivElement>(null);
+  const tooltipRef = useRef<HTMLDivElement>(null);
   const [pos, setPos] = useState({ top: 0, left: 0 });
 
   useEffect(() => {
     if (!show || !triggerRef.current) return;
-    const rect = triggerRef.current.getBoundingClientRect();
-    let top = 0;
-    let left = 0;
+    
+    // Small delay to let the tooltip render so we can measure its height
+    const timer = requestAnimationFrame(() => {
+      const rect = triggerRef.current!.getBoundingClientRect();
+      const tooltipEl = tooltipRef.current;
+      const tooltipH = tooltipEl?.offsetHeight ?? 140;
+      
+      let top = 0;
+      let left = 0;
 
-    if (placement === "right") {
-      const tooltipH = 140;
-      left = rect.right + 12;
-      top = rect.top + rect.height / 2 - tooltipH / 2;
+      if (placement === "right") {
+        left = rect.right + 12;
+        top = rect.top + rect.height / 2 - tooltipH / 2;
 
-      if (left + width > window.innerWidth - 8) {
-        left = rect.left - width - 12;
+        if (left + width > window.innerWidth - 8) {
+          left = rect.left - width - 12;
+        }
+        top = Math.max(8, Math.min(top, window.innerHeight - tooltipH - 8));
+      } else {
+        // Position tooltip above the trigger element with a gap
+        top = rect.top - tooltipH - 10;
+        if (top < 8) top = rect.bottom + 10; // fallback if not enough space above
+        left = rect.left + rect.width / 2 - width / 2;
+        left = Math.max(8, Math.min(left, window.innerWidth - width - 8));
       }
-      top = Math.max(8, Math.min(top, window.innerHeight - tooltipH - 8));
-    } else {
-      // Position tooltip above the trigger element
-      // Use bottom positioning so tooltip grows upward
-      top = rect.top - 10;
-      left = rect.left + rect.width / 2 - width / 2;
-      left = Math.max(8, Math.min(left, window.innerWidth - width - 8));
-    }
 
-    top += offsetY;
-    left += offsetX;
-    setPos({ top, left });
+      top += offsetY;
+      left += offsetX;
+      setPos({ top, left });
+    });
+    
+    return () => cancelAnimationFrame(timer);
   }, [show, width, placement, offsetX, offsetY]);
 
   if (disabled) return <>{children}</>;
@@ -69,16 +78,16 @@ export const PortalTooltip: React.FC<PortalTooltipProps> = ({
         <AnimatePresence>
           {show && (
             <motion.div
-              initial={{ opacity: 0, y: placement === "top" ? 6 : 6, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: placement === "top" ? 6 : 6, scale: 0.95 }}
+              ref={tooltipRef}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.15, ease: "easeOut" }}
               className="fixed z-[99999] pointer-events-none"
               style={{
                 top: pos.top,
                 left: pos.left,
                 width,
-                transform: placement === "top" ? "translateY(-100%)" : undefined,
               }}
             >
               <div className="relative rounded-xl p-3.5 shadow-[0_20px_50px_rgba(0,0,0,0.35)] border bg-panel border-base">
