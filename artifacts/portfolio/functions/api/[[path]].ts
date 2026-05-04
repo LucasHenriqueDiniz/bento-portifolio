@@ -412,6 +412,41 @@ export const onRequest: PagesFunction<Env> = async (context) => {
         const favAnime = Array.isArray(favsJson.data?.anime) ? favsJson.data?.anime : [];
         const favManga = Array.isArray(favsJson.data?.manga) ? favsJson.data?.manga : [];
 
+        // Fetch details for each favorite to get score, synopsis, type, episodes/chapters
+        const animeDetails = await Promise.all(
+          favAnime.slice(0, 10).map(async (a: any) => {
+            const details = await fetchJikanDetails("anime", a.mal_id, 1);
+            return {
+              malId: a.mal_id,
+              title: a.title,
+              year: a.start_year ?? null,
+              imageUrl: a.images?.jpg?.image_url ?? null,
+              url: `https://myanimelist.net/anime/${a.mal_id}`,
+              score: details?.score ?? null,
+              synopsis: details?.synopsis ?? null,
+              type: details?.type ?? null,
+              episodes: details?.episodes ?? null,
+            };
+          })
+        );
+
+        const mangaDetails = await Promise.all(
+          favManga.slice(0, 10).map(async (m: any) => {
+            const details = await fetchJikanDetails("manga", m.mal_id, 1);
+            return {
+              malId: m.mal_id,
+              title: m.title,
+              year: m.start_year ?? null,
+              imageUrl: m.images?.jpg?.image_url ?? null,
+              url: `https://myanimelist.net/manga/${m.mal_id}`,
+              score: details?.score ?? null,
+              synopsis: details?.synopsis ?? null,
+              type: details?.type ?? null,
+              chapters: details?.chapters ?? null,
+            };
+          })
+        );
+
         const payload = {
           animeStats: {
             completed: anime?.completed ?? 0,
@@ -423,28 +458,8 @@ export const onRequest: PagesFunction<Env> = async (context) => {
             reading: manga?.reading ?? 0,
             chaptersRead: manga?.chapters_read ?? 0,
           },
-          animeFavorites: favAnime.slice(0, 10).map((a: any) => ({
-            malId: a.mal_id,
-            title: a.title,
-            year: a.start_year ?? null,
-            imageUrl: a.images?.jpg?.image_url ?? null,
-            url: `https://myanimelist.net/anime/${a.mal_id}`,
-            score: null,
-            synopsis: null,
-            type: null,
-            episodes: null,
-          })),
-          mangaFavorites: favManga.slice(0, 10).map((m: any) => ({
-            malId: m.mal_id,
-            title: m.title,
-            year: m.start_year ?? null,
-            imageUrl: m.images?.jpg?.image_url ?? null,
-            url: `https://myanimelist.net/manga/${m.mal_id}`,
-            score: null,
-            synopsis: null,
-            type: null,
-            chapters: null,
-          })),
+          animeFavorites: animeDetails,
+          mangaFavorites: mangaDetails,
         };
 
         if (payload.animeFavorites.length || payload.mangaFavorites.length) {
