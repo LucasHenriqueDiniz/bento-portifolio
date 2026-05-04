@@ -175,7 +175,13 @@ export const MyAnimeListCard = React.memo(function MyAnimeListCard({
   const animeFav = data?.animeFavorites ?? [];
   const mangaFav = data?.mangaFavorites ?? [];
 
-  const hasData = Boolean(anime || manga);
+  const hasAnimeStats = Boolean(
+    anime && ((anime.completed ?? 0) > 0 || (anime.watching ?? 0) > 0 || (anime.episodesWatched ?? 0) > 0)
+  );
+  const hasMangaStats = Boolean(
+    manga && ((manga.completed ?? 0) > 0 || (manga.reading ?? 0) > 0 || (manga.chaptersRead ?? 0) > 0)
+  );
+  const hasData = hasAnimeStats || hasMangaStats || animeFav.length > 0 || mangaFav.length > 0;
 
   const animeFront = animeFav.slice(0, 5);
   const animeBack = animeFav.slice(5, 10);

@@ -4,11 +4,11 @@
     "greeting": "Oi, eu sou",
     "name": "Lucas",
     "role": "Desenvolvedor full-stack",
-    "descriptionPrefix": "Programar pra mim nao e so trabalho, e hobby mesmo. Curto ",
+    "descriptionPrefix": "Programar pra mim não é só trabalho, é hobby mesmo. Curto ",
     "codingLabel": "codar",
     "descriptionMiddle": ", ",
     "drawingLabel": "desenhar",
-    "descriptionSuffix": " e tirar projeto do papel ate virar algo que funcione de verdade."
+    "descriptionSuffix": " e tirar projeto do papel até virar algo que funcione de verdade."
   },
   "funFacts": {
     "label": "CURIOSIDADES",
@@ -106,10 +106,10 @@
   },
   "github": {
     "title": "GitHub",
-    "repos": "repos",
-    "contribs": "contribs",
+    "repos": "repositórios",
+    "contribs": "contribuições",
     "commits": "commits",
-    "streak": "streak",
+    "streak": "sequência",
     "daysSuffix": "d",
     "days": {
       "mon": "seg",

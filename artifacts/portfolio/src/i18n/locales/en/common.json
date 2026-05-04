@@ -2,7 +2,9 @@
   "nav": {
     "home": "Home",
     "projects": "Projects",
-    "resume": "Resume"
+    "resume": "Resume",
+    "contact": "Contact",
+    "donate": "Donate"
   },
   "buttons": {
     "back": "Back",

@@ -7,19 +7,13 @@ Este arquivo consolida e atualiza o que estava espalhado em `.opencode/`.
 
 - Portfolio pessoal em arquitetura monorepo.
 - Frontend: React + Vite (Bento UI/UX).
-- Backend: Express como proxy para APIs externas e protecao de segredos.
+- Backend: Cloudflare Pages Functions como proxy para APIs externas e protecao de segredos.
 
 ## 2) Estrutura do monorepo
 
 ```
 artifacts/
   portfolio/      # app frontend
-  api-server/     # backend API/proxy
-lib/
-  api-client-react/
-  api-spec/
-  api-zod/
-scripts/
 ```
 
 ## 3) Stack atual (fonte: package.json)
@@ -28,8 +22,8 @@ scripts/
 - Node: 18+
 - TypeScript: ~5.9.2
 - Frontend: React 19.1, Vite 7, Tailwind 4, Wouter, TanStack Query, Framer Motion, Radix UI
-- Backend: Express 5, dotenv, pino
-- Deploy: Cloudflare Pages (frontend estatico)
+- Backend: Cloudflare Pages Functions
+- Deploy: Cloudflare Pages (frontend + functions)
 
 ## 4) Comandos padrao
 
@@ -56,7 +50,7 @@ pnpm --filter @workspace/portfolio test
 
 - Nao commitar `.env` nem segredos.
 - Nao mover segredos para frontend.
-- Integracoes externas devem continuar via backend (`artifacts/api-server`).
+- Integracoes externas devem continuar via backend (Pages Functions em `artifacts/portfolio/functions`).
 
 ### 5.2 Convencoes de codigo
 
@@ -64,7 +58,7 @@ pnpm --filter @workspace/portfolio test
 - Componentes React em PascalCase.
 - Hooks com prefixo `use`.
 - Utilitarios sem dependencia de UI em `src/lib`.
-- Reutilizar schemas em `lib/api-zod` quando houver validacao compartilhada.
+- Reutilizar schemas locais em `artifacts/portfolio` quando houver validacao compartilhada.
 
 ### 5.3 Mudancas em UI
 
@@ -75,12 +69,12 @@ pnpm --filter @workspace/portfolio test
 ### 5.4 Mudancas em API/backend
 
 - Endpoint novo deve ter validacao de entrada e tratamento de erro consistente.
-- Se impactar frontend, atualizar cliente em `lib/api-client-react`.
+- Se impactar frontend, atualizar cliente local em `artifacts/portfolio`.
 - Nao quebrar contratos existentes sem documentar migracao.
 
 ## 6) Fluxo recomendado para contribuicao
 
-1. Ler contexto do modulo alvo (`artifacts/portfolio` ou `artifacts/api-server`).
+1. Ler contexto do modulo alvo (`artifacts/portfolio`).
 2. Implementar menor mudanca possivel para resolver o problema.
 3. Rodar `pnpm typecheck`.
 4. Rodar testes afetados.

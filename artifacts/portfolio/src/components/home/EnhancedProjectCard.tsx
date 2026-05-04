@@ -1,11 +1,13 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
+import { useLocation } from "wouter";
 import { WidgetCard } from "@/components/WidgetCard";
 import { CardHeader } from "@/components/CardHeader";
 import { ExternalLink, ChevronLeft, ChevronRight } from "lucide-react";
 
 export interface Project {
+  id: string;
   name: string;
   description: string;
   techStack: string[];
@@ -28,6 +30,7 @@ export function EnhancedProjectCard({
   isDark = false,
 }: EnhancedProjectCardProps) {
   const { t } = useTranslation("home");
+  const [, setLocation] = useLocation();
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
 
@@ -215,18 +218,17 @@ export function EnhancedProjectCard({
                 </div>
               )}
 
-              {current?.url && (
-                <motion.a
-                  href={current.url}
-                  target="_blank"
-                  rel="noreferrer"
+              {current?.id && (
+                <motion.button
+                  type="button"
+                  onClick={() => setLocation(`/projects/${current.id}`)}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   className="flex items-center gap-1 text-[10px] font-medium px-2 py-1 rounded-md text-white bg-brand hover:bg-brand-hover transition-colors"
                 >
                   {t("project.view")}
                   <ExternalLink size={9} />
-                </motion.a>
+                </motion.button>
               )}
             </div>
           </div>

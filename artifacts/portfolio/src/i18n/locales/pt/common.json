@@ -2,7 +2,9 @@
   "nav": {
     "home": "Home",
     "projects": "Projetos",
-    "resume": "Currículo"
+    "resume": "Currículo",
+    "contact": "Contato",
+    "donate": "Doar"
   },
   "buttons": {
     "back": "Voltar",

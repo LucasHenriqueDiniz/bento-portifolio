@@ -1,6 +1,6 @@
 # Portfolio - Local Development
 
-Portfolio web pessoal construído com React + Vite (frontend) e Express (backend API).
+Portfolio web pessoal construído com React + Vite (frontend) e Cloudflare Pages Functions (backend API).
 
 ## 📋 Pré-requisitos
 
@@ -55,21 +55,11 @@ O projeto requer as seguintes variáveis de ambiente (veja `.env.example` para r
 
 ## 🛠️ Comandos de Desenvolvimento
 
-### Executar ambos (Frontend + Backend)
-```bash
-pnpm dev
-```
-
 ### Executar apenas o Frontend (Portfolio)
 ```bash
 pnpm dev:portfolio
 ```
 Acesse: `http://localhost:5173`
-
-### Executar apenas o Backend (API Server)
-```bash
-pnpm dev:api
-```
 
 ### Build para Produção
 ```bash
@@ -86,10 +76,7 @@ pnpm typecheck
 ```
 portifolio/
 ├── artifacts/
-│   ├── portfolio/          # Frontend React + Vite
-│   └── api-server/         # Backend Express API
-├── lib/                    # Bibliotecas compartilhadas
-├── scripts/                # Scripts utilitários
+│   └── portfolio/          # Frontend React + Vite
 ├── .env                    # Variáveis de ambiente (não versionado)
 ├── .env.example            # Template de variáveis de ambiente
 ├── package.json            # Workspace root package
@@ -99,9 +86,6 @@ portifolio/
 ### Descrição dos Diretórios
 
 - **artifacts/portfolio**: Aplicação frontend React com Vite, Tailwind CSS, e componentes UI
-- **artifacts/api-server**: Servidor Express que fornece APIs para integrações externas
-- **lib/**: Bibliotecas compartilhadas entre frontend e backend (tipos, validações, etc.)
-- **scripts/**: Scripts de build e utilitários
 
 ## 🐛 Troubleshooting
 
@@ -168,15 +152,6 @@ pnpm typecheck
 # 2. Arquivos tsconfig.json estão corretos
 # 3. Imports estão corretos
 ```
-
-### Erro: "CORS error" ao fazer requisições da API
-
-**Problema**: Frontend não consegue fazer requisições para o backend devido a CORS.
-
-**Solução**: O API Server já está configurado com CORS habilitado. Verifique se:
-1. O backend está rodando (`pnpm dev:api`)
-2. A URL da API no frontend está correta
-3. As portas estão corretas (frontend: 5173, backend: porta configurada)
 
 ### Erro: "API integration not working" (Discord, Steam, Last.fm, etc.)
 
@@ -250,21 +225,17 @@ server: {
 
 ### Erro: "Cannot connect to API server"
 
-**Problema**: Frontend não consegue se conectar ao backend.
+**Problema**: Frontend não consegue se conectar ao backend (Pages Functions).
 
 **Checklist**:
-1. ✅ Backend está rodando? (`pnpm dev:api`)
+1. ✅ Backend está rodando? (Pages Functions em `pnpm dev:portfolio`)
 2. ✅ Porta do backend está correta?
 3. ✅ Firewall não está bloqueando?
 
 **Solução**:
 ```bash
-# Verificar se backend está rodando
-curl http://localhost:PORT/health
-
-# Se não responder, verificar logs do backend
-pnpm dev:api
-# Procurar por erros no console
+# Verificar se o backend (Pages Functions) esta respondendo
+curl http://localhost:5173/api/portfolio/stats
 ```
 
 ## 📚 Recursos Adicionais

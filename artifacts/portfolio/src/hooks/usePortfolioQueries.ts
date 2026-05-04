@@ -1,22 +1,15 @@
 import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { getCache, setCache } from "@/lib/queryCache";
+import { getCache, removeCache, setCache } from "@/lib/queryCache";
 import {
-  getGetNowPlayingQueryOptions,
-  getGetTopArtistsQueryOptions,
-  getGetSteamDataQueryOptions,
-  getGetLastWorkoutQueryOptions,
-  getGetStatsQueryOptions,
-  getGetMalDataQueryOptions,
-  getGetProjectsQueryOptions,
-  type getNowPlaying,
-  type getTopArtists,
-  type getSteamData,
-  type getLastWorkout,
-  type getStats,
-  type getMalData,
-  type getProjects,
-} from "@workspace/api-client-react";
+  getNowPlaying,
+  getTopArtists,
+  getSteamData,
+  getLastWorkout,
+  getStats,
+  getMalData,
+  getProjects,
+} from "@/lib/apiClient";
 
 function usePersistOnSuccess<T>(queryKey: string, data: T | undefined) {
   useEffect(() => {
@@ -28,12 +21,11 @@ function usePersistOnSuccess<T>(queryKey: string, data: T | undefined) {
 
 export function useGetNowPlayingCached() {
   const cached = getCache<Awaited<ReturnType<typeof getNowPlaying>>>("/api/portfolio/now-playing");
-  const opts = getGetNowPlayingQueryOptions();
-
   const query = useQuery({
-    ...opts,
+    queryKey: ["/api/portfolio/now-playing"],
+    queryFn: ({ signal }) => getNowPlaying({ signal }),
     placeholderData: cached,
-  }) as ReturnType<typeof import("@workspace/api-client-react").useGetNowPlaying>;
+  });
 
   usePersistOnSuccess("/api/portfolio/now-playing", query.data);
 
@@ -42,12 +34,11 @@ export function useGetNowPlayingCached() {
 
 export function useGetTopArtistsCached() {
   const cached = getCache<Awaited<ReturnType<typeof getTopArtists>>>("/api/portfolio/top-artists");
-  const opts = getGetTopArtistsQueryOptions();
-
   const query = useQuery({
-    ...opts,
+    queryKey: ["/api/portfolio/top-artists"],
+    queryFn: ({ signal }) => getTopArtists({ signal }),
     placeholderData: cached,
-  }) as ReturnType<typeof import("@workspace/api-client-react").useGetTopArtists>;
+  });
 
   usePersistOnSuccess("/api/portfolio/top-artists", query.data);
 
@@ -56,12 +47,11 @@ export function useGetTopArtistsCached() {
 
 export function useGetSteamDataCached() {
   const cached = getCache<Awaited<ReturnType<typeof getSteamData>>>("/api/portfolio/steam");
-  const opts = getGetSteamDataQueryOptions();
-
   const query = useQuery({
-    ...opts,
+    queryKey: ["/api/portfolio/steam"],
+    queryFn: ({ signal }) => getSteamData({ signal }),
     placeholderData: cached,
-  }) as ReturnType<typeof import("@workspace/api-client-react").useGetSteamData>;
+  });
 
   usePersistOnSuccess("/api/portfolio/steam", query.data);
 
@@ -70,12 +60,11 @@ export function useGetSteamDataCached() {
 
 export function useGetLastWorkoutCached() {
   const cached = getCache<Awaited<ReturnType<typeof getLastWorkout>>>("/api/portfolio/workout");
-  const opts = getGetLastWorkoutQueryOptions();
-
   const query = useQuery({
-    ...opts,
+    queryKey: ["/api/portfolio/workout"],
+    queryFn: ({ signal }) => getLastWorkout({ signal }),
     placeholderData: cached,
-  }) as ReturnType<typeof import("@workspace/api-client-react").useGetLastWorkout>;
+  });
 
   usePersistOnSuccess("/api/portfolio/workout", query.data);
 
@@ -84,12 +73,11 @@ export function useGetLastWorkoutCached() {
 
 export function useGetStatsCached() {
   const cached = getCache<Awaited<ReturnType<typeof getStats>>>("/api/portfolio/stats");
-  const opts = getGetStatsQueryOptions();
-
   const query = useQuery({
-    ...opts,
+    queryKey: ["/api/portfolio/stats"],
+    queryFn: ({ signal }) => getStats({ signal }),
     placeholderData: cached,
-  }) as ReturnType<typeof import("@workspace/api-client-react").useGetStats>;
+  });
 
   usePersistOnSuccess("/api/portfolio/stats", query.data);
 
@@ -97,29 +85,56 @@ export function useGetStatsCached() {
 }
 
 export function useGetMalDataCached() {
-  const cached = getCache<Awaited<ReturnType<typeof getMalData>>>("/api/portfolio/mal");
-  const opts = getGetMalDataQueryOptions();
+  const key = "/api/portfolio/mal";
+  const cached = getCache<Awaited<ReturnType<typeof getMalData>>>(key);
+  const isEmptyMalData = (payload: unknown) => {
+    if (!payload || typeof payload !== "object") return true;
+    const data = payload as Partial<Awaited<ReturnType<typeof getMalData>>>;
+    const anime = data.animeStats;
+    const manga = data.mangaStats;
+    const animeEmpty =
+      (anime?.completed ?? 0) === 0 &&
+      (anime?.watching ?? 0) === 0 &&
+      (anime?.episodesWatched ?? 0) === 0;
+    const mangaEmpty =
+      (manga?.completed ?? 0) === 0 &&
+      (manga?.reading ?? 0) === 0 &&
+      (manga?.chaptersRead ?? 0) === 0;
+    return animeEmpty && mangaEmpty && (data.animeFavorites?.length ?? 0) === 0 && (data.mangaFavorites?.length ?? 0) === 0;
+  };
+
+  const safeCached = isEmptyMalData(cached) ? undefined : cached;
+  if (!safeCached && cached) {
+    removeCache(key);
+  }
 
   const query = useQuery({
-    ...opts,
-    placeholderData: cached,
-  }) as ReturnType<typeof import("@workspace/api-client-react").useGetMalData>;
+    queryKey: [key],
+    queryFn: ({ signal }) => getMalData({ signal }),
+    placeholderData: safeCached,
+  });
 
-  usePersistOnSuccess("/api/portfolio/mal", query.data);
+  useEffect(() => {
+    if (query.data === undefined) return;
+    if (isEmptyMalData(query.data)) {
+      removeCache(key);
+      return;
+    }
+    setCache(key, query.data);
+  }, [query.data]);
 
   return query;
 }
 
 export function useGetProjectsCached() {
   const cached = getCache<Awaited<ReturnType<typeof getProjects>>>("/api/projects");
-  const opts = getGetProjectsQueryOptions();
-
   const query = useQuery({
-    ...opts,
+    queryKey: ["/api/portfolio/projects"],
+    queryFn: ({ signal }) => getProjects({ signal }),
     placeholderData: cached,
-  }) as ReturnType<typeof import("@workspace/api-client-react").useGetProjects>;
+  });
 
-  usePersistOnSuccess("/api/projects", query.data);
+  usePersistOnSuccess("/api/portfolio/projects", query.data);
 
   return query;
 }
