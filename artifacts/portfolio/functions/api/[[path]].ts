@@ -412,40 +412,21 @@ export const onRequest: PagesFunction<Env> = async (context) => {
         const favAnime = Array.isArray(favsJson.data?.anime) ? favsJson.data?.anime : [];
         const favManga = Array.isArray(favsJson.data?.manga) ? favsJson.data?.manga : [];
 
-        // Fetch details for each favorite to get score, synopsis, type, episodes/chapters
-        const animeDetails = await Promise.all(
-          favAnime.slice(0, 10).map(async (a: any) => {
-            const details = await fetchJikanDetails("anime", a.mal_id, 1);
-            return {
-              malId: a.mal_id,
-              title: a.title,
-              year: a.start_year ?? null,
-              imageUrl: a.images?.jpg?.image_url ?? null,
-              url: `https://myanimelist.net/anime/${a.mal_id}`,
-              score: details?.score ?? null,
-              synopsis: details?.synopsis ?? null,
-              type: details?.type ?? null,
-              episodes: details?.episodes ?? null,
-            };
-          })
-        );
-
-        const mangaDetails = await Promise.all(
-          favManga.slice(0, 10).map(async (m: any) => {
-            const details = await fetchJikanDetails("manga", m.mal_id, 1);
-            return {
-              malId: m.mal_id,
-              title: m.title,
-              year: m.start_year ?? null,
-              imageUrl: m.images?.jpg?.image_url ?? null,
-              url: `https://myanimelist.net/manga/${m.mal_id}`,
-              score: details?.score ?? null,
-              synopsis: details?.synopsis ?? null,
-              type: details?.type ?? null,
-              chapters: details?.chapters ?? null,
-            };
-          })
-        );
+        // Return basic data only - details fetched separately via /mal/details
+        const toBasic = (a: any) => ({
+          malId: a.mal_id,
+          title: a.title,
+          year: a.start_year ?? null,
+          imageUrl: a.images?.jpg?.image_url ?? null,
+          url: `https://myanimelist.net/anime/${a.mal_id}`,
+        });
+        const toBasicManga = (m: any) => ({
+          malId: m.mal_id,
+          title: m.title,
+          year: m.start_year ?? null,
+          imageUrl: m.images?.jpg?.image_url ?? null,
+          url: `https://myanimelist.net/manga/${m.mal_id}`,
+        });
 
         const payload = {
           animeStats: {
@@ -458,8 +439,8 @@ export const onRequest: PagesFunction<Env> = async (context) => {
             reading: manga?.reading ?? 0,
             chaptersRead: manga?.chapters_read ?? 0,
           },
-          animeFavorites: animeDetails,
-          mangaFavorites: mangaDetails,
+          animeFavorites: favAnime.slice(0, 10).map(toBasic),
+          mangaFavorites: favManga.slice(0, 10).map(toBasicManga),
         };
 
         if (payload.animeFavorites.length || payload.mangaFavorites.length) {
@@ -471,6 +452,63 @@ export const onRequest: PagesFunction<Env> = async (context) => {
         if (lastGoodMal) return json(lastGoodMal, 300);
         return json({ animeStats: { completed: 0, watching: 0, episodesWatched: 0 }, mangaStats: { completed: 0, reading: 0, chaptersRead: 0 }, animeFavorites: [], mangaFavorites: [] }, 30);
       }
+    }
+
+    if (path.startsWith("portfolio/mal/details")) {
+      const url = new URL(request.url);
+      const type = url.searchParams.get("type") as "anime" | "manga";
+      const idsParam = url.searchParams.get("ids");
+      if (!type || !idsParam) return new Response("Missing type or ids", { status: 400 });
+      
+      const ids = idsParam.split(",").map(Number).filter(Boolean);
+      const results: Record<number, any> = {};
+      
+      // Check KV cache first
+      const kvCacheKeys = ids.map((id) => `mal:detail:${type}:${id}`);
+      const cachedResults: Record<number, any> = {};
+      
+      if (env.PORTFOLIO_CACHE) {
+        for (let i = 0; i < ids.length; i++) {
+          const cached = await env.PORTFOLIO_CACHE.get(kvCacheKeys[i], { type: "text" });
+          if (cached) {
+            try {
+              cachedResults[ids[i]] = JSON.parse(cached);
+            } catch { /* ignore */ }
+          }
+        }
+      }
+      
+      // Fetch missing details with 1s delay between requests
+      const missingIds = ids.filter((id) => !cachedResults[id]);
+      for (let i = 0; i < missingIds.length; i++) {
+        const id = missingIds[i];
+        if (i > 0) await delay(1000); // 1s delay between requests
+        
+        const details = await fetchJikanDetails(type, id, 1);
+        if (details) {
+          const result = {
+            score: details?.score ?? null,
+            synopsis: details?.synopsis ?? null,
+            type: details?.type ?? null,
+            episodes: type === "anime" ? (details?.episodes ?? null) : null,
+            chapters: type === "manga" ? (details?.chapters ?? null) : null,
+          };
+          results[id] = result;
+          
+          // Cache in KV for 7 days
+          if (env.PORTFOLIO_CACHE) {
+            await env.PORTFOLIO_CACHE.put(
+              `mal:detail:${type}:${id}`,
+              JSON.stringify(result),
+              { expirationTtl: 604800 } // 7 days
+            );
+          }
+        }
+      }
+      
+      // Merge cached + fresh results
+      const finalResults: Record<number, any> = { ...cachedResults, ...results };
+      return json(finalResults, 300);
     }
 
     if (path === "portfolio/projects") {

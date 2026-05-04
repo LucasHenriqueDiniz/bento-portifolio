@@ -6,6 +6,7 @@ import { WidgetCard } from "@/components/WidgetCard";
 import { PortalTooltip } from "@/components/PortalTooltip";
 import CountUp from "@/components/CountUp";
 import { useFlipLock } from "@/hooks/useFlipLock";
+import { getMalDetails } from "@/lib/apiClient";
 
 interface ApiFavorite {
   malId: number;
@@ -44,7 +45,31 @@ interface MyAnimeListCardProps {
 const WAVE_INTERVAL_MS = 8000;
 const CARD_STAGGER_MS = 150;
 
-function MalTooltipContent({ item }: { item: ApiFavorite }) {
+function MalSkeleton() {
+  return (
+    <div className="space-y-2 animate-pulse">
+      <div className="flex items-start gap-3">
+        <div className="w-12 h-[72px] rounded-lg bg-field shrink-0" />
+        <div className="flex-1 min-w-0 space-y-1.5">
+          <div className="h-4 bg-field rounded w-3/4" />
+          <div className="h-3 bg-field rounded w-1/2" />
+          <div className="h-3 bg-field rounded w-1/3" />
+        </div>
+      </div>
+      <div className="border-t border-base pt-2 space-y-1.5">
+        <div className="h-3 bg-field rounded w-full" />
+        <div className="h-3 bg-field rounded w-5/6" />
+        <div className="h-3 bg-field rounded w-4/6" />
+      </div>
+    </div>
+  );
+}
+
+function MalTooltipContent({ item, loading }: { item: ApiFavorite; loading: boolean }) {
+  if (loading) {
+    return <MalSkeleton />;
+  }
+
   const meta = [
     item.year ? String(item.year) : null,
     item.type ?? null,
@@ -93,23 +118,36 @@ function CoverCard({
   backItem,
   flipped,
   onFlip,
+  detailItem,
+  detailLoading,
+  onHoverDetail,
 }: {
   frontItem: ApiFavorite;
   backItem?: ApiFavorite;
   flipped: boolean;
   onFlip: () => void;
+  detailItem?: ApiFavorite;
+  detailLoading: boolean;
+  onHoverDetail: () => void;
 }) {
   const currentItem = flipped && backItem ? backItem : frontItem;
+  const mergedItem = detailItem ? { ...currentItem, ...detailItem } : currentItem;
 
   return (
     <div className="flex-1 h-full min-w-0" style={{ perspective: "400px" }}>
-      <PortalTooltip content={<MalTooltipContent item={currentItem} />} width={320} placement="top" offsetY={0}>
+      <PortalTooltip 
+        content={<MalTooltipContent item={mergedItem} loading={detailLoading} />} 
+        width={320} 
+        placement="top" 
+        offsetY={0}
+      >
         <div
           className="relative w-full h-full rounded-lg overflow-hidden group cursor-pointer"
           onClick={(e) => {
             e.stopPropagation();
             onFlip();
           }}
+          onMouseEnter={onHoverDetail}
         >
           <div
             className="relative w-full h-full transition-transform"
@@ -166,6 +204,14 @@ export const MyAnimeListCard = React.memo(function MyAnimeListCard({
   const hoveredRef = useRef<Set<number>>(new Set());
   const { runWithFlipLock } = useFlipLock(700);
 
+  // Detail states
+  const [animeDetails, setAnimeDetails] = useState<Record<number, ApiFavorite>>({});
+  const [mangaDetails, setMangaDetails] = useState<Record<number, ApiFavorite>>({});
+  const [animeDetailsLoading, setAnimeDetailsLoading] = useState(false);
+  const [mangaDetailsLoading, setMangaDetailsLoading] = useState(false);
+  const [animeDetailsFailed, setAnimeDetailsFailed] = useState(false);
+  const [mangaDetailsFailed, setMangaDetailsFailed] = useState(false);
+
   const handleFlip = () => {
     runWithFlipLock(() => setFlipped((f) => !f));
   };
@@ -188,6 +234,83 @@ export const MyAnimeListCard = React.memo(function MyAnimeListCard({
   const mangaFront = mangaFav.slice(0, 5);
   const mangaBack = mangaFav.slice(5, 10);
 
+  // Fetch anime details in background after basic data loads
+  useEffect(() => {
+    if (animeFav.length === 0 || animeDetailsLoading || Object.keys(animeDetails).length > 0) return;
+
+    const fetchAnimeDetails = async () => {
+      setAnimeDetailsLoading(true);
+      setAnimeDetailsFailed(false);
+      try {
+        const ids = animeFav.map((a) => a.malId);
+        const details = await getMalDetails("anime", ids);
+        setAnimeDetails(details);
+      } catch {
+        setAnimeDetailsFailed(true);
+      } finally {
+        setAnimeDetailsLoading(false);
+      }
+    };
+
+    fetchAnimeDetails();
+  }, [animeFav]);
+
+  // Fetch manga details in background after anime details (1s delay)
+  useEffect(() => {
+    if (mangaFav.length === 0 || mangaDetailsLoading || Object.keys(mangaDetails).length > 0) return;
+
+    const fetchMangaDetails = async () => {
+      // Wait for anime details to finish, then wait 1s more
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      setMangaDetailsLoading(true);
+      setMangaDetailsFailed(false);
+      try {
+        const ids = mangaFav.map((m) => m.malId);
+        const details = await getMalDetails("manga", ids);
+        setMangaDetails(details);
+      } catch {
+        setMangaDetailsFailed(true);
+      } finally {
+        setMangaDetailsLoading(false);
+      }
+    };
+
+    fetchMangaDetails();
+  }, [mangaFav]);
+
+  // Retry on hover functions
+  const handleAnimeHoverDetail = useCallback((index: number) => {
+    if (animeDetailsFailed && !animeDetailsLoading) {
+      const item = animeFav[index];
+      if (!item) return;
+      
+      setAnimeDetailsLoading(true);
+      setAnimeDetailsFailed(false);
+      getMalDetails("anime", [item.malId])
+        .then((details) => {
+          setAnimeDetails((prev) => ({ ...prev, ...details }));
+        })
+        .catch(() => setAnimeDetailsFailed(true))
+        .finally(() => setAnimeDetailsLoading(false));
+    }
+  }, [animeDetailsFailed, animeDetailsLoading, animeFav]);
+
+  const handleMangaHoverDetail = useCallback((index: number) => {
+    if (mangaDetailsFailed && !mangaDetailsLoading) {
+      const item = mangaFav[index];
+      if (!item) return;
+      
+      setMangaDetailsLoading(true);
+      setMangaDetailsFailed(false);
+      getMalDetails("manga", [item.malId])
+        .then((details) => {
+          setMangaDetails((prev) => ({ ...prev, ...details }));
+        })
+        .catch(() => setMangaDetailsFailed(true))
+        .finally(() => setMangaDetailsLoading(false));
+    }
+  }, [mangaDetailsFailed, mangaDetailsLoading, mangaFav]);
+
   // Wave flip: all 5 cards flip in sequence with 150ms delay, driven by 1 timer
   useEffect(() => {
     if (!hasData) return;
@@ -196,7 +319,6 @@ export const MyAnimeListCard = React.memo(function MyAnimeListCard({
       const isAnimeVisible = !flipped;
       const targets = isAnimeVisible ? animeBack : mangaBack;
       const setters = isAnimeVisible ? setAnimeFlips : setMangaFlips;
-      const getters = isAnimeVisible ? animeFlips : mangaFlips;
 
       targets.forEach((backItem, i) => {
         if (!backItem) return;
@@ -305,6 +427,9 @@ export const MyAnimeListCard = React.memo(function MyAnimeListCard({
                     backItem={animeBack[i]}
                     flipped={animeFlips[i]}
                     onFlip={() => toggleAnimeFlip(i)}
+                    detailItem={animeDetails[item.malId]}
+                    detailLoading={animeDetailsLoading && !animeDetails[item.malId]}
+                    onHoverDetail={() => handleAnimeHoverDetail(i)}
                   />
                 </div>
               ))}
@@ -364,6 +489,9 @@ export const MyAnimeListCard = React.memo(function MyAnimeListCard({
                     backItem={mangaBack[i]}
                     flipped={mangaFlips[i]}
                     onFlip={() => toggleMangaFlip(i)}
+                    detailItem={mangaDetails[item.malId]}
+                    detailLoading={mangaDetailsLoading && !mangaDetails[item.malId]}
+                    onHoverDetail={() => handleMangaHoverDetail(i)}
                   />
                 </div>
               ))}
