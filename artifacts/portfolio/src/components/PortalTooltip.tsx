@@ -28,11 +28,11 @@ export const PortalTooltip: React.FC<PortalTooltipProps> = ({
   useEffect(() => {
     if (!show || !triggerRef.current) return;
     const rect = triggerRef.current.getBoundingClientRect();
-    const tooltipH = 140;
     let top = 0;
     let left = 0;
 
     if (placement === "right") {
+      const tooltipH = 140;
       left = rect.right + 12;
       top = rect.top + rect.height / 2 - tooltipH / 2;
 
@@ -41,8 +41,9 @@ export const PortalTooltip: React.FC<PortalTooltipProps> = ({
       }
       top = Math.max(8, Math.min(top, window.innerHeight - tooltipH - 8));
     } else {
-      top = rect.top - tooltipH - 10;
-      if (top < 8) top = rect.bottom + 10;
+      // Position tooltip above the trigger element
+      // Use bottom positioning so tooltip grows upward
+      top = rect.top - 10;
       left = rect.left + rect.width / 2 - width / 2;
       left = Math.max(8, Math.min(left, window.innerWidth - width - 8));
     }
@@ -68,15 +69,16 @@ export const PortalTooltip: React.FC<PortalTooltipProps> = ({
         <AnimatePresence>
           {show && (
             <motion.div
-              initial={{ opacity: 0, y: 6, scale: 0.95 }}
+              initial={{ opacity: 0, y: placement === "top" ? 6 : 6, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 6, scale: 0.95 }}
+              exit={{ opacity: 0, y: placement === "top" ? 6 : 6, scale: 0.95 }}
               transition={{ duration: 0.15, ease: "easeOut" }}
               className="fixed z-[99999] pointer-events-none"
               style={{
                 top: pos.top,
                 left: pos.left,
                 width,
+                transform: placement === "top" ? "translateY(-100%)" : undefined,
               }}
             >
               <div className="relative rounded-xl p-3.5 shadow-[0_20px_50px_rgba(0,0,0,0.35)] border bg-panel border-base">
