@@ -458,7 +458,7 @@ export const onRequest: PagesFunction<Env> = async (context) => {
       }
     }
 
-    if (path === "projects") {
+    if (path === "portfolio/projects") {
       return json([], 120);
     }
 
