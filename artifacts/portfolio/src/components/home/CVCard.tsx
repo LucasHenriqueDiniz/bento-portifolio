@@ -81,7 +81,7 @@ export const CVCard = React.memo(function CVCard({ navigate, isDark = false }: C
         <div className="relative z-10 flex-1 relative overflow-hidden rounded-lg">
           <div className="absolute inset-x-4 bottom-2 h-10 rounded-full blur-xl bg-black/20" />
           <motion.div
-            className="absolute left-1/2 -translate-x-1/2 translate-y-7 top-0 w-[244px] rounded-xl border overflow-hidden bg-panel border-base"
+            className="absolute left-1/2 -translate-x-1/2 translate-y-7 top-0 w-[244px] rounded-xl border overflow-hidden bg-panel border-white/30"
             style={{
               boxShadow: isDark
                 ? "0 20px 42px rgba(0,0,0,0.5), 0 2px 10px rgba(0,0,0,0.25)"

@@ -91,18 +91,22 @@ const GitHubGrid = React.memo(function GitHubGrid({
             <div key={w} className="flex flex-col gap-[2px] flex-1 min-w-0">
               {Array.from({ length: DAYS }).map((_, d) => {
                 const idx = w * DAYS + d;
+                const delay = (w * DAYS + d) * 0.003; // stagger from top-left to bottom-right
                 return (
-                  <div
+                  <motion.div
                     key={d}
-                    className={inView ? "gh-dot" : ""}
-                    style={
-                      {
-                        aspectRatio: "1",
-                        borderRadius: 2,
-                        backgroundColor: shades[cells[idx]],
-                        "--dot-delay": `${Math.min(idx * 1.3, 520)}ms`,
-                      } as React.CSSProperties
-                    }
+                    initial={{ opacity: 0, scale: 0.6 }}
+                    animate={inView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.6 }}
+                    transition={{
+                      delay,
+                      duration: 0.2,
+                      ease: "easeOut",
+                    }}
+                    style={{
+                      aspectRatio: "1",
+                      borderRadius: 2,
+                      backgroundColor: shades[cells[idx]],
+                    }}
                   />
                 );
               })}
