@@ -2,11 +2,15 @@
   "label": "Galeria",
   "title": "Desenhos & Artes",
   "subtitle": "Um espaço para compartilhar ilustrações, estudos e experimentos pessoais.",
+  "stats": {
+    "items": "{{count}} itens",
+    "nsfwCount": "{{count}} NSFW"
+  },
   "nsfwOverlay": "NSFW - clique para ver",
   "nsfwWarning": {
-    "title": "Conteudo sensivel",
+    "title": "Conteúdo sensível",
     "description": "Esta imagem pode conter nudez ou temas adultos. Deseja continuar?",
-    "remember": "Nao mostrar este aviso novamente nesta sessao",
+    "remember": "Não mostrar este aviso novamente nesta sessão",
     "cancel": "Cancelar",
     "confirm": "Ver imagem"
   },

@@ -12,6 +12,7 @@ const CARD =
 
 interface GitHubGridProps {
   seed: number;
+  contributionDays?: Array<{ date: string; count: number }>;
   inView: boolean;
   isDark: boolean;
   locale: string;
@@ -20,6 +21,7 @@ interface GitHubGridProps {
 
 const GitHubGrid = React.memo(function GitHubGrid({
   seed,
+  contributionDays,
   inView,
   isDark,
   locale,
@@ -37,14 +39,29 @@ const GitHubGrid = React.memo(function GitHubGrid({
     });
   }, [locale]);
 
-  const cells = useMemo(
-    () =>
-      Array.from({ length: WEEKS * DAYS }, (_, i) => {
-        const v = Math.abs(Math.sin(i * 9.1 + seed * 0.3) * 4) | 0;
-        return Math.min(Math.abs(Math.cos(i * 3.7)) > 0.5 ? v : 0, 4);
-      }),
-    [seed],
-  );
+  const cells = useMemo(() => {
+    if (contributionDays && contributionDays.length > 0) {
+      const normalized = contributionDays
+        .slice(-WEEKS * DAYS)
+        .map((d) => d.count)
+        .map((count) => {
+          if (count <= 0) return 0;
+          if (count <= 2) return 1;
+          if (count <= 5) return 2;
+          if (count <= 10) return 3;
+          return 4;
+        });
+      if (normalized.length < WEEKS * DAYS) {
+        return [...Array(WEEKS * DAYS - normalized.length).fill(0), ...normalized];
+      }
+      return normalized;
+    }
+
+    return Array.from({ length: WEEKS * DAYS }, (_, i) => {
+      const v = Math.abs(Math.sin(i * 9.1 + seed * 0.3) * 4) | 0;
+      return Math.min(Math.abs(Math.cos(i * 3.7)) > 0.5 ? v : 0, 4);
+    });
+  }, [contributionDays, seed]);
 
   const shades = isDark
     ? ["#1b1f24", "#0e4429", "#006d32", "#26a641", "#39d353"]
@@ -103,6 +120,7 @@ interface StatsData {
   githubRepos?: number;
   githubContributions?: number;
   longestStreak?: number;
+  contributionDays?: Array<{ date: string; count: number }>;
 }
 
 interface GitHubCardProps {
@@ -170,6 +188,7 @@ export const GitHubCard = React.memo(function GitHubCard({
           <div className="flex-1 min-h-0">
             <GitHubGrid
               seed={stats?.totalCommitsThisYear ?? 539}
+              contributionDays={stats?.contributionDays}
               inView={githubInView}
               isDark={isDark}
               locale={locale}

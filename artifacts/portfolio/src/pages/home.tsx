@@ -230,6 +230,7 @@ export default function Home() {
   const { data: malData, isLoading: loadingMal } = useGetMalData();
 
   const localizedFeaturedProjects = featuredProjects.map(p => ({
+    id: p.id,
     name: p.name,
     description: currentLang === "en" && p.descriptionEn ? p.descriptionEn : p.description,
     techStack: p.techStack,

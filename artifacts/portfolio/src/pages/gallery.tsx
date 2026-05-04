@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { ExternalLink, X } from "lucide-react";
 import SiteHeader from "@/components/SiteHeader";
 import Masonry, { type MasonryItem } from "@/components/Masonry";
+import TextPressure from "@/components/TextPressure";
 import { useTheme } from "@/hooks/useTheme";
 import {
   AlertDialog,
@@ -50,6 +51,34 @@ const rawItems: MasonryItem[] = [
   { id: "nsfw-rem", title: "Rem", img: "/gallery/NSFW-rem.webp", url: "/gallery/NSFW-rem.webp", height: 980, nsfw: true },
 ];
 
+const artYears: Record<string, string> = {
+  "baloon-rust": "2021",
+  "bully": "2022",
+  "caveira-feiosa": "2020",
+  "chu-e-elvy": "2023",
+  "girl-nh288888": "2023",
+  "hayato-shogi-pfp": "2020",
+  "neko": "2021",
+  "one-punch-man": "2021",
+  "noda-sketch": "2021",
+  "pingo-angry": "2022",
+  "pingo-bored": "2022",
+  "pingo-concursos-icons": "2022",
+  "pingo-crying": "2022",
+  "pingo-happy": "2022",
+  "redhair-rainjacket": "2024",
+  "tomoko-okboomer": "2023",
+  "snake-babe": "2023",
+  "wip-galinheiro": "2022",
+  "wip-school-entrance-background": "2022",
+  "wip-lost-past": "2021",
+  "vanessa": "2023",
+  "animated-beach": "2024",
+  "vn-night-idle-simple": "2024",
+  "nsfw-rem": "2024",
+  "siot-login-animation": "2025",
+};
+
 export default function GalleryPage() {
   const { t } = useTranslation("gallery");
   const { isDark, toggleTheme } = useTheme();
@@ -57,9 +86,7 @@ export default function GalleryPage() {
   const [pendingNsfwItem, setPendingNsfwItem] = useState<MasonryItem | null>(null);
   const [skipNsfwWarning, setSkipNsfwWarning] = useState<boolean>(() => sessionStorage.getItem("gallery_skip_nsfw_warning") === "1");
 
-  const items = useMemo(() => rawItems, []);
-  const nsfwCount = items.filter((item) => item.nsfw).length;
-
+  const items = useMemo(() => rawItems.map((item) => ({ ...item, year: artYears[item.id] ?? "2022" })), []);
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -89,20 +116,22 @@ export default function GalleryPage() {
         <div className="pointer-events-none absolute -bottom-12 -left-14 w-56 h-56 rounded-full bg-sky-400/10 blur-3xl" />
 
         <div className="mb-6 sm:mb-8 relative z-10">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-faint">{t("label")}</p>
-          <h1 className="mt-2 text-[clamp(2rem,7vw,4rem)] leading-none font-black tracking-tight">{t("title")}</h1>
-          <p className="mt-3 max-w-2xl text-[13px] text-sub">{t("subtitle")}</p>
-
-          <div className="mt-4 flex flex-wrap gap-2">
-            <span className="rounded-full border border-base bg-panel px-3 py-1 text-[11px] font-semibold text-sub">
-              {items.length} items
-            </span>
-            <span className="rounded-full border border-base bg-panel px-3 py-1 text-[11px] font-semibold text-sub">
-              {nsfwCount} NSFW
-            </span>
-            <span className="rounded-full border border-base bg-panel px-3 py-1 text-[11px] font-semibold text-sub">
-              {t("legend.nsfw")}
-            </span>
+          <div className="mt-1 min-h-[90px] sm:min-h-[120px] lg:min-h-[136px] h-auto">
+            <TextPressure
+              text={t("title")}
+              alpha={false}
+              stroke={false}
+              width
+              weight
+              italic
+              textColor={isDark ? "#f4efe8" : "#22170f"}
+              minFontSize={36}
+            />
+          </div>
+          <div className="mt-3 flex items-center gap-3" aria-hidden>
+            <div className="h-px flex-1" style={{ backgroundColor: "color-mix(in srgb, var(--border-base) 75%, transparent)" }} />
+            <span className="h-2 w-2 rounded-full" style={{ backgroundColor: "var(--accent)" }} />
+            <div className="h-px flex-1" style={{ backgroundColor: "color-mix(in srgb, var(--border-base) 75%, transparent)" }} />
           </div>
         </div>
 

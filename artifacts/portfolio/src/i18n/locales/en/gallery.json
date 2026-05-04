@@ -2,6 +2,10 @@
   "label": "Gallery",
   "title": "Drawings & Art",
   "subtitle": "A place to share personal illustrations, studies, and experiments.",
+  "stats": {
+    "items": "{{count}} items",
+    "nsfwCount": "{{count}} NSFW"
+  },
   "nsfwOverlay": "NSFW - click to view",
   "nsfwWarning": {
     "title": "Sensitive content",

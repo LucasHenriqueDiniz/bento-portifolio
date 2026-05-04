@@ -1,0 +1,7 @@
+name = "lucashdo-portfolio"
+compatibility_date = "2026-05-04"
+pages_build_output_dir = "dist/public"
+
+[[kv_namespaces]]
+binding = "PORTFOLIO_CACHE"
+id = "7148bef2a0a64d8398ad94a9a04ca4be"

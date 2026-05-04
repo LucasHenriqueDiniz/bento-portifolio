@@ -1,68 +1,56 @@
-import { useState, useEffect, useRef, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useMemo, useRef, useState } from "react";
+import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
-import { Link } from "wouter";
-import { FiArrowRight, FiSearch } from "react-icons/fi";
+import { FiSearch } from "react-icons/fi";
 import GridMotion from "@/components/GridMotion";
+import FlowingMenu from "@/components/FlowingMenu";
 import SiteHeader from "@/components/SiteHeader";
 import { useTheme } from "@/hooks/useTheme";
-import { projects, type Project } from "@/constants";
+import { projects } from "@/constants";
 
-const statusColors: Record<string, string> = {
-  completed: "#22c55e",
-  workInProgress: "#f59e0b",
-  experimental: "#8b5cf6",
-  discontinued: "#ef4444",
-};
-
-const statusLabels: Record<string, { pt: string; en: string }> = {
-  completed: { pt: "Concluído", en: "Completed" },
-  workInProgress: { pt: "Em Progresso", en: "In Progress" },
-  experimental: { pt: "Experimental", en: "Experimental" },
-  discontinued: { pt: "Descontinuado", en: "Discontinued" },
-};
+type ProjectTag = "all" | "website" | "software" | "extension";
 
 export default function ProjectsPage() {
   const { t, i18n } = useTranslation("projects");
   const currentLang = i18n.language?.split("-")[0] || "pt";
   const [query, setQuery] = useState("");
-  const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const [activeTag, setActiveTag] = useState<ProjectTag>("all");
   const { isDark, toggleTheme } = useTheme();
-  const listRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  /* Rotating image index for tooltip */
-  const [tooltipImgIdx, setTooltipImgIdx] = useState(0);
-  const tooltipTimer = useRef<ReturnType<typeof setInterval> | null>(null);
+  const filtered = projects
+    .slice()
+    .sort((a, b) => (a.priority ?? 999) - (b.priority ?? 999))
+    .filter((p) => {
+      const hasQuery = Boolean(query.trim());
+      const q = query.toLowerCase();
+      const localizedType = (currentLang === "en" ? p.typeEn : p.type) ?? "";
+      const localizedRole = (currentLang === "en" ? p.roleEn : p.role) ?? "";
+      const localizedHighlight = currentLang === "en" ? p.highlightEn : p.highlight;
+      const localizedDescription = currentLang === "en" ? p.descriptionEn : p.description;
+      const matchesQuery = !hasQuery
+        ? true
+        : p.name.toLowerCase().includes(q) ||
+          p.techStack.some((t) => t.toLowerCase().includes(q)) ||
+          localizedDescription.toLowerCase().includes(q) ||
+          localizedHighlight.toLowerCase().includes(q) ||
+          localizedType.toLowerCase().includes(q) ||
+          localizedRole.toLowerCase().includes(q) ||
+          (p.year?.toLowerCase().includes(q) ?? false);
 
-  const startTooltipRotation = useCallback((project: Project) => {
-    const imgs = project.images && project.images.length > 1 ? project.images : null;
-    if (!imgs) return;
-    setTooltipImgIdx(0);
-    if (tooltipTimer.current) clearInterval(tooltipTimer.current);
-    tooltipTimer.current = setInterval(() => {
-      setTooltipImgIdx((i) => (i + 1) % imgs.length);
-    }, 1400);
-  }, []);
+      if (!matchesQuery) return false;
+      if (activeTag === "all") return true;
+      return p.category === activeTag;
+    });
 
-  const stopTooltipRotation = useCallback(() => {
-    if (tooltipTimer.current) {
-      clearInterval(tooltipTimer.current);
-      tooltipTimer.current = null;
-    }
-    setTooltipImgIdx(0);
-  }, []);
-
-  const filtered = projects.filter((p) => {
-    if (!query.trim()) return true;
-    const q = query.toLowerCase();
-    return (
-      p.name.toLowerCase().includes(q) ||
-      p.techStack.some((t) => t.toLowerCase().includes(q)) ||
-      p.description.toLowerCase().includes(q) ||
-      (p.descriptionEn?.toLowerCase().includes(q) ?? false)
-    );
-  });
+  const categoryTags = useMemo(
+    () => [
+      { value: "website", label: currentLang === "en" ? "Website" : "Site" },
+      { value: "software", label: currentLang === "en" ? "Software" : "Software" },
+      { value: "extension", label: currentLang === "en" ? "Extension" : "Extensão" },
+    ] as const,
+    [currentLang]
+  );
 
   // Build GridMotion items from project images
   const gridItems = projects.map((p) =>
@@ -103,28 +91,19 @@ export default function ProjectsPage() {
     );
   }
 
-  // Keyboard navigation
-  const handleKeyDown = useCallback(
-    (e: KeyboardEvent) => {
-      if (e.key === "ArrowDown" || e.key === "ArrowUp") {
-        e.preventDefault();
-        const idx = filtered.findIndex((p) => p.id === hoveredId);
-        if (e.key === "ArrowDown") {
-          const next = filtered[Math.min(idx + 1, filtered.length - 1)];
-          if (next) setHoveredId(next.id);
-        } else {
-          const prev = filtered[Math.max(idx - 1, 0)];
-          if (prev) setHoveredId(prev.id);
-        }
-      }
-    },
-    [filtered, hoveredId]
-  );
+  const menuItems = useMemo(
+    () =>
+      filtered.map((project) => {
+        const gallery = project.images && project.images.length > 0 ? project.images : project.image ? [project.image] : [];
 
-  useEffect(() => {
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [handleKeyDown]);
+        return {
+          link: `/projects/${project.id}`,
+          text: project.name,
+          image: gallery.length > 0 ? gallery : ["/og-image.jpg"],
+        };
+      }),
+    [currentLang, filtered]
+  );
 
   const heroGradientColor = isDark ? "#0d0d0d" : "#b7a48f";
   const heroTitleClass = isDark
@@ -272,184 +251,67 @@ export default function ProjectsPage() {
               )}
             </div>
 
-            {/* List */}
-            <div ref={listRef} className="relative">
+            <div className="mb-8 flex flex-col gap-4">
+              <div className="relative w-full sm:max-w-[460px]">
+                <FiSearch size={14} className={`absolute left-3 top-1/2 -translate-y-1/2 ${isDark ? "text-white/40" : "text-[#6f6358]"}`} />
+                <input
+                  type="text"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder={t("search.placeholder")}
+                  className={`w-full pl-9 pr-10 py-2.5 rounded-xl border text-[13px] focus:outline-none transition-all ${
+                    isDark
+                      ? "bg-black/30 border-white/15 text-white placeholder:text-white/40"
+                      : "bg-white border-black/10 text-[#1f1a15] placeholder:text-[#6f6358]"
+                  }`}
+                />
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() => setActiveTag("all")}
+                  className={`px-3 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider transition-colors ${
+                    activeTag === "all"
+                      ? "bg-brand text-white"
+                      : isDark
+                        ? "bg-white/10 text-white/75 hover:bg-white/20"
+                        : "bg-black/8 text-[#3b322b] hover:bg-black/12"
+                  }`}
+                >
+                  {currentLang === "en" ? "All" : "Todos"}
+                </button>
+                {categoryTags.map((tag) => (
+                  <button
+                    key={tag.value}
+                    onClick={() => setActiveTag(tag.value)}
+                    className={`px-3 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider transition-colors ${
+                      activeTag === tag.value
+                        ? "bg-brand text-white"
+                        : isDark
+                          ? "bg-white/10 text-white/75 hover:bg-white/20"
+                          : "bg-black/8 text-[#3b322b] hover:bg-black/12"
+                    }`}
+                  >
+                    {tag.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="relative">
               {filtered.length > 0 ? (
-                filtered.map((project, i) => {
-                  const status = project.status ? statusLabels[project.status][currentLang as "pt" | "en"] : "";
-                  const statusColor = project.status ? statusColors[project.status] : "#555";
-                  const isHovered = hoveredId === project.id;
-
-                  return (
-                    <Link
-                      key={project.id}
-                      href={`/projects/${project.id}`}
-                      onMouseEnter={() => {
-                        setHoveredId(project.id);
-                        startTooltipRotation(project);
-                      }}
-                      onMouseLeave={() => {
-                        setHoveredId(null);
-                        stopTooltipRotation();
-                      }}
-                      className="group block"
-                    >
-                      <motion.div
-                        layout
-                        className={`relative flex items-center gap-4 sm:gap-6 py-5 sm:py-6 border-b cursor-pointer ${
-                          isDark ? "border-white/[0.06]" : "border-black/[0.06]"
-                        }`}
-                      >
-                        {/* Number */}
-                        <span className={`w-8 text-[11px] font-mono shrink-0 text-right hidden sm:block text-faint`}>
-                          {String(i + 1).padStart(2, "0")}
-                        </span>
-
-                        {/* Status dot */}
-                        <div className="relative shrink-0">
-                          <div className="w-2 h-2 rounded-full" style={{ backgroundColor: statusColor }} />
-                          {isHovered && (
-                            <motion.div
-                              layoutId="hover-dot"
-                              className="absolute inset-0 w-2 h-2 rounded-full"
-                              style={{ backgroundColor: statusColor }}
-                              initial={{ scale: 1 }}
-                              animate={{ scale: 1.5, opacity: 0.5 }}
-                              transition={{ duration: 0.3 }}
-                            />
-                          )}
-                        </div>
-
-                        {/* Name & meta */}
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-3 mb-1">
-                            <h3 className="text-[15px] sm:text-[17px] font-bold tracking-tight group-hover:text-brand transition-colors truncate">
-                              {project.name}
-                            </h3>
-                            {/* Status badge mobile */}
-                            <span
-                              className="sm:hidden text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded"
-                              style={{ color: statusColor, backgroundColor: `${statusColor}15` }}
-                            >
-                              {status}
-                            </span>
-                          </div>
-                          <p className={`text-[12px] truncate leading-relaxed text-faint`}>
-                            {project.highlight}
-                          </p>
-                        </div>
-
-                        {/* Tech stack — desktop only */}
-                        <div className="hidden lg:flex items-center gap-1.5 shrink-0 max-w-[220px]">
-                          {project.techStack.slice(0, 3).map((tech) => (
-                            <span
-                              key={tech}
-                              className={`text-[10px] px-1.5 py-0.5 rounded whitespace-nowrap ${
-                                isDark ? "bg-white/[0.04] text-faint" : "bg-black/[0.04] text-faint"
-                              }`}
-                            >
-                              {tech}
-                            </span>
-                          ))}
-                          {project.techStack.length > 3 && (
-                            <span className={`text-[10px] text-faint`}>
-                              +{project.techStack.length - 3}
-                            </span>
-                          )}
-                        </div>
-
-                        {/* Status desktop */}
-                        <div className="hidden sm:flex flex-col items-end gap-1 shrink-0 w-24">
-                          <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: statusColor }}>
-                            {status}
-                          </span>
-                        </div>
-
-                        {/* Arrow */}
-                        <motion.div
-                          className={`shrink-0 transition-colors ${
-                            isDark ? "text-faint group-hover:text-main" : "text-faint group-hover:text-main"
-                          }`}
-                          animate={{ x: isHovered ? 4 : 0 }}
-                          transition={{ duration: 0.2 }}
-                        >
-                          <FiArrowRight size={16} />
-                        </motion.div>
-
-                        {/* Hover image preview */}
-                        <AnimatePresence>
-                          {isHovered && project.image && (
-                            <motion.div
-                              initial={{ opacity: 0, scale: 0.92, y: 10 }}
-                              animate={{ opacity: 1, scale: 1, y: 0 }}
-                              exit={{ opacity: 0, scale: 0.92, y: 10 }}
-                              transition={{ duration: 0.25, ease: "easeOut" }}
-                              className="hidden xl:block absolute right-12 top-1/2 -translate-y-1/2 z-30 pointer-events-none"
-                            >
-                              <div className="relative w-[280px] rounded-xl overflow-hidden border border-white/10 shadow-2xl bg-panel">
-                                {(() => {
-                                  const imgs =
-                                    project.images && project.images.length > 0
-                                      ? project.images
-                                      : project.image
-                                        ? [project.image]
-                                        : [];
-                                  return (
-                                    <div className="relative aspect-[16/10]">
-                                      <AnimatePresence mode="wait">
-                                        <motion.img
-                                          key={imgs[tooltipImgIdx % imgs.length]}
-                                          src={imgs[tooltipImgIdx % imgs.length]}
-                                          alt={`${project.name} — ${tooltipImgIdx + 1}`}
-                                          initial={{ opacity: 0 }}
-                                          animate={{ opacity: 1 }}
-                                          exit={{ opacity: 0 }}
-                                          transition={{ duration: 0.35 }}
-                                          className="absolute inset-0 w-full h-full object-cover"
-                                        />
-                                      </AnimatePresence>
-                                      <div className="absolute inset-0 bg-gradient-to-t from-[#0d0d0d]/40 to-transparent" />
-
-                                      {/* Image counter dots */}
-                                      {imgs.length > 1 && (
-                                        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1 z-10">
-                                          {imgs.map((_, i) => (
-                                            <div
-                                              key={i}
-                                              className="h-1 rounded-full transition-all duration-300"
-                                              style={{
-                                                width: i === (tooltipImgIdx % imgs.length) ? 14 : 4,
-                                                backgroundColor:
-                                                  i === (tooltipImgIdx % imgs.length)
-                                                    ? "#fff"
-                                                    : "rgba(255,255,255,0.3)",
-                                              }}
-                                            />
-                                          ))}
-                                        </div>
-                                      )}
-                                    </div>
-                                  );
-                                })()}
-                              </div>
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
-
-                        {/* Hover bg highlight */}
-                        <motion.div
-                          className="absolute inset-0 -mx-4 sm:-mx-8 rounded-xl pointer-events-none"
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: isHovered ? 1 : 0 }}
-                          transition={{ duration: 0.2 }}
-                          style={{
-                            backgroundColor: isDark ? "rgba(255,255,255,0.015)" : "rgba(0,0,0,0.02)",
-                          }}
-                        />
-                      </motion.div>
-                    </Link>
-                  );
-                })
+                <div className="relative left-1/2 right-1/2 w-screen -ml-[50vw] -mr-[50vw] overflow-hidden">
+                  <div className="relative h-auto">
+                    <FlowingMenu
+                      items={menuItems}
+                      speed={24}
+                      textColor={isDark ? "#f9f6ef" : "#201911"}
+                      bgColor={isDark ? "#0d1014" : "#efe4d5"}
+                      marqueeBgColor={isDark ? "#f1b35a" : "#111111"}
+                      marqueeTextColor={isDark ? "#22170a" : "#f7ede1"}
+                      borderColor={isDark ? "rgba(255,255,255,0.16)" : "rgba(17,17,17,0.22)"}
+                    />
+                  </div>
+                </div>
               ) : (
                 <div className="flex flex-col items-center justify-center py-24 gap-4 text-center">
                   <FiSearch size={32} className="text-faint" />

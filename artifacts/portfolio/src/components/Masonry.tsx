@@ -50,6 +50,7 @@ export interface MasonryItem {
   img: string;
   url: string;
   height: number;
+  year?: string;
   mediaType?: "image" | "video";
   nsfw?: boolean;
   title?: string;
@@ -271,6 +272,11 @@ export default function Masonry({
             )}
             {colorShiftOnHover && (
               <div className="color-overlay absolute inset-0 rounded-[10px] bg-gradient-to-tr from-pink-500/50 to-sky-500/50 opacity-0 pointer-events-none" />
+            )}
+            {item.year && (
+              <div className="absolute left-2.5 bottom-2.5 rounded-md border border-white/20 bg-black/55 px-2 py-1 text-[10px] font-bold tracking-[0.08em] text-white/90">
+                {item.year}
+              </div>
             )}
           </div>
         </button>

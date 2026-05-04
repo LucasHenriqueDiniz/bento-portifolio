@@ -5,7 +5,6 @@ import { FiPrinter, FiGithub, FiMail, FiExternalLink, FiAward, FiBriefcase, FiCo
 import { Linkedin, Palette, MessageSquare } from "lucide-react";
 import SiteHeader from "@/components/SiteHeader";
 import { useTheme } from "@/hooks/useTheme";
-import { MagneticDocument } from "@/components/MagneticDocument";
 import { jobExperiences, academicExperiences, projects, certificates, languages, skillsData, ContactLinks } from "@/constants";
 import { formatDateRange } from "@/lib/dateFormatter";
 
@@ -100,7 +99,21 @@ function VisualResume({ isDark }: { isDark: boolean }) {
       const dateB = b.startDate ? new Date(b.startDate).getTime() : 0;
       return dateB - dateA;
     }), []);
-  const featuredProjects = useMemo(() => projects.filter(p => p.featured).slice(0, 6), []);
+  const resumeProjectIds = [
+    "heartopia-guide",
+    "quizhub",
+    "clearcut",
+    "instagram-enhancer",
+    "resgate-rs",
+    "itemmarketcap",
+  ];
+  const featuredProjects = useMemo(
+    () =>
+      resumeProjectIds
+        .map((id) => projects.find((p) => p.id === id))
+        .filter((p): p is (typeof projects)[number] => Boolean(p)),
+    []
+  );
 
   const skillsByCategory = useMemo(() => {
     const cats = ['frontend', 'backend', 'integration', 'automation', 'database', 'devops', 'ai'];
@@ -179,39 +192,42 @@ function VisualResume({ isDark }: { isDark: boolean }) {
       {/* ── EXPERIENCE ── */}
       <section>
         <SectionTitle icon={FiBriefcase} delay={0.05} isDark={isDark}>{t('sections.experience')}</SectionTitle>
-        <div className="space-y-0">
+        <div className="relative space-y-3">
+          <div
+            className="pointer-events-none absolute left-3 top-0 bottom-0 z-0"
+            style={{ width: "2px", backgroundColor: "color-mix(in srgb, var(--accent) 35%, transparent)" }}
+            aria-hidden
+          />
           {activeJobs.map((job, i) => (
-            <motion.div key={job.id} {...fadeUp(0.08 + i * 0.03)} className="flex gap-3 py-3 first:pt-0 last:pb-0">
-              {/* Timeline dot column — fixed width, always aligned */}
-              <div className="relative w-4 shrink-0 flex justify-center">
-                <div className="w-2.5 h-2.5 rounded-full border-2 mt-1.5 border-brand" style={{ backgroundColor: isDark ? "#1f2937" : "#fff" }} />
-                {i < activeJobs.length - 1 && (
-                  <div className="absolute top-4 bottom-0 left-1/2 w-px border-l border-dashed border-brand/20" />
-                )}
-              </div>
+            <motion.div
+              key={job.id}
+              {...fadeUp(0.08 + i * 0.03)}
+              className={`relative z-10 ml-9 rounded-2xl border p-3.5 transition-colors ${
+                isDark ? "bg-white/[0.02] border-white/10" : "bg-white border-gray-200"
+              }`}
+            >
+              <div className="absolute -left-[31px] top-1/2 h-3.5 w-3.5 -translate-y-1/2 rounded-full border-2 border-brand bg-canvas shadow-[0_0_0_3px_var(--color-canvas)]" />
 
-              {/* Logo column — fixed width, always present */}
-              <div className="w-10 shrink-0 mt-0.5">
-                {renderJobLogo(job)}
-              </div>
+              <div className="flex gap-3">
+                <div className="w-10 shrink-0 mt-0.5">{renderJobLogo(job)}</div>
 
-              {/* Content */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <h3 className="text-sm font-bold" style={{ color: isDark ? "#fff" : "#000" }}>{getJobTitle(job)}</h3>
-                  {!job.endDate && (
-                    <span className="text-[9px] font-bold px-1.5 py-0.5 rounded text-brand bg-brand/10">
-                      {t('common:status.current')}
-                    </span>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h3 className="text-sm font-bold" style={{ color: isDark ? "#fff" : "#000" }}>{getJobTitle(job)}</h3>
+                    {!job.endDate && (
+                      <span className="text-[9px] font-bold px-1.5 py-0.5 rounded text-brand bg-brand/10">
+                        {t('common:status.current')}
+                      </span>
+                    )}
+                  </div>
+                  {job.url ? (
+                    <a href={job.url} target="_blank" rel="noreferrer" className={`text-xs font-medium hover:underline ${isDark ? "text-gray-400" : "text-gray-500"}`}>{job.institution}</a>
+                  ) : (
+                    <p className={`text-xs font-medium ${isDark ? "text-gray-400" : "text-gray-500"}`}>{job.institution}</p>
                   )}
+                  <p className={`text-[10px] mb-1 ${isDark ? "text-gray-600" : "text-gray-400"}`}>{formatDateRange(job.startDate, job.endDate)}</p>
+                  <p className={`text-[12px] leading-relaxed ${isDark ? "text-gray-300" : "text-gray-700"}`}>{getJobDescription(job)}</p>
                 </div>
-                {job.url ? (
-                  <a href={job.url} target="_blank" rel="noreferrer" className={`text-xs font-medium hover:underline ${isDark ? "text-gray-400" : "text-gray-500"}`}>{job.institution}</a>
-                ) : (
-                  <p className={`text-xs font-medium ${isDark ? "text-gray-400" : "text-gray-500"}`}>{job.institution}</p>
-                )}
-                <p className={`text-[10px] mb-1 ${isDark ? "text-gray-600" : "text-gray-400"}`}>{formatDateRange(job.startDate, job.endDate)}</p>
-                <p className={`text-[12px] leading-relaxed ${isDark ? "text-gray-300" : "text-gray-700"}`}>{getJobDescription(job)}</p>
               </div>
             </motion.div>
           ))}
@@ -220,7 +236,22 @@ function VisualResume({ isDark }: { isDark: boolean }) {
 
       {/* ── PROJECTS ── */}
       <section>
-        <SectionTitle icon={FiCode} delay={0.15} isDark={isDark}>{t('sections.projects')}</SectionTitle>
+        <motion.div {...fadeUp(0.15)} className="flex items-center gap-2 mb-3">
+          <FiCode size={14} className="text-brand" />
+          <h2 className="text-[11px] font-black uppercase tracking-[0.15em] text-brand">
+            {t('sections.projects')}
+          </h2>
+          <div className="flex-1 h-px ml-2" style={{ backgroundColor: isDark ? "var(--accent-subtle)" : "var(--accent-subtle)" }} />
+          <a
+            href="/projects"
+            aria-label={currentLang === "en" ? "View all projects" : "Ver todos os projetos"}
+            className={`inline-flex items-center justify-center rounded-md border p-1.5 transition-colors ${
+              isDark ? "border-white/10 text-gray-400 hover:text-white hover:border-white/25" : "border-gray-200 text-gray-500 hover:text-black hover:border-gray-300"
+            }`}
+          >
+            <FiExternalLink size={12} />
+          </a>
+        </motion.div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           {featuredProjects.map((proj, i) => {
             const imageSrc = projectImageMap[proj.id] || proj.image || "/logo.svg";
@@ -245,7 +276,7 @@ function VisualResume({ isDark }: { isDark: boolean }) {
 
       {/* ── SKILLS ── */}
       <section>
-        <SectionTitle icon={FiCode} delay={0.22} isDark={isDark}>{t('sections.skills')}</SectionTitle>
+        <SectionTitle icon={FiLayout} delay={0.22} isDark={isDark}>{t('sections.skills')}</SectionTitle>
         <div className="space-y-2.5">
           {skillsByCategory.map((group) => (
             <motion.div key={group.category} {...fadeUp(0.24)} className="flex items-center gap-2 flex-wrap">
@@ -489,7 +520,9 @@ export default function ResumePage() {
         }
       `}</style>
 
-      <SiteHeader isDark={isDark} onToggleTheme={toggleTheme} />
+      <div className="no-print">
+        <SiteHeader isDark={isDark} onToggleTheme={toggleTheme} />
+      </div>
 
       <header className={`no-print mt-14 sticky top-14 z-40 h-14 border-b border-base bg-header/95 backdrop-blur-sm`}>
         <div className="max-w-[900px] mx-auto px-6 h-full flex items-center justify-between">
@@ -533,11 +566,9 @@ export default function ResumePage() {
 
       {/* Screen-only: switches between visual and ATS view */}
       <div className="screen-only">
-        <MagneticDocument>
-          <motion.div key={format} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.25 }}>
-            {format === "visual" ? <VisualResume isDark={isDark} /> : <ATSResume isDark={isDark} />}
-          </motion.div>
-        </MagneticDocument>
+        <motion.div key={format} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.25 }}>
+          {format === "visual" ? <VisualResume isDark={isDark} /> : <ATSResume isDark={isDark} />}
+        </motion.div>
       </div>
 
       {/* Print-only: always ATS, always in DOM */}

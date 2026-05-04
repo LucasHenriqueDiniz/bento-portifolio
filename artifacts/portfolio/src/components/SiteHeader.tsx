@@ -1,5 +1,6 @@
 import { Link, useLocation } from "wouter";
 import { Moon, Sun } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { LanguageSwitcher } from "@/i18n/LanguageSwitcher";
 import StaggeredMenu from "@/components/StaggeredMenu";
 import { ContactLinks } from "@/constants";
@@ -9,16 +10,16 @@ interface SiteHeaderProps {
   onToggleTheme: () => void;
 }
 
-const links = [
-  { href: "/", label: "Home" },
-  { href: "/projects", label: "Projects" },
-  { href: "/resume", label: "Resume" },
-  { href: "/contact", label: "Contact" },
-  { href: "/donate", label: "Donate" },
-];
-
 export default function SiteHeader({ isDark, onToggleTheme }: SiteHeaderProps) {
+  const { t } = useTranslation("common");
   const [location] = useLocation();
+  const links = [
+    { href: "/", label: t("nav.home") },
+    { href: "/projects", label: t("nav.projects") },
+    { href: "/resume", label: t("nav.resume") },
+    { href: "/contact", label: t("nav.contact") },
+    { href: "/donate", label: t("nav.donate") },
+  ];
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 h-14 border-b border-base bg-header/95 backdrop-blur-xl px-4 sm:px-6">
