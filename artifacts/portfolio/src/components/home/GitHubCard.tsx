@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from "react";
+import React, { useMemo, useRef, useState, useEffect } from "react";
 import { motion, useInView } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { SiGithub } from "react-icons/si";
@@ -143,7 +143,16 @@ export const GitHubCard = React.memo(function GitHubCard({
   const locale = currentLang === "en" ? "en-US" : "pt-BR";
   const dayLabels = ["", t("github.days.mon"), "", t("github.days.wed"), "", t("github.days.fri"), ""];
   const githubRef = useRef<HTMLDivElement>(null);
-  const githubInView = useInView(githubRef, { once: true, margin: "-50px" });
+  const githubInView = useInView(githubRef, { amount: 0.1 });
+  const hasAnimatedRef = useRef(false);
+  const [shouldAnimate, setShouldAnimate] = useState(false);
+
+  useEffect(() => {
+    if (githubInView && !hasAnimatedRef.current) {
+      hasAnimatedRef.current = true;
+      setShouldAnimate(true);
+    }
+  }, [githubInView]);
 
   const contributions = stats?.githubContributions ?? 0;
   const commits = stats?.totalCommitsThisYear ?? 0;
@@ -191,10 +200,9 @@ export const GitHubCard = React.memo(function GitHubCard({
           {/* GitHub Grid */}
           <div className="flex-1 min-h-0">
             <GitHubGrid
-              key={stats?.githubContributions ?? "loading"}
               seed={stats?.totalCommitsThisYear ?? 539}
               contributionDays={stats?.contributionDays}
-              inView={githubInView}
+              inView={shouldAnimate}
               isDark={isDark}
               locale={locale}
               dayLabels={dayLabels}
