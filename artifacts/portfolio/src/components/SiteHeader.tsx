@@ -62,16 +62,11 @@ export default function SiteHeader({ isDark, onToggleTheme }: SiteHeaderProps) {
           </button>
         </div>
 
-        <div className="md:hidden flex items-center gap-2">
-          <LanguageSwitcher isDark={isDark} />
-          <button
-            onClick={onToggleTheme}
-            className="w-8 h-8 rounded-lg flex items-center justify-center border border-base bg-panel text-faint transition-colors hover:text-main hover:bg-panel-hover"
-          >
-            {isDark ? <Sun size={14} /> : <Moon size={14} />}
-          </button>
+        <div className="md:hidden flex items-center">
           <StaggeredMenu
             isFixed
+            isDark={isDark}
+            onToggleTheme={onToggleTheme}
             items={links.map((l) => ({ label: l.label, ariaLabel: `Go to ${l.label}`, link: l.href }))}
             socialItems={[
               { label: "GitHub", link: ContactLinks.github },
@@ -82,7 +77,7 @@ export default function SiteHeader({ isDark, onToggleTheme }: SiteHeaderProps) {
             displayItemNumbering
             menuButtonColor={isDark ? "#eaeaea" : "#1b1b1b"}
             openMenuButtonColor="#1b1b1b"
-            colors={["#F2E9E2", "#D8C8B9"]}
+            colors={isDark ? ["#2a2a2a", "#1f1f1f"] : ["#F2E9E2", "#D8C8B9"]}
             accentColor="#E07A5F"
           />
         </div>
