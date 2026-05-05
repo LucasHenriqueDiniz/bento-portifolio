@@ -4,6 +4,7 @@ import { getCache, removeCache, setCache } from "@/lib/queryCache";
 import {
   getNowPlaying,
   getTopArtists,
+  getTopTracks,
   getSteamData,
   getLastWorkout,
   getStats,
@@ -41,6 +42,19 @@ export function useGetTopArtistsCached() {
   });
 
   usePersistOnSuccess("/api/portfolio/top-artists", query.data);
+
+  return query;
+}
+
+export function useGetTopTracksCached() {
+  const cached = getCache<Awaited<ReturnType<typeof getTopTracks>>>("/api/portfolio/top-tracks");
+  const query = useQuery({
+    queryKey: ["/api/portfolio/top-tracks"],
+    queryFn: ({ signal }) => getTopTracks({ signal }),
+    placeholderData: cached,
+  });
+
+  usePersistOnSuccess("/api/portfolio/top-tracks", query.data);
 
   return query;
 }

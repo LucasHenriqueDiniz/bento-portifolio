@@ -8,9 +8,9 @@ type WeatherState = {
   isLoading: boolean;
 };
 
-const BRASILIA_LAT = -15.793889;
-const BRASILIA_LON = -47.882778;
-const CACHE_KEY = "weather:brasilia";
+const PORTO_ALEGRE_LAT = -30.0346;
+const PORTO_ALEGRE_LON = -51.2177;
+const CACHE_KEY = "weather:portoalegre";
 
 function mapWeatherCodeToDescription(code: number, t: (key: string) => string): string {
   const allowedCodes = new Set([
@@ -37,7 +37,7 @@ export function useBrasiliaWeather() {
     const fetchWeather = async () => {
       try {
         const response = await fetch(
-          `https://api.open-meteo.com/v1/forecast?latitude=${BRASILIA_LAT}&longitude=${BRASILIA_LON}&current=temperature_2m,weather_code&timezone=America%2FSao_Paulo`,
+          `https://api.open-meteo.com/v1/forecast?latitude=${PORTO_ALEGRE_LAT}&longitude=${PORTO_ALEGRE_LON}&current=temperature_2m,weather_code&timezone=America%2FSao_Paulo`,
         );
 
         if (!response.ok) {

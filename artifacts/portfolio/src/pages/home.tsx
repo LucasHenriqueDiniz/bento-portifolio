@@ -6,6 +6,7 @@ import { useTheme } from "@/hooks/useTheme";
 import {
   useGetNowPlayingCached as useGetNowPlaying,
   useGetTopArtistsCached as useGetTopArtists,
+  useGetTopTracksCached as useGetTopTracks,
   useGetSteamDataCached as useGetSteamData,
   useGetLastWorkoutCached as useGetLastWorkout,
   useGetStatsCached as useGetStats,
@@ -224,6 +225,7 @@ export default function Home() {
 
   const { data: nowPlaying, isLoading: loadingNowPlaying } = useGetNowPlaying();
   const { data: topArtists, isLoading: loadingTopArtists } = useGetTopArtists();
+  const { data: topTracks, isLoading: loadingTopTracks } = useGetTopTracks();
   const { data: steamData, isLoading: loadingSteam } = useGetSteamData();
   const { data: workout, isLoading: loadingWorkout } = useGetLastWorkout();
   const { data: stats, isLoading: loadingStats } = useGetStats();
@@ -347,7 +349,7 @@ export default function Home() {
 
             {/* ── Col 6 ── */}
             <motion.div custom={15} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-6 lg:row-start-1 lg:row-span-2 h-auto lg:h-full min-h-[150px]">
-              <TopArtistsCard topArtists={topArtists as any} isLoading={loadingTopArtists} isDark={isDark} />
+              <TopArtistsCard topArtists={topArtists as any} topTracks={topTracks as any} isLoading={loadingTopArtists || loadingTopTracks} isDark={isDark} />
             </motion.div>
 
             <motion.div custom={16} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-6 lg:row-start-3 lg:row-span-1 h-auto lg:h-full">

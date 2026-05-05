@@ -141,16 +141,34 @@ export const onRequest: PagesFunction<Env> = async (context) => {
         const r = await fetch(u);
         const body = (await r.json()) as any;
         const track = body?.recenttracks?.track?.[0];
+        let albumArt =
+          track?.image?.find((img: any) => img.size === "extralarge")?.["#text"] ||
+          track?.image?.find((img: any) => img.size === "large")?.["#text"] ||
+          null;
+        
+        // Fallback to iTunes if Last.fm returns placeholder image
+        if (!albumArt || albumArt.includes("2a96cbd8b46e442fc41c2b86b821562f")) {
+          const artist = track?.artist?.["#text"] ?? track?.artist ?? "";
+          const trackName = track?.name ?? "";
+          if (artist && trackName) {
+            try {
+              const itunesRes = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(artist + " " + trackName)}&entity=song&limit=1`);
+              const itunesData = (await itunesRes.json()) as any;
+              const artwork = itunesData?.results?.[0]?.artworkUrl100;
+              if (artwork) {
+                albumArt = artwork.replace("100x100", "600x600");
+              }
+            } catch { /* ignore iTunes fallback errors */ }
+          }
+        }
+        
         const data = track
           ? {
               isPlaying: track["@attr"]?.nowplaying === "true",
               track: track.name ?? null,
               artist: track.artist?.["#text"] ?? track.artist ?? null,
               album: track.album?.["#text"] ?? track.album ?? null,
-              albumArt:
-                track.image?.find((img: any) => img.size === "extralarge")?.["#text"] ||
-                track.image?.find((img: any) => img.size === "large")?.["#text"] ||
-                null,
+              albumArt,
               trackUrl: track.url ?? null,
             }
           : { isPlaying: false, track: null, artist: null, album: null, albumArt: null, trackUrl: null };
