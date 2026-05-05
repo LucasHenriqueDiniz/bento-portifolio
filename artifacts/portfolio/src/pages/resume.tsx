@@ -506,7 +506,7 @@ export default function ResumePage() {
   }, [currentLang]);
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${isDark ? "dark bg-canvas text-main" : "bg-canvas text-main"}`}>
+    <div className={`min-h-screen pt-14 transition-colors duration-300 ${isDark ? "dark bg-canvas text-main" : "bg-canvas text-main"}`}>
       <style>{`
         .print-only { display: none; }
         @media print {
@@ -524,7 +524,7 @@ export default function ResumePage() {
         <SiteHeader isDark={isDark} onToggleTheme={toggleTheme} />
       </div>
 
-      <header className={`no-print mt-14 sticky top-14 z-40 h-14 border-b border-base bg-header/95 backdrop-blur-sm`}>
+      <header className={`no-print sticky top-14 z-40 h-14 border-b border-base bg-header/95 backdrop-blur-sm`}>
         <div className="max-w-[900px] mx-auto px-6 h-full flex items-center justify-between">
           <div className={`flex items-center gap-1 p-1 rounded-xl border border-base ${isDark ? "bg-panel" : "bg-panel"}`}>
             <button
