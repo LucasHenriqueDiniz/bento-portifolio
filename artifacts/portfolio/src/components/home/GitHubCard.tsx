@@ -191,6 +191,7 @@ export const GitHubCard = React.memo(function GitHubCard({
           {/* GitHub Grid */}
           <div className="flex-1 min-h-0">
             <GitHubGrid
+              key={stats?.githubContributions ?? "loading"}
               seed={stats?.totalCommitsThisYear ?? 539}
               contributionDays={stats?.contributionDays}
               inView={githubInView}

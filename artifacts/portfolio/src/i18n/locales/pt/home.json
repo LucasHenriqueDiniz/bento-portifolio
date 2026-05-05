@@ -45,10 +45,10 @@
   },
   "weather": {
     "title": "Clima",
-    "location": "Brasília",
+    "location": "Porto Alegre",
     "loading": "Carregando clima...",
     "unavailable": "Tempo indisponível",
-    "timezone": "Brasília (BRT, UTC-3)",
+    "timezone": "Porto Alegre (BRT, UTC-3)",
     "timeLabel": "Horário",
     "localTime": "Horário local",
     "flipLabel": "clima",

@@ -45,10 +45,10 @@
   },
   "weather": {
     "title": "Weather",
-    "location": "Brasilia",
+    "location": "Porto Alegre",
     "loading": "Loading weather...",
     "unavailable": "Weather unavailable",
-    "timezone": "Brasilia (BRT, UTC-3)",
+    "timezone": "Porto Alegre (BRT, UTC-3)",
     "timeLabel": "Time",
     "localTime": "Local time",
     "flipLabel": "weather",
