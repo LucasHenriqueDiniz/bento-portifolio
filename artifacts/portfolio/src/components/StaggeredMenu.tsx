@@ -54,8 +54,12 @@ export default function StaggeredMenu({
   const plusHRef = useRef<HTMLSpanElement | null>(null);
   const plusVRef = useRef<HTMLSpanElement | null>(null);
   const toggleBtnRef = useRef<HTMLButtonElement | null>(null);
+  const didInitRef = useRef(false);
 
+  // GSAP init — runs only once on mount
   useLayoutEffect(() => {
+    if (didInitRef.current) return;
+    didInitRef.current = true;
     const panel = panelRef.current;
     const layers = preLayersRef.current ? Array.from(preLayersRef.current.querySelectorAll(".sm-prelayer")) : [];
     if (!panel) return;
@@ -63,6 +67,11 @@ export default function StaggeredMenu({
     gsap.set([panel, ...layers], { xPercent: offscreen });
     if (toggleBtnRef.current) gsap.set(toggleBtnRef.current, { color: menuButtonColor });
   }, [position, menuButtonColor]);
+
+  // Update button color when theme changes without resetting position
+  useLayoutEffect(() => {
+    if (toggleBtnRef.current) gsap.set(toggleBtnRef.current, { color: menuButtonColor });
+  }, [menuButtonColor]);
 
   const animate = useCallback(
     (opening: boolean) => {
@@ -181,7 +190,10 @@ export default function StaggeredMenu({
 
         <div className="mt-10 flex items-center gap-3">
           <button
-            onClick={onToggleTheme}
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleTheme?.();
+            }}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg border text-sm font-semibold transition-colors ${
               isDark
                 ? "text-gray-300 border-gray-700 hover:text-white hover:border-gray-500"
