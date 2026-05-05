@@ -138,6 +138,17 @@ export const getNowPlaying = (options?: RequestInit) =>
 export const getTopArtists = (options?: RequestInit) =>
   fetchJson<TopArtist[]>("/api/portfolio/top-artists", options);
 
+export interface TopTrack {
+  name: string;
+  artist: string;
+  url: string;
+  imageUrl?: string | null;
+  playcount: string;
+}
+
+export const getTopTracks = (options?: RequestInit) =>
+  fetchJson<TopTrack[]>("/api/portfolio/top-tracks", options);
+
 export const getSteamData = (options?: RequestInit) =>
   fetchJson<SteamData>("/api/portfolio/steam", options);
 

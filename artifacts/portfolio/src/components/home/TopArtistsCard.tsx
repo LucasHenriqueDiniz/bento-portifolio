@@ -25,6 +25,7 @@ interface Track {
 
 interface TopArtistsCardProps {
   topArtists: Artist[] | undefined;
+  topTracks: Track[] | undefined;
   isLoading: boolean;
   isDark: boolean;
 }
@@ -41,18 +42,19 @@ async function fetchArtistImage(artist: string): Promise<string | undefined> {
 
 export const TopArtistsCard = React.memo(function TopArtistsCard({
   topArtists,
+  topTracks,
   isLoading,
   isDark,
 }: TopArtistsCardProps) {
   const { t } = useTranslation("home");
   const [flipped, setFlipped] = useState(false);
-  const [tracks, setTracks] = useState<Track[]>([]);
-  const [loadingTracks, setLoadingTracks] = useState(false);
   const [images, setImages] = useState<Record<string, string>>({});
   const { isFlipping, runWithFlipLock } = useFlipLock(700);
 
   const artists = Array.isArray(topArtists) ? topArtists : [];
+  const tracks = Array.isArray(topTracks) ? topTracks : [];
 
+  // Fetch images for artists
   useEffect(() => {
     let mounted = true;
     artists.slice(0, 5).forEach(async (artist) => {
@@ -62,32 +64,16 @@ export const TopArtistsCard = React.memo(function TopArtistsCard({
     return () => { mounted = false; };
   }, [artists]);
 
+  // Fetch images for tracks
   useEffect(() => {
-    if (!flipped || tracks.length > 0) return;
     let mounted = true;
-    setLoadingTracks(true);
-    fetch(`${import.meta.env.VITE_API_URL || ""}/api/portfolio/top-tracks`)
-      .then(r => r.json())
-      .then((data) => {
-        if (!mounted) return;
-        const arr = Array.isArray(data) ? data : [];
-        setTracks(arr);
-        setLoadingTracks(false);
-        // Fetch images for tracks
-        arr.slice(0, 5).forEach(async (track: Track) => {
-          const query = `${track.artist} ${track.name}`;
-          const img = await fetchArtistImage(query);
-          if (img && mounted) setImages(prev => ({ ...prev, [`${track.artist}-${track.name}`]: img }));
-        });
-      })
-      .catch(() => {
-        if (mounted) {
-          setTracks([]);
-          setLoadingTracks(false);
-        }
-      });
+    tracks.slice(0, 5).forEach(async (track) => {
+      const query = `${track.artist} ${track.name}`;
+      const img = await fetchArtistImage(query);
+      if (img && mounted) setImages(prev => ({ ...prev, [`${track.artist}-${track.name}`]: img }));
+    });
     return () => { mounted = false; };
-  }, [flipped, tracks.length]);
+  }, [tracks]);
 
   const handleFlip = () => {
     runWithFlipLock(() => setFlipped(f => !f));
@@ -212,11 +198,7 @@ export const TopArtistsCard = React.memo(function TopArtistsCard({
           </div>
 
           <div className="flex-1 flex flex-col justify-between">
-            {loadingTracks ? (
-              <div className="flex-1 flex items-center justify-center">
-                <SiLastdotfm size={20} className="text-brand animate-pulse" />
-              </div>
-            ) : tracks.length === 0 ? (
+            {tracks.length === 0 ? (
               <div className="flex-1 flex items-center justify-center">
                  <span className="text-[10px] text-faint">{t("artists.noTracks")}</span>
               </div>
