@@ -12,6 +12,27 @@ import {
   getProjects,
 } from "@/lib/apiClient";
 
+const QUERY_STABILITY_OPTIONS = {
+  retry: 2,
+  refetchOnWindowFocus: false,
+  refetchOnReconnect: true,
+  staleTime: 1000 * 60 * 5,
+} as const;
+
+const hasItems = <T>(value: T[] | undefined | null) => Array.isArray(value) && value.length > 0;
+
+const hasNowPlayingData = (data: Awaited<ReturnType<typeof getNowPlaying>> | undefined) =>
+  Boolean(data && (data.isPlaying || data.track || data.artist || data.album || data.albumArt || data.trackUrl));
+
+const hasSteamData = (data: Awaited<ReturnType<typeof getSteamData>> | undefined) =>
+  Boolean(data && ((data.recentGames?.length ?? 0) > 0 || (data.totalGames ?? 0) > 0));
+
+const hasWorkoutData = (data: Awaited<ReturnType<typeof getLastWorkout>> | undefined) =>
+  Boolean(data && ((data.exercises?.length ?? 0) > 0 || (data.totalVolume ?? 0) > 0 || (data.duration ?? 0) > 0));
+
+const hasStatsData = (data: Awaited<ReturnType<typeof getStats>> | undefined) =>
+  Boolean(data && ((data.githubRepos ?? 0) > 0 || (data.totalCommitsThisYear ?? 0) > 0 || (data.githubContributions ?? 0) > 0));
+
 function usePersistOnSuccess<T>(queryKey: string, data: T | undefined) {
   useEffect(() => {
     if (data !== undefined) {
@@ -26,11 +47,13 @@ export function useGetNowPlayingCached() {
     queryKey: ["/api/portfolio/now-playing"],
     queryFn: ({ signal }) => getNowPlaying({ signal }),
     placeholderData: cached,
+    ...QUERY_STABILITY_OPTIONS,
   });
 
-  usePersistOnSuccess("/api/portfolio/now-playing", query.data);
+  const data = hasNowPlayingData(query.data) ? query.data : cached;
+  usePersistOnSuccess("/api/portfolio/now-playing", hasNowPlayingData(data) ? data : undefined);
 
-  return query;
+  return { ...query, data };
 }
 
 export function useGetTopArtistsCached() {
@@ -39,11 +62,13 @@ export function useGetTopArtistsCached() {
     queryKey: ["/api/portfolio/top-artists"],
     queryFn: ({ signal }) => getTopArtists({ signal }),
     placeholderData: cached,
+    ...QUERY_STABILITY_OPTIONS,
   });
 
-  usePersistOnSuccess("/api/portfolio/top-artists", query.data);
+  const data = hasItems(query.data) ? query.data : cached;
+  usePersistOnSuccess("/api/portfolio/top-artists", hasItems(data) ? data : undefined);
 
-  return query;
+  return { ...query, data };
 }
 
 export function useGetTopTracksCached() {
@@ -52,11 +77,13 @@ export function useGetTopTracksCached() {
     queryKey: ["/api/portfolio/top-tracks"],
     queryFn: ({ signal }) => getTopTracks({ signal }),
     placeholderData: cached,
+    ...QUERY_STABILITY_OPTIONS,
   });
 
-  usePersistOnSuccess("/api/portfolio/top-tracks", query.data);
+  const data = hasItems(query.data) ? query.data : cached;
+  usePersistOnSuccess("/api/portfolio/top-tracks", hasItems(data) ? data : undefined);
 
-  return query;
+  return { ...query, data };
 }
 
 export function useGetSteamDataCached() {
@@ -65,11 +92,13 @@ export function useGetSteamDataCached() {
     queryKey: ["/api/portfolio/steam"],
     queryFn: ({ signal }) => getSteamData({ signal }),
     placeholderData: cached,
+    ...QUERY_STABILITY_OPTIONS,
   });
 
-  usePersistOnSuccess("/api/portfolio/steam", query.data);
+  const data = hasSteamData(query.data) ? query.data : cached;
+  usePersistOnSuccess("/api/portfolio/steam", hasSteamData(data) ? data : undefined);
 
-  return query;
+  return { ...query, data };
 }
 
 export function useGetLastWorkoutCached() {
@@ -78,11 +107,13 @@ export function useGetLastWorkoutCached() {
     queryKey: ["/api/portfolio/workout"],
     queryFn: ({ signal }) => getLastWorkout({ signal }),
     placeholderData: cached,
+    ...QUERY_STABILITY_OPTIONS,
   });
 
-  usePersistOnSuccess("/api/portfolio/workout", query.data);
+  const data = hasWorkoutData(query.data) ? query.data : cached;
+  usePersistOnSuccess("/api/portfolio/workout", hasWorkoutData(data) ? data : undefined);
 
-  return query;
+  return { ...query, data };
 }
 
 export function useGetStatsCached() {
@@ -91,11 +122,13 @@ export function useGetStatsCached() {
     queryKey: ["/api/portfolio/stats"],
     queryFn: ({ signal }) => getStats({ signal }),
     placeholderData: cached,
+    ...QUERY_STABILITY_OPTIONS,
   });
 
-  usePersistOnSuccess("/api/portfolio/stats", query.data);
+  const data = hasStatsData(query.data) ? query.data : cached;
+  usePersistOnSuccess("/api/portfolio/stats", hasStatsData(data) ? data : undefined);
 
-  return query;
+  return { ...query, data };
 }
 
 export function useGetMalDataCached() {
@@ -126,6 +159,7 @@ export function useGetMalDataCached() {
     queryKey: [key],
     queryFn: ({ signal }) => getMalData({ signal }),
     placeholderData: safeCached,
+    ...QUERY_STABILITY_OPTIONS,
   });
 
   useEffect(() => {
@@ -137,18 +171,21 @@ export function useGetMalDataCached() {
     setCache(key, query.data);
   }, [query.data]);
 
-  return query;
+  const data = isEmptyMalData(query.data) ? safeCached : query.data;
+  return { ...query, data };
 }
 
 export function useGetProjectsCached() {
-  const cached = getCache<Awaited<ReturnType<typeof getProjects>>>("/api/projects");
+  const cached = getCache<Awaited<ReturnType<typeof getProjects>>>("/api/portfolio/projects");
   const query = useQuery({
     queryKey: ["/api/portfolio/projects"],
     queryFn: ({ signal }) => getProjects({ signal }),
     placeholderData: cached,
+    ...QUERY_STABILITY_OPTIONS,
   });
 
-  usePersistOnSuccess("/api/portfolio/projects", query.data);
+  const data = hasItems(query.data) ? query.data : cached;
+  usePersistOnSuccess("/api/portfolio/projects", hasItems(data) ? data : undefined);
 
-  return query;
+  return { ...query, data };
 }
