@@ -102,7 +102,7 @@ export const projects: Project[] = [
     techStack: ["React", "TypeScript", "Vite", "Framer Motion", "Cloudflare Pages"],
     highlight: "Acervo pessoal de componentes com previews ao vivo, documentacao e deploy isolado",
     highlightEn: "Personal component archive with live previews, docs and isolated deployment",
-    url: "https://f4c7a6b8.lucas-ui-database.pages.dev",
+    url: "https://ui.lucashdo.com/",
     repoUrl: "https://github.com/LucasHenriqueDiniz/lucas-ui-database",
     featured: true,
     status: "workInProgress",
