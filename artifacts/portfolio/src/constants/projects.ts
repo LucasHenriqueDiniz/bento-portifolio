@@ -113,9 +113,9 @@ export const projects: Project[] = [
     typeEn: "Component library",
     year: "2026",
     priority: 2,
-    image: "/projects/lucas-ui-vault.png",
+    image: "/projects/lucas-ui-vault.webp",
     images: [
-      "/projects/lucas-ui-vault.png",
+      "/projects/lucas-ui-vault.webp",
       "/gallery/portfolio-character-component.png",
     ],
     showInDonate: false,

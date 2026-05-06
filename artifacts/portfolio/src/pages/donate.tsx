@@ -13,6 +13,7 @@ import {
   FiCheck,
 } from "react-icons/fi";
 import SiteHeader from "@/components/SiteHeader";
+import SEO from "@/components/SEO";
 import RotatingText from "@/components/RotatingText";
 import { useTheme } from "@/hooks/useTheme";
 
@@ -99,7 +100,9 @@ export default function DonatePage() {
   const inputBg = "bg-field border-base text-sub";
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${bgClass}`}>
+    <>
+      <SEO title="Doar" description="Apoie o trabalho de Lucas Diniz — doações via Pix, Ko-fi, Buy Me a Coffee e mais." url="/donate" />
+      <div className={`min-h-screen transition-colors duration-300 ${bgClass}`}>
       <SiteHeader isDark={isDark} onToggleTheme={toggleTheme} />
 
       <div className="relative max-w-[920px] mx-auto px-4 pt-24 pb-10">
@@ -272,5 +275,6 @@ export default function DonatePage() {
         </motion.p>
       </div>
     </div>
+    </>
   );
 }

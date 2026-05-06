@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from 'react-i18next';
 import SiteHeader from "@/components/SiteHeader";
+import SEO from "@/components/SEO";
 import { useTheme } from "@/hooks/useTheme";
 import {
   useGetNowPlayingCached as useGetNowPlaying,
@@ -243,7 +244,9 @@ export default function Home() {
   }));
 
   return (
-    <div className={`min-h-screen lg:h-screen flex flex-col font-sans overflow-y-auto lg:overflow-hidden transition-colors duration-300 pt-14 bg-canvas text-main ${isDark ? "dark" : ""}`}>
+    <>
+      <SEO />
+      <div className={`min-h-screen lg:h-screen flex flex-col font-sans overflow-y-auto lg:overflow-hidden transition-colors duration-300 pt-14 bg-canvas text-main ${isDark ? "dark" : ""}`}>
       {/* ── NAV ── */}
       <SiteHeader isDark={isDark} onToggleTheme={toggleTheme} />
 
@@ -377,5 +380,6 @@ export default function Home() {
         </CardGlowProvider>
       </BentoSection>
     </div>
+    </>
   );
 }

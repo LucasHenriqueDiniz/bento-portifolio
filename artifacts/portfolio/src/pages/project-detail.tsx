@@ -17,6 +17,7 @@ import {
 } from "react-icons/fi";
 import { projects } from "@/constants";
 import { useTheme } from "@/hooks/useTheme";
+import SEO from "@/components/SEO";
 import NotFound from "./not-found";
 
 const statusConfig: Record<string, { color: string; icon: typeof FiCheckCircle; labelPt: string; labelEn: string }> = {
@@ -69,8 +70,22 @@ export default function ProjectDetailPage() {
     window.location.href = `/projects/${id}`;
   };
 
+  const projectImage = allImages.length > 0 ? `https://lucashdo.com${allImages[0]}` : undefined;
+  const projectDescription = currentLang === "en" && project.descriptionEn
+    ? project.descriptionEn.split("\n")[0]
+    : project.description.split("\n")[0];
+
   return (
-    <div className={`min-h-screen transition-colors duration-300 bg-canvas text-main`}>
+    <>
+      <SEO
+        title={project.name}
+        description={projectDescription}
+        image={projectImage}
+        type="article"
+        url={`/projects/${project.id}`}
+        lang={currentLang === "en" ? "en" : "pt-BR"}
+      />
+      <div className={`min-h-screen transition-colors duration-300 bg-canvas text-main`}>
       <SiteHeader isDark={isDark} onToggleTheme={toggleTheme} />
 
       <div className="max-w-[1100px] mx-auto px-4 sm:px-6 pt-20 pb-8 sm:pt-24 sm:pb-12">
@@ -317,5 +332,6 @@ export default function ProjectDetailPage() {
         </div>
       </div>
     </div>
+    </>
   );
 }
