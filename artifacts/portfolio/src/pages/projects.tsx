@@ -5,6 +5,7 @@ import { FiSearch } from "react-icons/fi";
 import GridMotion from "@/components/GridMotion";
 import FlowingMenu from "@/components/FlowingMenu";
 import SiteHeader from "@/components/SiteHeader";
+import SEO from "@/components/SEO";
 import { useTheme } from "@/hooks/useTheme";
 import { projects } from "@/constants";
 
@@ -128,6 +129,7 @@ export default function ProjectsPage() {
 
   return (
     <>
+      <SEO title="Projetos" description="Explore os projetos de Lucas Diniz — desde extensões de navegador até aplicações web e software." url="/projects" />
       <SiteHeader isDark={isDark} onToggleTheme={toggleTheme} />
 
       {/* ═══ Scroll Container with Snap ═══ */}

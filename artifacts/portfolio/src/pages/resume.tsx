@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { FiPrinter, FiGithub, FiMail, FiExternalLink, FiAward, FiBriefcase, FiCode, FiLayout } from "react-icons/fi";
 import { Linkedin, Palette, MessageSquare } from "lucide-react";
 import SiteHeader from "@/components/SiteHeader";
+import SEO from "@/components/SEO";
 import { useTheme } from "@/hooks/useTheme";
 import { jobExperiences, academicExperiences, projects, certificates, languages, skillsData, ContactLinks } from "@/constants";
 import { formatDateRange } from "@/lib/dateFormatter";
@@ -506,7 +507,9 @@ export default function ResumePage() {
   }, [currentLang]);
 
   return (
-    <div className={`min-h-screen pt-14 transition-colors duration-300 ${isDark ? "dark bg-canvas text-main" : "bg-canvas text-main"}`}>
+    <>
+      <SEO title="Currículo" description="Currículo de Lucas Diniz — Desenvolvedor full-stack com experiência em web, mobile e automação." url="/resume" />
+      <div className={`min-h-screen pt-14 transition-colors duration-300 ${isDark ? "dark bg-canvas text-main" : "bg-canvas text-main"}`}>
       <style>{`
         .print-only { display: none; }
         @media print {
@@ -580,5 +583,6 @@ export default function ResumePage() {
         {t('footer.generatedFrom')} <span className="font-semibold text-brand">lucashdo.com</span>
       </div>
     </div>
+    </>
   );
 }

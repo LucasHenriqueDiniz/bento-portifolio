@@ -3,6 +3,7 @@ import { Link } from "wouter";
 import { Linkedin, Mail, Github, Instagram, ArrowUpRight, MessageCircleHeart } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import SiteHeader from "@/components/SiteHeader";
+import SEO from "@/components/SEO";
 import { useTheme } from "@/hooks/useTheme";
 import { ContactLinks } from "@/constants";
 
@@ -46,7 +47,9 @@ export default function ContactPage() {
   const isEn = currentLang === "en";
 
   return (
-    <div className={`min-h-screen bg-canvas text-main transition-colors duration-300 ${isDark ? "dark" : ""}`}>
+    <>
+      <SEO title="Contato" description="Entre em contato com Lucas Diniz — disponível para colaborações, freelas e oportunidades." url="/contact" />
+      <div className={`min-h-screen bg-canvas text-main transition-colors duration-300 ${isDark ? "dark" : ""}`}>
       <SiteHeader isDark={isDark} onToggleTheme={toggleTheme} />
 
       <main className="relative min-h-[100svh] w-full pt-24 sm:pt-28">
@@ -130,5 +133,6 @@ export default function ContactPage() {
         </div>
       </main>
     </div>
+    </>
   );
 }
