@@ -112,7 +112,7 @@ export const projects: Project[] = [
     type: "Biblioteca de componentes",
     typeEn: "Component library",
     year: "2026",
-    priority: 2,
+    priority: 0,
     image: "/projects/lucas-ui-vault.webp",
     images: [
       "/projects/lucas-ui-vault.webp",
