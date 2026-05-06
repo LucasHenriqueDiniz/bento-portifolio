@@ -89,6 +89,38 @@ export const projects: Project[] = [
     image: "/projects/clearcut.webp",
   },
   {
+    id: "lucas-ui-vault",
+    name: "Lucas UI Vault",
+    description:
+      "• Reuni em um acervo unico componentes que eu criei em projetos reais e experimentos paralelos\n" +
+      "• Estruturei previews interativos, docs de props, snippets de uso e index navegavel por categoria\n" +
+      "• Configurei pipeline de deploy separado para publicar a biblioteca sem impactar o portfolio principal",
+    descriptionEn:
+      "• Consolidated components I built across real projects and side experiments into a single archive\n" +
+      "• Structured interactive previews, prop docs, usage snippets and a navigable category index\n" +
+      "• Set up an isolated deployment pipeline so the library ships without impacting the main portfolio",
+    techStack: ["React", "TypeScript", "Vite", "Framer Motion", "Cloudflare Pages"],
+    highlight: "Acervo pessoal de componentes com previews ao vivo, documentacao e deploy isolado",
+    highlightEn: "Personal component archive with live previews, docs and isolated deployment",
+    url: "https://f4c7a6b8.lucas-ui-database.pages.dev",
+    repoUrl: "https://github.com/LucasHenriqueDiniz/lucas-ui-database",
+    featured: true,
+    status: "workInProgress",
+    category: "website",
+    role: "Desenvolvedor frontend solo",
+    roleEn: "Solo frontend developer",
+    type: "Biblioteca de componentes",
+    typeEn: "Component library",
+    year: "2026",
+    priority: 2,
+    image: "/projects/lucas-ui-vault.png",
+    images: [
+      "/projects/lucas-ui-vault.png",
+      "/gallery/portfolio-character-component.png",
+    ],
+    showInDonate: false,
+  },
+  {
     id: "esp-web-flasher",
     name: "ESP Web Flasher",
     description:
