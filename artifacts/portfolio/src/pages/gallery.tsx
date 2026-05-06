@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ExternalLink, X } from "lucide-react";
 import SiteHeader from "@/components/SiteHeader";
+import SEO from "@/components/SEO";
 import Masonry, { type MasonryItem } from "@/components/Masonry";
 import TextPressure from "@/components/TextPressure";
 import { useTheme } from "@/hooks/useTheme";
@@ -49,6 +50,7 @@ const rawItems: MasonryItem[] = [
   { id: "nsfw-vn-night-scene", title: "VN Night Scene", img: "/gallery/NSFW-vn-night-scene.mp4", url: "/gallery/NSFW-vn-night-scene.mp4", height: 760, mediaType: "video", nsfw: true },
   { id: "nsfw-bath-redhair-lady", title: "Bath Redhair Lady", img: "/gallery/bath-redhair-lady.webp", url: "/gallery/bath-redhair-lady.webp", height: 980, nsfw: true },
   { id: "nsfw-rem", title: "Rem", img: "/gallery/NSFW-rem.webp", url: "/gallery/NSFW-rem.webp", height: 980, nsfw: true },
+  { id: "portfolio-character-component", title: "Portfolio Character Component", img: "/gallery/portfolio-character-component.png", url: "/gallery/portfolio-character-component.png", height: 760 },
 ];
 
 const artYears: Record<string, string> = {
@@ -77,6 +79,7 @@ const artYears: Record<string, string> = {
   "vn-night-idle-simple": "2024",
   "nsfw-rem": "2024",
   "siot-login-animation": "2025",
+  "portfolio-character-component": "2026",
 };
 
 export default function GalleryPage() {
@@ -108,7 +111,9 @@ export default function GalleryPage() {
   };
 
   return (
-    <div className={`min-h-screen w-full pt-14 bg-canvas text-main transition-colors duration-300 ${isDark ? "dark" : ""}`}>
+    <>
+      <SEO title="Galeria" description="Galeria de arte e ilustrações de Lucas Diniz — desenhos digitais e concept art." url="/gallery" />
+      <div className={`min-h-screen w-full pt-14 bg-canvas text-main transition-colors duration-300 ${isDark ? "dark" : ""}`}>
       <SiteHeader isDark={isDark} onToggleTheme={toggleTheme} />
 
       <div className="mx-auto w-full max-w-[1300px] px-4 sm:px-6 py-8 sm:py-10 relative">
@@ -231,5 +236,6 @@ export default function GalleryPage() {
         </div>
       )}
     </div>
+    </>
   );
 }
