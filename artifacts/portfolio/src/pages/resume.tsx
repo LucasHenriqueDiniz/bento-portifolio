@@ -47,6 +47,7 @@ const projectImageMap: Record<string, string> = {
   "hypixel-daily-skip": "/projects/hypixel-auto-join.webp",
   "basicao-workshop": "/projects/basicao-workshop.webp",
   "clearcut": "/projects/clearcut.webp",
+  "dropcut": "/projects/dropcut-video.webp",
   "instagram-enhancer": "/projects/instagram-enhancer.webp",
 };
 

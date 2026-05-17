@@ -236,14 +236,18 @@ export const onRequest: PagesFunction<Env> = async (context) => {
         const ownedJson = (await ownedRes.json()) as any;
         const player = profileJson?.response?.players?.[0];
         const rawRecent = recentJson?.response?.games ?? [];
-        const recentGames = (Array.isArray(rawRecent) ? rawRecent : [rawRecent]).slice(0, 5).map((g: any) => ({
-          name: g.name,
-          hoursPlayed: Math.round((((g.playtime_2weeks ?? g.playtime_forever) ?? 0) / 60) * 10) / 10,
-          imageUrl: g.name === "Spacewars"
-            ? "https://raw.githubusercontent.com/hydralauncher/hydra/refs/heads/main/resources/icon.png"
-            : `https://cdn.cloudflare.steamstatic.com/steam/apps/${g.appid}/header.jpg`,
-          appId: String(g.appid),
-        }));
+        const recentGames = (Array.isArray(rawRecent) ? rawRecent : [rawRecent]).slice(0, 5).map((g: any) => {
+          const gameName = String(g.name ?? "").toLowerCase();
+          const isSpacewar = gameName === "spacewar" || gameName === "spacewars" || Number(g.appid) === 480;
+          return {
+            name: g.name,
+            hoursPlayed: Math.round((((g.playtime_2weeks ?? g.playtime_forever) ?? 0) / 60) * 10) / 10,
+            imageUrl: isSpacewar
+              ? "https://raw.githubusercontent.com/hydralauncher/hydra/refs/heads/main/resources/icon.png"
+              : `https://cdn.cloudflare.steamstatic.com/steam/apps/${g.appid}/header.jpg`,
+            appId: String(g.appid),
+          };
+        });
         return json({
           username: player?.personaname ?? "unknown",
           avatarUrl: player?.avatarfull ?? null,
