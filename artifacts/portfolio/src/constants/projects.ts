@@ -89,6 +89,35 @@ export const projects: Project[] = [
     image: "/projects/clearcut.webp",
   },
   {
+    id: "dropcut",
+    name: "DropCut",
+    description:
+      "• Desenvolvi um app desktop para compactar e cortar videos localmente no Windows com fluxo simples\n" +
+      "• Integrei Tauri, Rust e FFmpeg para processar arquivos offline com presets prontos para Discord\n" +
+      "• Adicionei recursos de exportacao, build de instalador e pipeline de release automatizado no GitHub Actions",
+    descriptionEn:
+      "• Built a desktop app to compress and trim videos locally on Windows with a simple workflow\n" +
+      "• Integrated Tauri, Rust and FFmpeg for fully offline processing with Discord-ready presets\n" +
+      "• Added export features, installer builds and an automated GitHub Actions release pipeline",
+    techStack: ["Tauri", "Rust", "TypeScript", "React", "FFmpeg"],
+    highlight: "App desktop offline para compactacao e corte de videos com FFmpeg",
+    highlightEn: "Offline desktop app for video compression and trimming with FFmpeg",
+    url: "https://dropcut.pages.dev",
+    repoUrl: "https://github.com/LucasHenriqueDiniz/dropcut",
+    featured: true,
+    status: "workInProgress",
+    category: "software",
+    role: "Desenvolvedor fullstack solo",
+    roleEn: "Solo fullstack developer",
+    type: "Aplicativo desktop",
+    typeEn: "Desktop application",
+    year: "2026",
+    priority: 2,
+    image: "/projects/dropcut-video.webp",
+    images: ["/projects/dropcut-video.webp", "/projects/dropcut-novideo.webp"],
+    showInDonate: true,
+  },
+  {
     id: "lucas-ui-vault",
     name: "Lucas UI Vault",
     description:
