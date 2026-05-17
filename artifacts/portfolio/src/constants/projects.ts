@@ -78,7 +78,7 @@ export const projects: Project[] = [
     highlightEn: "Desktop image processing app for background removal and batch exports",
     repoUrl: "https://github.com/LucasHenriqueDiniz/clearcut",
     featured: true,
-    status: "workInProgress",
+    status: "completed",
     category: "software",
     role: "Desenvolvedor fullstack solo",
     roleEn: "Solo fullstack developer",
