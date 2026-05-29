@@ -6,7 +6,7 @@ A modular **Bento-style personal portfolio** built as a monorepo with a React/Vi
 
 ## Showcase
 
-![Bento Portfolio showcase](./docs/showcase.svg)
+![Bento Portfolio showcase](./.github/assets/preview.png)
 
 The interface highlights real-world data (GitHub activity, music, games, anime, workouts, weather, and professional experience) inside responsive cards with smooth motion and clean typography.
 
