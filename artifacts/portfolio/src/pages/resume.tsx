@@ -163,9 +163,9 @@ function VisualResume({ isDark }: { isDark: boolean }) {
     );
   };
 
-  const getJobTitle = (job: any) => currentLang === 'en' && job.titleEn ? job.titleEn : job.title;
-  const getJobDescription = (job: any) => currentLang === 'en' && job.descriptionEn ? job.descriptionEn : job.description;
-  const getProjectDescription = (proj: any) => currentLang === 'en' && proj.descriptionEn ? proj.descriptionEn : proj.description;
+  const getJobTitle = (job: any) => job.titleEn || job.title;
+  const getJobDescription = (job: any) => job.descriptionEn || job.description;
+  const getProjectDescription = (proj: any) => proj.descriptionEn || proj.description;
 
   return (
     <div className="max-w-[900px] mx-auto px-6 py-8 space-y-6">
@@ -307,7 +307,7 @@ function VisualResume({ isDark }: { isDark: boolean }) {
                 </div>
               )}
               <div className="min-w-0 flex-1">
-                <h3 className="text-sm font-bold" style={{ color: isDark ? "#fff" : "#000" }}>{currentLang === 'en' && ed.titleEn ? ed.titleEn : ed.title}</h3>
+                <h3 className="text-sm font-bold" style={{ color: isDark ? "#fff" : "#000" }}>{ed.titleEn || ed.title}</h3>
                 <p className={`text-xs ${isDark ? "text-gray-400" : "text-gray-500"}`}>{ed.institution}</p>
                 <p className={`text-[10px] ${isDark ? "text-gray-600" : "text-gray-400"}`}>{formatDateRange(ed.startDate, ed.endDate)}</p>
               </div>
@@ -351,17 +351,17 @@ function VisualResume({ isDark }: { isDark: boolean }) {
 
 // ─── ATS Resume (Print-only) ─────────────────────────────
 function ATSResume({ isDark = false }: { isDark?: boolean }) {
-  const { t, i18n } = useTranslation(['resume', 'common']);
+  const { i18n } = useTranslation(['resume', 'common']);
   const currentLang = i18n.language?.split("-")[0] || "pt";
 
-  // Relevance-based ordering: principal job first, then co-founder, then side projects
   const jobPriority: Record<string, number> = {
-    "eng-futuro": 1,
-    "bots-channel": 2,
+    "policia-federal-it": 1,
+    "eng-futuro": 2,
     "comunica-mulher-work": 3,
-    "include-gurias-work": 4,
-    "eng-futuro-vol": 5,
-    "freelance-design": 6,
+    "bots-channel": 4,
+    "include-gurias-work": 5,
+    "eng-futuro-vol": 6,
+    "freelance-design": 7,
   };
 
   const activeJobs = useMemo(() => jobExperiences
@@ -376,7 +376,6 @@ function ATSResume({ isDark = false }: { isDark?: boolean }) {
       return dateB - dateA;
     }), []);
 
-  // Only 4 top projects for ATS
   const atsProjectIds = ["botschannel", "heartopia-guide", "weeb-profile", "context-tools"];
   const atsProjects = useMemo(() => atsProjectIds
     .map(id => projects.find(p => p.id === id))
@@ -384,73 +383,65 @@ function ATSResume({ isDark = false }: { isDark?: boolean }) {
 
   const topCertificates = useMemo(() => certificates.slice(0, 4), []);
 
-  const getJobTitle = (job: any) => currentLang === 'en' && job.titleEn ? job.titleEn : job.title;
-  const getJobDescription = (job: any) => currentLang === 'en' && job.descriptionEn ? job.descriptionEn : job.description;
+  const getJobTitle = (job: any) => job.titleEn || job.title;
+  const getJobDescription = (job: any) => job.descriptionEn || job.description;
 
   const renderBullets = (text: string) => (
-    <ul className="mt-1 space-y-0.5 list-none pl-0">
+    <ul className="mt-1 space-y-0.5 list-disc pl-5">
       {text.split('\n').map((line, i) => (
-        <li key={i} className={`text-[11px] leading-relaxed flex items-start gap-1.5 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
-          <span className="mt-1.5 w-1 h-1 rounded-full shrink-0 bg-brand" />
-          <span>{line.replace(/^•\s*/, '')}</span>
+        <li key={i} className={`text-[11px] leading-relaxed ${isDark ? "text-gray-300" : "text-gray-700"}`}>
+          <span>{line.replace(/^[-•]\s*/, '')}</span>
         </li>
       ))}
     </ul>
   );
 
   return (
-    <div className="max-w-[800px] mx-auto px-6 py-8 space-y-5">
-      <header>
+    <main className="resume-content max-w-[800px] mx-auto px-6 py-8 space-y-5" aria-label="Lucas Henrique Diniz resume">
+      <section className="resume-header">
         <h1 className="text-2xl font-black">Lucas Henrique Diniz</h1>
-        <p className="text-sm font-bold mt-0.5">{t('header.role')}</p>
+        <p className="text-sm font-bold mt-0.5">Full Stack Developer</p>
         <p className="text-xs mt-1">
           {ContactLinks.email} | github.com/LucasHenriqueDiniz | linkedin.com/in/lucas-diniz-ostroski
         </p>
-      </header>
+      </section>
 
       <section>
         <h2 className="text-sm font-black uppercase tracking-widest border-b border-black pb-1 mb-2">
-          {t('sections.experience')}
+          EXPERIENCE
         </h2>
         <div className="space-y-3">
           {activeJobs.map(job => (
-            <div key={job.id}>
-              <div className="flex items-baseline justify-between gap-2">
-                <h3 className="text-xs font-bold">{getJobTitle(job)}</h3>
-                <span className="text-[10px] shrink-0">{formatDateRange(job.startDate, job.endDate)}</span>
-              </div>
-              {job.url ? (
-                <a href={job.url} target="_blank" rel="noreferrer" className="text-[11px] font-medium hover:underline">{job.institution}</a>
-              ) : (
-                <p className="text-[11px] font-medium">{job.institution}</p>
-              )}
+            <article key={job.id} className="experience-item">
+              <h3 className="text-xs font-bold">{getJobTitle(job)} - {job.institution}</h3>
+              <p className="text-[10px]">{formatDateRange(job.startDate, job.endDate)}</p>
               {renderBullets(getJobDescription(job))}
-            </div>
+            </article>
           ))}
         </div>
       </section>
 
       <section>
         <h2 className="text-sm font-black uppercase tracking-widest border-b border-black pb-1 mb-2">
-          {t('sections.projects')}
+          SELECTED PROJECTS
         </h2>
         <div className="space-y-2.5">
           {atsProjects.map(proj => (
-            <div key={proj!.id}>
+            <article key={proj!.id} className="project-item">
               <div className="flex items-baseline justify-between">
                 <h3 className="text-xs font-bold">{proj!.name}</h3>
                 {proj!.url && <span className="text-[10px]">{proj!.url.replace('https://', '')}</span>}
               </div>
               {renderBullets(currentLang === 'en' && proj!.descriptionEn ? proj!.descriptionEn : proj!.description)}
               <p className="text-[10px]">Tech: {proj!.techStack.join(", ")}</p>
-            </div>
+            </article>
           ))}
         </div>
       </section>
 
       <section>
         <h2 className="text-sm font-black uppercase tracking-widest border-b border-black pb-1 mb-2">
-          {t('sections.skills')}
+          SKILLS
         </h2>
         <div className="space-y-1 text-[11px]">
           <p><span className="font-semibold">Languages:</span> TypeScript, JavaScript, Python, Go, SQL</p>
@@ -463,35 +454,34 @@ function ATSResume({ isDark = false }: { isDark?: boolean }) {
 
       <section>
         <h2 className="text-sm font-black uppercase tracking-widest border-b border-black pb-1 mb-2">
-          {t('sections.education')}
+          EDUCATION
         </h2>
         <div className="space-y-1.5">
           {activeEducation.map(ed => (
-            <div key={ed.id} className="flex items-baseline justify-between gap-2">
+            <article key={ed.id} className="flex items-baseline justify-between gap-2">
               <div>
-                <span className="text-xs font-bold">{currentLang === 'en' && ed.titleEn ? ed.titleEn : ed.title}</span>
-                <span className="text-[11px]"> — {ed.institution}</span>
+                <span className="text-xs font-bold">{ed.titleEn || ed.title}</span>
+                <span className="text-[11px]"> - {ed.institution}</span>
               </div>
               <span className="text-[10px] shrink-0">{formatDateRange(ed.startDate, ed.endDate)}</span>
-            </div>
+            </article>
           ))}
         </div>
       </section>
 
       <section>
         <h2 className="text-sm font-black uppercase tracking-widest border-b border-black pb-1 mb-2">
-          {t('sections.certifications')}
+          CERTIFICATIONS
         </h2>
         <div className="flex flex-wrap gap-x-4 gap-y-1 text-[11px]">
           {topCertificates.map(cert => (
-            <span key={cert.title}>• {cert.title} ({cert.issueDate})</span>
+            <span key={cert.title}>- {cert.title} ({cert.issueDate})</span>
           ))}
         </div>
       </section>
-    </div>
+    </main>
   );
 }
-
 // ─── Main Page ───────────────────────────────────────────
 export default function ResumePage() {
   const { isDark, toggleTheme } = useTheme();
@@ -511,24 +501,11 @@ export default function ResumePage() {
     <>
       <SEO title="Currículo" description="Currículo de Lucas Diniz — Desenvolvedor full-stack com experiência em web, mobile e automação." url="/resume" />
       <div className={`min-h-screen pt-14 transition-colors duration-300 ${isDark ? "dark bg-canvas text-main" : "bg-canvas text-main"}`}>
-      <style>{`
-        .print-only { display: none; }
-        @media print {
-          .no-print { display: none !important; }
-          .screen-only { display: none !important; }
-          .print-only { display: block !important; }
-          html, body { background: white !important; color: black !important; }
-          * { color: black !important; background: transparent !important; opacity: 1 !important; }
-          a { text-decoration: none !important; color: black !important; }
-          @page { margin: 1.5cm; }
-        }
-      `}</style>
-
-      <div className="no-print">
+      <div className="no-print print-hidden">
         <SiteHeader isDark={isDark} onToggleTheme={toggleTheme} />
       </div>
 
-      <header className={`no-print sticky top-14 z-40 h-14 border-b border-base bg-header/95 backdrop-blur-sm`}>
+      <header className={`no-print print-hidden sticky top-14 z-40 h-14 border-b border-base bg-header/95 backdrop-blur-sm`}>
         <div className="max-w-[900px] mx-auto px-6 h-full flex items-center justify-between">
           <div className={`flex items-center gap-1 p-1 rounded-xl border border-base ${isDark ? "bg-panel" : "bg-panel"}`}>
             <button
@@ -580,7 +557,7 @@ export default function ResumePage() {
         <ATSResume />
       </div>
 
-      <div className={`no-print text-center text-[10px] py-6 border-t ${isDark ? "border-gray-800 text-gray-600" : "border-gray-200 text-gray-400"}`}>
+      <div className={`no-print print-hidden text-center text-[10px] py-6 border-t ${isDark ? "border-gray-800 text-gray-600" : "border-gray-200 text-gray-400"}`}>
         {t('footer.generatedFrom')} <span className="font-semibold text-brand">lucashdo.com</span>
       </div>
     </div>

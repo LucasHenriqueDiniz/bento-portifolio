@@ -492,3 +492,86 @@
   transform: scale(1.008);
   box-shadow: var(--shadow-sm);
 }
+
+.print-only {
+  display: none;
+}
+
+@media print {
+  @page {
+    margin: 12mm;
+  }
+
+  html,
+  body {
+    background: white !important;
+    color: black !important;
+    font-size: 11pt;
+  }
+
+  body {
+    margin: 0 !important;
+  }
+
+  nav,
+  header,
+  footer,
+  button,
+  [role="button"],
+  .menu,
+  .navbar,
+  .site-header,
+  .site-footer,
+  .print-hidden,
+  .no-print,
+  .screen-only {
+    display: none !important;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+
+  #root,
+  .min-h-screen {
+    min-height: auto !important;
+    padding: 0 !important;
+    background: white !important;
+  }
+
+  .resume-content {
+    display: block !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    background: white !important;
+    color: black !important;
+  }
+
+  section,
+  article,
+  .resume-header,
+  .experience-item,
+  .project-item {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  a {
+    color: black !important;
+    text-decoration: none !important;
+  }
+
+  * {
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  .resume-content,
+  .resume-content * {
+    background: white !important;
+    color: black !important;
+  }
+}
