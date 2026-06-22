@@ -1,4 +1,5 @@
 import "./i18n";
+import { lazy, Suspense } from "react";
 import { Switch, Route, Router as WouterRouter } from "wouter";
 import { motion } from "framer-motion";
 import { useLocation } from "wouter";
@@ -7,14 +8,19 @@ import { HelmetProvider } from "react-helmet-async";
 import { queryClient } from "@/lib/queryClient";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
-import Projects from "@/pages/projects";
-import ProjectDetail from "@/pages/project-detail";
-import Resume from "@/pages/resume";
-import Donate from "@/pages/donate";
-import Contact from "@/pages/contact";
-import Gallery from "@/pages/gallery";
+
+// Home is the primary (LCP) route and stays eagerly bundled. The remaining
+// routes are code-split into their own async chunks so their heavy deps
+// (GridMotion/FlowingMenu/Masonry/gsap, the large resume page, etc.) are kept
+// out of the initial Home bundle.
+const Projects = lazy(() => import("@/pages/projects"));
+const ProjectDetail = lazy(() => import("@/pages/project-detail"));
+const Resume = lazy(() => import("@/pages/resume"));
+const Donate = lazy(() => import("@/pages/donate"));
+const Contact = lazy(() => import("@/pages/contact"));
+const Gallery = lazy(() => import("@/pages/gallery"));
+const NotFound = lazy(() => import("@/pages/not-found"));
 
 function Router() {
   const [location] = useLocation();
@@ -27,16 +33,18 @@ function Router() {
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
       >
-        <Switch>
-          <Route path="/" component={Home} />
-          <Route path="/projects" component={Projects} />
-          <Route path="/projects/:id" component={ProjectDetail} />
-          <Route path="/resume" component={Resume} />
-          <Route path="/donate" component={Donate} />
-          <Route path="/contact" component={Contact} />
-          <Route path="/gallery" component={Gallery} />
-          <Route component={NotFound} />
-        </Switch>
+        <Suspense fallback={<div className="min-h-screen" />}>
+          <Switch>
+            <Route path="/" component={Home} />
+            <Route path="/projects" component={Projects} />
+            <Route path="/projects/:id" component={ProjectDetail} />
+            <Route path="/resume" component={Resume} />
+            <Route path="/donate" component={Donate} />
+            <Route path="/contact" component={Contact} />
+            <Route path="/gallery" component={Gallery} />
+            <Route component={NotFound} />
+          </Switch>
+        </Suspense>
       </motion.div>
     </div>
   );
