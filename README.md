@@ -94,4 +94,4 @@ artifacts/
 
 ## License
 
-For now, this project is private/personal use unless a LICENSE file is added.
+This project is licensed under the MIT License — see the [LICENSE](./LICENSE) file for details.
