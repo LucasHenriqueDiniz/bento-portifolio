@@ -1,5 +1,6 @@
 import { createRoot } from "react-dom/client";
 import { setBaseUrl } from "@/lib/apiClient";
+import { registerWebMcpTools } from "@/lib/webmcp";
 import App from "./App";
 import "./index.css";
 
@@ -11,3 +12,5 @@ const isLocalApi = /localhost|127\.0\.0\.1/.test(envApiUrl);
 setBaseUrl(isProdHost && isLocalApi ? "" : envApiUrl);
 
 createRoot(document.getElementById("root")!).render(<App />);
+
+registerWebMcpTools();
