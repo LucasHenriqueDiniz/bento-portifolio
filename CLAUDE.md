@@ -2,14 +2,9 @@
 
 Canonical instructions for AI coding agents in this repository.
 
-This is the **source of truth**. Other tool-specific entry points
-(`AGENTS.md`, `CODEX.md`, `.opencode/OPENCODE.md`) are thin pointers back here
-to avoid duplicated rules.
-
-Compatible with:
-- Claude Code
-- Codex / OpenAI coding agents
-- OpenCode
+This is the **source of truth**. `AGENTS.md` is a thin pointer back here so
+that any tool which doesn't read `CLAUDE.md` (Codex, Cursor, etc.) still lands
+on the same instructions.
 
 ## 1) Mission
 
