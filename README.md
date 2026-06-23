@@ -3,6 +3,8 @@
 A modular **Bento-style personal portfolio** built as a monorepo with a React/Vite frontend and Cloudflare Pages Functions for secure API integrations.
 
 > Looking for the previous version? See: [old-lucas-portfolio](https://github.com/LucasHenriqueDiniz/old-lucas-portfolio)
+>
+> Sibling project: **Lucas UI Vault** — a React component library with live previews and code snippets, hosted at [ui.lucashdo.com](https://ui.lucashdo.com/) ([repo](https://github.com/LucasHenriqueDiniz/lucas-ui-database)).
 
 ## Showcase
 
@@ -80,6 +82,22 @@ pnpm dev:api
 pnpm typecheck
 pnpm build
 ```
+
+## Public API
+
+The Cloudflare Pages Function at `artifacts/portfolio/functions/api/[[path]].ts` exposes a handful of read-only, unauthenticated `GET` endpoints that back the portfolio's widgets. They are documented here for discoverability (see `/.well-known/api-catalog`):
+
+| Endpoint | Description |
+| --- | --- |
+| `/api/portfolio/now-playing` | Currently playing track (Last.fm) |
+| `/api/portfolio/top-artists` | Top artists, 3-month window (Last.fm) |
+| `/api/portfolio/top-tracks` | Top tracks, 3-month window (Last.fm) |
+| `/api/portfolio/steam` | Steam profile and recently played games |
+| `/api/portfolio/workout` | Most recent workout and weekly stats (Lyfta) |
+| `/api/portfolio/stats` | GitHub contribution and language stats |
+| `/api/portfolio/mal` | MyAnimeList stats and favorites |
+
+All responses are JSON, cached at the edge (KV + Cache API), and intended for this portfolio's own UI — there is no SLA or versioning guarantee for third-party consumption.
 
 ## Project Structure
 

@@ -2,4 +2,5 @@
 
 Codex compatibility file.
 
-Follow instructions in `AGENTS.md`.
+The canonical instructions for this repository live in `CLAUDE.md`.
+Follow the instructions there.
