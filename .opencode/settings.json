@@ -14,15 +14,15 @@
     "test": "pnpm --filter @workspace/portfolio test"
   },
   "rules": [
-    "rules/architecture-rules.md",
-    "rules/clean-code-rules.md",
-    "rules/testing-rules.md",
-    "rules/workflow-rules.md"
+    "../.claude/rules/architecture-rules.md",
+    "../.claude/rules/clean-code-rules.md",
+    "../.claude/rules/testing-rules.md",
+    "../.claude/rules/workflow-rules.md"
   ],
   "skills": [
-    "skills/lint",
-    "skills/pitch",
-    "skills/postmortem",
-    "skills/research"
+    "../.claude/skills/lint",
+    "../.claude/skills/pitch",
+    "../.claude/skills/postmortem",
+    "../.claude/skills/research"
   ]
 }
