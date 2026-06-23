@@ -3,6 +3,8 @@
 A modular **Bento-style personal portfolio** built as a monorepo with a React/Vite frontend and Cloudflare Pages Functions for secure API integrations.
 
 > Looking for the previous version? See: [old-lucas-portfolio](https://github.com/LucasHenriqueDiniz/old-lucas-portfolio)
+>
+> Sibling project: **Lucas UI Vault** — a React component library with live previews and code snippets, hosted at [ui.lucashdo.com](https://ui.lucashdo.com/) ([repo](https://github.com/LucasHenriqueDiniz/lucas-ui-database)).
 
 ## Showcase
 

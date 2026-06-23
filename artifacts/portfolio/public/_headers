@@ -2,4 +2,4 @@
   Content-Type: application/linkset+json
 
 /
-  Link: </.well-known/api-catalog>; rel="api-catalog", </sitemap.xml>; rel="sitemap"
+  Link: </.well-known/api-catalog>; rel="api-catalog", </sitemap.xml>; rel="sitemap", <https://ui.lucashdo.com/>; rel="related"; title="Lucas UI Vault"
