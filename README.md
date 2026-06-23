@@ -2,13 +2,15 @@
 
 A modular **Bento-style personal portfolio** built as a monorepo with a React/Vite frontend and Cloudflare Pages Functions for secure API integrations.
 
-> Looking for the previous version? See: [old-lucas-portfolio](https://github.com/LucasHenriqueDiniz/old-lucas-portfolio)
+🔗 **Live:** [lucashdo.com](https://lucashdo.com)
+
+> **Related:** [Lucas UI Vault](https://ui.lucashdo.com/) — a React component library with live previews and code snippets ([repo](https://github.com/LucasHenriqueDiniz/lucas-ui-database)).
 >
-> Sibling project: **Lucas UI Vault** — a React component library with live previews and code snippets, hosted at [ui.lucashdo.com](https://ui.lucashdo.com/) ([repo](https://github.com/LucasHenriqueDiniz/lucas-ui-database)).
+> **Previous version:** [old-lucas-portfolio](https://github.com/LucasHenriqueDiniz/old-lucas-portfolio).
 
 ## Showcase
 
-![Bento Portfolio showcase](./.github/assets/preview.png)
+[![Bento Portfolio showcase](./.github/assets/preview.png)](https://lucashdo.com)
 
 The interface highlights real-world data (GitHub activity, music, games, anime, workouts, weather, and professional experience) inside responsive cards with smooth motion and clean typography.
 
@@ -22,22 +24,6 @@ This project is designed to present a complete developer profile in a single int
 - **What I track**: integrations with external platforms and personal metrics.
 
 The architecture keeps secrets on the backend via Cloudflare Functions, while the frontend focuses on performance, UI consistency, and accessibility.
-
-## Suggested Repository Metadata
-
-If you want to optimize GitHub discoverability, you can use:
-
-- **Repository name (recommended):** `bento-portfolio`
-- **Current name:** `bento-portifolio`
-- **Note:** `portfolio` is the standard English spelling, so renaming improves professionalism and searchability.
-
-### Short description (GitHub "About")
-
-`Bento-style developer portfolio built with React, Vite, and Cloudflare Pages Functions, featuring real-time integrations and modular UI cards.`
-
-### Topics / tags
-
-`portfolio`, `bento-ui`, `react`, `vite`, `typescript`, `tailwindcss`, `cloudflare-pages`, `cloudflare-functions`, `frontend`, `fullstack`, `personal-website`, `web-performance`
 
 ## Tech Stack
 
