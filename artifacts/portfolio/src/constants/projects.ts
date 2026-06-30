@@ -535,8 +535,8 @@ export const projects: Project[] = [
     techStack: ["Node.js", "TypeScript", "AWS Lambda", "PostgreSQL", "API Integration"],
     highlight: "SaaS serverless para automação de chatbots multi-canal",
     highlightEn: "Serverless SaaS for multi-channel chatbot automation",
-    url: "https://platform.botschannel.com/en",
-    repoUrl: "https://github.com/BotsChannel",
+    url: "https://botschannel-showcase.pages.dev/",
+    repoUrl: "https://github.com/LucasHenriqueDiniz/botschannel",
     status: "discontinued",
     category: "software",
     role: "Desenvolvedor fullstack",
@@ -598,6 +598,243 @@ export const projects: Project[] = [
     year: "2026",
     priority: 18,
     image: "/projects/hypixel-auto-join.webp",
+  },
+  {
+    id: "funsona",
+    name: "FunSona",
+    description:
+      "• Arquitetei um monorepo com arquitetura baseada em agentes para documentação colaborativa com IA\n" +
+      "• Implementei integração com Supabase para persistência de dados e modelos de agentes\n" +
+      "• Estruturei ambiente de desenvolvimento com pnpm workspaces e suporte a múltiplos canais de deployment",
+    descriptionEn:
+      "• Architected a monorepo with agent-based architecture for AI-collaborative documentation\n" +
+      "• Implemented Supabase integration for data persistence and agent models\n" +
+      "• Structured development environment with pnpm workspaces and multi-channel deployment support",
+    techStack: ["TypeScript", "Astro", "React", "Supabase"],
+    highlight: "Plataforma colaborativa com integração de agentes de IA",
+    highlightEn: "AI agent-integrated collaborative platform",
+    url: "http://funsona.com/",
+    repoUrl: "https://github.com/LucasHenriqueDiniz/funsona",
+    featured: false,
+    status: "workInProgress",
+    category: "website",
+    role: "Desenvolvedor fullstack",
+    roleEn: "Fullstack developer",
+    type: "Plataforma colaborativa",
+    typeEn: "Collaborative platform",
+    year: "2025-2026",
+    priority: 14,
+    image: "/projects/funsona.png",
+  },
+  {
+    id: "koto-by-pingo",
+    name: "Koto By Pingo",
+    description:
+      "• Desenvolvi uma app interativa de aprendizado de japonês com 7 modos de treinamento (Hiragana, Katakana, Kanji, vocabulário)\n" +
+      "• Implementei simulados JLPT, rastreamento de progresso e interface responsiva com Framer Motion\n" +
+      "• Otimizei performance com Vite, TypeScript strict e deploy em Cloudflare Pages",
+    descriptionEn:
+      "• Built an interactive Japanese learning app with 7 training modes (Hiragana, Katakana, Kanji, vocabulary)\n" +
+      "• Implemented JLPT mock exams, progress tracking and responsive UI with Framer Motion\n" +
+      "• Optimized performance with Vite, strict TypeScript and Cloudflare Pages deployment",
+    techStack: ["React", "TypeScript", "Vite", "Tailwind CSS", "Framer Motion"],
+    highlight: "Plataforma de aprendizado de japonês com múltiplos modos de treinamento",
+    highlightEn: "Japanese learning platform with multiple training modes",
+    url: "https://koto-by-pingo.pages.dev/kana",
+    repoUrl: "https://github.com/LucasHenriqueDiniz/koto-by-pingo",
+    featured: true,
+    status: "completed",
+    category: "website",
+    role: "Desenvolvedor solo",
+    roleEn: "Solo developer",
+    type: "App educacional",
+    typeEn: "Educational app",
+    year: "2025-2026",
+    priority: 5,
+  },
+  {
+    id: "tubetrace",
+    name: "TubeTrace",
+    description:
+      "• Criei um analisador de histórico do YouTube com processamento 100% local no navegador\n" +
+      "• Implementei 8 arcétipos de personalidade de visualização, mapas de calor (horário/diário/mensal/anual) e detecção de binges\n" +
+      "• Adicionei suporte multi-idiomas (EN, PT, ES, FR, DE, IT), exportação de arquivos e modo demo com Recharts",
+    descriptionEn:
+      "• Built a YouTube watch history analyzer with 100% local browser-side processing\n" +
+      "• Implemented 8 viewing personality archetypes, heatmaps (hourly/daily/monthly/yearly) and binge detection\n" +
+      "• Added multilingual support (EN, PT, ES, FR, DE, IT), file export and demo mode with Recharts",
+    techStack: ["React", "TypeScript", "Vite", "Recharts", "Framer Motion"],
+    highlight: "Analisador de histórico do YouTube com processamento totalmente local",
+    highlightEn: "Privacy-focused YouTube history analyzer with local processing",
+    url: "https://tubetrace.pages.dev/",
+    repoUrl: "https://github.com/LucasHenriqueDiniz/tubetrace",
+    featured: true,
+    status: "completed",
+    category: "website",
+    role: "Desenvolvedor solo",
+    roleEn: "Solo developer",
+    type: "Ferramenta de análise",
+    typeEn: "Analytics tool",
+    year: "2025-2026",
+    priority: 6,
+    image: "/projects/tubetrace.png",
+    images: ["/projects/tubetrace.png", "/projects/tubetrace-2.png", "/projects/tubetrace-3.png"],
+  },
+  {
+    id: "small-web-apps",
+    name: "Small Web Apps",
+    description:
+      "• Compilei uma coleção de 136+ ferramentas gratuitas de navegador (JSON formatter, JWT decoder, ferramentas PDF, processamento de imagens, utilidades do YouTube)\n" +
+      "• Implementei arquitetura com Astro + React, processamento 100% local e interface intuitiva\n" +
+      "• Otimizei para performance, acessibilidade e SEO com Tailwind CSS e deploy em Cloudflare Pages",
+    descriptionEn:
+      "• Compiled a collection of 136+ free browser-based tools (JSON formatter, JWT decoder, PDF tools, image processing, YouTube utilities)\n" +
+      "• Implemented Astro + React architecture with 100% local processing and intuitive UI\n" +
+      "• Optimized for performance, accessibility and SEO with Tailwind CSS and Cloudflare Pages deployment",
+    techStack: ["Astro", "React", "TypeScript", "Tailwind CSS"],
+    highlight: "Coleção de ferramentas web gratuitas sem contas, uploads ou servidores",
+    highlightEn: "Free web tools collection - no accounts, uploads, or servers",
+    url: "https://smallwebapps.com/",
+    repoUrl: "https://github.com/LucasHenriqueDiniz/smallwebapps",
+    featured: true,
+    status: "completed",
+    category: "website",
+    role: "Desenvolvedor solo",
+    roleEn: "Solo developer",
+    type: "Coleção de ferramentas",
+    typeEn: "Tools collection",
+    year: "2025-2026",
+    priority: 7,
+    image: "/projects/smallwebapps.png",
+    images: ["/projects/smallwebapps.png", "/projects/smallwebapps-2.png", "/projects/smallwebapps-3.png"],
+  },
+  {
+    id: "calculebrasil",
+    name: "Calcule Brasil",
+    description:
+      "• Desenvolvi um hub de 12 calculadoras brasileiras (custos de carro, vida solo, eletricidade, IRPF, INSS autonomo, CLT vs PJ)\n" +
+      "• Estruturei 15 artigos de blog, 4 comparativos lado-a-lado, 6 páginas institucionais com otimização SEO completa\n" +
+      "• Implementei com React, TanStack Start e deploy em Cloudflare Workers com performance de edge computing",
+    descriptionEn:
+      "• Developed a hub of 12 Brazilian calculators (car costs, solo living, electricity, IRPF, autonomous INSS, CLT vs PJ)\n" +
+      "• Structured 15 blog articles, 4 side-by-side comparisons, 6 institutional pages with complete SEO optimization\n" +
+      "• Implemented with React, TanStack Start and Cloudflare Workers deployment with edge computing performance",
+    techStack: ["React", "TypeScript", "TanStack Start", "Cloudflare Workers"],
+    highlight: "12 calculadoras interativas para decisões financeiras no Brasil",
+    highlightEn: "12 interactive calculators for financial decisions in Brazil",
+    url: "https://calculebrasil.com/",
+    repoUrl: "https://github.com/LucasHenriqueDiniz/calculadoras-brasil",
+    featured: true,
+    status: "completed",
+    category: "website",
+    role: "Desenvolvedor fullstack",
+    roleEn: "Fullstack developer",
+    type: "Calculadora financeira",
+    typeEn: "Financial calculator",
+    year: "2025-2026",
+    priority: 8,
+    image: "/projects/calculebrasil.png",
+    images: ["/projects/calculebrasil.png", "/projects/calculebrasil-2.png"],
+  },
+  {
+    id: "adsense-site-auditor",
+    name: "AdSense Site Auditor",
+    description:
+      "• Criei um Skill do Claude Code que avalia sites contra critérios de elegibilidade do Google AdSense\n" +
+      "• Implementei 73 verificações de requisitos da documentação oficial, crawling de sites com controle de profundidade e validação SEO técnica\n" +
+      "• Adicionei 6 modos de auditoria (pré-aplicação, pós-rejeição, verificação, análise de repo, geração de tarefas, health checks)",
+    descriptionEn:
+      "• Created a Claude Code skill that evaluates websites against Google AdSense eligibility criteria\n" +
+      "• Implemented 73 requirement checks from official documentation, site crawling with depth control and technical SEO validation\n" +
+      "• Added 6 audit modes (pre-application, post-rejection, verification, repo analysis, task generation, health checks)",
+    techStack: ["Python", "Claude Code", "Web Scraping"],
+    highlight: "Auditor de elegibilidade do AdSense alimentado por Claude",
+    highlightEn: "Claude-powered AdSense eligibility auditor",
+    repoUrl: "https://github.com/LucasHenriqueDiniz/adsense-site-auditor",
+    status: "completed",
+    category: "software",
+    role: "Desenvolvedor solo",
+    roleEn: "Solo developer",
+    type: "Ferramenta de auditoria",
+    typeEn: "Auditing tool",
+    year: "2025-2026",
+    priority: 10,
+  },
+  {
+    id: "arca",
+    name: "Arca",
+    description:
+      "• Plataforma web moderna construída com foco em experiência do usuário e performance\n" +
+      "• Implementei com React, TypeScript e deploy em Cloudflare Pages\n" +
+      "• Arquitetura escalável e componentes reutilizáveis",
+    descriptionEn:
+      "• Modern web platform built with focus on user experience and performance\n" +
+      "• Implemented with React, TypeScript and Cloudflare Pages deployment\n" +
+      "• Scalable architecture and reusable components",
+    techStack: ["React", "TypeScript", "Cloudflare Pages"],
+    highlight: "Aplicação web moderna com arquitetura escalável",
+    highlightEn: "Modern web application with scalable architecture",
+    url: "https://arca-web.pages.dev/",
+    repoUrl: "https://github.com/LucasHenriqueDiniz/arca",
+    status: "completed",
+    category: "website",
+    role: "Desenvolvedor fullstack",
+    roleEn: "Fullstack developer",
+    type: "Aplicação web",
+    typeEn: "Web application",
+    year: "2025",
+    priority: 11,
+    image: "/projects/arca.png",
+    images: ["/projects/arca.png", "/projects/arca-2.png", "/projects/arca-3.png"],
+  },
+  {
+    id: "gocronometer-mcp",
+    name: "Cronometer MCP",
+    description:
+      "• Construí um servidor MCP (Model Context Protocol) local para automação do Cronometer e integração com assistentes de IA\n" +
+      "• Implementei rastreamento de nutrição, cálculo de macros, registro de peso e dados de exercícios\n" +
+      "• Estruturei com Go e protocolo stdio MCP para comunicação com Claude e outros assistentes",
+    descriptionEn:
+      "• Built a local MCP (Model Context Protocol) server for Cronometer automation and AI assistant integration\n" +
+      "• Implemented nutrition tracking, macro calculation, weight logging and exercise data management\n" +
+      "• Structured with Go and stdio MCP protocol for communication with Claude and other AI assistants",
+    techStack: ["Go", "MCP", "CLI"],
+    highlight: "Servidor MCP para automação de nutrição com assistentes de IA",
+    highlightEn: "MCP server for nutrition automation with AI assistants",
+    repoUrl: "https://github.com/LucasHenriqueDiniz/gocronometer-mcp",
+    status: "completed",
+    category: "software",
+    role: "Desenvolvedor solo",
+    roleEn: "Solo developer",
+    type: "Ferramenta de CLI",
+    typeEn: "CLI Tool",
+    year: "2025-2026",
+    priority: 12,
+    image: "/projects/gocronometer-mcp.png",
+  },
+  {
+    id: "simple-extension-boilerplate",
+    name: "Simple Extension Boilerplate",
+    description:
+      "• Criei um template streamlined para Chrome extensions com Manifest V3, Vite, React 19 e TypeScript\n" +
+      "• Implementei registro de funcionalidades, internacionalização (EN/PT), página de changelog e build unificado\n" +
+      "• Adicionei ferramenta CLI para scaffolding rápido de novas extensões com 735 commits de desenvolvimento",
+    descriptionEn:
+      "• Created a streamlined Chrome extension template with Manifest V3, Vite, React 19 and TypeScript\n" +
+      "• Implemented feature registry, internationalization (EN/PT), changelog page and unified build process\n" +
+      "• Added CLI scaffolding tool for rapid extension generation with 735 commits of development",
+    techStack: ["Vite", "React", "TypeScript", "Manifest V3", "Tailwind CSS"],
+    highlight: "Boilerplate moderno para Chrome extensions com Vite e React",
+    highlightEn: "Modern Chrome extension boilerplate with Vite and React",
+    repoUrl: "https://github.com/LucasHenriqueDiniz/simple-extension-boilerplate",
+    status: "completed",
+    category: "extension",
+    role: "Desenvolvedor solo",
+    roleEn: "Solo developer",
+    type: "Template de extensão",
+    typeEn: "Extension template",
+    year: "2025-2026",
+    priority: 13,
   },
 ];
 
