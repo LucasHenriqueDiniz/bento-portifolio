@@ -37,6 +37,19 @@ export interface TimelineAcademicExperience {
  */
 export const timelineJobExperiences: TimelineJobExperience[] = [
   {
+    id: "policia-federal-it",
+    position: "Estagiário de Tecnologia da Informação",
+    company: "Polícia Federal",
+    location: "Brasília, Brasil",
+    type: "Internship",
+    startDate: "2026-05",
+    endDate: null,
+    description:
+      "Apoio na automatização de processos antigos e manuais, reduzindo retrabalho em rotinas internas de TI. Auxílio no mapeamento, documentação e melhoria de fluxos operacionais de tecnologia em ambiente institucional.",
+    technologies: ["IT Support", "Troubleshooting", "Documentation", "Systems"],
+    logo: "/timeline/policia-federal.png",
+  },
+  {
     id: "eng-futuro",
     position: "Desenvolvedor Full Stack",
     company: "Engenharia do Futuro",
