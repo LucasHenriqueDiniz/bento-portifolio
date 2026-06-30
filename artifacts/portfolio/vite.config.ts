@@ -26,6 +26,20 @@ export default defineConfig({
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        // Split large, stable vendors into their own long-cacheable chunks so
+        // the main entry chunk stays small and cheap to parse on the main thread.
+        manualChunks(id) {
+          if (!id.includes("node_modules")) return;
+          if (/[\\/]node_modules[\\/](react|react-dom|scheduler)[\\/]/.test(id)) return "react";
+          if (/[\\/]node_modules[\\/](framer-motion|motion)[\\/]/.test(id)) return "motion";
+          if (/[\\/]node_modules[\\/](i18next|react-i18next|i18next-browser-languagedetector)[\\/]/.test(id)) return "i18n";
+          if (/[\\/]node_modules[\\/]@tanstack[\\/]/.test(id)) return "query";
+          if (/[\\/]node_modules[\\/](react-icons|lucide-react)[\\/]/.test(id)) return "icons";
+        },
+      },
+    },
   },
   server: {
     port,

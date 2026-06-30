@@ -12,6 +12,7 @@ node_modules/
 
 # Build Output
 dist/
+.wrangler/
 tmp/
 out-tsc/
 *.tsbuildinfo

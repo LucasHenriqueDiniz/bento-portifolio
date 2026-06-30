@@ -1,0 +1,46 @@
+{
+  "linkset": [
+    {
+      "anchor": "https://lucashdo.com/api/portfolio/now-playing",
+      "service-doc": [{ "href": "https://github.com/LucasHenriqueDiniz/bento-portifolio#public-api" }],
+      "status": [{ "href": "https://lucashdo.com/api/portfolio/now-playing" }],
+      "title": "Currently playing track (Last.fm, read-only, no auth)"
+    },
+    {
+      "anchor": "https://lucashdo.com/api/portfolio/top-artists",
+      "service-doc": [{ "href": "https://github.com/LucasHenriqueDiniz/bento-portifolio#public-api" }],
+      "status": [{ "href": "https://lucashdo.com/api/portfolio/top-artists" }],
+      "title": "Top artists, 3-month window (Last.fm, read-only, no auth)"
+    },
+    {
+      "anchor": "https://lucashdo.com/api/portfolio/top-tracks",
+      "service-doc": [{ "href": "https://github.com/LucasHenriqueDiniz/bento-portifolio#public-api" }],
+      "status": [{ "href": "https://lucashdo.com/api/portfolio/top-tracks" }],
+      "title": "Top tracks, 3-month window (Last.fm, read-only, no auth)"
+    },
+    {
+      "anchor": "https://lucashdo.com/api/portfolio/steam",
+      "service-doc": [{ "href": "https://github.com/LucasHenriqueDiniz/bento-portifolio#public-api" }],
+      "status": [{ "href": "https://lucashdo.com/api/portfolio/steam" }],
+      "title": "Steam profile and recently played games (read-only, no auth)"
+    },
+    {
+      "anchor": "https://lucashdo.com/api/portfolio/workout",
+      "service-doc": [{ "href": "https://github.com/LucasHenriqueDiniz/bento-portifolio#public-api" }],
+      "status": [{ "href": "https://lucashdo.com/api/portfolio/workout" }],
+      "title": "Most recent workout and weekly stats (read-only, no auth)"
+    },
+    {
+      "anchor": "https://lucashdo.com/api/portfolio/stats",
+      "service-doc": [{ "href": "https://github.com/LucasHenriqueDiniz/bento-portifolio#public-api" }],
+      "status": [{ "href": "https://lucashdo.com/api/portfolio/stats" }],
+      "title": "GitHub contribution and language stats (read-only, no auth)"
+    },
+    {
+      "anchor": "https://lucashdo.com/api/portfolio/mal",
+      "service-doc": [{ "href": "https://github.com/LucasHenriqueDiniz/bento-portifolio#public-api" }],
+      "status": [{ "href": "https://lucashdo.com/api/portfolio/mal" }],
+      "title": "MyAnimeList stats and favorites (read-only, no auth)"
+    }
+  ]
+}

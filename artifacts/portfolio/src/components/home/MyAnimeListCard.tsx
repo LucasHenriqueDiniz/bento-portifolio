@@ -6,7 +6,7 @@ import { WidgetCard } from "@/components/WidgetCard";
 import { PortalTooltip } from "@/components/PortalTooltip";
 import CountUp from "@/components/CountUp";
 import { useFlipLock } from "@/hooks/useFlipLock";
-import { getMalDetails } from "@/lib/apiClient";
+import { getMalDetails, type MalDetail } from "@/lib/apiClient";
 
 interface ApiFavorite {
   malId: number;
@@ -126,7 +126,7 @@ function CoverCard({
   backItem?: ApiFavorite;
   flipped: boolean;
   onFlip: () => void;
-  detailItem?: ApiFavorite;
+  detailItem?: MalDetail;
   detailLoading: boolean;
   onHoverDetail: () => void;
 }) {
@@ -205,8 +205,8 @@ export const MyAnimeListCard = React.memo(function MyAnimeListCard({
   const { runWithFlipLock } = useFlipLock(700);
 
   // Detail states
-  const [animeDetails, setAnimeDetails] = useState<Record<number, ApiFavorite>>({});
-  const [mangaDetails, setMangaDetails] = useState<Record<number, ApiFavorite>>({});
+  const [animeDetails, setAnimeDetails] = useState<Record<number, MalDetail>>({});
+  const [mangaDetails, setMangaDetails] = useState<Record<number, MalDetail>>({});
   const [animeDetailsLoading, setAnimeDetailsLoading] = useState(false);
   const [mangaDetailsLoading, setMangaDetailsLoading] = useState(false);
   const [animeDetailsFailed, setAnimeDetailsFailed] = useState(false);

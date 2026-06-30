@@ -163,8 +163,16 @@ export const getStats = (options?: RequestInit) =>
 export const getMalData = (options?: RequestInit) =>
   fetchJson<MalData>("/api/portfolio/mal", options);
 
+export interface MalDetail {
+  score: number | null;
+  synopsis: string | null;
+  type: string | null;
+  episodes: number | null;
+  chapters: number | null;
+}
+
 export const getMalDetails = (type: "anime" | "manga", ids: number[], options?: RequestInit) =>
-  fetchJson<Record<number, { score: number | null; synopsis: string | null; type: string | null; episodes: number | null; chapters: number | null }>>(
+  fetchJson<Record<number, MalDetail>>(
     `/api/portfolio/mal/details?type=${type}&ids=${ids.join(",")}`,
     options
   );
