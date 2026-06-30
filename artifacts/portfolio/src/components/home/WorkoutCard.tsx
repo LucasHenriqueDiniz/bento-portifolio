@@ -161,39 +161,35 @@ export const WorkoutCard = React.memo(function WorkoutCard({
             {hasExercises ? (
               <div className="h-full overflow-y-auto custom-scrollbar pr-1 space-y-1">
                 {exercises.map((ex, i) => (
-                  <motion.div
+                  <PortalTooltip
                     key={`${ex.name}-${i}`}
-                    initial={{ opacity: 0, x: -6 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.08 + i * 0.03, duration: 0.24 }}
-                    className="h-full"
+                    content={<ExerciseTooltipContent exercise={ex} />}
+                    width={260}
+                    placement="right"
+                    offsetX={8}
                   >
-                    <PortalTooltip
-                      content={<ExerciseTooltipContent exercise={ex} />}
-                      width={260}
-                      placement="right"
-                      offsetX={8}
+                    <motion.div
+                      initial={{ opacity: 0, x: -6 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.08 + i * 0.03, duration: 0.24 }}
+                      className={`flex items-center justify-between gap-2 rounded-md px-1.5 py-1 cursor-pointer transition-colors ${
+                        isDark ? "hover:bg-white/5" : "hover:bg-panel"
+                      }`}
                     >
-                      <div
-                        className={`flex items-center justify-between gap-2 rounded-md px-1.5 py-1 cursor-pointer transition-colors ${
-                          isDark ? "hover:bg-white/5" : "hover:bg-panel"
-                        }`}
-                      >
-                        <div className="flex items-center gap-1.5 flex-1 min-w-0">
-                          <Dumbbell size={9} className="text-brand/45 shrink-0" />
-                          <p className="text-[10px] font-medium truncate text-sub">{ex.name}</p>
-                        </div>
-                        <div className="flex items-center gap-1 shrink-0">
-                          <span className={`text-[8px] font-semibold px-1.5 py-0.5 rounded-md ${isDark ? "bg-white/5 border border-white/10 text-white/65" : "bg-panel border border-base text-faint"}`}>
-                            {ex.sets}x{ex.reps}
-                          </span>
-                          <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded-md ${isDark ? "bg-brand/15 text-brand" : "bg-brand-subtle border border-brand/20 text-brand"}`}>
-                            {ex.weight}kg
-                          </span>
-                        </div>
+                      <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                        <Dumbbell size={9} className="text-brand/45 shrink-0" />
+                        <p className="text-[10px] font-medium truncate text-sub">{ex.name}</p>
                       </div>
-                    </PortalTooltip>
-                  </motion.div>
+                      <div className="flex items-center gap-1 shrink-0">
+                        <span className={`text-[8px] font-semibold px-1.5 py-0.5 rounded-md ${isDark ? "bg-white/5 border border-white/10 text-white/65" : "bg-panel border border-base text-faint"}`}>
+                          {ex.sets}x{ex.reps}
+                        </span>
+                        <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded-md ${isDark ? "bg-brand/15 text-brand" : "bg-brand-subtle border border-brand/20 text-brand"}`}>
+                          {ex.weight}kg
+                        </span>
+                      </div>
+                    </motion.div>
+                  </PortalTooltip>
                 ))}
               </div>
             ) : (

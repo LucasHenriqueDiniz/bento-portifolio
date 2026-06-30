@@ -66,11 +66,11 @@ const socialIcons: Record<string, React.ReactNode> = {
 };
 
 const socialGradients: Record<string, { from: string; to: string; glow: string }> = {
-  Instagram: { from: "#E4405F", to: "#FD1D1D", glow: "rgb(228, 64, 95)" },
-  Discord: { from: "#5865F2", to: "#7289DA", glow: "rgb(88, 101, 242)" },
-  GitHub: { from: "#333333", to: "#1F6FEB", glow: "rgb(31, 111, 235)" },
-  LinkedIn: { from: "#0A66C2", to: "#0077B5", glow: "rgb(10, 102, 194)" },
-  Email: { from: "#EA4335", to: "#F44336", glow: "rgb(234, 67, 53)" },
+  Instagram: { from: "#E4405F", to: "#FD1D1D", glow: "228, 64, 95" },
+  Discord: { from: "#5865F2", to: "#7289DA", glow: "88, 101, 242" },
+  GitHub: { from: "#333333", to: "#1F6FEB", glow: "31, 111, 235" },
+  LinkedIn: { from: "#0A66C2", to: "#0077B5", glow: "10, 102, 194" },
+  Email: { from: "#EA4335", to: "#F44336", glow: "234, 67, 53" },
 };
 
 function SocialCard({ contact, isDark }: { contact: typeof contacts[number]; isDark: boolean }) {
