@@ -1,5 +1,6 @@
 export interface NowPlaying {
   isPlaying: boolean;
+  timestamp: number | null;
   track: string | null;
   artist: string | null;
   album: string | null;
@@ -34,6 +35,7 @@ export interface WorkoutExercise {
   sets: number;
   reps: number;
   weight: number;
+  exercise_image?: string | null;
 }
 
 export interface WeeklyWorkoutStats {

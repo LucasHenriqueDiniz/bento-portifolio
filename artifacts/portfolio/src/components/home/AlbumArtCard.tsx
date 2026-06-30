@@ -12,15 +12,33 @@ import { fadeUpSoft } from "@/lib/animations";
  * @property {string} [nowPlaying.albumArt] - Album art URL
  * @property {string} [nowPlaying.track] - Track name
  * @property {string} [nowPlaying.artist] - Artist name
+ * @property {boolean} [nowPlaying.isPlaying] - Whether currently playing
+ * @property {number} [nowPlaying.timestamp] - Unix timestamp when track was scrobbled
  * @property {boolean} isLoading - Loading state
  * @property {boolean} isDark - Dark mode flag
  */
 interface AlbumArtCardProps {
   nowPlaying:
-    | { albumArt?: string; track?: string; artist?: string }
+    | { albumArt?: string; track?: string; artist?: string; isPlaying?: boolean; timestamp?: number | null }
     | undefined;
   isLoading: boolean;
   isDark: boolean;
+}
+
+function formatTimeAgo(timestamp: number | null | undefined): string | null {
+  if (!timestamp) return null;
+  const now = Date.now();
+  const diff = now - timestamp;
+  const seconds = Math.floor(diff / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+
+  if (seconds < 60) return "agora";
+  if (minutes < 60) return `há ${minutes}m`;
+  if (hours < 24) return `há ${hours}h`;
+  if (days < 7) return `há ${days}d`;
+  return null;
 }
 
 /**
@@ -67,9 +85,14 @@ export const AlbumArtCard = memo(function AlbumArtCard({
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
           <div className="absolute bottom-3 left-3 right-3">
-            <p className="text-white/70 text-[9px] uppercase tracking-widest font-semibold mb-0.5">
-              {t("album.listening")}
-            </p>
+            <div className="flex items-center gap-1 mb-0.5">
+              {nowPlaying.isPlaying && (
+                <div className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse" />
+              )}
+              <p className="text-white/70 text-[9px] uppercase tracking-widest font-semibold">
+                {nowPlaying.isPlaying ? t("album.listening") : formatTimeAgo(nowPlaying.timestamp) ? `${t("album.listening")} ${formatTimeAgo(nowPlaying.timestamp)}` : t("album.listening")}
+              </p>
+            </div>
             <p className="text-white text-[13px] font-bold leading-tight truncate">
               {nowPlaying.track}
             </p>

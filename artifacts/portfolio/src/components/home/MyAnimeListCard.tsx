@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { SiMyanimelist } from "react-icons/si";
-import { Star } from "lucide-react";
+import { Star, AlertCircle, RefreshCw } from "lucide-react";
 import { WidgetCard } from "@/components/WidgetCard";
 import { PortalTooltip } from "@/components/PortalTooltip";
 import CountUp from "@/components/CountUp";
@@ -283,7 +283,7 @@ export const MyAnimeListCard = React.memo(function MyAnimeListCard({
     if (animeDetailsFailed && !animeDetailsLoading) {
       const item = animeFav[index];
       if (!item) return;
-      
+
       setAnimeDetailsLoading(true);
       setAnimeDetailsFailed(false);
       getMalDetails("anime", [item.malId])
@@ -299,7 +299,7 @@ export const MyAnimeListCard = React.memo(function MyAnimeListCard({
     if (mangaDetailsFailed && !mangaDetailsLoading) {
       const item = mangaFav[index];
       if (!item) return;
-      
+
       setMangaDetailsLoading(true);
       setMangaDetailsFailed(false);
       getMalDetails("manga", [item.malId])
@@ -310,6 +310,37 @@ export const MyAnimeListCard = React.memo(function MyAnimeListCard({
         .finally(() => setMangaDetailsLoading(false));
     }
   }, [mangaDetailsFailed, mangaDetailsLoading, mangaFav]);
+
+  // Full retry functions
+  const handleAnimeFullRetry = useCallback(() => {
+    if (!animeDetailsLoading) {
+      setAnimeDetails({});
+      setAnimeDetailsLoading(true);
+      setAnimeDetailsFailed(false);
+      const ids = animeFav.map((a) => a.malId);
+      getMalDetails("anime", ids)
+        .then((details) => {
+          setAnimeDetails(details);
+        })
+        .catch(() => setAnimeDetailsFailed(true))
+        .finally(() => setAnimeDetailsLoading(false));
+    }
+  }, [animeDetailsLoading, animeFav]);
+
+  const handleMangaFullRetry = useCallback(() => {
+    if (!mangaDetailsLoading) {
+      setMangaDetails({});
+      setMangaDetailsLoading(true);
+      setMangaDetailsFailed(false);
+      const ids = mangaFav.map((m) => m.malId);
+      getMalDetails("manga", ids)
+        .then((details) => {
+          setMangaDetails(details);
+        })
+        .catch(() => setMangaDetailsFailed(true))
+        .finally(() => setMangaDetailsLoading(false));
+    }
+  }, [mangaDetailsLoading, mangaFav]);
 
   // Wave flip: all 5 cards flip in sequence with 150ms delay, driven by 1 timer
   useEffect(() => {
@@ -383,6 +414,16 @@ export const MyAnimeListCard = React.memo(function MyAnimeListCard({
               <div className="inline-flex items-center gap-1.5">
                 <SiMyanimelist size={12} className="text-brand" />
                 <span className="text-[9px] font-semibold text-brand uppercase tracking-wider">{t("mal.anime")}</span>
+                {animeDetailsFailed && (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); handleAnimeFullRetry(); }}
+                    className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-red-500/10 hover:bg-red-500/20 transition-colors"
+                    title="Retry loading details"
+                  >
+                    <AlertCircle size={10} className="text-red-500" />
+                    <RefreshCw size={8} className="text-red-500 animate-spin" />
+                  </button>
+                )}
               </div>
               <button
                 onClick={(e) => { e.stopPropagation(); handleFlip(); }}
@@ -445,6 +486,16 @@ export const MyAnimeListCard = React.memo(function MyAnimeListCard({
               <div className="inline-flex items-center gap-1.5">
                 <SiMyanimelist size={12} className="text-brand" />
                 <span className="text-[9px] font-semibold text-brand uppercase tracking-wider">{t("mal.manga")}</span>
+                {mangaDetailsFailed && (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); handleMangaFullRetry(); }}
+                    className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-red-500/10 hover:bg-red-500/20 transition-colors"
+                    title="Retry loading details"
+                  >
+                    <AlertCircle size={10} className="text-red-500" />
+                    <RefreshCw size={8} className="text-red-500 animate-spin" />
+                  </button>
+                )}
               </div>
               <button
                 onClick={(e) => { e.stopPropagation(); handleFlip(); }}

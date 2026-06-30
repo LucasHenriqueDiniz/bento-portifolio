@@ -1,93 +1,106 @@
 # Bento Portfolio
 
-A modular **Bento-style personal portfolio** built as a monorepo with a React/Vite frontend and Cloudflare Pages Functions for secure API integrations.
+A Bento-style personal portfolio built with React, Vite, TypeScript, Tailwind CSS, and Cloudflare Pages Functions.
 
-> Looking for the previous version? See: [old-lucas-portfolio](https://github.com/LucasHenriqueDiniz/old-lucas-portfolio)
+The project presents professional experience, projects, skills, social links, and live integrations in a responsive card-based interface. External service credentials stay behind Cloudflare Functions; the frontend consumes only the API surface it needs.
 
-## Showcase
+> Previous version: [old-lucas-portfolio](https://github.com/LucasHenriqueDiniz/old-lucas-portfolio)
 
-![Bento Portfolio showcase](./.github/assets/preview.png)
+## Preview
 
-The interface highlights real-world data (GitHub activity, music, games, anime, workouts, weather, and professional experience) inside responsive cards with smooth motion and clean typography.
+![Bento Portfolio preview](./.github/assets/preview.png)
 
-## Project Description
+## Stack
 
-This project is designed to present a complete developer profile in a single interactive page:
-
-- **Who I am**: intro, bio, and social links.
-- **What I build**: featured projects and technical stack.
-- **What I do**: professional timeline and resume access.
-- **What I track**: integrations with external platforms and personal metrics.
-
-The architecture keeps secrets on the backend via Cloudflare Functions, while the frontend focuses on performance, UI consistency, and accessibility.
-
-## Suggested Repository Metadata
-
-If you want to optimize GitHub discoverability, you can use:
-
-- **Repository name (recommended):** `bento-portfolio`
-- **Current name:** `bento-portifolio`
-- **Note:** `portfolio` is the standard English spelling, so renaming improves professionalism and searchability.
-
-### Short description (GitHub "About")
-
-`Bento-style developer portfolio built with React, Vite, and Cloudflare Pages Functions, featuring real-time integrations and modular UI cards.`
-
-### Topics / tags
-
-`portfolio`, `bento-ui`, `react`, `vite`, `typescript`, `tailwindcss`, `cloudflare-pages`, `cloudflare-functions`, `frontend`, `fullstack`, `personal-website`, `web-performance`
-
-## Tech Stack
-
-- **Monorepo / Workspace:** pnpm workspaces
-- **Frontend:** React 19, Vite 7, Tailwind CSS 4, Wouter, TanStack Query, Framer Motion, Radix UI
+- **Workspace:** pnpm workspaces
+- **Frontend:** React 19, Vite 7, TypeScript, Tailwind CSS 4
+- **UI:** Radix UI, Framer Motion, lucide-react, shadcn-style components
+- **Data:** TanStack Query, i18next
 - **Backend:** Cloudflare Pages Functions
-- **Language:** TypeScript
 - **Deploy:** Cloudflare Pages
 
-## Getting Started
+## Features
 
-### Prerequisites
+- Responsive Bento grid for profile, projects, experience, and activity cards
+- Internationalized content with English and Portuguese locales
+- Project, resume, gallery, contact, and donation pages
+- API integrations for GitHub, Discord, Steam, Last.fm, MyAnimeList, Lyfta, weather, and contact notifications
+- Cloudflare KV-backed cache support through the `PORTFOLIO_CACHE` binding
+
+## Project Structure
+
+```txt
+artifacts/
+  portfolio/
+    functions/   # Cloudflare Pages Functions API
+    public/      # Static assets, documents, images, and locale files
+    scripts/     # Build and maintenance scripts
+    src/         # React application source
+```
+
+## Requirements
 
 - Node.js 18+
 - pnpm
 
-### Install
+## Setup
+
+Install dependencies from the repository root:
 
 ```bash
 pnpm install
 ```
 
-### Environment variables
+Create the environment files:
 
 ```bash
 cp .env.example .env
+cp artifacts/portfolio/.env.example artifacts/portfolio/.env
 ```
 
-Then fill your `.env` with your own credentials.
+Root `.env` values are used by the backend functions and third-party integrations. `artifacts/portfolio/.env` contains frontend Vite variables such as `VITE_API_URL`.
 
 ## Development
+
+Run the portfolio app:
 
 ```bash
 pnpm dev
 ```
 
-Useful alternatives:
+The root `dev` script runs the Vite app from `artifacts/portfolio`.
+
+## Scripts
+
+From the repository root:
 
 ```bash
-pnpm dev:portfolio
-pnpm dev:api
+pnpm dev
 pnpm typecheck
 pnpm build
 ```
 
-## Project Structure
+From `artifacts/portfolio`:
 
 ```bash
-artifacts/
-  portfolio/      # React + Vite app (frontend + Cloudflare functions)
+pnpm dev
+pnpm serve
+pnpm typecheck
+pnpm build
 ```
+
+## Deployment
+
+The Cloudflare Pages configuration lives in `artifacts/portfolio/wrangler.toml`.
+
+Build output is written to:
+
+```txt
+artifacts/portfolio/dist/public
+```
+
+Required production secrets should be configured in Cloudflare, not committed to this repository.
 
 ## License
 
-For now, this project is private/personal use unless a LICENSE file is added.
+MIT

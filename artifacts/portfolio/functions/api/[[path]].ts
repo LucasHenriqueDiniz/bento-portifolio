@@ -165,13 +165,14 @@ export const onRequest: PagesFunction<Env> = async (context) => {
         const data = track
           ? {
               isPlaying: track["@attr"]?.nowplaying === "true",
+              timestamp: track.date?.uts ? Number(track.date.uts) * 1000 : null,
               track: track.name ?? null,
               artist: track.artist?.["#text"] ?? track.artist ?? null,
               album: track.album?.["#text"] ?? track.album ?? null,
               albumArt,
               trackUrl: track.url ?? null,
             }
-          : { isPlaying: false, track: null, artist: null, album: null, albumArt: null, trackUrl: null };
+          : { isPlaying: false, timestamp: null, track: null, artist: null, album: null, albumArt: null, trackUrl: null };
         return json(data, 30);
       });
     }
@@ -268,9 +269,9 @@ export const onRequest: PagesFunction<Env> = async (context) => {
             duration: 60,
             totalVolume: 8000,
             exercises: [
-              { name: "Bench Press", sets: 4, reps: 8, weight: 100 },
-              { name: "Incline Press", sets: 3, reps: 10, weight: 36 },
-              { name: "Overhead Press", sets: 4, reps: 8, weight: 70 },
+              { name: "Bench Press", sets: 4, reps: 8, weight: 100, exercise_image: "" },
+              { name: "Incline Press", sets: 3, reps: 10, weight: 36, exercise_image: "" },
+              { name: "Overhead Press", sets: 4, reps: 8, weight: 70, exercise_image: "" },
             ],
             weeklyStats: { workoutsThisWeek: 3, totalVolumeThisWeek: 25000, avgDuration: 60, streak: 5 },
           }, 180);
@@ -288,9 +289,39 @@ export const onRequest: PagesFunction<Env> = async (context) => {
           const sets = setsArr.length || Number(ex.sets_count ?? 3);
           const weight = setsArr.length ? Math.max(...setsArr.map((s: any) => Number(s.weight ?? 0))) : Number(ex.weight ?? 0);
           const reps = setsArr.length ? Math.max(...setsArr.map((s: any) => Number(s.reps ?? 0))) : Number(ex.reps ?? 10);
-          return { name: ex.excercise_name ?? ex.exercise_name ?? ex.name ?? "Exercise", sets, reps, weight };
+          return {
+            name: ex.excercise_name ?? ex.exercise_name ?? ex.name ?? "Exercise",
+            sets,
+            reps,
+            weight,
+            exercise_image: ex.exercise_image ?? "",
+          };
         });
         const calcVolume = exercises.reduce((acc: number, ex: any) => acc + ex.sets * ex.reps * ex.weight, 0);
+
+        // Calculate week boundaries (Monday to Sunday of current week)
+        const now = new Date();
+        const dayOfWeek = now.getDay();
+        const firstDay = new Date(now);
+        firstDay.setDate(now.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1)); // Monday
+        firstDay.setHours(0, 0, 0, 0);
+
+        const lastDay = new Date(firstDay);
+        lastDay.setDate(firstDay.getDate() + 6); // Sunday
+        lastDay.setHours(23, 59, 59, 999);
+
+        // Filter workouts from this week
+        const weekWorkouts = workouts.filter((wo) => {
+          const woDate = new Date(wo.workout_perform_date ?? 0);
+          return woDate >= firstDay && woDate <= lastDay;
+        });
+
+        const weekWorkoutCount = weekWorkouts.length;
+        const weekTotalVolume = weekWorkouts.reduce((a: number, wo: any) => a + Number(wo.total_volume ?? wo.totalLiftedWeight ?? 0), 0);
+        const weekAvgDuration = weekWorkoutCount > 0
+          ? Math.round(weekWorkouts.reduce((a: number, wo: any) => a + Number(wo.duration ?? 0), 0) / weekWorkoutCount)
+          : 0;
+
         return json({
           date: (w.workout_perform_date ?? new Date().toISOString()).split(/[T ]/)[0],
           type: w.title ?? "Workout",
@@ -298,9 +329,9 @@ export const onRequest: PagesFunction<Env> = async (context) => {
           totalVolume: Number(w.total_volume ?? w.totalLiftedWeight ?? calcVolume),
           exercises,
           weeklyStats: {
-            workoutsThisWeek: workouts.length,
-            totalVolumeThisWeek: workouts.reduce((a: number, wo: any) => a + Number(wo.total_volume ?? wo.totalLiftedWeight ?? 0), 0),
-            avgDuration: Math.round(workouts.reduce((a: number, wo: any) => a + Number(wo.duration ?? 0), 0) / workouts.length),
+            workoutsThisWeek: weekWorkoutCount,
+            totalVolumeThisWeek: weekTotalVolume,
+            avgDuration: weekAvgDuration,
             streak: 0,
           },
         }, 300);

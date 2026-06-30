@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { Dumbbell, TrendingUp } from "lucide-react";
 import { WidgetCard } from "@/components/WidgetCard";
+import { PortalTooltip } from "@/components/PortalTooltip";
 import CountUp from "@/components/CountUp";
 
 /**
@@ -12,12 +13,14 @@ import CountUp from "@/components/CountUp";
  * @property {number} sets - Number of sets
  * @property {number} reps - Number of reps per set
  * @property {number} weight - Weight in kg
+ * @property {string} [exercise_image] - URL to exercise image
  */
 interface Exercise {
   name: string;
   sets: number;
   reps: number;
   weight: number;
+  exercise_image?: string | null;
 }
 
 /**
@@ -53,6 +56,38 @@ interface WorkoutCardProps {
   workout: WorkoutData | undefined;
   isLoading: boolean;
   isDark: boolean;
+}
+
+function ExerciseTooltipContent({ exercise }: { exercise: Exercise }) {
+  const volume = exercise.sets * exercise.reps * exercise.weight;
+  return (
+    <div className="space-y-2">
+      {exercise.exercise_image && (
+        <img
+          src={exercise.exercise_image}
+          alt={exercise.name}
+          className="w-full h-24 rounded-lg object-cover bg-field/50"
+          onError={(e) => {
+            (e.target as HTMLImageElement).style.display = "none";
+          }}
+        />
+      )}
+      <div>
+        <p className="text-[12px] font-bold text-main leading-tight">
+          {exercise.name}
+        </p>
+        <p className="text-[11px] text-faint mt-1">
+          {exercise.sets}x{exercise.reps} @ {exercise.weight}kg
+        </p>
+      </div>
+      <div className="border-t border-base pt-2">
+        <div className="flex justify-between items-center">
+          <span className="text-[10px] text-faint">Volume total</span>
+          <span className="text-[12px] font-bold text-brand">{volume.toLocaleString()}kg</span>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 /**
@@ -131,20 +166,33 @@ export const WorkoutCard = React.memo(function WorkoutCard({
                     initial={{ opacity: 0, x: -6 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.08 + i * 0.03, duration: 0.24 }}
-                    className={`flex items-center justify-between gap-2 rounded-md px-1.5 py-1 ${isDark ? "hover:bg-white/5" : "hover:bg-panel"}`}
+                    className="h-full"
                   >
-                    <div className="flex items-center gap-1.5 flex-1 min-w-0">
-                      <Dumbbell size={9} className="text-brand/45 shrink-0" />
-                      <p className="text-[10px] font-medium truncate text-sub">{ex.name}</p>
-                    </div>
-                    <div className="flex items-center gap-1 shrink-0">
-                      <span className={`text-[8px] font-semibold px-1.5 py-0.5 rounded-md ${isDark ? "bg-white/5 border border-white/10 text-white/65" : "bg-panel border border-base text-faint"}`}>
-                        {ex.sets}x{ex.reps}
-                      </span>
-                      <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded-md ${isDark ? "bg-brand/15 text-brand" : "bg-brand-subtle border border-brand/20 text-brand"}`}>
-                        {ex.weight}kg
-                      </span>
-                    </div>
+                    <PortalTooltip
+                      content={<ExerciseTooltipContent exercise={ex} />}
+                      width={260}
+                      placement="right"
+                      offsetX={8}
+                    >
+                      <div
+                        className={`flex items-center justify-between gap-2 rounded-md px-1.5 py-1 cursor-pointer transition-colors ${
+                          isDark ? "hover:bg-white/5" : "hover:bg-panel"
+                        }`}
+                      >
+                        <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                          <Dumbbell size={9} className="text-brand/45 shrink-0" />
+                          <p className="text-[10px] font-medium truncate text-sub">{ex.name}</p>
+                        </div>
+                        <div className="flex items-center gap-1 shrink-0">
+                          <span className={`text-[8px] font-semibold px-1.5 py-0.5 rounded-md ${isDark ? "bg-white/5 border border-white/10 text-white/65" : "bg-panel border border-base text-faint"}`}>
+                            {ex.sets}x{ex.reps}
+                          </span>
+                          <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded-md ${isDark ? "bg-brand/15 text-brand" : "bg-brand-subtle border border-brand/20 text-brand"}`}>
+                            {ex.weight}kg
+                          </span>
+                        </div>
+                      </div>
+                    </PortalTooltip>
                   </motion.div>
                 ))}
               </div>
