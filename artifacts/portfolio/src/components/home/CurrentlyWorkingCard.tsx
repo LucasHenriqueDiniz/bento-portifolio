@@ -1,9 +1,10 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { SiExpo, SiSupabase, SiTypescript } from "react-icons/si";
+import { SiExpo, SiSupabase, SiTypescript, SiCloudflare } from "react-icons/si";
 import { FaReact } from "react-icons/fa";
 import { WidgetCard } from "@/components/WidgetCard";
 import { CardHeader } from "@/components/CardHeader";
+import { ExternalLink } from "lucide-react";
 
 interface CurrentlyWorkingCardProps {
   isDark?: boolean;
@@ -15,7 +16,8 @@ export const CurrentlyWorkingCard = React.memo(function CurrentlyWorkingCard({
   const { t } = useTranslation("home");
 
   const project = {
-    name: "Pingo Concursos",
+    name: "Koto By Pingo",
+    url: "https://koto-by-pingo.pages.dev/kana",
     subtitle: t("currentlyWorking.subtitle", "Plataforma mobile educacional para concursos públicos"),
     focus: [
       t("currentlyWorking.focus1", "Offline-first com sync em tempo real"),
@@ -31,6 +33,7 @@ export const CurrentlyWorkingCard = React.memo(function CurrentlyWorkingCard({
       { name: "Supabase", icon: <SiSupabase size={10} />, color: "#3ecf8e" },
       { name: "TypeScript", icon: <SiTypescript size={10} />, color: "#3178c6" },
       { name: "Expo", icon: <SiExpo size={10} />, color: "#e8e8e8" },
+      { name: "Cloudflare", icon: <SiCloudflare size={10} />, color: "#f6821f" },
     ],
     progress: 40,
   };
@@ -60,9 +63,22 @@ export const CurrentlyWorkingCard = React.memo(function CurrentlyWorkingCard({
 
         <div className="flex-1 flex flex-col justify-between mt-1.5 min-h-0 overflow-hidden gap-2">
           <div>
-            <h3 className="text-[14px] font-bold leading-tight tracking-tight mb-0.5 text-main">
-              {project.name}
-            </h3>
+            <div className="flex items-start justify-between gap-2 mb-0.5">
+              <h3 className="text-[14px] font-bold leading-tight tracking-tight text-main flex-1">
+                {project.name}
+              </h3>
+              {project.url && (
+                <a
+                  href={project.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="shrink-0 text-brand hover:text-brand/80 transition-colors"
+                  title="Visit project"
+                >
+                  <ExternalLink size={12} />
+                </a>
+              )}
+            </div>
             <p className="text-[10px] leading-snug mb-1.5 text-sub">
               {project.subtitle}
             </p>
