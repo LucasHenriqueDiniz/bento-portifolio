@@ -624,7 +624,7 @@ export const projects: Project[] = [
     typeEn: "Collaborative platform",
     year: "2025-2026",
     priority: 14,
-    image: "/projects/funsona.png",
+    image: "/projects/funsona.webp",
   },
   {
     id: "koto-by-pingo",
@@ -677,8 +677,8 @@ export const projects: Project[] = [
     typeEn: "Analytics tool",
     year: "2025-2026",
     priority: 6,
-    image: "/projects/tubetrace.png",
-    images: ["/projects/tubetrace.png", "/projects/tubetrace-2.png", "/projects/tubetrace-3.png"],
+    image: "/projects/tubetrace.webp",
+    images: ["/projects/tubetrace.webp", "/projects/tubetrace-2.webp", "/projects/tubetrace-3.webp"],
   },
   {
     id: "small-web-apps",
@@ -705,8 +705,8 @@ export const projects: Project[] = [
     typeEn: "Tools collection",
     year: "2025-2026",
     priority: 7,
-    image: "/projects/smallwebapps.png",
-    images: ["/projects/smallwebapps.png", "/projects/smallwebapps-2.png", "/projects/smallwebapps-3.png"],
+    image: "/projects/smallwebapps.webp",
+    images: ["/projects/smallwebapps.webp", "/projects/smallwebapps-2.webp", "/projects/smallwebapps-3.webp"],
   },
   {
     id: "calculebrasil",
@@ -733,8 +733,8 @@ export const projects: Project[] = [
     typeEn: "Financial calculator",
     year: "2025-2026",
     priority: 8,
-    image: "/projects/calculebrasil.png",
-    images: ["/projects/calculebrasil.png", "/projects/calculebrasil-2.png"],
+    image: "/projects/calculebrasil.webp",
+    images: ["/projects/calculebrasil.webp", "/projects/calculebrasil-2.webp"],
   },
   {
     id: "adsense-site-auditor",
@@ -784,8 +784,8 @@ export const projects: Project[] = [
     typeEn: "Web application",
     year: "2025",
     priority: 11,
-    image: "/projects/arca.png",
-    images: ["/projects/arca.png", "/projects/arca-2.png", "/projects/arca-3.png"],
+    image: "/projects/arca.webp",
+    images: ["/projects/arca.webp", "/projects/arca-2.webp", "/projects/arca-3.webp"],
   },
   {
     id: "gocronometer-mcp",
@@ -810,7 +810,7 @@ export const projects: Project[] = [
     typeEn: "CLI Tool",
     year: "2025-2026",
     priority: 12,
-    image: "/projects/gocronometer-mcp.png",
+    image: "/projects/gocronometer-mcp.webp",
   },
   {
     id: "simple-extension-boilerplate",
