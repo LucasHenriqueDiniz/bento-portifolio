@@ -68,7 +68,6 @@ export const PortalTooltip: React.FC<PortalTooltipProps> = ({
     <>
       <div
         ref={triggerRef}
-        className="h-full"
         onMouseEnter={() => setShow(true)}
         onMouseLeave={() => setShow(false)}
       >

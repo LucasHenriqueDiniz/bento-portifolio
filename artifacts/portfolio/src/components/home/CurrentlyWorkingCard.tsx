@@ -30,7 +30,6 @@ export const CurrentlyWorkingCard = React.memo(function CurrentlyWorkingCard({
     ],
     tech: [
       { name: "React Native", icon: <FaReact size={10} />, color: "#61dafb" },
-      { name: "Supabase", icon: <SiSupabase size={10} />, color: "#3ecf8e" },
       { name: "TypeScript", icon: <SiTypescript size={10} />, color: "#3178c6" },
       { name: "Expo", icon: <SiExpo size={10} />, color: "#e8e8e8" },
       { name: "Cloudflare", icon: <SiCloudflare size={10} />, color: "#f6821f" },
