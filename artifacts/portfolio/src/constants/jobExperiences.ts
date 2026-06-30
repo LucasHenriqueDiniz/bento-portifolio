@@ -194,7 +194,7 @@ export const jobExperiences: JobExperience[] = [
     startDate: "2025-12",
     endDate: null,
     showInTimeline: true,
-    icon: "MessageSquare",
+    icon: "/timeline/comunicamulher.webp",
     topTags: [
       { label: "Bolsa" },
       { label: "ComunicaMulher" },
