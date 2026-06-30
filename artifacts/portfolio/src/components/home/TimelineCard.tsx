@@ -4,9 +4,9 @@ import { useTranslation } from "react-i18next";
 import { Card } from "@/components/Card";
 import { PortalTooltip } from "@/components/PortalTooltip";
 import {
-  timelineJobExperiences,
   timelineAcademicExperiences,
 } from "@/constants/timelineData";
+import { jobExperiences } from "@/constants/jobExperiences";
 import { certificates } from "@/constants/academicExperiences";
 import {
   FiBriefcase,
@@ -49,6 +49,21 @@ const formatDateRange = (
   return `${startMonth} ${startYear} — ${endMonth} ${endYear}`;
 };
 
+// Transform JobExperience to display format
+const formatJobForDisplay = (job: typeof jobExperiences[0], currentLang: string) => ({
+  id: job.id,
+  position: currentLang === "en" ? (job.titleEn || job.title) : job.title,
+  company: job.institution,
+  location: "São Paulo, Brasil", // Default location - can be extended in jobExperiences if needed
+  type: job.topTags[0]?.label as any || "Job",
+  startDate: job.startDate,
+  endDate: job.endDate,
+  description: currentLang === "en" ? (job.descriptionEn || job.description) : job.description,
+  technologies: job.tags.map(t => t.label),
+  logo: job.icon,
+  url: job.url,
+});
+
 interface TimelineCardProps {
   isDark: boolean;
 }
@@ -75,7 +90,7 @@ export const TimelineCard = React.memo(function TimelineCard({
     window.open("/resume", "_blank");
   };
 
-  const jobs = timelineJobExperiences;
+  const jobs = jobExperiences.filter(job => job.showInTimeline);
   const education = timelineAcademicExperiences;
 
   const handleWheel = (e: React.WheelEvent, ref: React.RefObject<HTMLDivElement | null>) => {
@@ -122,123 +137,126 @@ export const TimelineCard = React.memo(function TimelineCard({
 
             <div ref={scrollFrontRef} className="flex-1 min-h-0 overflow-y-auto custom-scrollbar pr-0.5 mt-2 -mx-1 px-1">
               <div className="flex flex-col gap-2">
-                {jobs.map((job, i) => (
-                  <PortalTooltip
-                    key={job.id}
-                    width={320}
-                    placement="right"
-                    offsetX={4}
-                    content={
-                      <div>
-                        <div className="flex items-start gap-3">
-                          {job.logo ? (
-                            <img
-                              src={job.logo}
-                              alt={job.company}
-                              className="w-10 h-10 rounded-lg object-cover shrink-0 bg-field border border-base"
-                            />
-                          ) : (
-                            <div className="w-10 h-10 rounded-lg bg-field flex items-center justify-center shrink-0">
-                              <FiBriefcase size={16} style={{ color: ACCENT }} />
-                            </div>
-                          )}
-                          <div className="flex-1 min-w-0">
-                            <p className="text-[14px] font-bold text-main leading-tight">
-                              {job.position}
-                            </p>
-                            <p className="text-[12px] text-faint mt-0.5">
-                              {job.company}
-                            </p>
-                            <div className="flex items-center gap-1.5 mt-1">
-                              <FiMapPin size={11} className="text-faint" />
-                              <span className="text-[11px] text-faint">{job.location}</span>
-                              <span className="text-[11px] text-faint">•</span>
-                              <span className="text-[11px] text-faint capitalize">{job.type}</span>
+                {jobs.map((jobRaw, i) => {
+                  const job = formatJobForDisplay(jobRaw, currentLang);
+                  return (
+                    <PortalTooltip
+                      key={job.id}
+                      width={320}
+                      placement="right"
+                      offsetX={4}
+                      content={
+                        <div>
+                          <div className="flex items-start gap-3">
+                            {job.logo ? (
+                              <img
+                                src={job.logo}
+                                alt={job.company}
+                                className="w-10 h-10 rounded-lg object-cover shrink-0 bg-field border border-base"
+                              />
+                            ) : (
+                              <div className="w-10 h-10 rounded-lg bg-field flex items-center justify-center shrink-0">
+                                <FiBriefcase size={16} style={{ color: ACCENT }} />
+                              </div>
+                            )}
+                            <div className="flex-1 min-w-0">
+                              <p className="text-[14px] font-bold text-main leading-tight">
+                                {job.position}
+                              </p>
+                              <p className="text-[12px] text-faint mt-0.5">
+                                {job.company}
+                              </p>
+                              <div className="flex items-center gap-1.5 mt-1">
+                                <FiMapPin size={11} className="text-faint" />
+                                <span className="text-[11px] text-faint">{job.location}</span>
+                                <span className="text-[11px] text-faint">•</span>
+                                <span className="text-[11px] text-faint capitalize">{job.type}</span>
+                              </div>
                             </div>
                           </div>
+                          {job.description && (
+                            <p className="text-[12px] text-sub leading-relaxed mt-2.5 border-t border-base pt-2 line-clamp-4">
+                              {job.description}
+                            </p>
+                          )}
+                          {job.technologies.length > 0 && (
+                            <div className="flex flex-wrap gap-1 mt-2">
+                              {job.technologies.slice(0, 6).map((tech) => (
+                                <span
+                                  key={tech}
+                                  className="text-[11px] px-2 py-0.5 rounded-md font-medium"
+                                  style={{
+                                    backgroundColor: isDark ? "rgba(255,255,255,0.06)" : "#f0f0f0",
+                                    color: isDark ? "#aaa" : "#555",
+                                  }}
+                                >
+                                  {tech}
+                                </span>
+                              ))}
+                            </div>
+                          )}
                         </div>
-                        {job.description && (
-                          <p className="text-[12px] text-sub leading-relaxed mt-2.5 border-t border-base pt-2 line-clamp-4">
-                            {job.description}
+                      }
+                    >
+                      <motion.div
+                        initial={{ opacity: 0, x: -6 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.15 + i * 0.06, duration: 0.3 }}
+                        className="flex gap-2.5 p-2 rounded-xl border border-transparent hover:border-base hover:bg-panel-hover transition-all"
+                      >
+                        <div className="shrink-0 mt-0.5">
+                          {job.logo ? (
+                            <div className="w-8 h-8 rounded-lg overflow-hidden bg-field border border-base flex items-center justify-center">
+                              <img src={job.logo} alt="" className="w-full h-full object-cover" />
+                            </div>
+                          ) : (
+                            <div className="w-8 h-8 rounded-lg bg-field flex items-center justify-center">
+                              <FiBriefcase size={14} style={{ color: ACCENT }} />
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-start justify-between gap-2">
+                            <p className="text-[11px] font-bold text-main leading-tight truncate">
+                              {job.position}
+                            </p>
+                            {job.endDate === null && (
+                              <span
+                                className="text-[7px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider shrink-0"
+                                style={{ color: ACCENT, backgroundColor: `${ACCENT}15` }}
+                              >
+                                {t("timeline.present")}
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-[10px] text-faint leading-tight mt-0.5 truncate">
+                            {job.company}
                           </p>
-                        )}
-                        {job.technologies.length > 0 && (
-                          <div className="flex flex-wrap gap-1 mt-2">
-                            {job.technologies.slice(0, 6).map((tech) => (
+                          <div className="flex items-center gap-1.5 mt-1">
+                            <FiCalendar size={8} className="text-faint" />
+                            <span className="text-[9px] text-faint">
+                              {formatDateRange(job.startDate, job.endDate, dateLocale, t("timeline.present"))}
+                            </span>
+                          </div>
+                          <div className="flex flex-wrap gap-1 mt-1.5">
+                            {job.technologies.slice(0, 3).map((tech) => (
                               <span
                                 key={tech}
-                                className="text-[11px] px-2 py-0.5 rounded-md font-medium"
+                                className="text-[9px] px-1.5 py-px rounded font-medium"
                                 style={{
-                                  backgroundColor: isDark ? "rgba(255,255,255,0.06)" : "#f0f0f0",
-                                  color: isDark ? "#aaa" : "#555",
+                                  backgroundColor: isDark ? "var(--bg-elevated)" : "var(--bg-field)",
+                                  color: isDark ? "var(--text-faint)" : "var(--text-sub)",
                                 }}
                               >
                                 {tech}
                               </span>
                             ))}
                           </div>
-                        )}
-                      </div>
-                    }
-                  >
-                    <motion.div
-                      initial={{ opacity: 0, x: -6 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.15 + i * 0.06, duration: 0.3 }}
-                      className="flex gap-2.5 p-2 rounded-xl border border-transparent hover:border-base hover:bg-panel-hover transition-all"
-                    >
-                      <div className="shrink-0 mt-0.5">
-                        {job.logo ? (
-                          <div className="w-8 h-8 rounded-lg overflow-hidden bg-field border border-base flex items-center justify-center">
-                            <img src={job.logo} alt="" className="w-full h-full object-cover" />
-                          </div>
-                        ) : (
-                          <div className="w-8 h-8 rounded-lg bg-field flex items-center justify-center">
-                            <FiBriefcase size={14} style={{ color: ACCENT }} />
-                          </div>
-                        )}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between gap-2">
-                          <p className="text-[11px] font-bold text-main leading-tight truncate">
-                            {job.position}
-                          </p>
-                          {job.endDate === null && (
-                            <span
-                              className="text-[7px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider shrink-0"
-                              style={{ color: ACCENT, backgroundColor: `${ACCENT}15` }}
-                            >
-                              {t("timeline.present")}
-                            </span>
-                          )}
                         </div>
-                        <p className="text-[10px] text-faint leading-tight mt-0.5 truncate">
-                          {job.company}
-                        </p>
-                        <div className="flex items-center gap-1.5 mt-1">
-                          <FiCalendar size={8} className="text-faint" />
-                          <span className="text-[9px] text-faint">
-                            {formatDateRange(job.startDate, job.endDate, dateLocale, t("timeline.present"))}
-                          </span>
-                        </div>
-                        <div className="flex flex-wrap gap-1 mt-1.5">
-                          {job.technologies.slice(0, 3).map((tech) => (
-                            <span
-                              key={tech}
-                              className="text-[9px] px-1.5 py-px rounded font-medium"
-                              style={{
-                                backgroundColor: isDark ? "var(--bg-elevated)" : "var(--bg-field)",
-                                color: isDark ? "var(--text-faint)" : "var(--text-sub)",
-                              }}
-                            >
-                              {tech}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    </motion.div>
-                  </PortalTooltip>
-                ))}
+                      </motion.div>
+                    </PortalTooltip>
+                  );
+                })}
               </div>
             </div>
 
