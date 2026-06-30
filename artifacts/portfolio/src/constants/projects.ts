@@ -788,6 +788,32 @@ export const projects: Project[] = [
     images: ["/projects/arca.webp", "/projects/arca-2.webp", "/projects/arca-3.webp"],
   },
   {
+    id: "argo-studios",
+    name: "Argo Studios",
+    description:
+      "• Plataforma criativa para estúdios e artistas colaborarem em projetos\n" +
+      "• Implementei interface intuitiva com ferramentas de colaboração em tempo real\n" +
+      "• Estruturei arquitetura escalável para suportar múltiplos usuários e projetos simultâneos",
+    descriptionEn:
+      "• Creative platform for studios and artists to collaborate on projects\n" +
+      "• Implemented intuitive interface with real-time collaboration tools\n" +
+      "• Structured scalable architecture to support multiple concurrent users and projects",
+    techStack: ["React", "TypeScript", "WebSockets", "Cloudflare"],
+    highlight: "Plataforma colaborativa para criadores e estúdios",
+    highlightEn: "Collaborative platform for creators and studios",
+    repoUrl: "https://github.com/LucasHenriqueDiniz/argo-studios",
+    status: "completed",
+    category: "website",
+    role: "Desenvolvedor fullstack",
+    roleEn: "Fullstack developer",
+    type: "Plataforma colaborativa",
+    typeEn: "Collaborative platform",
+    year: "2025-2026",
+    priority: 9,
+    image: "/projects/argo-studios.webp",
+    images: ["/projects/argo-studios.webp", "/projects/argo-studios-2.webp", "/projects/argo-studios-3.webp"],
+  },
+  {
     id: "gocronometer-mcp",
     name: "Cronometer MCP",
     description:
