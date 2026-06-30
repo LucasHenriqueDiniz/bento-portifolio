@@ -455,11 +455,11 @@ export const MyAnimeListCard = React.memo(function MyAnimeListCard({
 
             <div className="border-t border-base shrink-0" />
 
-            <div className="flex gap-1.5 flex-1 min-h-0">
+            <div className="flex gap-1.5 flex-1">
               {animeFront.map((item, i) => (
                 <div
                   key={item.malId}
-                  className="flex-1 h-full min-w-0"
+                  className="flex-1 min-w-0"
                   onMouseEnter={() => hoveredRef.current.add(i)}
                   onMouseLeave={() => hoveredRef.current.delete(i)}
                 >
@@ -527,11 +527,11 @@ export const MyAnimeListCard = React.memo(function MyAnimeListCard({
 
             <div className="border-t border-base shrink-0" />
 
-            <div className="flex gap-1.5 flex-1 min-h-0">
+            <div className="flex gap-1.5 flex-1">
               {mangaFront.map((item, i) => (
                 <div
                   key={item.malId}
-                  className="flex-1 h-full min-w-0"
+                  className="flex-1 min-w-0"
                   onMouseEnter={() => hoveredRef.current.add(i + 5)}
                   onMouseLeave={() => hoveredRef.current.delete(i + 5)}
                 >
