@@ -114,7 +114,7 @@ export const projects: Project[] = [
     year: "2026",
     priority: 2,
     image: "/projects/dropcut-video.webp",
-    images: ["/projects/dropcut-video.webp", "/projects/dropcut-novideo.webp", "/projects/dropcut-banner.webp"],
+    images: ["/projects/dropcut-video.webp", "/projects/dropcut-novideo.webp", "/projects/dropcut-banner.png"],
     showInDonate: true,
   },
   {
@@ -677,8 +677,8 @@ export const projects: Project[] = [
     typeEn: "Analytics tool",
     year: "2025-2026",
     priority: 6,
-    image: "/projects/tubetrace.webp",
-    images: ["/projects/tubetrace.webp", "/projects/tubetrace-2.webp", "/projects/tubetrace-3.webp"],
+    image: "/projects/tubetrace.png",
+    images: ["/projects/tubetrace.png", "/projects/tubetrace-2.png", "/projects/tubetrace-3.png"],
   },
   {
     id: "small-web-apps",
@@ -705,8 +705,8 @@ export const projects: Project[] = [
     typeEn: "Tools collection",
     year: "2025-2026",
     priority: 7,
-    image: "/projects/smallwebapps.webp",
-    images: ["/projects/smallwebapps.webp", "/projects/smallwebapps-2.webp", "/projects/smallwebapps-3.webp"],
+    image: "/projects/smallwebapps.png",
+    images: ["/projects/smallwebapps.png", "/projects/smallwebapps-2.png", "/projects/smallwebapps-3.png"],
   },
   {
     id: "calculebrasil",
@@ -810,8 +810,8 @@ export const projects: Project[] = [
     typeEn: "Collaborative platform",
     year: "2025-2026",
     priority: 9,
-    image: "/projects/argo-studios.webp",
-    images: ["/projects/argo-studios.webp", "/projects/argo-studios-2.webp", "/projects/argo-studios-3.webp"],
+    image: "/projects/argo-studios.png",
+    images: ["/projects/argo-studios.png", "/projects/argo-studios-2.webp", "/projects/argo-studios-3.webp"],
   },
   {
     id: "gocronometer-mcp",
@@ -836,7 +836,7 @@ export const projects: Project[] = [
     typeEn: "CLI Tool",
     year: "2025-2026",
     priority: 12,
-    image: "/projects/gocronometer-mcp.webp",
+    image: "/projects/gocronometer-mcp.png",
   },
   {
     id: "simple-extension-boilerplate",
