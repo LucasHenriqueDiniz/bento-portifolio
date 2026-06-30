@@ -114,7 +114,7 @@ export const projects: Project[] = [
     year: "2026",
     priority: 2,
     image: "/projects/dropcut-video.webp",
-    images: ["/projects/dropcut-video.webp", "/projects/dropcut-novideo.webp"],
+    images: ["/projects/dropcut-video.webp", "/projects/dropcut-novideo.webp", "/projects/dropcut-banner.webp"],
     showInDonate: true,
   },
   {
