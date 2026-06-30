@@ -58,36 +58,96 @@ const fadeUp = {
 
 /* ─── Individual Social Cards ─────────────────────── */
 const socialIcons: Record<string, React.ReactNode> = {
-  Instagram: <SiInstagram size={14} />,
-  Discord: <SiDiscord size={14} />,
-  GitHub: <SiGithub size={14} />,
-  LinkedIn: <Linkedin size={14} />,
-  Email: <FiMail size={14} />,
+  Instagram: <SiInstagram size={20} />,
+  Discord: <SiDiscord size={20} />,
+  GitHub: <SiGithub size={20} />,
+  LinkedIn: <Linkedin size={20} />,
+  Email: <FiMail size={20} />,
+};
+
+const socialGradients: Record<string, { from: string; to: string; glow: string }> = {
+  Instagram: { from: "#E4405F", to: "#FD1D1D", glow: "rgb(228, 64, 95)" },
+  Discord: { from: "#5865F2", to: "#7289DA", glow: "rgb(88, 101, 242)" },
+  GitHub: { from: "#333333", to: "#1F6FEB", glow: "rgb(31, 111, 235)" },
+  LinkedIn: { from: "#0A66C2", to: "#0077B5", glow: "rgb(10, 102, 194)" },
+  Email: { from: "#EA4335", to: "#F44336", glow: "rgb(234, 67, 53)" },
 };
 
 function SocialCard({ contact, isDark }: { contact: typeof contacts[number]; isDark: boolean }) {
+  const gradient = socialGradients[contact.platform];
+
   return (
     <Card
-      className={`h-full ${isDark ? "bg-white/4 border-white/8 hover:border-white/15 hover:bg-white/6" : "bg-panel-hover border-base hover:border-hover hover:bg-panel"} transition-all`}
-      glowColor="var(--accent-glow)"
+      className="h-full overflow-hidden group"
+      glowColor={gradient.glow}
+      glowIntensity={1.2}
     >
       <motion.a
         href={contact.url}
         target="_blank"
         rel="noreferrer"
-        whileHover={{ scale: 1.02, y: -2 }}
-        whileTap={{ scale: 0.98 }}
-        className="h-full flex flex-col items-center justify-center gap-1.5 cursor-pointer"
-        title={contact.label}
-        style={{
-          color: contact.color,
-        }}
+        whileHover={{ scale: 1.05, y: -4 }}
+        whileTap={{ scale: 0.95 }}
+        className="h-full flex flex-col items-center justify-center gap-2 cursor-pointer relative overflow-hidden"
+        title={contact.platform}
       >
-        <span className="text-[16px] leading-none">{socialIcons[contact.platform]}</span>
-        <span className={`text-[9px] font-bold uppercase tracking-wider text-center leading-tight ${isDark ? "text-white/70" : "text-sub"}`}>
-          {contact.label}
-        </span>
+        {/* Animated gradient background */}
+        <div
+          className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+          style={{
+            background: `linear-gradient(135deg, ${gradient.from} 0%, ${gradient.to} 100%)`,
+          }}
+        />
+
+        {/* Subtle pattern overlay */}
+        <div className="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity duration-500" style={{
+          backgroundImage: "radial-gradient(circle at 2px 2px, rgba(255,255,255,0.3) 1px, transparent 1px)",
+          backgroundSize: "20px 20px",
+        }} />
+
+        {/* Glow effect on hover */}
+        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl" style={{
+          background: `radial-gradient(circle, ${gradient.glow}40 0%, transparent 70%)`,
+        }} />
+
+        {/* Content */}
+        <div className="relative z-10 flex flex-col items-center gap-2">
+          <motion.div
+            className="text-white drop-shadow-lg"
+            whileHover={{ scale: 1.15, rotate: 5 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+          >
+            {socialIcons[contact.platform]}
+          </motion.div>
+
+          <div className="text-center">
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-white/90 drop-shadow">
+              {contact.platform}
+            </p>
+            <p className="text-[8px] text-white/70 drop-shadow mt-0.5 max-w-[90%] line-clamp-1">
+              {contact.label}
+            </p>
+          </div>
+        </div>
+
+        {/* Hover shine effect */}
+        <div
+          className="absolute inset-0 opacity-0 group-hover:opacity-60 transition-opacity duration-500 pointer-events-none"
+          style={{
+            background: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%)",
+            transform: "skewX(-20deg) translateX(-100%)",
+            animation: "none",
+          }}
+        />
       </motion.a>
+
+      <style>{`
+        @keyframes shine {
+          100% {
+            transform: skewX(-20deg) translateX(100%);
+          }
+        }
+      `}</style>
     </Card>
   );
 }
