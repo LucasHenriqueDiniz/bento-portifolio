@@ -678,7 +678,7 @@ export const projects: Project[] = [
     year: "2025-2026",
     priority: 6,
     image: "/projects/tubetrace.png",
-    images: ["/projects/tubetrace.png", "/projects/tubetrace-2.png", "/projects/tubetrace-3.png"],
+    images: ["/projects/tubetrace.png", "/projects/tubetrace2.png", "/projects/tubetrace3.png"],
   },
   {
     id: "small-web-apps",
@@ -706,7 +706,7 @@ export const projects: Project[] = [
     year: "2025-2026",
     priority: 7,
     image: "/projects/smallwebapps.png",
-    images: ["/projects/smallwebapps.png", "/projects/smallwebapps-2.png", "/projects/smallwebapps-3.png"],
+    images: ["/projects/smallwebapps.png", "/projects/smallwebapps2.png", "/projects/smallwebapps3.png"],
   },
   {
     id: "calculebrasil",
