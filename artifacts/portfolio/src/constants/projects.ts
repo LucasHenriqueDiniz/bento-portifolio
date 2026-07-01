@@ -624,7 +624,7 @@ export const projects: Project[] = [
     typeEn: "Collaborative platform",
     year: "2025-2026",
     priority: 14,
-    image: "/projects/funsona.webp",
+    
   },
   {
     id: "koto-by-pingo",
@@ -733,8 +733,8 @@ export const projects: Project[] = [
     typeEn: "Financial calculator",
     year: "2025-2026",
     priority: 8,
-    image: "/projects/calculebrasil.webp",
-    images: ["/projects/calculebrasil.webp", "/projects/calculebrasil-2.webp"],
+    image: "/projects/calculebrasil.png",
+    images: ["/projects/calculebrasil.png", "/projects/calculebrasil-2.png"],
   },
   {
     id: "adsense-site-auditor",
@@ -784,8 +784,8 @@ export const projects: Project[] = [
     typeEn: "Web application",
     year: "2025",
     priority: 11,
-    image: "/projects/arca.webp",
-    images: ["/projects/arca.webp", "/projects/arca-2.webp", "/projects/arca-3.webp"],
+    image: "/projects/arca.png",
+    images: ["/projects/arca.png", "/projects/arca-2.png", "/projects/arca-3.png"],
   },
   {
     id: "argo-studios",
@@ -811,7 +811,7 @@ export const projects: Project[] = [
     year: "2025-2026",
     priority: 9,
     image: "/projects/argo-studios.png",
-    images: ["/projects/argo-studios.png", "/projects/argo-studios-2.webp", "/projects/argo-studios-3.webp"],
+    images: ["/projects/argo-studios.png", "/projects/argo-studios-2.png", "/projects/argo-studios-3.png"],
   },
   {
     id: "gocronometer-mcp",
