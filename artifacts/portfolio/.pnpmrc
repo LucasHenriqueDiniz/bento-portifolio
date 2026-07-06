@@ -1,3 +1,4 @@
 # pnpm configuration
-# Disable build script approval requirement
-ignore-scripts = false
+# Allow build scripts
+auto-install-peers=true
+enable-modules-dir=true

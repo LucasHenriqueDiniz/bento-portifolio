@@ -163,9 +163,9 @@ function VisualResume({ isDark }: { isDark: boolean }) {
     );
   };
 
-  const getJobTitle = (job: any) => job.titleEn || job.title;
-  const getJobDescription = (job: any) => job.descriptionEn || job.description;
-  const getProjectDescription = (proj: any) => proj.descriptionEn || proj.description;
+  const getJobTitle = (job: any) => currentLang === 'en' ? (job.titleEn || job.title) : (job.title || job.titleEn);
+  const getJobDescription = (job: any) => currentLang === 'en' ? (job.descriptionEn || job.description) : (job.description || job.descriptionEn);
+  const getProjectDescription = (proj: any) => currentLang === 'en' ? (proj.descriptionEn || proj.description) : (proj.description || proj.descriptionEn);
 
   return (
     <div className="max-w-[900px] mx-auto px-6 py-8 space-y-6">
@@ -383,8 +383,8 @@ function ATSResume({ isDark = false }: { isDark?: boolean }) {
 
   const topCertificates = useMemo(() => certificates.slice(0, 4), []);
 
-  const getJobTitle = (job: any) => job.titleEn || job.title;
-  const getJobDescription = (job: any) => job.descriptionEn || job.description;
+  const getJobTitle = (job: any) => currentLang === 'en' ? (job.titleEn || job.title) : (job.title || job.titleEn);
+  const getJobDescription = (job: any) => currentLang === 'en' ? (job.descriptionEn || job.description) : (job.description || job.descriptionEn);
 
   const renderBullets = (text: string) => (
     <ul className="mt-1 space-y-0.5 list-disc pl-5">
