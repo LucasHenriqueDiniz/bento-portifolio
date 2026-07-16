@@ -91,9 +91,9 @@ function SocialCard({ contact, isDark }: { contact: typeof contacts[number]; isD
         className="h-full flex flex-col items-center justify-center gap-2 cursor-pointer relative overflow-hidden"
         title={contact.platform}
       >
-        {/* Animated gradient background */}
+        {/* Gradient background (always visible, brightens on hover) */}
         <div
-          className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+          className="absolute inset-0 opacity-90 group-hover:opacity-100 transition-opacity duration-500"
           style={{
             background: `linear-gradient(135deg, ${gradient.from} 0%, ${gradient.to} 100%)`,
           }}
@@ -124,7 +124,7 @@ function SocialCard({ contact, isDark }: { contact: typeof contacts[number]; isD
             <p className="text-[10px] font-semibold uppercase tracking-widest text-white/90 drop-shadow">
               {contact.platform}
             </p>
-            <p className="text-[8px] text-white/70 drop-shadow mt-0.5 max-w-[90%] line-clamp-1">
+            <p className="text-[8px] text-white/70 drop-shadow mt-0.5 max-w-full px-1 line-clamp-2 break-words text-center">
               {contact.label}
             </p>
           </div>

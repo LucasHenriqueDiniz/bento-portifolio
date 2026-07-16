@@ -498,11 +498,21 @@ export const onRequest: PagesFunction<Env> = async (context) => {
 
         if (payload.animeFavorites.length || payload.mangaFavorites.length) {
           lastGoodMal = payload;
+          if (env.PORTFOLIO_CACHE) {
+            await env.PORTFOLIO_CACHE.put(KV_MAL_KEY, JSON.stringify(payload), { expirationTtl: 2592000 });
+          }
         }
 
         return json(payload, 900);
       } catch {
         if (lastGoodMal) return json(lastGoodMal, 300);
+        if (env.PORTFOLIO_CACHE) {
+          const kvFallback = await env.PORTFOLIO_CACHE.get(KV_MAL_KEY, { type: "text" });
+          if (kvFallback) {
+            lastGoodMal = JSON.parse(kvFallback);
+            return json(lastGoodMal, 300);
+          }
+        }
         return json({ animeStats: { completed: 0, watching: 0, episodesWatched: 0 }, mangaStats: { completed: 0, reading: 0, chaptersRead: 0 }, animeFavorites: [], mangaFavorites: [] }, 30);
       }
     }
