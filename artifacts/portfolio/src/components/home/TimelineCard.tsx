@@ -26,7 +26,7 @@ const GREEN = "var(--status-completed)";
 
 const formatDateRange = (
   startDate: string,
-  endDate: string | null,
+  endDate: string | null | undefined,
   locale: string,
   presentLabel: string
 ): string => {
