@@ -11,7 +11,7 @@ type Env = {
   PORTFOLIO_CACHE?: KVNamespace;
 };
 
-const JIKAN_BASE = "https://api.jikan.moe/v4";
+const JIKAN_BASE = "https://jikan-edge.lucas-hdo.workers.dev/v1";
 const JIKAN_HEADERS: Record<string, string> = {
   Accept: "application/json",
   "User-Agent": "lucashdo-portfolio/1.0 (+https://lucashdo.com)",
@@ -96,24 +96,34 @@ const fetchWithTimeout = async (url: string, init: RequestInit = {}, timeoutMs =
   }
 };
 
+const rateLimitDelayMs = (res: Response, attempt: number) => {
+  const retryAfter = Number(res.headers.get("Retry-After"));
+  return Number.isFinite(retryAfter) && retryAfter > 0
+    ? Math.min(retryAfter * 1000, 10000)
+    : 1000 + attempt * 500;
+};
+
 async function fetchJikanUserResource<T>(user: string, resource: "statistics" | "favorites", retries = 2): Promise<T> {
   for (let i = 0; i <= retries; i++) {
     const res = await fetchWithTimeout(`${JIKAN_BASE}/users/${user}/${resource}`, { headers: JIKAN_HEADERS });
     if (res.status === 429 || res.status === 403) {
-      await delay(1000 + i * 500);
+      await delay(rateLimitDelayMs(res, i));
       continue;
     }
-    if (!res.ok) throw new Error(`Jikan ${resource} request failed (${res.status})`);
+    if (!res.ok) {
+      const body = (await res.json().catch(() => null)) as any;
+      throw new Error(`jikan-edge ${resource} request failed (${body?.error?.code ?? res.status})`);
+    }
     return (await res.json()) as T;
   }
-  throw new Error(`Jikan ${resource} request failed by rate limit`);
+  throw new Error(`jikan-edge ${resource} request failed by rate limit`);
 }
 
 async function fetchJikanDetails(type: "anime" | "manga", id: number, retries = 2): Promise<any> {
   for (let i = 0; i <= retries; i++) {
     const res = await fetch(`${JIKAN_BASE}/${type}/${id}`, { headers: JIKAN_HEADERS });
     if (res.status === 429 || res.status === 403) {
-      await delay(1000 + i * 500);
+      await delay(rateLimitDelayMs(res, i));
       continue;
     }
     if (!res.ok) return null;
@@ -455,9 +465,10 @@ export const onRequest: PagesFunction<Env> = async (context) => {
       const user = env.MAL_USERNAME ?? "Amayacrab";
 
       try {
+        type JikanEdgeFavorite = { malId?: number; mal_id?: number; title: string; url?: string; imageUrl?: string | null };
         const [statsJson, favsJson] = await Promise.all([
-          fetchJikanUserResource<{ data?: { anime?: { completed?: number; watching?: number; episodes_watched?: number }; manga?: { completed?: number; reading?: number; chapters_read?: number } } }>(user, "statistics"),
-          fetchJikanUserResource<{ data?: { anime?: Array<{ mal_id: number; title: string; start_year?: number | null; images?: { jpg?: { image_url?: string } } }>; manga?: Array<{ mal_id: number; title: string; start_year?: number | null; images?: { jpg?: { image_url?: string } } }> } }>(user, "favorites"),
+          fetchJikanUserResource<{ data?: { anime?: { completed?: number; watching?: number; episodesWatched?: number | null }; manga?: { completed?: number; reading?: number; chaptersRead?: number | null } } }>(user, "statistics"),
+          fetchJikanUserResource<{ data?: { anime?: JikanEdgeFavorite[]; manga?: JikanEdgeFavorite[] } }>(user, "favorites"),
         ]);
 
         const anime = statsJson.data?.anime;
@@ -466,34 +477,31 @@ export const onRequest: PagesFunction<Env> = async (context) => {
         const favManga = Array.isArray(favsJson.data?.manga) ? favsJson.data?.manga : [];
 
         // Return basic data only - details fetched separately via /mal/details
-        const toBasic = (a: any) => ({
-          malId: a.mal_id,
-          title: a.title,
-          year: a.start_year ?? null,
-          imageUrl: a.images?.jpg?.image_url ?? null,
-          url: `https://myanimelist.net/anime/${a.mal_id}`,
-        });
-        const toBasicManga = (m: any) => ({
-          malId: m.mal_id,
-          title: m.title,
-          year: m.start_year ?? null,
-          imageUrl: m.images?.jpg?.image_url ?? null,
-          url: `https://myanimelist.net/manga/${m.mal_id}`,
-        });
+        // jikan-edge favorites keep mal_id in snake_case and carry no start year
+        const toBasic = (type: "anime" | "manga") => (a: JikanEdgeFavorite) => {
+          const malId = a.malId ?? a.mal_id;
+          return {
+            malId,
+            title: a.title,
+            year: null,
+            imageUrl: a.imageUrl ?? null,
+            url: a.url ?? `https://myanimelist.net/${type}/${malId}`,
+          };
+        };
 
         const payload = {
           animeStats: {
             completed: anime?.completed ?? 0,
             watching: anime?.watching ?? 0,
-            episodesWatched: anime?.episodes_watched ?? 0,
+            episodesWatched: anime?.episodesWatched ?? 0,
           },
           mangaStats: {
             completed: manga?.completed ?? 0,
             reading: manga?.reading ?? 0,
-            chaptersRead: manga?.chapters_read ?? 0,
+            chaptersRead: manga?.chaptersRead ?? 0,
           },
-          animeFavorites: favAnime.slice(0, 10).map(toBasic),
-          mangaFavorites: favManga.slice(0, 10).map(toBasicManga),
+          animeFavorites: favAnime.slice(0, 10).map(toBasic("anime")),
+          mangaFavorites: favManga.slice(0, 10).map(toBasic("manga")),
         };
 
         if (payload.animeFavorites.length || payload.mangaFavorites.length) {
