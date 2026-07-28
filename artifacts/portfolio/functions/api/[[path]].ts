@@ -465,7 +465,7 @@ export const onRequest: PagesFunction<Env> = async (context) => {
       const user = env.MAL_USERNAME ?? "Amayacrab";
 
       try {
-        type JikanEdgeFavorite = { malId?: number; mal_id?: number; title: string; url?: string; imageUrl?: string | null };
+        type JikanEdgeFavorite = { malId: number; title: string; url?: string; startYear?: number | null; imageUrl?: string | null };
         const [statsJson, favsJson] = await Promise.all([
           fetchJikanUserResource<{ data?: { anime?: { completed?: number; watching?: number; episodesWatched?: number | null }; manga?: { completed?: number; reading?: number; chaptersRead?: number | null } } }>(user, "statistics"),
           fetchJikanUserResource<{ data?: { anime?: JikanEdgeFavorite[]; manga?: JikanEdgeFavorite[] } }>(user, "favorites"),
@@ -477,17 +477,13 @@ export const onRequest: PagesFunction<Env> = async (context) => {
         const favManga = Array.isArray(favsJson.data?.manga) ? favsJson.data?.manga : [];
 
         // Return basic data only - details fetched separately via /mal/details
-        // jikan-edge favorites keep mal_id in snake_case and carry no start year
-        const toBasic = (type: "anime" | "manga") => (a: JikanEdgeFavorite) => {
-          const malId = a.malId ?? a.mal_id;
-          return {
-            malId,
-            title: a.title,
-            year: null,
-            imageUrl: a.imageUrl ?? null,
-            url: a.url ?? `https://myanimelist.net/${type}/${malId}`,
-          };
-        };
+        const toBasic = (type: "anime" | "manga") => (a: JikanEdgeFavorite) => ({
+          malId: a.malId,
+          title: a.title,
+          year: a.startYear ?? null,
+          imageUrl: a.imageUrl ?? null,
+          url: a.url ?? `https://myanimelist.net/${type}/${a.malId}`,
+        });
 
         const payload = {
           animeStats: {
