@@ -12,7 +12,8 @@
     "certifications": "Certifications"
   },
   "status": {
-    "current": "Current"
+    "current": "Current",
+    "present": "Present"
   },
   "categories": {
     "frontend": "Frontend",
@@ -22,5 +23,15 @@
     "database": "Database",
     "devops": "Cloud & DevOps",
     "ai": "AI"
+  },
+  "ats": {
+    "tech": "Tech",
+    "skills": {
+      "languages": "Languages",
+      "frontend": "Frontend",
+      "backend": "Backend",
+      "database": "Database",
+      "devops": "DevOps / Cloud"
+    }
   }
 }

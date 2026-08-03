@@ -86,6 +86,11 @@ function SkillTag({ name, isDark }: { name: string; isDark: boolean }) {
 function VisualResume({ isDark }: { isDark: boolean }) {
   const { t, i18n } = useTranslation(['resume', 'common']);
   const currentLang = i18n.language?.split("-")[0] || "pt";
+  const dateLocale = currentLang === 'en' ? 'en-US' : 'pt-BR';
+  const presentLabel = t('status.present');
+  const formatRange = (start: string, end: string | null | undefined) =>
+    formatDateRange(start, end, dateLocale, presentLabel);
+  const getEducationTitle = (ed: any) => currentLang === 'en' ? (ed.titleEn || ed.title) : (ed.title || ed.titleEn);
 
   const activeJobs = useMemo(() => jobExperiences
     .filter(exp => exp.showInTimeline)
@@ -227,7 +232,7 @@ function VisualResume({ isDark }: { isDark: boolean }) {
                   ) : (
                     <p className={`text-xs font-medium ${isDark ? "text-gray-400" : "text-gray-500"}`}>{job.institution}</p>
                   )}
-                  <p className={`text-[10px] mb-1 ${isDark ? "text-gray-600" : "text-gray-400"}`}>{formatDateRange(job.startDate, job.endDate)}</p>
+                  <p className={`text-[10px] mb-1 ${isDark ? "text-gray-600" : "text-gray-400"}`}>{formatRange(job.startDate, job.endDate)}</p>
                   <p className={`text-[12px] leading-relaxed ${isDark ? "text-gray-300" : "text-gray-700"}`}>{getJobDescription(job)}</p>
                 </div>
               </div>
@@ -307,9 +312,9 @@ function VisualResume({ isDark }: { isDark: boolean }) {
                 </div>
               )}
               <div className="min-w-0 flex-1">
-                <h3 className="text-sm font-bold" style={{ color: isDark ? "#fff" : "#000" }}>{ed.titleEn || ed.title}</h3>
+                <h3 className="text-sm font-bold" style={{ color: isDark ? "#fff" : "#000" }}>{getEducationTitle(ed)}</h3>
                 <p className={`text-xs ${isDark ? "text-gray-400" : "text-gray-500"}`}>{ed.institution}</p>
-                <p className={`text-[10px] ${isDark ? "text-gray-600" : "text-gray-400"}`}>{formatDateRange(ed.startDate, ed.endDate)}</p>
+                <p className={`text-[10px] ${isDark ? "text-gray-600" : "text-gray-400"}`}>{formatRange(ed.startDate, ed.endDate)}</p>
               </div>
             </motion.div>
           ))}
@@ -351,8 +356,12 @@ function VisualResume({ isDark }: { isDark: boolean }) {
 
 // ─── ATS Resume (Print-only) ─────────────────────────────
 function ATSResume({ isDark = false }: { isDark?: boolean }) {
-  const { i18n } = useTranslation(['resume', 'common']);
+  const { t, i18n } = useTranslation(['resume', 'common']);
   const currentLang = i18n.language?.split("-")[0] || "pt";
+  const dateLocale = currentLang === 'en' ? 'en-US' : 'pt-BR';
+  const presentLabel = t('status.present');
+  const formatRange = (start: string, end: string | null | undefined) =>
+    formatDateRange(start, end, dateLocale, presentLabel);
 
   const jobPriority: Record<string, number> = {
     "policia-federal-it": 1,
@@ -385,6 +394,7 @@ function ATSResume({ isDark = false }: { isDark?: boolean }) {
 
   const getJobTitle = (job: any) => currentLang === 'en' ? (job.titleEn || job.title) : (job.title || job.titleEn);
   const getJobDescription = (job: any) => currentLang === 'en' ? (job.descriptionEn || job.description) : (job.description || job.descriptionEn);
+  const getEducationTitle = (ed: any) => currentLang === 'en' ? (ed.titleEn || ed.title) : (ed.title || ed.titleEn);
 
   const renderBullets = (text: string) => (
     <ul className="mt-1 space-y-0.5 list-disc pl-5">
@@ -400,7 +410,7 @@ function ATSResume({ isDark = false }: { isDark?: boolean }) {
     <main className="resume-content max-w-[800px] mx-auto px-6 py-8 space-y-5" aria-label="Lucas Henrique Diniz resume">
       <section className="resume-header">
         <h1 className="text-2xl font-black">Lucas Henrique Diniz</h1>
-        <p className="text-sm font-bold mt-0.5">Full Stack Developer</p>
+        <p className="text-sm font-bold mt-0.5">{t('header.role')}</p>
         <p className="text-xs mt-1">
           {ContactLinks.email} | github.com/LucasHenriqueDiniz | linkedin.com/in/lucas-diniz-ostroski
         </p>
@@ -408,13 +418,13 @@ function ATSResume({ isDark = false }: { isDark?: boolean }) {
 
       <section>
         <h2 className="text-sm font-black uppercase tracking-widest border-b border-black pb-1 mb-2">
-          EXPERIENCE
+          {t('sections.experience')}
         </h2>
         <div className="space-y-3">
           {activeJobs.map(job => (
             <article key={job.id} className="experience-item">
               <h3 className="text-xs font-bold">{getJobTitle(job)} - {job.institution}</h3>
-              <p className="text-[10px]">{formatDateRange(job.startDate, job.endDate)}</p>
+              <p className="text-[10px]">{formatRange(job.startDate, job.endDate)}</p>
               {renderBullets(getJobDescription(job))}
             </article>
           ))}
@@ -423,7 +433,7 @@ function ATSResume({ isDark = false }: { isDark?: boolean }) {
 
       <section>
         <h2 className="text-sm font-black uppercase tracking-widest border-b border-black pb-1 mb-2">
-          SELECTED PROJECTS
+          {t('sections.projects')}
         </h2>
         <div className="space-y-2.5">
           {atsProjects.map(proj => (
@@ -433,7 +443,7 @@ function ATSResume({ isDark = false }: { isDark?: boolean }) {
                 {proj!.url && <span className="text-[10px]">{proj!.url.replace('https://', '')}</span>}
               </div>
               {renderBullets(currentLang === 'en' && proj!.descriptionEn ? proj!.descriptionEn : proj!.description)}
-              <p className="text-[10px]">Tech: {proj!.techStack.join(", ")}</p>
+              <p className="text-[10px]">{t('ats.tech')}: {proj!.techStack.join(", ")}</p>
             </article>
           ))}
         </div>
@@ -441,29 +451,29 @@ function ATSResume({ isDark = false }: { isDark?: boolean }) {
 
       <section>
         <h2 className="text-sm font-black uppercase tracking-widest border-b border-black pb-1 mb-2">
-          SKILLS
+          {t('sections.skills')}
         </h2>
         <div className="space-y-1 text-[11px]">
-          <p><span className="font-semibold">Languages:</span> TypeScript, JavaScript, Python, Go, SQL</p>
-          <p><span className="font-semibold">Frontend:</span> React, Next.js, React Native, Expo, Tailwind CSS, Framer Motion</p>
-          <p><span className="font-semibold">Backend:</span> Node.js, NestJS, Prisma, REST APIs, WebSockets</p>
-          <p><span className="font-semibold">Database:</span> PostgreSQL, Supabase, Redis</p>
-          <p><span className="font-semibold">DevOps / Cloud:</span> AWS Lambda, Docker, Vercel, GitHub Actions</p>
+          <p><span className="font-semibold">{t('ats.skills.languages')}:</span> TypeScript, JavaScript, Python, Go, SQL</p>
+          <p><span className="font-semibold">{t('ats.skills.frontend')}:</span> React, Next.js, React Native, Expo, Tailwind CSS, Framer Motion</p>
+          <p><span className="font-semibold">{t('ats.skills.backend')}:</span> Node.js, NestJS, Prisma, REST APIs, WebSockets</p>
+          <p><span className="font-semibold">{t('ats.skills.database')}:</span> PostgreSQL, Supabase, Redis</p>
+          <p><span className="font-semibold">{t('ats.skills.devops')}:</span> AWS Lambda, Docker, Vercel, GitHub Actions</p>
         </div>
       </section>
 
       <section>
         <h2 className="text-sm font-black uppercase tracking-widest border-b border-black pb-1 mb-2">
-          EDUCATION
+          {t('sections.education')}
         </h2>
         <div className="space-y-1.5">
           {activeEducation.map(ed => (
             <article key={ed.id} className="flex items-baseline justify-between gap-2">
               <div>
-                <span className="text-xs font-bold">{ed.titleEn || ed.title}</span>
+                <span className="text-xs font-bold">{getEducationTitle(ed)}</span>
                 <span className="text-[11px]"> - {ed.institution}</span>
               </div>
-              <span className="text-[10px] shrink-0">{formatDateRange(ed.startDate, ed.endDate)}</span>
+              <span className="text-[10px] shrink-0">{formatRange(ed.startDate, ed.endDate)}</span>
             </article>
           ))}
         </div>
@@ -471,7 +481,7 @@ function ATSResume({ isDark = false }: { isDark?: boolean }) {
 
       <section>
         <h2 className="text-sm font-black uppercase tracking-widest border-b border-black pb-1 mb-2">
-          CERTIFICATIONS
+          {t('sections.certifications')}
         </h2>
         <div className="flex flex-wrap gap-x-4 gap-y-1 text-[11px]">
           {topCertificates.map(cert => (

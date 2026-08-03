@@ -131,6 +131,13 @@ const fetchJson = async <T>(path: string, init?: RequestInit): Promise<T> => {
     throw new Error(`${res.status} ${res.statusText}`);
   }
 
+  // A dev server without Pages Functions answers /api/* with the SPA shell and a
+  // 200, which would otherwise surface as an opaque JSON parse error.
+  const contentType = res.headers.get("content-type") ?? "";
+  if (!contentType.includes("application/json")) {
+    throw new Error(`Expected JSON from ${path}, got "${contentType || "no content-type"}"`);
+  }
+
   return (await res.json()) as T;
 };
 

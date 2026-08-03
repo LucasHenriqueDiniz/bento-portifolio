@@ -8,6 +8,8 @@ const port = Number(rawPort);
 
 const basePath = process.env.BASE_PATH ?? "/";
 
+const apiProxyTarget = process.env.API_PROXY_TARGET ?? "https://lucashdo.com";
+
 export default defineConfig({
   base: basePath,
   assetsInclude: ["**/*.glb"],
@@ -44,6 +46,15 @@ export default defineConfig({
   server: {
     port,
     host: "localhost",
+    // `vite dev` does not run Cloudflare Pages Functions, so /api/* would be
+    // answered with the SPA shell. Proxy it to a real deployment instead.
+    proxy: {
+      "/api": {
+        target: apiProxyTarget,
+        changeOrigin: true,
+        secure: true,
+      },
+    },
     fs: {
       strict: true,
       deny: ["**/.*"],

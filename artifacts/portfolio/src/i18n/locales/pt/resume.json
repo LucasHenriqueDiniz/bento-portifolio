@@ -1,26 +1,37 @@
 {
   "header": {
-    "role": "Full Stack Developer",
-    "summary": "3+ years as a developer building web apps, IoT platforms and AI automation. React, TypeScript, Node.js, AWS."
+    "role": "Desenvolvedor Full Stack",
+    "summary": "3+ anos como desenvolvedor construindo aplicações web, plataformas IoT e automação com IA. React, TypeScript, Node.js, AWS."
   },
   "sections": {
-    "experience": "Experience",
-    "projects": "Selected Projects",
-    "skills": "Skills",
-    "education": "Education",
-    "languages": "Languages",
-    "certifications": "Certifications"
+    "experience": "Experiência",
+    "projects": "Projetos Selecionados",
+    "skills": "Habilidades",
+    "education": "Formação",
+    "languages": "Idiomas",
+    "certifications": "Certificações"
   },
   "status": {
-    "current": "Current"
+    "current": "Atual",
+    "present": "Atual"
   },
   "categories": {
     "frontend": "Frontend",
     "backend": "Backend",
-    "integration": "Integration",
-    "automation": "Automation",
-    "database": "Database",
+    "integration": "Integração",
+    "automation": "Automação",
+    "database": "Banco de Dados",
     "devops": "Cloud & DevOps",
-    "ai": "AI"
+    "ai": "IA"
+  },
+  "ats": {
+    "tech": "Tecnologias",
+    "skills": {
+      "languages": "Linguagens",
+      "frontend": "Frontend",
+      "backend": "Backend",
+      "database": "Banco de Dados",
+      "devops": "DevOps / Cloud"
+    }
   }
 }
