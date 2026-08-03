@@ -63,7 +63,7 @@ export const jobExperiences: JobExperience[] = [
       { label: "Python" },
       { label: "Microcontrollers" },
     ],
-    description: "• Refactored platform and landing page, establishing design system and component guidelines\n• Built Web Serial firmware installer for browser-based flashing and serial communication\n• Automated IoT device onboarding pipeline reducing setup time by 60%",
+    description: "• Refatorei a plataforma e a landing page, estabelecendo design system e diretrizes de componentes\n• Desenvolvi instalador de firmware via Web Serial para gravação e comunicação serial direto no navegador\n• Automatizei o pipeline de provisionamento de dispositivos IoT, reduzindo o tempo de configuração em 60%",
     descriptionEn: "• Refactored platform and landing page, establishing design system and component guidelines\n• Built Web Serial firmware installer for browser-based flashing and serial communication\n• Automated IoT device onboarding pipeline reducing setup time by 60%",
   },
   {
@@ -89,7 +89,7 @@ export const jobExperiences: JobExperience[] = [
       { label: "C" },
       { label: "ViteJS" },
     ],
-    description: "• Led technical Front-End workshops covering architecture and code patterns\n• Developed embedded firmware, web interface and backend API\n• Integrated microcontroller hardware with fullstack application",
+    description: "• Conduzi workshops técnicos de Front-End abordando arquitetura e padrões de código\n• Desenvolvi firmware embarcado, interface web e API de backend\n• Integrei hardware de microcontroladores com a aplicação fullstack",
     descriptionEn: "• Led technical Front-End workshops covering architecture and code patterns\n• Developed embedded firmware, web interface and backend API\n• Integrated microcontroller hardware with fullstack application",
   },
   {
@@ -114,7 +114,7 @@ export const jobExperiences: JobExperience[] = [
       { label: "Zustand" },
       { label: "TypeScript" },
     ],
-    description: "• Architected serverless SaaS for multi-channel chatbot automation (WhatsApp, Telegram, Instagram)\n• Implemented custom auth system and JSON-based flow processing engine\n• Built AWS Lambda infrastructure with PostgreSQL and no-code visual workflow builder",
+    description: "• Arquitetei um SaaS serverless para automação de chatbots multi-canal (WhatsApp, Telegram, Instagram)\n• Implementei sistema de autenticação próprio e motor de processamento de fluxos baseado em JSON\n• Construí a infraestrutura em AWS Lambda com PostgreSQL e um editor visual de fluxos no-code",
     descriptionEn: "• Architected serverless SaaS for multi-channel chatbot automation (WhatsApp, Telegram, Instagram)\n• Implemented custom auth system and JSON-based flow processing engine\n• Built AWS Lambda infrastructure with PostgreSQL and no-code visual workflow builder",
   },
   {
@@ -137,7 +137,7 @@ export const jobExperiences: JobExperience[] = [
       { label: "After Effects" },
       { label: "Graphic Design" },
     ],
-    description: "• Managed end-to-end design projects for multiple clients with 98.7% satisfaction rate\n• Developed visual identities, promotional materials and motion graphics\n• Coordinated deliveries and stakeholder communication",
+    description: "• Conduzi projetos de design de ponta a ponta para diversos clientes, com 98,7% de satisfação\n• Desenvolvi identidades visuais, materiais promocionais e motion graphics\n• Coordenei entregas e a comunicação com os clientes",
     descriptionEn: "• Managed end-to-end design projects for multiple clients with 98.7% satisfaction rate\n• Developed visual identities, promotional materials and motion graphics\n• Coordinated deliveries and stakeholder communication",
   },
   {
@@ -182,7 +182,7 @@ export const jobExperiences: JobExperience[] = [
       { label: "AWS" },
       { label: "Figma" },
     ],
-    description: "• Architected fullstack institutional platform with custom headless CMS\n• Implemented authentication system and interactive chatbot\n• Built admin dashboard with full CRUD for educational content and member management",
+    description: "• Arquitetei a plataforma institucional fullstack com CMS headless próprio\n• Implementei sistema de autenticação e chatbot interativo\n• Construí painel administrativo com CRUD completo de conteúdo educacional e gestão de membros",
     descriptionEn: "• Architected fullstack institutional platform with custom headless CMS\n• Implemented authentication system and interactive chatbot\n• Built admin dashboard with full CRUD for educational content and member management",
   },
   {
@@ -206,7 +206,7 @@ export const jobExperiences: JobExperience[] = [
       { label: "PostgreSQL" },
       { label: "Impacto Social" },
     ],
-    description: "• Built complaint management system with complete moderation workflow\n• Implemented intake pipeline with validation and sanitization\n• Designed granular Supabase RLS policies and admin dashboard with advanced filters",
+    description: "• Desenvolvi sistema de gestão de denúncias com fluxo completo de moderação\n• Implementei pipeline de recebimento com validação e sanitização dos dados\n• Modelei políticas RLS granulares no Supabase e painel administrativo com filtros avançados",
     descriptionEn: "• Built complaint management system with complete moderation workflow\n• Implemented intake pipeline with validation and sanitization\n• Designed granular Supabase RLS policies and admin dashboard with advanced filters",
   },
 ];
