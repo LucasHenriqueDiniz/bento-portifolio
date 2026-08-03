@@ -135,11 +135,12 @@ function CoverCard({
 
   return (
     <div className="flex-1 h-full min-w-0" style={{ perspective: "400px" }}>
-      <PortalTooltip 
-        content={<MalTooltipContent item={mergedItem} loading={detailLoading} />} 
-        width={320} 
-        placement="top" 
+      <PortalTooltip
+        content={<MalTooltipContent item={mergedItem} loading={detailLoading} />}
+        width={320}
+        placement="top"
         offsetY={0}
+        className="w-full h-full"
       >
         <div
           className="relative w-full h-full rounded-lg overflow-hidden group cursor-pointer"

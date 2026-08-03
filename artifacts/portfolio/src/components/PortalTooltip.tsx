@@ -10,6 +10,7 @@ interface PortalTooltipProps {
   placement?: "top" | "right";
   offsetX?: number;
   offsetY?: number;
+  className?: string;
 }
 
 export const PortalTooltip: React.FC<PortalTooltipProps> = ({
@@ -20,6 +21,7 @@ export const PortalTooltip: React.FC<PortalTooltipProps> = ({
   placement = "top",
   offsetX = 0,
   offsetY = 0,
+  className = "",
 }) => {
   const [show, setShow] = useState(false);
   const triggerRef = useRef<HTMLDivElement>(null);
@@ -68,6 +70,7 @@ export const PortalTooltip: React.FC<PortalTooltipProps> = ({
     <>
       <div
         ref={triggerRef}
+        className={className}
         onMouseEnter={() => setShow(true)}
         onMouseLeave={() => setShow(false)}
       >
