@@ -1,7 +1,8 @@
 import { readFileSync, writeFileSync } from "fs";
 import path from "path";
+import { fileURLToPath } from "url";
 
-const dirname = path.dirname(new URL(import.meta.url).pathname);
+const dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(dirname, "..");
 const SITE_URL = "https://lucashdo.com";
 

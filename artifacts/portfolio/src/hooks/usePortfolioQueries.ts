@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getCache, removeCache, setCache } from "@/lib/queryCache";
 import {
@@ -10,6 +10,8 @@ import {
   getStats,
   getMalData,
   getProjects,
+  getVisitorCount,
+  incrementVisitorCount,
 } from "@/lib/apiClient";
 
 const QUERY_STABILITY_OPTIONS = {
@@ -173,6 +175,34 @@ export function useGetMalDataCached() {
 
   const data = isEmptyMalData(query.data) ? safeCached : query.data;
   return { ...query, data };
+}
+
+export function useVisitorCount() {
+  const key = "/api/portfolio/visitors";
+  const cached = getCache<number>(key);
+  const [count, setCount] = useState<number | undefined>(cached);
+  const hasIncremented = useRef(false);
+
+  useEffect(() => {
+    if (hasIncremented.current) return;
+    hasIncremented.current = true;
+
+    incrementVisitorCount()
+      .then((result) => {
+        setCount(result.count);
+        setCache(key, result.count);
+      })
+      .catch(() => {
+        getVisitorCount()
+          .then((result) => {
+            setCount(result.count);
+            setCache(key, result.count);
+          })
+          .catch(() => {});
+      });
+  }, []);
+
+  return count;
 }
 
 export function useGetProjectsCached() {

@@ -133,13 +133,27 @@ async function fetchJikanDetails(type: "anime" | "manga", id: number, retries = 
   return null;
 }
 
+const VISITOR_KEY = "visitor-count";
+
 export const onRequest: PagesFunction<Env> = async (context) => {
   const { request, env } = context;
+  const path = new URL(request.url).pathname.replace(/^\/api\/?/, "");
+
+  if (request.method === "POST" && path === "portfolio/visitors/increment") {
+    try {
+      if (!env.PORTFOLIO_CACHE) return json({ count: 0 }, 0);
+      const current = Number((await env.PORTFOLIO_CACHE.get(VISITOR_KEY, { type: "text" })) ?? "0");
+      const count = Number.isFinite(current) ? current + 1 : 1;
+      await env.PORTFOLIO_CACHE.put(VISITOR_KEY, String(count));
+      return json({ count }, 0);
+    } catch {
+      return new Response("Upstream error", { status: 502 });
+    }
+  }
+
   if (request.method !== "GET") {
     return new Response("Method not allowed", { status: 405 });
   }
-
-  const path = new URL(request.url).pathname.replace(/^\/api\/?/, "");
 
   try {
     if (path === "portfolio/now-playing") {
@@ -576,6 +590,12 @@ export const onRequest: PagesFunction<Env> = async (context) => {
       // Merge cached + fresh results
       const finalResults: Record<number, any> = { ...cachedResults, ...results };
       return json(finalResults, 300);
+    }
+
+    if (path === "portfolio/visitors") {
+      if (!env.PORTFOLIO_CACHE) return json({ count: 0 }, 0);
+      const current = Number((await env.PORTFOLIO_CACHE.get(VISITOR_KEY, { type: "text" })) ?? "0");
+      return json({ count: Number.isFinite(current) ? current : 0 }, 0);
     }
 
     if (path === "portfolio/projects") {

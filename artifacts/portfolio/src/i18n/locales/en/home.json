@@ -197,7 +197,12 @@
     "focusLabel": "Current focus",
     "focus1": "Offline-first with real-time sync",
     "focus2": "Polished and accessible UI",
-    "progress": "Progress"
+    "progress": "Progress",
+    "visitorsLabel": "site visits",
+    "visitorsFlipLabel": "visits",
+    "visitorsBackTitle": "visitors",
+    "visitorsLive": "live",
+    "backFlipLabel": "back"
   },
   "projects": {
     "stars": "stars"

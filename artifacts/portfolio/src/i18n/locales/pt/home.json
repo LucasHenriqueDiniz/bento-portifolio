@@ -197,7 +197,12 @@
     "focusLabel": "Foco atual",
     "focus1": "Offline-first com sync em tempo real",
     "focus2": "UI polida e acessível",
-    "progress": "Progresso"
+    "progress": "Progresso",
+    "visitorsLabel": "visitas ao site",
+    "visitorsFlipLabel": "visitas",
+    "visitorsBackTitle": "visitantes",
+    "visitorsLive": "tempo real",
+    "backFlipLabel": "voltar"
   },
   "projects": {
     "stars": "stars"

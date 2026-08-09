@@ -120,7 +120,7 @@ const buildUrl = (path: string) => `${baseUrl}${path}`;
 const fetchJson = async <T>(path: string, init?: RequestInit): Promise<T> => {
   const res = await fetch(buildUrl(path), {
     ...init,
-    method: "GET",
+    method: init?.method ?? "GET",
     headers: {
       "Content-Type": "application/json",
       ...(init?.headers ?? {}),
@@ -186,3 +186,13 @@ export const getMalDetails = (type: "anime" | "manga", ids: number[], options?: 
 
 export const getProjects = (options?: RequestInit) =>
   fetchJson<ProjectApiItem[]>("/api/portfolio/projects", options);
+
+export interface VisitorCount {
+  count: number;
+}
+
+export const getVisitorCount = (options?: RequestInit) =>
+  fetchJson<VisitorCount>("/api/portfolio/visitors", options);
+
+export const incrementVisitorCount = (options?: RequestInit) =>
+  fetchJson<VisitorCount>("/api/portfolio/visitors/increment", { ...options, method: "POST" });
