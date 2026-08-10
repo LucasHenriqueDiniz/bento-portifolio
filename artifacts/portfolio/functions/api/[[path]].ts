@@ -537,11 +537,18 @@ export const onRequest: PagesFunction<Env> = async (context) => {
 
     if (path.startsWith("portfolio/mal/details")) {
       const url = new URL(request.url);
-      const type = url.searchParams.get("type") as "anime" | "manga";
+      const type = url.searchParams.get("type");
       const idsParam = url.searchParams.get("ids");
       if (!type || !idsParam) return new Response("Missing type or ids", { status: 400 });
-      
+      if (type !== "anime" && type !== "manga") {
+        return new Response("Invalid type: must be 'anime' or 'manga'", { status: 400 });
+      }
+
       const ids = idsParam.split(",").map(Number).filter(Boolean);
+      const MAX_IDS = 20;
+      if (ids.length > MAX_IDS) {
+        return new Response(`Too many ids: max ${MAX_IDS}`, { status: 400 });
+      }
       const results: Record<number, any> = {};
       
       // Check KV cache first
