@@ -157,7 +157,7 @@ export const onRequest: PagesFunction<Env> = async (context) => {
 
   try {
     if (path === "portfolio/now-playing") {
-      return cached(request, path, 30, env, async () => {
+      return await cached(request, path, 30, env, async () => {
         const key = env.LASTFM_API_KEY ?? "";
         const user = env.LASTFM_USERNAME ?? "Amayacrab";
         if (!key) return json({ isPlaying: false, track: null, artist: null, album: null, albumArt: null, trackUrl: null }, 30);
@@ -202,7 +202,7 @@ export const onRequest: PagesFunction<Env> = async (context) => {
     }
 
     if (path === "portfolio/top-artists") {
-      return cached(request, path, 300, env, async () => {
+      return await cached(request, path, 300, env, async () => {
         const key = env.LASTFM_API_KEY ?? "";
         const user = env.LASTFM_USERNAME ?? "Amayacrab";
         if (!key) return json([], 60);
@@ -224,7 +224,7 @@ export const onRequest: PagesFunction<Env> = async (context) => {
     }
 
     if (path === "portfolio/top-tracks") {
-      return cached(request, path, 300, env, async () => {
+      return await cached(request, path, 300, env, async () => {
         const key = env.LASTFM_API_KEY ?? "";
         const user = env.LASTFM_USERNAME ?? "Amayacrab";
         if (!key) return json([], 60);
@@ -247,7 +247,7 @@ export const onRequest: PagesFunction<Env> = async (context) => {
     }
 
     if (path === "portfolio/steam") {
-      return cached(request, path, 120, env, async () => {
+      return await cached(request, path, 120, env, async () => {
         const key = env.STEAM_API_KEY ?? "";
         const id = env.STEAM_ID ?? "";
         if (!key || !id) return json({ username: "unknown", avatarUrl: null, currentGame: null, totalGames: 0, recentGames: [] }, 60);
@@ -284,7 +284,7 @@ export const onRequest: PagesFunction<Env> = async (context) => {
     }
 
     if (path === "portfolio/workout") {
-      return cached(request, path, 300, env, async () => {
+      return await cached(request, path, 300, env, async () => {
         const key = env.LYFTA_API_KEY ?? "";
         if (!key) {
           return json({
@@ -363,7 +363,7 @@ export const onRequest: PagesFunction<Env> = async (context) => {
     }
 
     if (path === "portfolio/stats") {
-      return cached(request, path, 600, env, async () => {
+      return await cached(request, path, 600, env, async () => {
         const userName = env.GITHUB_USERNAME ?? "LucasHenriqueDiniz";
         const pat = env.GITHUB_PAT ?? "";
         const authHeaders = {
