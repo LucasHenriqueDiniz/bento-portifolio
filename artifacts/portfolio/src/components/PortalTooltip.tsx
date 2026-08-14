@@ -37,8 +37,8 @@ export const PortalTooltip: React.FC<PortalTooltipProps> = ({
       const tooltipEl = tooltipRef.current;
       const tooltipH = tooltipEl?.offsetHeight ?? 140;
       
-      let top = 0;
-      let left = 0;
+      let top: number;
+      let left: number;
 
       if (placement === "right") {
         left = rect.right + 12;

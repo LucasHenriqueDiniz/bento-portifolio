@@ -32,9 +32,13 @@ jobs:
         run: pnpm install --no-frozen-lockfile
 
       - name: Run linter
-        run: pnpm run lint 2>/dev/null || true
+        run: pnpm run lint
         working-directory: artifacts/portfolio
 
       - name: Run type check
-        run: pnpm run typecheck 2>/dev/null || true
+        run: pnpm run typecheck
+        working-directory: artifacts/portfolio
+
+      - name: Run tests
+        run: pnpm run test
         working-directory: artifacts/portfolio

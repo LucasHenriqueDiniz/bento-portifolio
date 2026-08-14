@@ -35,7 +35,7 @@ export default defineConfig({
         manualChunks(id) {
           if (!id.includes("node_modules")) return;
           if (/[\\/]node_modules[\\/](react|react-dom|scheduler)[\\/]/.test(id)) return "react";
-          if (/[\\/]node_modules[\\/](framer-motion|motion)[\\/]/.test(id)) return "motion";
+          if (/[\\/]node_modules[\\/]framer-motion[\\/]/.test(id)) return "motion";
           if (/[\\/]node_modules[\\/](i18next|react-i18next|i18next-browser-languagedetector)[\\/]/.test(id)) return "i18n";
           if (/[\\/]node_modules[\\/]@tanstack[\\/]/.test(id)) return "query";
           if (/[\\/]node_modules[\\/](react-icons|lucide-react)[\\/]/.test(id)) return "icons";

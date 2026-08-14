@@ -1,11 +1,12 @@
 import { motion } from "framer-motion";
 import { useState, useMemo, useEffect } from "react";
 import { useTranslation } from 'react-i18next';
-import { FiPrinter, FiGithub, FiMail, FiExternalLink, FiAward, FiBriefcase, FiCode, FiLayout } from "react-icons/fi";
+import { FiPrinter, FiGithub, FiMail, FiExternalLink, FiAward, FiBriefcase, FiCode, FiLayout, FiLoader } from "react-icons/fi";
 import { Linkedin, Palette, MessageSquare } from "lucide-react";
 import SiteHeader from "@/components/SiteHeader";
 import SEO from "@/components/SEO";
 import { useTheme } from "@/hooks/useTheme";
+import { useToast } from "@/hooks/use-toast";
 import { jobExperiences, academicExperiences, projects, certificates, languages, skillsData, ContactLinks } from "@/constants";
 import { formatDateRange } from "@/lib/dateFormatter";
 
@@ -496,8 +497,27 @@ function ATSResume({ isDark = false }: { isDark?: boolean }) {
 export default function ResumePage() {
   const { isDark, toggleTheme } = useTheme();
   const [format, setFormat] = useState<ResumeFormat>("visual");
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const { t, i18n } = useTranslation('common');
+  const { toast } = useToast();
   const currentLang = i18n.language?.split("-")[0] || "pt";
+
+  const handleDownloadPdf = async () => {
+    setIsGeneratingPdf(true);
+    try {
+      const { downloadResumePdf } = await import("@/components/resume/ResumePdfDocument");
+      await downloadResumePdf(currentLang === "en" ? "en" : "pt");
+    } catch (error) {
+      console.error("Failed to generate resume PDF:", error);
+      toast({
+        variant: "destructive",
+        title: currentLang === "en" ? "Couldn't generate the PDF" : "Não foi possível gerar o PDF",
+        description: currentLang === "en" ? "Please try again in a moment." : "Tente novamente em instantes.",
+      });
+    } finally {
+      setIsGeneratingPdf(false);
+    }
+  };
 
   useEffect(() => {
     const suffix = currentLang === "en" ? "Resume" : "Currículo";
@@ -545,12 +565,17 @@ export default function ResumePage() {
           </div>
 
           <button
-            onClick={() => window.print()}
-            className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border transition-colors ${isDark ? "text-gray-300 border-base hover:text-white" : "text-gray-700 border-base hover:text-gray-900"}`}
+            onClick={handleDownloadPdf}
+            disabled={isGeneratingPdf}
+            className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border transition-colors disabled:opacity-60 disabled:cursor-wait ${isDark ? "text-gray-300 border-base hover:text-white" : "text-gray-700 border-base hover:text-gray-900"}`}
             title={currentLang === 'en' ? 'Download ATS PDF' : 'Baixar PDF ATS'}
           >
-            <FiPrinter size={13} />
-            <span>{currentLang === 'en' ? 'ATS PDF' : 'PDF ATS'}</span>
+            {isGeneratingPdf ? <FiLoader size={13} className="animate-spin" /> : <FiPrinter size={13} />}
+            <span>
+              {isGeneratingPdf
+                ? (currentLang === 'en' ? 'Generating…' : 'Gerando…')
+                : (currentLang === 'en' ? 'ATS PDF' : 'PDF ATS')}
+            </span>
           </button>
         </div>
       </header>

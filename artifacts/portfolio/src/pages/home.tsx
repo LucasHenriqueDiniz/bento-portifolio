@@ -32,7 +32,7 @@ import {
 import { BentoSection } from "@/components/BentoCard";
 import { Card } from "@/components/Card";
 import { CardGlowProvider } from "@/components/CardGlowContext";
-import { contacts, featuredProjects } from "@/constants";
+import { contacts, featuredProjects, personSchema } from "@/constants";
 import { SiInstagram, SiDiscord, SiGithub } from "react-icons/si";
 import { FiMail } from "react-icons/fi";
 import { Linkedin } from "lucide-react";
@@ -305,7 +305,7 @@ export default function Home() {
 
   return (
     <>
-      <SEO />
+      <SEO structuredData={personSchema} />
       <div className={`min-h-screen lg:h-screen flex flex-col font-sans overflow-y-auto lg:overflow-hidden transition-colors duration-300 pt-14 bg-canvas text-main ${isDark ? "dark" : ""}`}>
       {/* ── NAV ── */}
       <SiteHeader isDark={isDark} onToggleTheme={toggleTheme} />

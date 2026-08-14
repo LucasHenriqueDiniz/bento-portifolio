@@ -198,7 +198,7 @@ export function useVisitorCount() {
             setCount(result.count);
             setCache(key, result.count);
           })
-          .catch(() => {});
+          .catch((e) => console.warn("visitor count fallback failed:", e));
       });
   }, []);
 
