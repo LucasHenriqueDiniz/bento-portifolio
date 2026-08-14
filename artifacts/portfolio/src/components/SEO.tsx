@@ -8,6 +8,7 @@ interface SEOProps {
   url?: string;
   lang?: string;
   noindex?: boolean;
+  structuredData?: Record<string, unknown> | Record<string, unknown>[];
 }
 
 const defaultTitle = "Lucas Diniz — Full-stack Developer";
@@ -24,11 +25,17 @@ export default function SEO({
   url,
   lang = "pt-BR",
   noindex = false,
+  structuredData,
 }: SEOProps) {
   const fullTitle = title ? `${title} — Lucas Diniz` : defaultTitle;
   const metaDescription = description || defaultDescription;
   const metaImage = image || defaultImage;
   const metaUrl = url ? `${siteUrl}${url}` : siteUrl;
+  const jsonLdBlocks = structuredData
+    ? Array.isArray(structuredData)
+      ? structuredData
+      : [structuredData]
+    : [];
 
   return (
     <Helmet>
@@ -36,6 +43,11 @@ export default function SEO({
       <title>{fullTitle}</title>
       <meta name="description" content={metaDescription} />
       {noindex && <meta name="robots" content="noindex" />}
+      {jsonLdBlocks.map((block, index) => (
+        <script key={index} type="application/ld+json">
+          {JSON.stringify(block)}
+        </script>
+      ))}
 
       {/* Open Graph */}
       <meta property="og:title" content={fullTitle} />

@@ -98,7 +98,7 @@ export const CurrentlyWorkingCard = React.memo(function CurrentlyWorkingCard({
 
         <div className="rounded-lg p-2 border bg-field border-ghost">
           <p className="text-[8px] font-semibold uppercase tracking-widest mb-1 text-faint">
-            Next Milestones
+            {t("currentlyWorking.milestonesLabel", "Next Milestones")}
           </p>
           <div className="space-y-0.5">
             {project.milestones.map((item, i) => (
