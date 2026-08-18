@@ -9,6 +9,22 @@
         "dev"
       ],
       "port": 3000
+    },
+    {
+      "name": "pages-preview",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "--dir",
+        "artifacts/portfolio",
+        "exec",
+        "wrangler",
+        "pages",
+        "dev",
+        "dist/public",
+        "--port",
+        "8788"
+      ],
+      "port": 8788
     }
   ]
 }

@@ -10,9 +10,7 @@ import type { MachineStatus } from "@/lib/apiClient";
 // so a cached payload never claims a machine is up right now.
 const FRESH_READING_MS = 30 * 60 * 1000;
 
-const METER_SEGMENTS = 10;
 const TEMP_METER_FULL_SCALE_C = 100;
-const FACEPLATE_SLITS = 16;
 
 interface Metric {
   label: string;
@@ -28,30 +26,23 @@ const isRecentReading = (at: string | undefined) => {
 
 const clampRatio = (ratio: number) => Math.min(Math.max(ratio, 0), 1);
 
-function SegmentMeter({ ratio }: { ratio: number }) {
-  const filled = Math.max(Math.round(clampRatio(ratio) * METER_SEGMENTS), 1);
-
-  return (
-    <div className="flex flex-1 min-w-[28px] gap-[2px]" aria-hidden="true">
-      {Array.from({ length: METER_SEGMENTS }, (_, index) => (
-        <span
-          key={index}
-          className={`flex-1 h-[6px] rounded-[1px] ${index < filled ? "bg-brand" : ""}`}
-          style={index < filled ? undefined : { backgroundColor: "var(--border-base)" }}
-        />
-      ))}
-    </div>
-  );
-}
-
 function MetricRow({ label, value, ratio }: Metric) {
   return (
     <div className="flex items-center gap-2">
-      <dt className="font-mono text-[9px] uppercase tracking-wider text-faint w-[42px] shrink-0 truncate">
+      <dt className="text-[7px] uppercase tracking-wider font-semibold text-faint w-[46px] shrink-0 truncate">
         {label}
       </dt>
-      <SegmentMeter ratio={ratio} />
-      <dd className="font-mono text-[10px] font-bold tabular-nums text-main shrink-0">{value}</dd>
+      <div
+        className="flex-1 min-w-[28px] h-1.5 rounded-full overflow-hidden"
+        style={{ backgroundColor: "var(--border-base)" }}
+        aria-hidden="true"
+      >
+        <div
+          className="h-full rounded-full bg-brand"
+          style={{ width: `${clampRatio(ratio) * 100}%` }}
+        />
+      </div>
+      <dd className="text-[10px] font-bold tabular-nums text-main shrink-0">{value}</dd>
     </div>
   );
 }
@@ -123,7 +114,7 @@ export const MachinesCard = React.memo(function MachinesCard() {
               {emptyIcon}
             </div>
           </div>
-          <p className="font-mono text-[8px] text-faint">{t("machines.unavailable")}</p>
+          <p className="text-[9px] text-faint">{t("machines.unavailable")}</p>
         </div>
       );
     }
@@ -132,39 +123,25 @@ export const MachinesCard = React.memo(function MachinesCard() {
 
     return (
       <div className="h-full flex flex-col justify-between pt-2 min-h-0 overflow-hidden gap-2">
-        <div className="rounded-lg border border-ghost bg-field px-2.5 py-2">
-          <div className="flex items-center gap-[3px] overflow-hidden mb-2" aria-hidden="true">
-            {Array.from({ length: FACEPLATE_SLITS }, (_, index) => (
-              <span
-                key={index}
-                className="h-2.5 w-[2px] shrink-0 rounded-full"
-                style={{ backgroundColor: "var(--border-base)" }}
-              />
-            ))}
-          </div>
-
-          <div className="flex items-baseline gap-2">
-            <span className="relative flex h-2 w-2 shrink-0 self-center">
-              {machine.online && isLive && (
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60" />
-              )}
-              <span
-                className={`relative inline-flex h-2 w-2 rounded-full ${
-                  machine.online
-                    ? "bg-emerald-400 shadow-[0_0_6px_1px_rgba(52,211,153,0.65)]"
-                    : "bg-neutral-500"
-                }`}
-              />
-            </span>
-            <p className="font-mono text-[15px] font-black uppercase tracking-tight leading-none text-main">
-              {machine.online ? t("machines.online") : t("machines.offline")}
-            </p>
-            {machine.uptimeHours !== null && (
-              <p className="font-mono text-[9px] text-faint ml-auto shrink-0">
-                {t("machines.uptime")} {formatCount(Math.round(machine.uptimeHours), locale)} h
-              </p>
+        <div className="rounded-lg border border-base bg-field px-2.5 py-2 flex items-center gap-2">
+          <span className="relative flex h-2 w-2 shrink-0">
+            {machine.online && isLive && (
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60" />
             )}
-          </div>
+            <span
+              className={`relative inline-flex h-2 w-2 rounded-full ${
+                machine.online ? "bg-emerald-400" : "bg-neutral-500"
+              }`}
+            />
+          </span>
+          <p className="text-[13px] font-black capitalize leading-none text-main">
+            {machine.online ? t("machines.online") : t("machines.offline")}
+          </p>
+          {machine.uptimeHours !== null && (
+            <p className="text-[8px] text-faint ml-auto shrink-0">
+              {t("machines.uptime")} {formatCount(Math.round(machine.uptimeHours), locale)} h
+            </p>
+          )}
         </div>
 
         {metrics.length > 0 && (
@@ -176,7 +153,7 @@ export const MachinesCard = React.memo(function MachinesCard() {
         )}
 
         {readingTime && (
-          <p className="font-mono text-[8px] leading-none text-faint">
+          <p className="text-[8px] leading-none text-faint">
             {t("machines.lastReading", { time: readingTime })}
           </p>
         )}
@@ -189,13 +166,13 @@ export const MachinesCard = React.memo(function MachinesCard() {
       className="h-full"
       front={{
         title: t("machines.pcTitle"),
-        icon: <span className="font-mono text-[9px] text-faint">▚</span>,
+        icon: <Monitor size={10} className="text-faint" />,
         content: machineFace(data?.pc ?? null, <Monitor size={16} />),
         flipLabel: t("machines.flipToServer"),
       }}
       back={{
         title: t("machines.serverTitle"),
-        icon: <span className="font-mono text-[9px] text-faint">▤</span>,
+        icon: <Server size={10} className="text-faint" />,
         content: machineFace(data?.server ?? null, <Server size={16} />),
         flipLabel: t("machines.flipToPc"),
       }}
