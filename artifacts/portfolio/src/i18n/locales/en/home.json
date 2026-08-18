@@ -192,18 +192,27 @@
     }
   },
   "currentlyWorking": {
-    "label": "In development",
-    "subtitle": "Mobile educational platform for public competitions",
-    "focusLabel": "Current focus",
-    "focus1": "Offline-first with real-time sync",
-    "focus2": "Polished and accessible UI",
-    "milestonesLabel": "Next Milestones",
-    "progress": "Progress",
-    "visitorsLabel": "site visits",
-    "visitorsFlipLabel": "visits",
-    "visitorsBackTitle": "visitors",
-    "visitorsLive": "live",
-    "backFlipLabel": "back"
+    "label": "In development"
+  },
+  "views": {
+    "title": "Views",
+    "label": "site visits",
+    "live": "live"
+  },
+  "machines": {
+    "pcTitle": "My PC",
+    "serverTitle": "Server",
+    "online": "online",
+    "offline": "offline",
+    "uptime": "up",
+    "cpu": "cpu",
+    "ram": "ram",
+    "gpu": "gpu",
+    "disk": "disk",
+    "lastReading": "reading from {{time}}",
+    "unavailable": "No reading right now",
+    "flipToServer": "server",
+    "flipToPc": "pc"
   },
   "projects": {
     "stars": "stars"

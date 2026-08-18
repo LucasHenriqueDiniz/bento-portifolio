@@ -5,3 +5,9 @@ pages_build_output_dir = "dist/public"
 [[kv_namespaces]]
 binding = "PORTFOLIO_CACHE"
 id = "7148bef2a0a64d8398ad94a9a04ca4be"
+
+# Leitura direta da telemetria do daily-ingest (PC + servidor). Somente SELECTs.
+[[d1_databases]]
+binding = "DAILY_INGEST_DB"
+database_name = "daily-ingest"
+database_id = "28f0e5fd-3e16-42d2-8108-f421645301d6"

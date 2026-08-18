@@ -10,6 +10,7 @@ import {
   getStats,
   getMalData,
   getProjects,
+  getMachinesStatus,
   getVisitorCount,
   incrementVisitorCount,
 } from "@/lib/apiClient";
@@ -203,6 +204,26 @@ export function useVisitorCount() {
   }, []);
 
   return count;
+}
+
+// `online: false` is a valid reading (the machine is off), so having at least one
+// machine block is the only emptiness signal here.
+const hasMachinesStatus = (data: Awaited<ReturnType<typeof getMachinesStatus>> | undefined) =>
+  Boolean(data && typeof data.at === "string" && (data.pc || data.server));
+
+export function useGetMachinesStatusCached() {
+  const cached = getCache<Awaited<ReturnType<typeof getMachinesStatus>>>("/api/portfolio/machines");
+  const query = useQuery({
+    queryKey: ["/api/portfolio/machines"],
+    queryFn: ({ signal }) => getMachinesStatus({ signal }),
+    placeholderData: cached,
+    ...QUERY_STABILITY_OPTIONS,
+  });
+
+  const data = hasMachinesStatus(query.data) ? query.data : cached;
+  usePersistOnSuccess("/api/portfolio/machines", hasMachinesStatus(data) ? data : undefined);
+
+  return { ...query, data };
 }
 
 export function useGetProjectsCached() {

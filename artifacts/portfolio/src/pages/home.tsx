@@ -28,6 +28,8 @@ import {
   PolaroidStack,
   EnhancedProjectCard,
   CurrentlyWorkingCard,
+  MachinesCard,
+  ViewsCard,
 } from "@/components/home";
 import { BentoSection } from "@/components/BentoCard";
 import { Card } from "@/components/Card";
@@ -75,6 +77,14 @@ const socialGradients: Record<string, { from: string; to: string; glow: string }
 
 function SocialCard({ contact, isDark }: { contact: typeof contacts[number]; isDark: boolean }) {
   const gradient = socialGradients[contact.platform];
+  const [mag, setMag] = useState({ x: 0, y: 0 });
+
+  const handleMove = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const px = (e.clientX - rect.left) / rect.width - 0.5;
+    const py = (e.clientY - rect.top) / rect.height - 0.5;
+    setMag({ x: px * 6, y: py * 6 });
+  };
 
   return (
     <Card
@@ -86,8 +96,9 @@ function SocialCard({ contact, isDark }: { contact: typeof contacts[number]; isD
         href={contact.url}
         target="_blank"
         rel="noreferrer"
-        whileHover={{ scale: 1.05, y: -4 }}
         whileTap={{ scale: 0.95 }}
+        onMouseMove={handleMove}
+        onMouseLeave={() => setMag({ x: 0, y: 0 })}
         className="h-full flex flex-col items-center justify-center gap-2 cursor-pointer relative overflow-hidden"
         title={contact.platform}
       >
@@ -110,25 +121,17 @@ function SocialCard({ contact, isDark }: { contact: typeof contacts[number]; isD
           background: `radial-gradient(circle, ${gradient.glow}40 0%, transparent 70%)`,
         }} />
 
-        {/* Content */}
-        <div className="relative z-10 flex flex-col items-center gap-2">
-          <motion.div
-            className="text-white drop-shadow-lg"
-            whileHover={{ scale: 1.15, rotate: 5 }}
-            transition={{ type: "spring", stiffness: 300, damping: 20 }}
-          >
-            {socialIcons[contact.platform]}
-          </motion.div>
-
-          <div className="text-center">
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-white/90 drop-shadow">
-              {contact.platform}
-            </p>
-            <p className="text-[8px] text-white/70 drop-shadow mt-0.5 max-w-full px-1 line-clamp-2 break-words text-center">
-              {contact.label}
-            </p>
-          </div>
-        </div>
+        {/* Content — light magnet toward the cursor */}
+        <motion.div
+          className="relative z-10 flex flex-col items-center gap-1.5"
+          animate={{ x: mag.x, y: mag.y }}
+          transition={{ type: "spring", stiffness: 260, damping: 20, mass: 0.6 }}
+        >
+          <span className="text-white drop-shadow-lg">{socialIcons[contact.platform]}</span>
+          <p className="text-[10px] font-semibold uppercase tracking-widest text-white/90 drop-shadow">
+            {contact.platform}
+          </p>
+        </motion.div>
 
         {/* Hover shine effect */}
         <div
@@ -323,10 +326,10 @@ export default function Home() {
                   <div className="flex items-start justify-between mb-2">
                     <p className={LABEL}>{t('about.label')}</p>
                     <div className="flex gap-2 text-faint">
-                      <a href={contacts.find((c) => c.platform === "GitHub")?.url} target="_blank" rel="noreferrer" aria-label="GitHub"><SiGithub size={12} /></a>
-                      <a href={contacts.find((c) => c.platform === "Instagram")?.url} target="_blank" rel="noreferrer" aria-label="Instagram"><SiInstagram size={12} /></a>
-                      <a href={contacts.find((c) => c.platform === "LinkedIn")?.url} target="_blank" rel="noreferrer" aria-label="LinkedIn"><Linkedin size={12} /></a>
-                      <a href={contacts.find((c) => c.platform === "Email")?.url} aria-label="Email"><FiMail size={12} /></a>
+                      <a href={contacts.find((c) => c.platform === "GitHub")?.url} target="_blank" rel="noreferrer" aria-label="GitHub" className="transition-all duration-200 hover:-translate-y-0.5 hover:scale-125 hover:text-main"><SiGithub size={12} /></a>
+                      <a href={contacts.find((c) => c.platform === "Instagram")?.url} target="_blank" rel="noreferrer" aria-label="Instagram" className="transition-all duration-200 hover:-translate-y-0.5 hover:scale-125 hover:text-[#E4405F]"><SiInstagram size={12} /></a>
+                      <a href={contacts.find((c) => c.platform === "LinkedIn")?.url} target="_blank" rel="noreferrer" aria-label="LinkedIn" className="transition-all duration-200 hover:-translate-y-0.5 hover:scale-125 hover:text-[#0A66C2]"><Linkedin size={12} /></a>
+                      <a href={contacts.find((c) => c.platform === "Email")?.url} aria-label="Email" className="transition-all duration-200 hover:-translate-y-0.5 hover:scale-125 hover:text-[#EA4335]"><FiMail size={12} /></a>
                     </div>
                   </div>
                   <div className="flex gap-3 items-center mb-2">
@@ -364,8 +367,13 @@ export default function Home() {
             </motion.div>
 
             {/* Currently Working */}
-            <motion.div custom={4} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-2 lg:row-start-2 lg:row-span-3 h-auto lg:h-full min-h-[150px]">
-              <CurrentlyWorkingCard isDark={isDark} />
+            <motion.div custom={4} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-2 lg:row-start-2 lg:row-span-1 h-auto lg:h-full min-h-[90px]">
+              <CurrentlyWorkingCard />
+            </motion.div>
+
+            {/* Site views */}
+            <motion.div custom={21} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-2 lg:row-start-3 lg:row-span-2 h-auto lg:h-full min-h-[180px]">
+              <ViewsCard />
             </motion.div>
 
             {/* GitHub 2 cols wide */}
@@ -415,20 +423,22 @@ export default function Home() {
               <TopArtistsCard topArtists={topArtists as any} topTracks={topTracks as any} isLoading={loadingTopArtists || loadingTopTracks} isDark={isDark} />
             </motion.div>
 
-            <motion.div custom={16} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-6 lg:row-start-3 lg:row-span-1 h-auto lg:h-full">
-              <SocialCard contact={contacts.find(c => c.platform === "Discord")!} isDark={isDark} />
+            <motion.div custom={16} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-6 lg:row-start-3 lg:row-span-1 h-auto lg:h-full min-h-[90px]">
+              <div className="grid grid-cols-2 gap-2 h-full">
+                <SocialCard contact={contacts.find(c => c.platform === "Discord")!} isDark={isDark} />
+                <SocialCard contact={contacts.find(c => c.platform === "Instagram")!} isDark={isDark} />
+              </div>
             </motion.div>
 
-            <motion.div custom={17} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-6 lg:row-start-4 lg:row-span-1 h-auto lg:h-full">
-              <SocialCard contact={contacts.find(c => c.platform === "Instagram")!} isDark={isDark} />
+            <motion.div custom={17} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-6 lg:row-start-4 lg:row-span-1 h-auto lg:h-full min-h-[90px]">
+              <div className="grid grid-cols-2 gap-2 h-full">
+                <SocialCard contact={contacts.find(c => c.platform === "GitHub")!} isDark={isDark} />
+                <SocialCard contact={contacts.find(c => c.platform === "LinkedIn")!} isDark={isDark} />
+              </div>
             </motion.div>
 
-            <motion.div custom={18} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-6 lg:row-start-5 lg:row-span-1 h-auto lg:h-full">
-              <SocialCard contact={contacts.find(c => c.platform === "GitHub")!} isDark={isDark} />
-            </motion.div>
-
-            <motion.div custom={19} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-6 lg:row-start-6 lg:row-span-1 h-auto lg:h-full">
-              <SocialCard contact={contacts.find(c => c.platform === "LinkedIn")!} isDark={isDark} />
+            <motion.div custom={18} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-6 lg:row-start-5 lg:row-span-2 h-auto lg:h-full min-h-[190px]">
+              <MachinesCard />
             </motion.div>
 
             <motion.div custom={20} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-6 lg:row-start-7 lg:row-span-2 h-auto lg:h-full min-h-[150px]">

@@ -192,18 +192,27 @@
     }
   },
   "currentlyWorking": {
-    "label": "Em desenvolvimento",
-    "subtitle": "Plataforma mobile educacional para concursos públicos",
-    "focusLabel": "Foco atual",
-    "focus1": "Offline-first com sync em tempo real",
-    "focus2": "UI polida e acessível",
-    "milestonesLabel": "Próximos marcos",
-    "progress": "Progresso",
-    "visitorsLabel": "visitas ao site",
-    "visitorsFlipLabel": "visitas",
-    "visitorsBackTitle": "visitantes",
-    "visitorsLive": "tempo real",
-    "backFlipLabel": "voltar"
+    "label": "Em desenvolvimento"
+  },
+  "views": {
+    "title": "Visitas",
+    "label": "visitas ao site",
+    "live": "tempo real"
+  },
+  "machines": {
+    "pcTitle": "Meu PC",
+    "serverTitle": "Servidor",
+    "online": "online",
+    "offline": "offline",
+    "uptime": "no ar",
+    "cpu": "cpu",
+    "ram": "ram",
+    "gpu": "gpu",
+    "disk": "disco",
+    "lastReading": "leitura de {{time}}",
+    "unavailable": "Sem leitura no momento",
+    "flipToServer": "servidor",
+    "flipToPc": "pc"
   },
   "projects": {
     "stars": "stars"

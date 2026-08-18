@@ -191,6 +191,31 @@ export interface VisitorCount {
   count: number;
 }
 
+export interface MachineDisk {
+  name: string;
+  usedPct: number;
+}
+
+export interface MachineStatus {
+  online: boolean;
+  uptimeHours: number | null;
+  cpuPct: number | null;
+  cpuTempC: number | null;
+  ramPct: number | null;
+  gpuPct: number | null;
+  gpuTempC: number | null;
+  disks: MachineDisk[];
+}
+
+export interface MachinesStatus {
+  at: string;
+  pc: MachineStatus | null;
+  server: MachineStatus | null;
+}
+
+export const getMachinesStatus = (options?: RequestInit) =>
+  fetchJson<MachinesStatus>("/api/portfolio/machines", options);
+
 export const getVisitorCount = (options?: RequestInit) =>
   fetchJson<VisitorCount>("/api/portfolio/visitors", options);
 
