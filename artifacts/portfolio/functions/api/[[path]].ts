@@ -12,7 +12,7 @@ type Env = {
   DAILY_INGEST_DB?: D1Database;
 };
 
-const JIKAN_BASE = "https://jikan-edge.lucas-hdo.workers.dev/v1";
+const JIKAN_BASE = "https://jikan.lucashdo.com/v1";
 const JIKAN_HEADERS: Record<string, string> = {
   Accept: "application/json",
   "User-Agent": "lucashdo-portfolio/1.0 (+https://lucashdo.com)",

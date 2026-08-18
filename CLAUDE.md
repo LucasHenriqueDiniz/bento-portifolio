@@ -66,14 +66,15 @@ artifacts/
 
 All third-party calls live in `artifacts/portfolio/functions/api/[[path]].ts`.
 
-- **MyAnimeList data** goes through **jikan-edge** (`https://jikan-edge.lucas-hdo.workers.dev/v1`), **not** the
-  legacy `api.jikan.moe/v4` Jikan API. Do not reintroduce the old base URL.
+- **MyAnimeList data** goes through **jikan-edge** (`https://jikan.lucashdo.com/v1`), **not** the
+  legacy `api.jikan.moe/v4` Jikan API. Do not reintroduce the old base URL. The worker also answers on its
+  original `jikan-edge.lucas-hdo.workers.dev` address, but the custom domain is the canonical one — use it.
   - Every response is wrapped in `{ data, meta: { cached, stale, refreshFailed, fetchedAt } }` — no Jikan-style
     `pagination` object. `meta.stale: true` is a valid cache-fallback response, not an error.
     Fields are camelCase (`malId`, `episodesWatched`, `startYear`, `imageUrl` as a flat string).
   - Handle `429`/rate limiting by honoring the `Retry-After` header (see `rateLimitDelayMs` in `[[path]].ts`).
   - Some Jikan routes are **not served** by jikan-edge (genre lists, club search, `top/reviews`, user
-    history/external, per-episode forum, etc.) — check `https://jikan-edge.lucas-hdo.workers.dev/docs` before
+    history/external, per-episode forum, etc.) — check `https://jikan.lucashdo.com/docs` before
     depending on a new route.
   - jikan-edge is Lucas's own worker and evolves independently; if MAL numbers look wrong, verify against a
     live profile page before assuming the portfolio-side parsing is at fault — the bug may be upstream.
@@ -130,4 +131,4 @@ Reusable workflows live in `.claude/skills/` and are invoked as slash commands:
 
 ---
 
-Last updated: 2026-07-28
+Last updated: 2026-08-18
