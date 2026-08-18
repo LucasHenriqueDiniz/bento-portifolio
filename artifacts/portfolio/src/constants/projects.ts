@@ -169,6 +169,7 @@ export const projects: Project[] = [
     techStack: ["Node.js", "TypeScript", "GitHub Actions", "SVG", "API Integration"],
     highlight: "Geração dinâmica de SVG com plugins, múltiplas APIs e pipeline no GitHub Actions",
     highlightEn: "Dynamic SVG generation with plugins, multiple APIs and GitHub Actions pipeline",
+    url: "https://weebprofile-dashboard.pages.dev",
     repoUrl: "https://github.com/LucasHenriqueDiniz/WeebProfile",
     featured: true,
     status: "workInProgress",
@@ -179,7 +180,8 @@ export const projects: Project[] = [
     typeEn: "GitHub README tool",
     year: "2024-2026",
     priority: 8,
-    image: "/projects/weebprofile.webp",
+    image: "/projects/weebprofile-dashboard.jpg",
+    images: ["/projects/weebprofile-dashboard.jpg", "/projects/weebprofile.webp"],
     showInDonate: true,
   },
   {
@@ -382,14 +384,16 @@ export const projects: Project[] = [
     description:
       "• Construí uma plataforma para cadastro e busca de pessoas desaparecidas durante a tragédia no RS\n" +
       "• Implementei fluxo de registro, consulta e atualização usando Next.js e Supabase\n" +
-      "• Disponibilizei o projeto como iniciativa open-source para resposta comunitária emergencial",
+      "• Disponibilizei o projeto como iniciativa open-source para resposta comunitária emergencial\n" +
+      "• Sem ambiente de produção ativo: a emergência passou e o deploy foi desligado — o código segue aberto no repositório",
     descriptionEn:
       "• Built a platform for registering and searching missing people during the RS tragedy\n" +
       "• Implemented registration, lookup and update flows using Next.js and Supabase\n" +
-      "• Open-sourced the project as a community emergency response initiative",
+      "• Open-sourced the project as a community emergency response initiative\n" +
+      "• No live production environment: the emergency passed and the deployment was shut down — the code remains open in the repository",
     techStack: ["Next.js", "TypeScript", "Supabase"],
-    highlight: "Plataforma de cadastro e busca de desaparecidos criada para resposta emergencial no RS",
-    highlightEn: "Missing people registration and search platform built for RS emergency response",
+    highlight: "Plataforma emergencial de desaparecidos no RS — sem produção ativa, código aberto no repositório",
+    highlightEn: "RS missing-people emergency platform — no live production, source open in the repository",
     repoUrl: "https://github.com/BotsChannel/resgate-rs",
     featured: true,
     status: "completed",
@@ -707,6 +711,7 @@ export const projects: Project[] = [
     typeEn: "Auditing tool",
     year: "2025-2026",
     priority: 10,
+    image: "/projects/adsense-site-auditor.png",
   },
   {
     id: "arca",
@@ -867,53 +872,6 @@ export const projects: Project[] = [
     typeEn: "Desktop application",
     year: "2026",
     priority: 16,
-  },
-  {
-    id: "personal-observability",
-    name: "Personal Observability",
-    description:
-      "• Construí um sistema pessoal de observabilidade que coleta AdSense, Search Console, OLX, uptime e telemetria de máquinas\n" +
-      "• Implementei registry de integrações, scheduler com cron, processors de anomalia/oportunidade SEO e API autenticada\n" +
-      "• Entrego os insights em múltiplos canais: statusline, dashboard web, wallpaper e resumo diário",
-    descriptionEn:
-      "• Built a personal observability system collecting AdSense, Search Console, OLX, uptime and machine telemetry\n" +
-      "• Implemented an integration registry, cron scheduler, anomaly/SEO-opportunity processors and an authenticated API\n" +
-      "• Delivers insights through multiple channels: statusline, web dashboard, wallpaper and daily digest",
-    techStack: ["Cloudflare Workers", "TypeScript", "D1", "KV", "Google APIs"],
-    highlight: "Pipeline de coleta e detecção que transforma métricas dispersas em insights diários",
-    highlightEn: "Collection and detection pipeline turning scattered metrics into daily insights",
-    status: "workInProgress",
-    category: "software",
-    role: "Desenvolvedor solo",
-    roleEn: "Solo developer",
-    type: "Infraestrutura pessoal",
-    typeEn: "Personal infrastructure",
-    year: "2026",
-    priority: 13,
-  },
-  {
-    id: "vn-engine",
-    name: "VN Engine",
-    description:
-      "• Construí uma engine de visual novel com React Native + Expo rodando em Android, iOS e Web de um único código\n" +
-      "• Implementei sistema de cenas data-driven com diálogos, escolhas com branching, flags e recursos\n" +
-      "• Adicionei sprites com expressões trocáveis, áudio (música, SFX, vozes), menu, HUD e sistema de capítulos",
-    descriptionEn:
-      "• Built a visual novel engine with React Native + Expo running on Android, iOS and Web from a single codebase\n" +
-      "• Implemented a data-driven scene system with dialogs, branching choices, flags and resources\n" +
-      "• Added sprites with swappable expressions, audio (music, SFX, voice), menu, HUD and a chapter system",
-    techStack: ["React Native", "Expo", "TypeScript", "Zustand"],
-    highlight: "Engine de visual novel multiplataforma com cenas definidas em TypeScript puro",
-    highlightEn: "Cross-platform visual novel engine with scenes defined in plain TypeScript",
-    repoUrl: "https://github.com/LucasHenriqueDiniz/vn-engine",
-    status: "experimental",
-    category: "software",
-    role: "Desenvolvedor solo",
-    roleEn: "Solo developer",
-    type: "Engine / mobile",
-    typeEn: "Engine / mobile",
-    year: "2026",
-    priority: 17,
   },
   {
     id: "bento-portfolio",
