@@ -873,7 +873,7 @@ export const projects: Project[] = [
     techStack: ["Tauri", "Rust", "React", "TypeScript", "Windows Registry"],
     highlight: "Troca os sons do Windows por packs do XP, Vista e 7 — com prévia e backup reversível",
     highlightEn: "Swaps Windows sounds for XP, Vista and 7 packs — with preview and reversible backup",
-    url: "https://sounddeck-a3r.pages.dev",
+    url: "https://sounddeck.lucas-hdo.workers.dev",
     repoUrl: "https://github.com/LucasHenriqueDiniz/sounddeck",
     status: "workInProgress",
     category: "software",
