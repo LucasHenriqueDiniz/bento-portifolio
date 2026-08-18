@@ -743,26 +743,34 @@ export const projects: Project[] = [
     id: "argo-studios",
     name: "Argo Studios",
     description:
-      "• Plataforma criativa para estúdios e artistas colaborarem em projetos\n" +
-      "• Implementei interface intuitiva com ferramentas de colaboração em tempo real\n" +
-      "• Estruturei arquitetura escalável para suportar múltiplos usuários e projetos simultâneos",
+      "• Cuidei do design e do frontend de um estúdio indie de games que fundei com o Gabriel em 2024\n" +
+      "• Assinei a camada de interface dos três projetos: Date! (visual novel de romance mobile), Tidehollow (dungeon crawler roguelite) e Sora Engine (editor de visual novel desktop)\n" +
+      "• Construí o site do estúdio com estética pixel art, animações de scroll e páginas de cada projeto\n" +
+      "• O estúdio encerrou em 2025 e o site segue no ar como arquivo do que construímos",
     descriptionEn:
-      "• Creative platform for studios and artists to collaborate on projects\n" +
-      "• Implemented intuitive interface with real-time collaboration tools\n" +
-      "• Structured scalable architecture to support multiple concurrent users and projects",
-    techStack: ["React", "TypeScript", "WebSockets", "Cloudflare"],
-    highlight: "Plataforma colaborativa para criadores e estúdios",
-    highlightEn: "Collaborative platform for creators and studios",
-    status: "completed",
+      "• Led design and frontend for an indie game studio I co-founded with Gabriel in 2024\n" +
+      "• Owned the interface layer across all three projects: Date! (mobile romance visual novel), Tidehollow (roguelite dungeon crawler) and Sora Engine (desktop visual novel editor)\n" +
+      "• Built the studio site with a pixel-art aesthetic, scroll animations and per-project pages\n" +
+      "• The studio wrapped up in 2025 and the site remains online as an archive of what we built",
+    techStack: ["React", "TypeScript", "Cloudflare Pages", "UI Design", "Pixel Art"],
+    highlight: "Estúdio indie de games que co-fundei — site-arquivo dos três projetos que enviamos",
+    highlightEn: "Indie game studio I co-founded — archive site of the three projects we shipped",
+    url: "https://argo-studios.pages.dev",
+    status: "discontinued",
     category: "website",
-    role: "Desenvolvedor fullstack",
-    roleEn: "Fullstack developer",
-    type: "Plataforma colaborativa",
-    typeEn: "Collaborative platform",
-    year: "2025-2026",
+    role: "Co-fundador · design e frontend",
+    roleEn: "Co-founder · design and frontend",
+    type: "Estúdio de games / site",
+    typeEn: "Game studio / website",
+    year: "2024-2025",
     priority: 9,
-    image: "/projects/argo-studios.png",
-    images: ["/projects/argo-studios.png", "/projects/argo-studios-2.png", "/projects/argo-studios-3.png"],
+    image: "/projects/argo-studios-hero.png",
+    images: [
+      "/projects/argo-studios-hero.png",
+      "/projects/argo-studios.png",
+      "/projects/argo-studios-2.png",
+      "/projects/argo-studios-3.png",
+    ],
   },
   {
     id: "gocronometer-mcp",
@@ -853,16 +861,19 @@ export const projects: Project[] = [
     id: "sounddeck",
     name: "SoundDeck",
     description:
-      "• Estou construindo um gerenciador de esquemas de som para Windows 10/11 com Tauri e React\n" +
-      "• Implementei catálogo de esquemas temáticos, preview de sons e aplicação direta no registro do sistema\n" +
-      "• Estruturei pipeline de build do catálogo e empacotamento de esquemas em ZIP",
+      "• Construí um seletor de esquemas de som para Windows 10/11: escolha um pack, ouça a prévia e aplique\n" +
+      "• Incluí os esquemas clássicos do XP, Vista e 7 mais dois originais, com editor evento a evento\n" +
+      "• Implementei backup automático do esquema atual antes de cada aplicação, tornando toda mudança reversível\n" +
+      "• Escrevi a escrita no registro do Windows em Rust via Tauri, com landing page bilíngue PT/EN",
     descriptionEn:
-      "• Building a sound scheme manager for Windows 10/11 with Tauri and React\n" +
-      "• Implemented a themed scheme catalog, sound previews and direct application to the system registry\n" +
-      "• Structured a catalog build pipeline and ZIP scheme packaging",
-    techStack: ["Tauri", "Rust", "React", "TypeScript"],
-    highlight: "Gerenciador de esquemas de som do Windows com catálogo temático",
-    highlightEn: "Windows sound scheme manager with a themed catalog",
+      "• Built a sound scheme picker for Windows 10/11: choose a pack, hear the preview, apply it\n" +
+      "• Included the classic XP, Vista and 7 schemes plus two originals, with a per-event editor\n" +
+      "• Implemented automatic backup of the current scheme before each apply, making every change reversible\n" +
+      "• Wrote the Windows registry layer in Rust through Tauri, with a bilingual PT/EN landing page",
+    techStack: ["Tauri", "Rust", "React", "TypeScript", "Windows Registry"],
+    highlight: "Troca os sons do Windows por packs do XP, Vista e 7 — com prévia e backup reversível",
+    highlightEn: "Swaps Windows sounds for XP, Vista and 7 packs — with preview and reversible backup",
+    url: "https://sounddeck-a3r.pages.dev",
     repoUrl: "https://github.com/LucasHenriqueDiniz/sounddeck",
     status: "workInProgress",
     category: "software",
@@ -872,6 +883,7 @@ export const projects: Project[] = [
     typeEn: "Desktop application",
     year: "2026",
     priority: 16,
+    image: "/projects/sounddeck.png",
   },
   {
     id: "bento-portfolio",
