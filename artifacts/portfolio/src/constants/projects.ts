@@ -43,7 +43,6 @@ export const projects: Project[] = [
     highlight: "Plataforma de conteúdo em produção com arquitetura focada em SEO",
     highlightEn: "Production content platform with SEO-focused architecture",
     url: "https://heartopia.guide/en",
-    repoUrl: "https://github.com/LucasHenriqueDiniz/heartopia-guide",
     featured: true,
     status: "completed",
     category: "website",
@@ -53,9 +52,10 @@ export const projects: Project[] = [
     typeEn: "Content platform",
     year: "2025-2026",
     priority: 1,
-    image: "/projects/heartopiaguide.webp",
+    image: "/projects/heartopia-hero.jpg",
     showInDonate: true,
     images: [
+      "/projects/heartopia-hero.jpg",
       "/projects/heartopiaguide.webp",
       "/projects/heartopia-guide-2.webp",
       "/projects/heartopia-guide-3.webp",
@@ -114,7 +114,12 @@ export const projects: Project[] = [
     year: "2026",
     priority: 2,
     image: "/projects/dropcut-video.webp",
-    images: ["/projects/dropcut-video.webp", "/projects/dropcut-novideo.webp", "/projects/dropcut-banner.png"],
+    images: [
+      "/projects/dropcut-video.webp",
+      "/projects/dropcut-novideo.webp",
+      "/projects/dropcut-landing.png",
+      "/projects/dropcut-banner.png",
+    ],
     showInDonate: true,
   },
   {
@@ -145,35 +150,10 @@ export const projects: Project[] = [
     image: "/projects/lucas-ui-vault.webp",
     images: [
       "/projects/lucas-ui-vault.webp",
+      "/projects/uivault-home.png",
       "/gallery/portfolio-character-component.png",
     ],
     showInDonate: false,
-  },
-  {
-    id: "esp-web-flasher",
-    name: "ESP Web Flasher",
-    description:
-      "• Construí um instalador web de firmware para ESP32/ESP8266 usando Web Serial API\n" +
-      "• Adicionei monitor serial com suporte a logs ANSI e envio de comandos pelo navegador\n" +
-      "• Integrei esptool-js para reduzir dependência de instaladores nativos no onboarding de dispositivos",
-    descriptionEn:
-      "• Built a web-based firmware installer for ESP32/ESP8266 using the Web Serial API\n" +
-      "• Added a serial monitor with ANSI log support and browser-based command input\n" +
-      "• Integrated esptool-js to reduce native installer dependency during device onboarding",
-    techStack: ["React", "TypeScript", "Web Serial API", "ESP32", "Material UI"],
-    highlight: "Instalação de firmware e monitor serial para ESP32/ESP8266 direto pelo navegador",
-    highlightEn: "Browser-based firmware flashing and serial monitor for ESP32/ESP8266",
-    repoUrl: "https://github.com/LucasHenriqueDiniz/siot-web-flasher",
-    featured: false,
-    status: "completed",
-    category: "software",
-    role: "Desenvolvedor frontend / IoT web tooling",
-    roleEn: "Frontend developer / IoT web tooling",
-    type: "Ferramenta IoT",
-    typeEn: "IoT tooling",
-    year: "2025",
-    priority: 7,
-    image: "/projects/esp-web-flasher.webp",
   },
   {
     id: "weeb-profile",
@@ -189,7 +169,6 @@ export const projects: Project[] = [
     techStack: ["Node.js", "TypeScript", "GitHub Actions", "SVG", "API Integration"],
     highlight: "Geração dinâmica de SVG com plugins, múltiplas APIs e pipeline no GitHub Actions",
     highlightEn: "Dynamic SVG generation with plugins, multiple APIs and GitHub Actions pipeline",
-    url: "https://weeb-profile-web-client.vercel.app/",
     repoUrl: "https://github.com/LucasHenriqueDiniz/WeebProfile",
     featured: true,
     status: "workInProgress",
@@ -299,7 +278,6 @@ export const projects: Project[] = [
     techStack: ["Next.js", "TypeScript", "Supabase", "PostgreSQL"],
     highlight: "Plataforma institucional fullstack com CMS customizado e dashboard administrativo",
     highlightEn: "Fullstack institutional platform with custom CMS and admin dashboard",
-    url: "https://www.includegurias.com.br",
     repoUrl: "https://github.com/include-gurias/includegurias-website",
     featured: true,
     status: "completed",
@@ -342,7 +320,8 @@ export const projects: Project[] = [
     typeEn: "Interactive web experiment",
     year: "2025",
     priority: 13,
-    image: "/projects/windows_xp_online.webp",
+    image: "/projects/winxp-desktop.png",
+    images: ["/projects/winxp-desktop.png", "/projects/windows_xp_online.webp"],
   },
   {
     id: "simple-overlay-timer",
@@ -411,7 +390,6 @@ export const projects: Project[] = [
     techStack: ["Next.js", "TypeScript", "Supabase"],
     highlight: "Plataforma de cadastro e busca de desaparecidos criada para resposta emergencial no RS",
     highlightEn: "Missing people registration and search platform built for RS emergency response",
-    url: "https://resgate-rs.vercel.app",
     repoUrl: "https://github.com/BotsChannel/resgate-rs",
     featured: true,
     status: "completed",
@@ -424,39 +402,6 @@ export const projects: Project[] = [
     priority: 12,
     image: "/projects/resgate-rs.webp",
     images: ["/projects/resgate-rs.webp", "/projects/resgate-rs-2.webp"],
-  },
-  {
-    id: "quizhub",
-    name: "QuizHub",
-    description:
-      "• Construí uma plataforma de questões com ranking, editor colaborativo e organização por concursos\n" +
-      "• Modelei dados relacionais para questões, alternativas, provas, matérias e histórico de respostas\n" +
-      "• Implementei pipeline de ingestão com apoio de LLM para transformar conteúdo bruto em dados estruturados",
-    descriptionEn:
-      "• Built a question platform with ranking, collaborative editor and exam-based organization\n" +
-      "• Modeled relational data for questions, options, exams, subjects and answer history\n" +
-      "• Implemented an ingestion pipeline with LLM assistance to turn raw content into structured data",
-    techStack: ["Next.js", "TypeScript", "Supabase", "PostgreSQL", "LLM Integration"],
-    highlight: "Plataforma de questões com ranking e ingestão assistida por LLM",
-    highlightEn: "Question platform with ranking and LLM-assisted ingestion",
-    url: "https://quizhub.com.br/",
-    repoUrl: "https://github.com/LucasHenriqueDiniz/quizhub",
-    featured: true,
-    status: "workInProgress",
-    category: "website",
-    role: "Desenvolvedor fullstack solo",
-    roleEn: "Solo fullstack developer",
-    type: "EdTech / banco de questões",
-    typeEn: "EdTech / question bank",
-    year: "2025-2026",
-    priority: 2,
-    image: "/projects/quizhub-thumbnail.webp",
-    images: [
-      "/projects/quizhub-thumbnail.webp",
-      "/projects/quizhub.webp",
-      "/projects/quizhub-2.webp",
-      "/projects/quizhub-3.webp",
-    ],
   },
   {
     id: "comunica-mulher",
@@ -482,8 +427,9 @@ export const projects: Project[] = [
     typeEn: "Management system",
     year: "2025",
     priority: 14,
-    image: "/projects/comunicamulher.webp",
+    image: "/projects/comunicamulher-hero.jpg",
     images: [
+      "/projects/comunicamulher-hero.jpg",
       "/projects/comunicamulher.webp",
       "/projects/comunica-mulher-2.webp",
       "/projects/comunica-mulher-3.webp",
@@ -504,7 +450,6 @@ export const projects: Project[] = [
     highlight: "Analytics de mercado Steam com coleta de dados, normalização e cache Redis",
     highlightEn: "Steam market analytics with data collection, normalization and Redis caching",
     url: "https://item-marketcap.vercel.app/",
-    repoUrl: "https://github.com/LucasHenriqueDiniz/item-marketcap",
     featured: true,
     status: "workInProgress",
     category: "website",
@@ -514,8 +459,9 @@ export const projects: Project[] = [
     typeEn: "Analytics / digital market",
     year: "2025",
     priority: 15,
-    image: "/projects/itemmarketcap.webp",
+    image: "/projects/itemmarketcap-hero.png",
     images: [
+      "/projects/itemmarketcap-hero.png",
       "/projects/itemmarketcap.webp",
       "/projects/item-market-cap-2.webp",
       "/projects/item-market-cap-3.webp",
@@ -545,34 +491,12 @@ export const projects: Project[] = [
     typeEn: "SaaS / automation",
     year: "2024",
     priority: 16,
-    image: "/projects/bots-channel.webp",
-    images: ["/projects/bots-channel.webp", "/projects/bots-channel-2.webp"],
-  },
-  {
-    id: "autowabba",
-    name: "AutoWabba",
-    description:
-      "• Construí um app desktop de automação para downloads em lote usando Playwright\n" +
-      "• Implementei processamento paralelo, fila de tarefas e lógica de retry\n" +
-      "• Modelei arquitetura Electron com IPC para comunicação entre UI e processo principal",
-    descriptionEn:
-      "• Built a desktop automation app for bulk downloads using Playwright\n" +
-      "• Implemented parallel processing, task queue and retry logic\n" +
-      "• Designed an Electron architecture with IPC between UI and main process",
-    techStack: ["Electron", "Node.js", "Playwright", "Automation"],
-    highlight: "Automação desktop para downloads em lote com Playwright e Electron",
-    highlightEn: "Desktop automation for bulk downloads with Playwright and Electron",
-    url: "https://github.com/LucasHenriqueDiniz/AutoWabba",
-    repoUrl: "https://github.com/LucasHenriqueDiniz/AutoWabba",
-    status: "completed",
-    category: "software",
-    role: "Desenvolvedor solo",
-    roleEn: "Solo developer",
-    type: "Automação desktop",
-    typeEn: "Desktop automation",
-    year: "2025",
-    priority: 17,
-    image: "/projects/autowabba.webp",
+    image: "/projects/botschannel-hero.png",
+    images: [
+      "/projects/botschannel-hero.png",
+      "/projects/bots-channel.webp",
+      "/projects/bots-channel-2.webp",
+    ],
   },
   {
     id: "hypixel-daily-skip",
@@ -603,28 +527,34 @@ export const projects: Project[] = [
     id: "funsona",
     name: "FunSona",
     description:
-      "• Arquitetei um monorepo com arquitetura baseada em agentes para documentação colaborativa com IA\n" +
-      "• Implementei integração com Supabase para persistência de dados e modelos de agentes\n" +
-      "• Estruturei ambiente de desenvolvimento com pnpm workspaces e suporte a múltiplos canais de deployment",
+      "• Construí uma plataforma de quizzes SEO-first para criar, jogar e compartilhar quizzes de trivia e personalidade\n" +
+      "• Estruturei monorepo com Astro + React no frontend e API Hono em Cloudflare Workers, com auth via Clerk\n" +
+      "• Implementei gamificação (XP, streaks, leaderboards, achievements), busca full-text em Postgres e premium via Stripe",
     descriptionEn:
-      "• Architected a monorepo with agent-based architecture for AI-collaborative documentation\n" +
-      "• Implemented Supabase integration for data persistence and agent models\n" +
-      "• Structured development environment with pnpm workspaces and multi-channel deployment support",
-    techStack: ["TypeScript", "Astro", "React", "Supabase"],
-    highlight: "Plataforma colaborativa com integração de agentes de IA",
-    highlightEn: "AI agent-integrated collaborative platform",
-    url: "http://funsona.com/",
+      "• Built an SEO-first quiz platform for creating, playing and sharing trivia and personality quizzes\n" +
+      "• Structured a monorepo with Astro + React frontend and a Hono API on Cloudflare Workers, with Clerk auth\n" +
+      "• Implemented gamification (XP, streaks, leaderboards, achievements), Postgres full-text search and Stripe premium",
+    techStack: ["Astro", "React", "TypeScript", "Hono", "Cloudflare Workers", "Supabase", "Stripe"],
+    highlight: "Plataforma de quizzes SEO-first com gamificação e monetização — sucessora do QuizHub",
+    highlightEn: "SEO-first quiz platform with gamification and monetization — successor to QuizHub",
+    url: "https://funsona.com/",
     repoUrl: "https://github.com/LucasHenriqueDiniz/funsona",
-    featured: false,
+    featured: true,
     status: "workInProgress",
     category: "website",
-    role: "Desenvolvedor fullstack",
-    roleEn: "Fullstack developer",
-    type: "Plataforma colaborativa",
-    typeEn: "Collaborative platform",
+    role: "Desenvolvedor fullstack solo",
+    roleEn: "Solo fullstack developer",
+    type: "Plataforma de quizzes",
+    typeEn: "Quiz platform",
     year: "2025-2026",
-    priority: 14,
-    
+    priority: 2,
+    image: "/projects/funsona.png",
+    images: [
+      "/projects/funsona.png",
+      "/projects/funsona-explore.png",
+      "/projects/funsona-quiz.jpg",
+      "/projects/funsona-leaderboard.png",
+    ],
   },
   {
     id: "koto-by-pingo",
@@ -651,6 +581,14 @@ export const projects: Project[] = [
     typeEn: "Educational app",
     year: "2025-2026",
     priority: 5,
+    image: "/projects/koto-by-pingo.png",
+    images: [
+      "/projects/koto-by-pingo.png",
+      "/projects/koto-home.png",
+      "/projects/koto-vocab.png",
+      "/projects/koto-simulados.png",
+      "/projects/koto-escuta.png",
+    ],
   },
   {
     id: "tubetrace",
@@ -705,8 +643,14 @@ export const projects: Project[] = [
     typeEn: "Tools collection",
     year: "2025-2026",
     priority: 7,
-    image: "/projects/smallwebapps.png",
-    images: ["/projects/smallwebapps.png", "/projects/smallwebapps2.png", "/projects/smallwebapps3.png"],
+    image: "/projects/smallwebapps-hero.png",
+    images: [
+      "/projects/smallwebapps-hero.png",
+      "/projects/smallwebapps-apps.png",
+      "/projects/smallwebapps.png",
+      "/projects/smallwebapps2.png",
+      "/projects/smallwebapps3.png",
+    ],
   },
   {
     id: "calculebrasil",
@@ -733,8 +677,12 @@ export const projects: Project[] = [
     typeEn: "Financial calculator",
     year: "2025-2026",
     priority: 8,
-    image: "/projects/calculebrasil.png",
-    images: ["/projects/calculebrasil.png", "/projects/calculebrasil-2.png"],
+    image: "/projects/calculebrasil-hero.png",
+    images: [
+      "/projects/calculebrasil-hero.png",
+      "/projects/calculebrasil.png",
+      "/projects/calculebrasil-2.png",
+    ],
   },
   {
     id: "adsense-site-auditor",
@@ -775,7 +723,6 @@ export const projects: Project[] = [
     highlight: "Aplicação web moderna com arquitetura escalável",
     highlightEn: "Modern web application with scalable architecture",
     url: "https://arca-web.pages.dev/",
-    repoUrl: "https://github.com/LucasHenriqueDiniz/arca",
     status: "completed",
     category: "website",
     role: "Desenvolvedor fullstack",
@@ -801,7 +748,6 @@ export const projects: Project[] = [
     techStack: ["React", "TypeScript", "WebSockets", "Cloudflare"],
     highlight: "Plataforma colaborativa para criadores e estúdios",
     highlightEn: "Collaborative platform for creators and studios",
-    repoUrl: "https://github.com/LucasHenriqueDiniz/argo-studios",
     status: "completed",
     category: "website",
     role: "Desenvolvedor fullstack",
@@ -839,28 +785,161 @@ export const projects: Project[] = [
     image: "/projects/gocronometer-mcp.png",
   },
   {
-    id: "simple-extension-boilerplate",
-    name: "Simple Extension Boilerplate",
+    id: "jikan-edge",
+    name: "Jikan Edge",
     description:
-      "• Criei um template streamlined para Chrome extensions com Manifest V3, Vite, React 19 e TypeScript\n" +
-      "• Implementei registro de funcionalidades, internacionalização (EN/PT), página de changelog e build unificado\n" +
-      "• Adicionei ferramenta CLI para scaffolding rápido de novas extensões com 735 commits de desenvolvimento",
+      "• Construí uma API REST de anime/mangá com paridade funcional com o Jikan, rodando inteira em Cloudflare Workers\n" +
+      "• Implementei 97 rotas cobrindo 96 dos 100 endpoints do Jikan v4, com cache em D1, stale fallback e rate limiting por IP\n" +
+      "• Escrevi testes de contrato por rota, benchmarks de parser e setup de self-hosting com um comando",
     descriptionEn:
-      "• Created a streamlined Chrome extension template with Manifest V3, Vite, React 19 and TypeScript\n" +
-      "• Implemented feature registry, internationalization (EN/PT), changelog page and unified build process\n" +
-      "• Added CLI scaffolding tool for rapid extension generation with 735 commits of development",
-    techStack: ["Vite", "React", "TypeScript", "Manifest V3", "Tailwind CSS"],
-    highlight: "Boilerplate moderno para Chrome extensions com Vite e React",
-    highlightEn: "Modern Chrome extension boilerplate with Vite and React",
-    repoUrl: "https://github.com/LucasHenriqueDiniz/simple-extension-boilerplate",
+      "• Built an anime/manga REST API with functional parity with Jikan, running entirely on Cloudflare Workers\n" +
+      "• Implemented 97 routes covering 96 of Jikan v4's 100 endpoints, with D1 caching, stale fallback and per-IP rate limiting\n" +
+      "• Wrote per-route contract tests, parser benchmarks and one-command self-hosting setup",
+    techStack: ["Cloudflare Workers", "TypeScript", "D1", "REST API", "Web Scraping"],
+    highlight: "API de dados do MyAnimeList servida na edge com cache D1 — alimenta este próprio portfólio",
+    highlightEn: "MyAnimeList data API served at the edge with D1 caching — powers this very portfolio",
+    url: "https://jikan-edge.lucas-hdo.workers.dev",
+    repoUrl: "https://github.com/LucasHenriqueDiniz/jikan-edge",
+    featured: true,
     status: "completed",
-    category: "extension",
+    category: "software",
+    role: "Desenvolvedor backend solo",
+    roleEn: "Solo backend developer",
+    type: "API pública / edge computing",
+    typeEn: "Public API / edge computing",
+    year: "2026",
+    priority: 3,
+    image: "/projects/jikan-edge.png",
+    images: ["/projects/jikan-edge.png", "/projects/jikan-edge-docs.png"],
+  },
+  {
+    id: "word-genie",
+    name: "Word Genie",
+    description:
+      "• Construí um solver de palavras em tempo real para Gartic Phone e Guess The Build com resposta em milissegundos\n" +
+      "• Curei dicionários com 26 mil+ palavras em 5 idiomas (PT, EN, ES, FR, IT) com i18n completo e hreflang\n" +
+      "• Implementei com Astro + React islands para JS mínimo, Lighthouse 95+ e Core Web Vitals verdes",
+    descriptionEn:
+      "• Built a real-time word solver for Gartic Phone and Guess The Build with millisecond responses\n" +
+      "• Curated dictionaries with 26k+ words across 5 languages (PT, EN, ES, FR, IT) with full i18n and hreflang\n" +
+      "• Implemented with Astro + React islands for minimal JS, Lighthouse 95+ and green Core Web Vitals",
+    techStack: ["Astro", "React", "TypeScript", "Tailwind CSS", "Cloudflare Pages"],
+    highlight: "Solver de palavras multilíngue com pattern matching instantâneo no navegador",
+    highlightEn: "Multilingual word solver with instant in-browser pattern matching",
+    url: "https://word-genie.pages.dev",
+    repoUrl: "https://github.com/LucasHenriqueDiniz/word-genie",
+    status: "completed",
+    category: "website",
     role: "Desenvolvedor solo",
     roleEn: "Solo developer",
-    type: "Template de extensão",
-    typeEn: "Extension template",
-    year: "2025-2026",
+    type: "Ferramenta para jogos",
+    typeEn: "Gaming tool",
+    year: "2026",
+    priority: 10,
+    image: "/projects/word-genie-hero.png",
+    images: [
+      "/projects/word-genie-hero.png",
+      "/projects/word-genie-gartic.png",
+      "/projects/word-genie-gtb.png",
+      "/projects/word-genie.png",
+    ],
+  },
+  {
+    id: "sounddeck",
+    name: "SoundDeck",
+    description:
+      "• Estou construindo um gerenciador de esquemas de som para Windows 10/11 com Tauri e React\n" +
+      "• Implementei catálogo de esquemas temáticos, preview de sons e aplicação direta no registro do sistema\n" +
+      "• Estruturei pipeline de build do catálogo e empacotamento de esquemas em ZIP",
+    descriptionEn:
+      "• Building a sound scheme manager for Windows 10/11 with Tauri and React\n" +
+      "• Implemented a themed scheme catalog, sound previews and direct application to the system registry\n" +
+      "• Structured a catalog build pipeline and ZIP scheme packaging",
+    techStack: ["Tauri", "Rust", "React", "TypeScript"],
+    highlight: "Gerenciador de esquemas de som do Windows com catálogo temático",
+    highlightEn: "Windows sound scheme manager with a themed catalog",
+    repoUrl: "https://github.com/LucasHenriqueDiniz/sounddeck",
+    status: "workInProgress",
+    category: "software",
+    role: "Desenvolvedor solo",
+    roleEn: "Solo developer",
+    type: "Aplicativo desktop",
+    typeEn: "Desktop application",
+    year: "2026",
+    priority: 16,
+  },
+  {
+    id: "personal-observability",
+    name: "Personal Observability",
+    description:
+      "• Construí um sistema pessoal de observabilidade que coleta AdSense, Search Console, OLX, uptime e telemetria de máquinas\n" +
+      "• Implementei registry de integrações, scheduler com cron, processors de anomalia/oportunidade SEO e API autenticada\n" +
+      "• Entrego os insights em múltiplos canais: statusline, dashboard web, wallpaper e resumo diário",
+    descriptionEn:
+      "• Built a personal observability system collecting AdSense, Search Console, OLX, uptime and machine telemetry\n" +
+      "• Implemented an integration registry, cron scheduler, anomaly/SEO-opportunity processors and an authenticated API\n" +
+      "• Delivers insights through multiple channels: statusline, web dashboard, wallpaper and daily digest",
+    techStack: ["Cloudflare Workers", "TypeScript", "D1", "KV", "Google APIs"],
+    highlight: "Pipeline de coleta e detecção que transforma métricas dispersas em insights diários",
+    highlightEn: "Collection and detection pipeline turning scattered metrics into daily insights",
+    status: "workInProgress",
+    category: "software",
+    role: "Desenvolvedor solo",
+    roleEn: "Solo developer",
+    type: "Infraestrutura pessoal",
+    typeEn: "Personal infrastructure",
+    year: "2026",
     priority: 13,
+  },
+  {
+    id: "vn-engine",
+    name: "VN Engine",
+    description:
+      "• Construí uma engine de visual novel com React Native + Expo rodando em Android, iOS e Web de um único código\n" +
+      "• Implementei sistema de cenas data-driven com diálogos, escolhas com branching, flags e recursos\n" +
+      "• Adicionei sprites com expressões trocáveis, áudio (música, SFX, vozes), menu, HUD e sistema de capítulos",
+    descriptionEn:
+      "• Built a visual novel engine with React Native + Expo running on Android, iOS and Web from a single codebase\n" +
+      "• Implemented a data-driven scene system with dialogs, branching choices, flags and resources\n" +
+      "• Added sprites with swappable expressions, audio (music, SFX, voice), menu, HUD and a chapter system",
+    techStack: ["React Native", "Expo", "TypeScript", "Zustand"],
+    highlight: "Engine de visual novel multiplataforma com cenas definidas em TypeScript puro",
+    highlightEn: "Cross-platform visual novel engine with scenes defined in plain TypeScript",
+    repoUrl: "https://github.com/LucasHenriqueDiniz/vn-engine",
+    status: "experimental",
+    category: "software",
+    role: "Desenvolvedor solo",
+    roleEn: "Solo developer",
+    type: "Engine / mobile",
+    typeEn: "Engine / mobile",
+    year: "2026",
+    priority: 17,
+  },
+  {
+    id: "bento-portfolio",
+    name: "Bento Portfolio",
+    description:
+      "• Construí este portfólio em estilo bento com React, Vite e Cloudflare Pages Functions\n" +
+      "• Integrei GitHub, Last.fm, MyAnimeList (via Jikan Edge), Steam e Lyfta server-side com cache em KV\n" +
+      "• Adicionei card de telemetria das minhas máquinas alimentado por D1, currículo em PDF e i18n PT/EN",
+    descriptionEn:
+      "• Built this bento-style portfolio with React, Vite and Cloudflare Pages Functions\n" +
+      "• Integrated GitHub, Last.fm, MyAnimeList (via Jikan Edge), Steam and Lyfta server-side with KV caching\n" +
+      "• Added a machine telemetry card fed by D1, PDF resume generation and PT/EN i18n",
+    techStack: ["React", "Vite", "TypeScript", "Tailwind CSS", "Cloudflare Pages Functions"],
+    highlight: "Este site: cards bento com integrações ao vivo e backend serverless",
+    highlightEn: "This site: bento cards with live integrations and a serverless backend",
+    url: "https://lucashdo.com/",
+    repoUrl: "https://github.com/LucasHenriqueDiniz/bento-portifolio",
+    status: "completed",
+    category: "website",
+    role: "Desenvolvedor fullstack solo",
+    roleEn: "Solo fullstack developer",
+    type: "Portfólio / integrações",
+    typeEn: "Portfolio / integrations",
+    year: "2025-2026",
+    priority: 14,
+    image: "/projects/bento-portfolio.jpg",
   },
 ];
 
