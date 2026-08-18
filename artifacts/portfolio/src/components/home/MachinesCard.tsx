@@ -115,7 +115,7 @@ export const MachinesCard = React.memo(function MachinesCard() {
   const machineFace = (machine: MachineStatus | null, emptyIcon: React.ReactNode) => {
     if (!machine) {
       return (
-        <div className="flex-1 flex flex-col items-center justify-center gap-2.5">
+        <div className="h-full flex flex-col items-center justify-center gap-2.5">
           <div className="relative flex items-center justify-center">
             <span className="absolute h-14 w-14 rounded-full border border-ghost animate-ping [animation-duration:3s] opacity-40" />
             <span className="absolute h-14 w-14 rounded-full border border-ghost" />
@@ -131,7 +131,7 @@ export const MachinesCard = React.memo(function MachinesCard() {
     const metrics = buildMetrics(machine);
 
     return (
-      <div className="flex-1 flex flex-col justify-between mt-2 min-h-0 overflow-hidden gap-2">
+      <div className="h-full flex flex-col justify-between pt-2 min-h-0 overflow-hidden gap-2">
         <div className="rounded-lg border border-ghost bg-field px-2.5 py-2">
           <div className="flex items-center gap-[3px] overflow-hidden mb-2" aria-hidden="true">
             {Array.from({ length: FACEPLATE_SLITS }, (_, index) => (

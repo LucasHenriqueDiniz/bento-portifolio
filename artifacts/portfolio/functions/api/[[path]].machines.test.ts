@@ -132,4 +132,31 @@ describe("portfolio/machines", () => {
 
     expect(res.status).toBe(502);
   });
+
+  it("falls back to the public stats endpoint when the D1 query itself fails", async () => {
+    const brokenDb = {
+      prepare: () => ({
+        all: async () => {
+          throw new Error("no such table: metrics");
+        },
+      }),
+    };
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () =>
+        new Response(
+          JSON.stringify({
+            at: "2026-08-18T00:42:37.209Z",
+            servidor: { online: true, noArHoras: 5, cpuTempC: 70, ramPct: 10, discoPct: 6.1 },
+          }),
+          { status: 200 }
+        )
+      )
+    );
+
+    const body = (await (await onRequest(makeContext({ DAILY_INGEST_DB: brokenDb }))).json()) as any;
+
+    expect(body.pc).toBeNull();
+    expect(body.server.cpuTempC).toBe(70);
+  });
 });

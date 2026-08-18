@@ -685,8 +685,12 @@ export const onRequest: PagesFunction<Env> = async (context) => {
       // rejecting the whole request.
       return await cached(request, path, 300, env, async () => {
         if (env.DAILY_INGEST_DB) {
-          const rows = ((await env.DAILY_INGEST_DB.prepare(MACHINE_METRICS_SQL).all())
-            .results ?? []) as unknown as MetricRow[];
+          // A D1 failure (missing table, binding misconfigured) downgrades to the
+          // public-stats fallback below instead of failing the whole request.
+          const rows = (await env.DAILY_INGEST_DB.prepare(MACHINE_METRICS_SQL)
+            .all()
+            .then((result) => result.results ?? [])
+            .catch(() => [])) as unknown as MetricRow[];
           if (rows.length) {
             return json(
               {
