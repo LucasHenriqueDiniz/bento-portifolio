@@ -12,17 +12,18 @@ export const formatDateRange = (
   locale = "en-US",
   presentLabel = "Present",
 ): string => {
-  const start = new Date(startDate + "-01"); // Add day for valid date parsing
-  const startYear = start.getFullYear();
-  const startMonth = start.toLocaleDateString(locale, { month: "short" });
+  // Parsed and formatted in UTC so the month never shifts for visitors west of UTC.
+  const start = new Date(`${startDate}-01T00:00:00Z`);
+  const startYear = start.getUTCFullYear();
+  const startMonth = start.toLocaleDateString(locale, { month: "short", timeZone: "UTC" });
 
   if (!endDate) {
     return `${startMonth} ${startYear} - ${presentLabel}`;
   }
 
-  const end = new Date(endDate + "-01");
-  const endYear = end.getFullYear();
-  const endMonth = end.toLocaleDateString(locale, { month: "short" });
+  const end = new Date(`${endDate}-01T00:00:00Z`);
+  const endYear = end.getUTCFullYear();
+  const endMonth = end.toLocaleDateString(locale, { month: "short", timeZone: "UTC" });
 
   if (startYear === endYear) {
     return `${startMonth} - ${endMonth} ${startYear}`;
