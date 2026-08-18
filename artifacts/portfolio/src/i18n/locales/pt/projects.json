@@ -11,7 +11,34 @@
   },
   "countSuffix": "projetos",
   "search": {
-    "placeholder": "Buscar projetos, tecnologias, palavras-chave...",
+    "placeholder": "Buscar por nome ou stack...",
     "clear": "Limpar"
+  },
+  "index": {
+    "eyebrow": "Projetos — índice completo",
+    "lead": "Do experimento de fim de semana ao que está em produção agora. Clique num projeto para ver o showcase.",
+    "filter": "Filtrar",
+    "featured": "Em destaque",
+    "fullArchive": "Arquivo completo",
+    "empty": "Nenhum projeto encontrado.",
+    "clearFilters": "Limpar filtros",
+    "all": "Todos",
+    "stats": {
+      "total": "Projetos",
+      "live": "No ar",
+      "years": "Anos de código"
+    },
+    "columns": {
+      "number": "Nº",
+      "name": "Nome",
+      "description": "Descrição",
+      "category": "Categoria",
+      "year": "Ano"
+    },
+    "categories": {
+      "website": "Site",
+      "software": "Software",
+      "extension": "Extensão"
+    }
   }
 }

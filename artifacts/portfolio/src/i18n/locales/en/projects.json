@@ -11,7 +11,34 @@
     "subtitle": "Move your mouse to explore"
   },
   "search": {
-    "placeholder": "Search projects, tech, keywords...",
+    "placeholder": "Search by name or stack...",
     "clear": "Clear"
+  },
+  "index": {
+    "eyebrow": "Projects — full index",
+    "lead": "From weekend experiments to what's running in production right now. Click a project to see its showcase.",
+    "filter": "Filter",
+    "featured": "Featured",
+    "fullArchive": "Full archive",
+    "empty": "No projects found.",
+    "clearFilters": "Clear filters",
+    "all": "All",
+    "stats": {
+      "total": "Projects",
+      "live": "Live",
+      "years": "Years of code"
+    },
+    "columns": {
+      "number": "No.",
+      "name": "Name",
+      "description": "Description",
+      "category": "Category",
+      "year": "Year"
+    },
+    "categories": {
+      "website": "Website",
+      "software": "Software",
+      "extension": "Extension"
+    }
   }
 }
