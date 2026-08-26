@@ -1,7 +1,7 @@
 {
   "header": {
-    "role": "Full Stack Developer",
-    "summary": "3+ years as a developer building web apps, IoT platforms & AI automation. React, TypeScript, Node.js, AWS."
+    "role": "Software Engineer",
+    "summary": "Software Engineer at Appmax (payments fintech), on the Engineering/Data team. 3+ years building web apps, IoT platforms & AI automation. Python, TypeScript, Go, Next.js, Node.js."
   },
   "sections": {
     "experience": "Experience",
@@ -9,7 +9,8 @@
     "skills": "Skills",
     "education": "Education",
     "languages": "Languages",
-    "certifications": "Certifications"
+    "certifications": "Certifications",
+    "publications": "Publications"
   },
   "status": {
     "current": "Current",

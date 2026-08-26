@@ -75,12 +75,25 @@ describe("ResumePdfDocument", () => {
     expect(runs).toContain("Lucas Henrique Diniz");
   });
 
+  it("renders the publications section with its localized heading", async () => {
+    const enRuns = extractTextRuns(decompressStreams(await renderPdfBytes("en")));
+    const ptRuns = extractTextRuns(decompressStreams(await renderPdfBytes("pt")));
+
+    // styles.sectionTitle applies textTransform: uppercase, so the glyphs that
+    // actually reach the page are the uppercased heading, not the i18n string.
+    expect(enRuns).toContain("PUBLICATIONS");
+    expect(ptRuns).toContain("PUBLICAÇÕES");
+    expect(enRuns).toContain(
+      "ChatBot Include Gurias: Conhecendo Mulheres das Ciências Exatas",
+    );
+  });
+
   it("localizes the role text per language", async () => {
     const enRuns = extractTextRuns(decompressStreams(await renderPdfBytes("en")));
     const ptRuns = extractTextRuns(decompressStreams(await renderPdfBytes("pt")));
 
-    expect(enRuns).toContain("Full Stack Developer");
-    expect(ptRuns).toContain("Desenvolvedor Full Stack");
-    expect(ptRuns).not.toContain("Full Stack Developer");
+    expect(enRuns).toContain("Software Engineer");
+    expect(ptRuns).toContain("Engenheiro de Software");
+    expect(ptRuns).not.toContain("Software Engineer");
   });
 });

@@ -6,7 +6,8 @@ export const personSchema = {
   name: "Lucas Diniz",
   url: ContactLinks.website,
   image: "https://lucashdo.com/ogImage.png",
-  jobTitle: "Full Stack Developer",
+  jobTitle: "Software Engineer",
+  worksFor: { "@type": "Organization", name: "Appmax" },
   email: ContactLinks.email,
   sameAs: [ContactLinks.github, ContactLinks.linkedin, ContactLinks.instagram],
 };

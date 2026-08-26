@@ -54,13 +54,13 @@ const formatJobForDisplay = (job: typeof jobExperiences[0], currentLang: string)
   id: job.id,
   position: currentLang === "en" ? (job.titleEn || job.title) : job.title,
   company: job.institution,
-  location: "São Paulo, Brasil", // Default location - can be extended in jobExperiences if needed
+  location: job.location,
   type: job.topTags[0]?.label as any || "Job",
   startDate: job.startDate,
   endDate: job.endDate,
   description: currentLang === "en" ? (job.descriptionEn || job.description) : job.description,
   technologies: job.tags.map(t => t.label),
-  logo: job.icon,
+  logo: job.icon?.startsWith("/") ? job.icon : undefined,
   url: job.url,
 });
 
@@ -167,9 +167,13 @@ export const TimelineCard = React.memo(function TimelineCard({
                                 {job.company}
                               </p>
                               <div className="flex items-center gap-1.5 mt-1">
-                                <FiMapPin size={11} className="text-faint" />
-                                <span className="text-[11px] text-faint">{job.location}</span>
-                                <span className="text-[11px] text-faint">•</span>
+                                {job.location && (
+                                  <>
+                                    <FiMapPin size={11} className="text-faint" />
+                                    <span className="text-[11px] text-faint">{job.location}</span>
+                                    <span className="text-[11px] text-faint">•</span>
+                                  </>
+                                )}
                                 <span className="text-[11px] text-faint capitalize">{job.type}</span>
                               </div>
                             </div>

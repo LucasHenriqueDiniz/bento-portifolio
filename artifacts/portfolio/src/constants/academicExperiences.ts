@@ -56,7 +56,7 @@ export const academicExperiences: AcademicExperience[] = [
     id: "unicv",
     title: "Engenharia de Software",
     titleEn: "Software Engineering",
-    institution: "UNICV",
+    institution: "UNICV - Centro Universitário Cidade Verde",
     url: "https://www.unicv.edu.br/",
     startDate: "2025-02",
     endDate: null,
@@ -73,7 +73,7 @@ export const academicExperiences: AcademicExperience[] = [
       { label: "Databases" },
       { label: "Software Architecture" },
     ],
-    description: "Foco em arquitetura robusta de sistemas, desenvolvimento escalável e implementação de metodologia ágil. Imersão profunda em padrões de design e engenharia de software moderna.",
+    description: "Foco em arquitetura robusta de sistemas, desenvolvimento escalável e implementação de metodologia ágil. Imersão profunda em padrões de design e engenharia de software moderna. Conclusão prevista para 2027.",
     descriptionEn: "Focus on robust system architecture, scalable development and agile methodology implementation. Deep dive into design patterns and modern software engineering.",
   },
   {
@@ -158,7 +158,7 @@ export const certificates: Certificate[] = [
     skills: ["Japonês"],
   },
   {
-    title: "EF SET English Certificate (C2 Proficiency)",
+    title: "Certificado EF SET Inglês 78/100 (C2 Domínio Pleno)",
     issuer: "EF SET",
     issueDate: "2024-11",
     url: "https://cert.efset.org/pt/LfJe4z",

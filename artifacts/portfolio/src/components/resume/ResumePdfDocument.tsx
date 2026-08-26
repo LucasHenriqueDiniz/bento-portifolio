@@ -5,8 +5,10 @@ import {
   academicExperiences,
   certificates,
   ContactLinks,
+  formatPublicationSource,
   jobExperiences,
   projects,
+  publications,
   type JobExperience,
   type AcademicExperience,
 } from "@/constants";
@@ -74,13 +76,14 @@ function Bullets({ text }: { text: string }) {
 }
 
 const JOB_PRIORITY: Record<string, number> = {
-  "policia-federal-it": 1,
-  "eng-futuro": 2,
-  "comunica-mulher-work": 3,
-  "bots-channel": 4,
-  "include-gurias-work": 5,
+  "appmax": 1,
+  "comunica-mulher-work": 2,
+  "policia-federal-it": 3,
+  "eng-futuro": 4,
+  "bots-channel": 5,
   "eng-futuro-vol": 6,
-  "freelance-design": 7,
+  "include-gurias-work": 7,
+  "freelance-design": 8,
 };
 
 const ATS_PROJECT_IDS = ["botschannel", "heartopia-guide", "weeb-profile", "context-tools"];
@@ -195,6 +198,20 @@ export function ResumePdfDocument({ lang }: { lang: Lang }) {
         <Text style={styles.certLine}>
           {topCertificates.map((cert) => `${cert.title} (${cert.issueDate})`).join("   •   ")}
         </Text>
+
+        {publications.length > 0 && (
+          <>
+            <Text style={styles.sectionTitle}>{t("sections.publications")}</Text>
+            <Text style={styles.certLine}>
+              {publications
+                .map((publication) => {
+                  const source = formatPublicationSource(publication);
+                  return source ? `${publication.title} (${source})` : publication.title;
+                })
+                .join("   •   ")}
+            </Text>
+          </>
+        )}
       </Page>
     </Document>
   );

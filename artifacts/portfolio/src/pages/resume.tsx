@@ -1,13 +1,13 @@
 import { motion } from "framer-motion";
 import { useState, useMemo, useEffect } from "react";
 import { useTranslation } from 'react-i18next';
-import { FiPrinter, FiGithub, FiMail, FiExternalLink, FiAward, FiBriefcase, FiCode, FiLayout, FiLoader } from "react-icons/fi";
+import { FiPrinter, FiGithub, FiMail, FiExternalLink, FiAward, FiBriefcase, FiCode, FiFileText, FiLayout, FiLoader } from "react-icons/fi";
 import { Linkedin, Palette, MessageSquare } from "lucide-react";
 import SiteHeader from "@/components/SiteHeader";
 import SEO from "@/components/SEO";
 import { useTheme } from "@/hooks/useTheme";
 import { useToast } from "@/hooks/use-toast";
-import { jobExperiences, academicExperiences, projects, certificates, languages, skillsData, ContactLinks } from "@/constants";
+import { jobExperiences, academicExperiences, projects, certificates, languages, publications, formatPublicationSource, skillsData, ContactLinks } from "@/constants";
 import { formatDateRange } from "@/lib/dateFormatter";
 
 type ResumeFormat = "visual" | "ats";
@@ -351,6 +351,35 @@ function VisualResume({ isDark }: { isDark: boolean }) {
           ))}
         </div>
       </section>
+
+      {/* ── PUBLICATIONS ── */}
+      {publications.length > 0 && (
+        <section>
+          <SectionTitle icon={FiFileText} delay={0.45} isDark={isDark}>{t('sections.publications')}</SectionTitle>
+          <div className="grid grid-cols-1 gap-y-1">
+            {publications.map((publication) => {
+              const source = formatPublicationSource(publication);
+              const content = (
+                <>
+                  <span className="text-brand">•</span>
+                  <span className="flex-1">{publication.title}</span>
+                  {source && <span className={`text-[10px] shrink-0 ${isDark ? "text-gray-600" : "text-gray-400"}`}>({source})</span>}
+                </>
+              );
+              return publication.url ? (
+                <a key={publication.title} href={publication.url} target="_blank" rel="noreferrer" className={`flex items-center gap-2 text-[11px] py-1 hover:opacity-70 transition-opacity group ${isDark ? "text-gray-300" : "text-gray-700"}`}>
+                  {content}
+                  <FiExternalLink size={10} className="opacity-0 group-hover:opacity-100 transition-opacity shrink-0 text-brand" />
+                </a>
+              ) : (
+                <div key={publication.title} className={`flex items-center gap-2 text-[11px] py-1 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
+                  {content}
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
     </div>
   );
 }
@@ -365,13 +394,14 @@ function ATSResume({ isDark = false }: { isDark?: boolean }) {
     formatDateRange(start, end, dateLocale, presentLabel);
 
   const jobPriority: Record<string, number> = {
-    "policia-federal-it": 1,
-    "eng-futuro": 2,
-    "comunica-mulher-work": 3,
-    "bots-channel": 4,
-    "include-gurias-work": 5,
+    "appmax": 1,
+    "comunica-mulher-work": 2,
+    "policia-federal-it": 3,
+    "eng-futuro": 4,
+    "bots-channel": 5,
     "eng-futuro-vol": 6,
-    "freelance-design": 7,
+    "include-gurias-work": 7,
+    "freelance-design": 8,
   };
 
   const activeJobs = useMemo(() => jobExperiences
@@ -490,6 +520,22 @@ function ATSResume({ isDark = false }: { isDark?: boolean }) {
           ))}
         </div>
       </section>
+
+      {publications.length > 0 && (
+        <section>
+          <h2 className="text-sm font-black uppercase tracking-widest border-b border-black pb-1 mb-2">
+            {t('sections.publications')}
+          </h2>
+          <div className="space-y-1 text-[11px]">
+            {publications.map(publication => {
+              const source = formatPublicationSource(publication);
+              return (
+                <p key={publication.title}>- {publication.title}{source && ` (${source})`}</p>
+              );
+            })}
+          </div>
+        </section>
+      )}
     </main>
   );
 }
