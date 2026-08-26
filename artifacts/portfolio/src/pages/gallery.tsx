@@ -46,6 +46,7 @@ const rawItems: MasonryItem[] = [
   { id: "wip-school-entrance-background", title: "WIP School Entrance", img: "/gallery/wip-school-entrance-background.webp", url: "/gallery/wip-school-entrance-background.webp", height: 730 },
   { id: "animated-beach", title: "Animated Beach", img: "/gallery/animated-beach.mp4", url: "/gallery/animated-beach.mp4", height: 760, mediaType: "video" },
   { id: "siot-login-animation", title: "SIOT Login Animation", img: "/gallery/siot-login-animation.mp4", url: "/gallery/siot-login-animation.mp4", height: 760, mediaType: "video" },
+  { id: "weebprofile-sora", title: "Weeb Profile Sora", img: "/gallery/weebprofile-sora.mp4", url: "/gallery/weebprofile-sora.mp4", height: 760, mediaType: "video" },
   { id: "vn-night-idle-simple", title: "VN Night Idle", img: "/gallery/vn-night-idle-simple.mp4", url: "/gallery/vn-night-idle-simple.mp4", height: 760, mediaType: "video" },
   { id: "nsfw-bath-redhair-lady", title: "Bath Redhair Lady", img: "/gallery/bath-redhair-lady.webp", url: "/gallery/bath-redhair-lady.webp", height: 980, nsfw: true },
   { id: "nsfw-rem", title: "Rem", img: "/gallery/NSFW-rem.webp", url: "/gallery/NSFW-rem.webp", height: 980, nsfw: true },
@@ -77,6 +78,8 @@ const artYears: Record<string, string> = {
   "animated-beach": "2024",
   "vn-night-idle-simple": "2024",
   "nsfw-rem": "2024",
+  "weeb-profile-old-logo": "2023",
+  "weebprofile-sora": "2024",
   "siot-login-animation": "2025",
   "portfolio-character-component": "2026",
 };
