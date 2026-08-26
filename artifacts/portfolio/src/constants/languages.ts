@@ -25,6 +25,14 @@ export const languages: LanguageData[] = [
     },
   },
   {
+    name: 'Español',
+    level: 'intermediate',
+    levelLabel: {
+      pt: 'Intermediário',
+      en: 'Limited Working',
+    },
+  },
+  {
     name: '日本語',
     level: 'basic',
     levelLabel: {

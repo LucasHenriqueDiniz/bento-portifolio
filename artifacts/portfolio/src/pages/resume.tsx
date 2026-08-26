@@ -365,13 +365,14 @@ function ATSResume({ isDark = false }: { isDark?: boolean }) {
     formatDateRange(start, end, dateLocale, presentLabel);
 
   const jobPriority: Record<string, number> = {
-    "policia-federal-it": 1,
-    "eng-futuro": 2,
-    "comunica-mulher-work": 3,
-    "bots-channel": 4,
-    "include-gurias-work": 5,
+    "appmax": 1,
+    "comunica-mulher-work": 2,
+    "policia-federal-it": 3,
+    "eng-futuro": 4,
+    "bots-channel": 5,
     "eng-futuro-vol": 6,
-    "freelance-design": 7,
+    "include-gurias-work": 7,
+    "freelance-design": 8,
   };
 
   const activeJobs = useMemo(() => jobExperiences
