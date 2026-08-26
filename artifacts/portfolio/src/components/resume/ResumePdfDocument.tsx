@@ -5,8 +5,10 @@ import {
   academicExperiences,
   certificates,
   ContactLinks,
+  formatPublicationSource,
   jobExperiences,
   projects,
+  publications,
   type JobExperience,
   type AcademicExperience,
 } from "@/constants";
@@ -196,6 +198,20 @@ export function ResumePdfDocument({ lang }: { lang: Lang }) {
         <Text style={styles.certLine}>
           {topCertificates.map((cert) => `${cert.title} (${cert.issueDate})`).join("   •   ")}
         </Text>
+
+        {publications.length > 0 && (
+          <>
+            <Text style={styles.sectionTitle}>{t("sections.publications")}</Text>
+            <Text style={styles.certLine}>
+              {publications
+                .map((publication) => {
+                  const source = formatPublicationSource(publication);
+                  return source ? `${publication.title} (${source})` : publication.title;
+                })
+                .join("   •   ")}
+            </Text>
+          </>
+        )}
       </Page>
     </Document>
   );

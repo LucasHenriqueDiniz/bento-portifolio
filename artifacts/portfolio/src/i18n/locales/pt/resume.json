@@ -9,7 +9,8 @@
     "skills": "Habilidades",
     "education": "Formação",
     "languages": "Idiomas",
-    "certifications": "Certificações"
+    "certifications": "Certificações",
+    "publications": "Publicações"
   },
   "status": {
     "current": "Atual",

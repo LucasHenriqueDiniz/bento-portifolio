@@ -9,7 +9,8 @@
     "skills": "Skills",
     "education": "Education",
     "languages": "Languages",
-    "certifications": "Certifications"
+    "certifications": "Certifications",
+    "publications": "Publications"
   },
   "status": {
     "current": "Current",
