@@ -50,7 +50,7 @@ const rawItems: MasonryItem[] = [
   { id: "vn-night-idle-simple", title: "VN Night Idle", img: "/gallery/vn-night-idle-simple.mp4", url: "/gallery/vn-night-idle-simple.mp4", height: 760, mediaType: "video" },
   { id: "nsfw-bath-redhair-lady", title: "Bath Redhair Lady", img: "/gallery/bath-redhair-lady.webp", url: "/gallery/bath-redhair-lady.webp", height: 980, nsfw: true },
   { id: "nsfw-rem", title: "Rem", img: "/gallery/NSFW-rem.webp", url: "/gallery/NSFW-rem.webp", height: 980, nsfw: true },
-  { id: "portfolio-character-component", title: "Portfolio Character Component", img: "/gallery/portfolio-character-component.png", url: "/gallery/portfolio-character-component.png", height: 760 },
+  { id: "portfolio-character-component", title: "Portfolio Character Component", img: "/gallery/portfolio-character-component.mp4", url: "/gallery/portfolio-character-component.mp4", height: 760, mediaType: "video" },
 ];
 
 const artYears: Record<string, string> = {
