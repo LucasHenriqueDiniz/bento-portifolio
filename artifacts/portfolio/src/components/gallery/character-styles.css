@@ -1,0 +1,163 @@
+.character-root {
+  margin: 0 auto;
+  width: 100%;
+  max-width: 100%;
+  min-height: 340px;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 16 / 9;
+  border-radius: 22px;
+  border: 1px solid rgba(82, 89, 136, 0.45);
+  background: radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.12), transparent 48%),
+    linear-gradient(120deg, #1e2033 0%, #232746 55%, #1b1f36 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.character-stage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 18px;
+  overflow: hidden;
+  background: radial-gradient(circle at 18% 18%, rgba(80, 146, 255, 0.14), transparent 46%),
+    linear-gradient(125deg, #121a31 0%, #172543 52%, #0f1932 100%);
+}
+
+.character-root.no-frame {
+  border: none;
+  padding: 0 !important;
+}
+
+.character-svg-host {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+}
+
+.character-bg-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+  user-select: none;
+  pointer-events: none;
+}
+
+.character-bg-text .small {
+  font-weight: 700;
+  font-size: clamp(18px, 2.4vw, 36px);
+  opacity: 0.9;
+  justify-self: start;
+  margin-bottom: 6px;
+}
+
+.character-bg-text .big {
+  font-weight: 900;
+  font-size: clamp(172px, 14vw, 320px);
+  line-height: 1;
+}
+
+.character-svg-host svg {
+  width: 100%;
+  height: 100%;
+  transform: scale(0.82) translateY(150px);
+  transform-origin: center;
+}
+
+[data-theme="light"] .character-root {
+  border-color: var(--border-strong);
+  background: radial-gradient(circle at 16% 20%, rgba(26, 164, 190, 0.18), transparent 46%),
+    radial-gradient(circle at 82% 14%, rgba(112, 129, 255, 0.14), transparent 44%),
+    linear-gradient(120deg, #eef5ff 0%, #dfebf8 55%, #d4e3f2 100%);
+}
+
+[data-theme="light"] .character-stage {
+  background: radial-gradient(circle at 18% 18%, rgba(26, 164, 190, 0.14), transparent 44%),
+    radial-gradient(circle at 76% 20%, rgba(112, 129, 255, 0.12), transparent 40%),
+    linear-gradient(125deg, #f5faff 0%, #e8f1fb 52%, #deebf9 100%);
+}
+
+[data-theme="light"] .character-bg-text {
+  color: #1f96a8;
+}
+
+.waves-wrap {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.waves-wrap.front-layer {
+  z-index: 10;
+}
+
+.wave {
+  position: absolute;
+  width: 140%;
+  max-width: none;
+  left: -20%;
+  height: 100%;
+  mask-repeat: no-repeat;
+  mask-size: 100% 100%;
+  mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+  -webkit-mask-position: center;
+}
+
+.wave.back {
+  bottom: -4%;
+  mask-image: url('/svgs/waves/wave-back.svg');
+  -webkit-mask-image: url('/svgs/waves/wave-back.svg');
+}
+
+.wave.front {
+  bottom: -10%;
+  mask-image: url('/svgs/waves/wave-front.svg');
+  -webkit-mask-image: url('/svgs/waves/wave-front.svg');
+}
+
+.wave.front.on-top {
+  z-index: 4;
+}
+
+.bubbles-wrap {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.bubble {
+  position: absolute;
+  bottom: -40px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  opacity: 0.35;
+  animation: bubbleFloat linear infinite;
+  filter: blur(2px);
+}
+
+@keyframes bubbleFloat {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateY(-380px) scale(0.5);
+    opacity: 0;
+  }
+}

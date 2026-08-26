@@ -4,6 +4,7 @@ import { ExternalLink, X } from "lucide-react";
 import SiteHeader from "@/components/SiteHeader";
 import SEO from "@/components/SEO";
 import Masonry, { type MasonryItem } from "@/components/Masonry";
+import { AboutCharacterCard } from "@/components/gallery/AboutCharacterCard";
 import TextPressure from "@/components/TextPressure";
 import { useTheme } from "@/hooks/useTheme";
 import {
@@ -50,7 +51,15 @@ const rawItems: MasonryItem[] = [
   { id: "vn-night-idle-simple", title: "VN Night Idle", img: "/gallery/vn-night-idle-simple.mp4", url: "/gallery/vn-night-idle-simple.mp4", height: 760, mediaType: "video" },
   { id: "nsfw-bath-redhair-lady", title: "Bath Redhair Lady", img: "/gallery/bath-redhair-lady.webp", url: "/gallery/bath-redhair-lady.webp", height: 980, nsfw: true },
   { id: "nsfw-rem", title: "Rem", img: "/gallery/NSFW-rem.webp", url: "/gallery/NSFW-rem.webp", height: 980, nsfw: true },
-  { id: "portfolio-character-component", title: "Portfolio Character Component", img: "/gallery/portfolio-character-component.mp4", url: "/gallery/portfolio-character-component.mp4", height: 760, mediaType: "video" },
+  {
+    id: "portfolio-character-component",
+    title: "Portfolio Character Component",
+    img: "/gallery/portfolio-character-component.png",
+    url: "https://ui.lucashdo.com/components/character-hero",
+    height: 760,
+    mediaType: "component",
+    component: <AboutCharacterCard showFrameBorder={false} />,
+  },
 ];
 
 const artYears: Record<string, string> = {
@@ -213,7 +222,11 @@ export default function GalleryPage() {
             className="relative max-h-[86vh] max-w-[92vw]"
             onClick={(e) => e.stopPropagation()}
           >
-            {activeItem.mediaType === "video" ? (
+            {activeItem.mediaType === "component" ? (
+              <div className="w-[92vw] max-w-[1100px] overflow-hidden rounded-xl shadow-2xl">
+                {activeItem.component}
+              </div>
+            ) : activeItem.mediaType === "video" ? (
               <video
                 src={activeItem.img}
                 className="max-h-[86vh] max-w-[92vw] object-contain rounded-xl shadow-2xl"
