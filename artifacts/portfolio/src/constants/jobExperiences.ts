@@ -43,6 +43,7 @@ export const jobExperiences: JobExperience[] = [
     ],
     description: "Time de Engenharia/Dados da Appmax, fintech de pagamentos.",
     descriptionEn: "Engineering/Data team at Appmax, a payments fintech.",
+    icon: "/timeline/appmax.webp",
   },
   {
     id: "comunica-mulher-work",
