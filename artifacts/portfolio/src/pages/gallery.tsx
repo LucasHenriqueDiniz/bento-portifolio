@@ -4,6 +4,7 @@ import { ExternalLink, X } from "lucide-react";
 import SiteHeader from "@/components/SiteHeader";
 import SEO from "@/components/SEO";
 import Masonry, { type MasonryItem } from "@/components/Masonry";
+import { AboutCharacterCard } from "@/components/gallery/AboutCharacterCard";
 import TextPressure from "@/components/TextPressure";
 import { useTheme } from "@/hooks/useTheme";
 import {
@@ -46,11 +47,19 @@ const rawItems: MasonryItem[] = [
   { id: "wip-school-entrance-background", title: "WIP School Entrance", img: "/gallery/wip-school-entrance-background.webp", url: "/gallery/wip-school-entrance-background.webp", height: 730 },
   { id: "animated-beach", title: "Animated Beach", img: "/gallery/animated-beach.mp4", url: "/gallery/animated-beach.mp4", height: 760, mediaType: "video" },
   { id: "siot-login-animation", title: "SIOT Login Animation", img: "/gallery/siot-login-animation.mp4", url: "/gallery/siot-login-animation.mp4", height: 760, mediaType: "video" },
+  { id: "weebprofile-sora", title: "Weeb Profile Sora", img: "/gallery/weebprofile-sora.mp4", url: "/gallery/weebprofile-sora.mp4", height: 760, mediaType: "video" },
   { id: "vn-night-idle-simple", title: "VN Night Idle", img: "/gallery/vn-night-idle-simple.mp4", url: "/gallery/vn-night-idle-simple.mp4", height: 760, mediaType: "video" },
-  { id: "nsfw-vn-night-scene", title: "VN Night Scene", img: "/gallery/NSFW-vn-night-scene.mp4", url: "/gallery/NSFW-vn-night-scene.mp4", height: 760, mediaType: "video", nsfw: true },
   { id: "nsfw-bath-redhair-lady", title: "Bath Redhair Lady", img: "/gallery/bath-redhair-lady.webp", url: "/gallery/bath-redhair-lady.webp", height: 980, nsfw: true },
   { id: "nsfw-rem", title: "Rem", img: "/gallery/NSFW-rem.webp", url: "/gallery/NSFW-rem.webp", height: 980, nsfw: true },
-  { id: "portfolio-character-component", title: "Portfolio Character Component", img: "/gallery/portfolio-character-component.png", url: "/gallery/portfolio-character-component.png", height: 760 },
+  {
+    id: "portfolio-character-component",
+    title: "Portfolio Character Component",
+    img: "/gallery/portfolio-character-component.png",
+    url: "https://ui.lucashdo.com/components/character-hero",
+    height: 760,
+    mediaType: "component",
+    component: <AboutCharacterCard showFrameBorder={false} />,
+  },
 ];
 
 const artYears: Record<string, string> = {
@@ -63,11 +72,11 @@ const artYears: Record<string, string> = {
   "neko": "2021",
   "one-punch-man": "2021",
   "noda-sketch": "2021",
-  "pingo-angry": "2022",
-  "pingo-bored": "2022",
-  "pingo-concursos-icons": "2022",
-  "pingo-crying": "2022",
-  "pingo-happy": "2022",
+  "pingo-angry": "2026",
+  "pingo-bored": "2026",
+  "pingo-concursos-icons": "2026",
+  "pingo-crying": "2026",
+  "pingo-happy": "2026",
   "redhair-rainjacket": "2024",
   "tomoko-okboomer": "2023",
   "snake-babe": "2023",
@@ -78,6 +87,8 @@ const artYears: Record<string, string> = {
   "animated-beach": "2024",
   "vn-night-idle-simple": "2024",
   "nsfw-rem": "2024",
+  "weeb-profile-old-logo": "2023",
+  "weebprofile-sora": "2024",
   "siot-login-animation": "2025",
   "portfolio-character-component": "2026",
 };
@@ -211,7 +222,11 @@ export default function GalleryPage() {
             className="relative max-h-[86vh] max-w-[92vw]"
             onClick={(e) => e.stopPropagation()}
           >
-            {activeItem.mediaType === "video" ? (
+            {activeItem.mediaType === "component" ? (
+              <div className="w-[92vw] max-w-[1100px] overflow-hidden rounded-xl shadow-2xl">
+                {activeItem.component}
+              </div>
+            ) : activeItem.mediaType === "video" ? (
               <video
                 src={activeItem.img}
                 className="max-h-[86vh] max-w-[92vw] object-contain rounded-xl shadow-2xl"

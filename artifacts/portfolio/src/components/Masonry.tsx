@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { gsap } from "gsap";
 
 const useMedia = (queries: string[], values: number[], defaultValue: number): number => {
@@ -51,7 +51,8 @@ export interface MasonryItem {
   url: string;
   height: number;
   year?: string;
-  mediaType?: "image" | "video";
+  mediaType?: "image" | "video" | "component";
+  component?: ReactNode;
   nsfw?: boolean;
   title?: string;
 }
@@ -129,7 +130,9 @@ export default function Masonry({
   };
 
   useEffect(() => {
-    preloadImages(items.filter((i) => i.mediaType !== "video").map((i) => i.img)).then(() => setImagesReady(true));
+    preloadImages(
+      items.filter((i) => !i.mediaType || i.mediaType === "image").map((i) => i.img),
+    ).then(() => setImagesReady(true));
   }, [items]);
 
   const grid = useMemo<GridItem[]>(() => {
@@ -240,7 +243,11 @@ export default function Masonry({
           aria-label={item.title ?? item.id}
         >
           <div className="relative w-full h-full rounded-[10px] shadow-[0px_10px_50px_-10px_rgba(0,0,0,0.2)] overflow-hidden">
-            {item.mediaType === "video" ? (
+            {item.mediaType === "component" ? (
+              <div className="absolute inset-0 [&>*]:h-full [&>*]:w-full [&_.character-root]:aspect-auto [&_.character-root]:min-h-0 [&_.character-root]:rounded-none">
+                {item.component}
+              </div>
+            ) : item.mediaType === "video" ? (
               <video
                 src={item.img}
                 className="absolute inset-0 h-full w-full object-cover"
