@@ -18,10 +18,10 @@ export const languages: LanguageData[] = [
   },
   {
     name: 'English',
-    level: 'fluent',
+    level: 'advanced',
     levelLabel: {
-      pt: 'Fluente',
-      en: 'Fluent',
+      pt: 'Avançado',
+      en: 'Advanced',
     },
   },
   {
