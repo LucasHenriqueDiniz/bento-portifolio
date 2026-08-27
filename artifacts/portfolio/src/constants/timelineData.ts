@@ -26,7 +26,7 @@ export const timelineAcademicExperiences: TimelineAcademicExperience[] = [
     degree: "Engenharia de Software",
     field: "Computer Software Engineering",
     institution: "UNICV - Centro Universitário Cidade Verde",
-    location: "Brasil",
+    location: "Remoto",
     startDate: "2025-02",
     endDate: null,
     description:
