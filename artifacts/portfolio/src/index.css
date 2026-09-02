@@ -56,7 +56,7 @@
 }
 
 /* ─── Tailwind Custom Utilities (Design Tokens) ───── */
-/* Nomes escolhidos para NÃO conflitar com o tema shadcn/Tailwind v4 */
+/* Names chosen so they do NOT clash with the shadcn/Tailwind v4 theme */
 @utility bg-canvas       { background-color: var(--bg-canvas); }
 @utility bg-panel        { background-color: var(--bg-panel); }
 @utility bg-panel-hover  { background-color: var(--bg-panel-hover); }
@@ -92,8 +92,8 @@
 
 /* ─── Design Tokens ───────────────────────────────── */
 :root {
-  /* Accent — trocar aqui para mudar a cor principal */
-  /* Tema Caranguejo (Crab) — tom suave para light mode */
+  /* Accent - change here to change the primary color */
+  /* Crab theme - soft tone for light mode */
   --accent: #E07A5F;
   --accent-hover: #C96A50;
   --accent-subtle: rgba(224, 122, 95, 0.10);
@@ -128,7 +128,7 @@
   --status-experimental: #8b5cf6;
   --status-discontinued: #ef4444;
 
-  /* Legacy shadcn tokens (mantidas para compatibilidade) */
+  /* Legacy shadcn tokens (kept for compatibility) */
   --button-outline: rgba(0,0,0, .08);
   --badge-outline: rgba(0,0,0, .04);
   --opaque-button-border-intensity: 9;
@@ -195,7 +195,7 @@
 }
 
 .dark {
-  /* Accent — trocar aqui também para dark */
+  /* Accent - change here too for dark mode */
   --accent: #FF7A5C;
   --accent-hover: #FF6A4C;
   --accent-subtle: rgba(255, 122, 92, 0.1);

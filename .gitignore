@@ -29,6 +29,11 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
+# Claude Code's local permission file. NEVER commit it: allow-rules accumulate by
+# clicking, and a rule that allowlists a command with a token in it puts that token
+# in the repo.
+**/.claude/settings.local.json
+
 # IDE - VSCode
 .vscode/
 

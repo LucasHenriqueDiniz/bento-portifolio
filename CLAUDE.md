@@ -28,9 +28,11 @@ artifacts/
 
 ## 4) Core stack
 
-- pnpm workspaces
-- Node.js 18+
-- TypeScript (strict)
+- pnpm workspaces (`pnpm@11.24.0`, pinned in the root `packageManager` field)
+- Node.js `24.19.0`, pinned in `.nvmrc` — CI reads that file, so do not assume an older runtime
+- TypeScript. ⚠️ `strict` is **not** enabled in `tsconfig.base.json`; individual flags are, and
+  `strictFunctionTypes` and `noUnusedLocals` are explicitly `false`. Read the file before relying
+  on a strict-mode guarantee.
 - React + Vite + Tailwind
 - Cloudflare Pages Functions
 
@@ -91,17 +93,24 @@ All third-party calls live in `artifacts/portfolio/functions/api/[[path]].ts`.
 
 ## 10) Commands
 
-From repository root:
+From repository root — these are the scripts that actually exist in the root `package.json`:
 
 ```bash
 pnpm install
-pnpm dev
-pnpm dev:portfolio
-pnpm dev:api
-pnpm typecheck
-pnpm build
+pnpm dev              # runs the portfolio dev server
+pnpm typecheck        # typecheck:libs, then every artifact's own typecheck
+pnpm typecheck:libs   # tsc --build only
+pnpm build            # typecheck, then each package's build
+```
+
+The root has no `dev:portfolio` and no `dev:api`. Lint and test live in the portfolio package:
+
+```bash
+pnpm --filter @workspace/portfolio lint
 pnpm --filter @workspace/portfolio test
 ```
+
+Verify a command against `package.json` before running it; do not invent one.
 
 ## 11) PR / delivery checklist
 
@@ -110,17 +119,37 @@ pnpm --filter @workspace/portfolio test
 - [ ] No undocumented breaking changes.
 - [ ] Docs updated when needed.
 
-## 12) Detailed rules
+## 12) Where the house-style rules come from
 
-The following rule files contain the full conventions for this repo and are
-imported into context:
+The conventions this repo is held to are **skills in the `hexagram` plugin**, not files in this
+tree. They are installed per machine (user scope, from the `imgabrieldev/hexagram` marketplace),
+so a clone picks up whatever version the person cloning has installed — nothing here pins them:
+
+`architecture` · `naming` · `git` · `language` · `testing` · `clean-code` · `diagrams` ·
+`workflow` · `terraform` · `setup-machine` · `research` · `postmortem` · `lint`
+
+**None of them is copied into `.claude/rules/`, and that is on purpose.** Copying a rule freezes
+it at the version that was copied, and the copy is what gets read from then on. Look for a rule in
+the plugin, not on disk — the absence of a local copy is not the absence of a standard.
+
+## 13) Legacy local rules — superseded, not authoritative
+
+⚠️ The files below predate the plugin above and are **not** the house style. They are still
+`@`-imported into context, so they are listed here for the reader who sees them arrive:
 
 - @.claude/rules/architecture-rules.md
 - @.claude/rules/clean-code-rules.md
 - @.claude/rules/testing-rules.md
 - @.claude/rules/workflow-rules.md
 
-## 13) Skills
+`architecture-rules.md` describes an `artifacts/api-server/` (Express) and a top-level `lib/`;
+neither exists in this tree, which runs Cloudflare Pages Functions instead. The `workflow-rules.md`
+loop and the `.claude/skills/` copies of `pitch`/`research`/`postmortem`/`lint` (mirrored again
+under `.agents/skills/`) point at a `docs/` directory this repo does not have, and shadow the
+plugin's own skills of the same name. Where they disagree with section 12, section 12 wins.
+Removing them is an open decision, not something this file has settled.
+
+## 14) Skills
 
 Reusable workflows live in `.claude/skills/` and are invoked as slash commands:
 
@@ -132,3 +161,16 @@ Reusable workflows live in `.claude/skills/` and are invoked as slash commands:
 ---
 
 Last updated: 2026-08-18
+
+## Commit hook
+
+`.githooks/commit-msg` strips AI attribution trailers from commit messages. Git does not version
+`.git/hooks`, so what makes the hook run is one line of local config — and a fresh clone does not
+have it. The root `prepare` script sets it on `pnpm install`, and only when nothing else claims it:
+
+```
+git config --get core.hooksPath >/dev/null 2>&1 || git config core.hooksPath .githooks
+```
+
+If you already point `core.hooksPath` somewhere else, the script leaves your value alone and this
+repo's hook stays inert — wire it by hand, or move the file into whatever directory you do use.

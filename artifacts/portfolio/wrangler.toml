@@ -6,7 +6,7 @@ pages_build_output_dir = "dist/public"
 binding = "PORTFOLIO_CACHE"
 id = "7148bef2a0a64d8398ad94a9a04ca4be"
 
-# Leitura direta da telemetria do daily-ingest (PC + servidor). Somente SELECTs.
+# Direct read of daily-ingest telemetry (PC + server). SELECTs only.
 [[d1_databases]]
 binding = "DAILY_INGEST_DB"
 database_name = "daily-ingest"

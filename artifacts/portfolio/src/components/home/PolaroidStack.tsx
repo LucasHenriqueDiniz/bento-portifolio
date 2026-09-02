@@ -4,10 +4,10 @@ import { useTranslation } from "react-i18next";
 import { Card } from "@/components/Card";
 import { fadeUpSoft } from "@/lib/animations";
 
-// Fotos locais com legendas criativas
+// Local photos, each paired with a playful caption
 const POLAROID_PHOTOS = [
   "/photos/hana.jpg",
-  "/photos/hana%20(2).jpg",
+  "/photos/hana-2.jpg",
   "/photos/poca.jpg",
   "/photos/jardim-botanico-curitiba.jpg",
   "/photos/jardim-botanico-curitiba-2.jpg",

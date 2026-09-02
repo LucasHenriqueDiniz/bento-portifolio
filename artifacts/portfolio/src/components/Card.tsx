@@ -5,8 +5,8 @@ export interface CardProps {
   children: React.ReactNode;
   className?: string;
   style?: React.CSSProperties;
-  glowColor?: string;       // "R, G, B"  ex: "61, 114, 204"
-  glowIntensity?: number;   // multiplicador de opacidade do glow (default 1)
+  glowColor?: string;       // "R, G, B"  e.g. "61, 114, 204"
+  glowIntensity?: number;   // glow opacity multiplier (default 1)
   borderRadius?: number;    // px
   onClick?: React.MouseEventHandler<HTMLDivElement>;
   onMouseMove?: React.MouseEventHandler<HTMLDivElement>;
@@ -17,9 +17,9 @@ export interface CardProps {
 }
 
 /**
- * Card com glow global.
- * Usa a posição do mouse no documento para calcular glow em TODOS os cards,
- * mesmo quando o cursor não está diretamente em cima.
+ * Card with a global glow.
+ * Uses the mouse position in the document to compute the glow for EVERY card,
+ * even when the cursor is not directly over it.
  */
 export const Card = React.memo(function Card({
   children,
@@ -49,16 +49,16 @@ export const Card = React.memo(function Card({
     const mx = glowState.x;
     const my = glowState.y;
 
-    // Distância do mouse ao centro do card
+    // Distance from the mouse to the card center
     const cx = rect.left + rect.width / 2;
     const cy = rect.top + rect.height / 2;
     const dx = mx - cx;
     const dy = my - cy;
 
-    // Verifica se está dentro
+    // Check whether the mouse is inside
     const inside = mx >= rect.left && mx <= rect.right && my >= rect.top && my <= rect.bottom;
 
-    // Raio de influência quando fora (px)
+    // Influence radius when outside (px)
     const outerRadius = 220;
     const dist = Math.hypot(dx, dy);
 
@@ -67,28 +67,28 @@ export const Card = React.memo(function Card({
     let opacity: number;
 
     if (inside) {
-      // Dentro: glow segue o mouse
+      // Inside: the glow follows the mouse
       xPct = ((mx - rect.left) / rect.width) * 100;
       yPct = ((my - rect.top) / rect.height) * 100;
-      // Edge proximity para intensidade
+      // Edge proximity drives the intensity
       const edgeX = Math.max(Math.abs(xPct - 50) / 50, Math.abs(yPct - 50) / 50);
       opacity = Math.max(0, (edgeX - 0.35) / 0.65);
     } else {
-      // Fora: glow aparece na borda mais próxima, apontando pro mouse
+      // Outside: the glow appears on the nearest edge, pointing at the mouse
       const maxDist = Math.max(rect.width, rect.height) / 2 + outerRadius;
       if (dist > maxDist) {
         setComputed({ x: 50, y: 50, opacity: 0, inside: false });
         return;
       }
 
-      // Posição relativa do mouse ao retângulo do card
+      // Mouse position relative to the card rectangle
       const relX = Math.max(rect.left, Math.min(mx, rect.right));
       const relY = Math.max(rect.top, Math.min(my, rect.bottom));
 
       xPct = ((relX - rect.left) / rect.width) * 100;
       yPct = ((relY - rect.top) / rect.height) * 100;
 
-      // Opacidade cai com a distância
+      // Opacity falls off with distance
       const edgeDist = Math.hypot(relX - mx, relY - my);
       opacity = Math.max(0, 1 - edgeDist / outerRadius) * 0.55;
     }
@@ -124,7 +124,7 @@ export const Card = React.memo(function Card({
           transition: "transform 0.6s cubic-bezier(0.4, 0.0, 0.2, 1)",
         }}
       >
-        {/* Border glow radial — ativo tanto dentro quanto perto */}
+        {/* Radial border glow - active both inside and nearby */}
         <div
           className="absolute inset-0"
           style={{
