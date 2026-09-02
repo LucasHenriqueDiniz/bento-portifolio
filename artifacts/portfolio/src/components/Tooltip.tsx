@@ -10,8 +10,8 @@ interface TooltipProps {
 }
 
 /**
- * Tooltip reutilizável posicionado acima do elemento.
- * Aparece ao passar o mouse e desaparece ao sair.
+ * Reusable tooltip positioned above its element.
+ * Appears on mouse enter and disappears on mouse leave.
  */
 export const Tooltip: React.FC<TooltipProps> = ({
   children,
@@ -28,7 +28,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
     if (!show || !ref.current) return;
     const rect = ref.current.getBoundingClientRect();
     const tooltipW = typeof width === "number" ? width : 280;
-    const tooltipH = 160; // estimativa
+    const tooltipH = 160; // estimate
     let top = rect.top - tooltipH - 8;
     let flipDown = false;
     if (top < 8) {

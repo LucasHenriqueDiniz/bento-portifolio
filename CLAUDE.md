@@ -119,17 +119,37 @@ Verify a command against `package.json` before running it; do not invent one.
 - [ ] No undocumented breaking changes.
 - [ ] Docs updated when needed.
 
-## 12) Detailed rules
+## 12) Where the house-style rules come from
 
-The following rule files contain the full conventions for this repo and are
-imported into context:
+The conventions this repo is held to are **skills in the `hexagram` plugin**, not files in this
+tree. They are installed per machine (user scope, from the `imgabrieldev/hexagram` marketplace),
+so a clone picks up whatever version the person cloning has installed — nothing here pins them:
+
+`architecture` · `naming` · `git` · `language` · `testing` · `clean-code` · `diagrams` ·
+`workflow` · `terraform` · `setup-machine` · `research` · `postmortem` · `lint`
+
+**None of them is copied into `.claude/rules/`, and that is on purpose.** Copying a rule freezes
+it at the version that was copied, and the copy is what gets read from then on. Look for a rule in
+the plugin, not on disk — the absence of a local copy is not the absence of a standard.
+
+## 13) Legacy local rules — superseded, not authoritative
+
+⚠️ The files below predate the plugin above and are **not** the house style. They are still
+`@`-imported into context, so they are listed here for the reader who sees them arrive:
 
 - @.claude/rules/architecture-rules.md
 - @.claude/rules/clean-code-rules.md
 - @.claude/rules/testing-rules.md
 - @.claude/rules/workflow-rules.md
 
-## 13) Skills
+`architecture-rules.md` describes an `artifacts/api-server/` (Express) and a top-level `lib/`;
+neither exists in this tree, which runs Cloudflare Pages Functions instead. The `workflow-rules.md`
+loop and the `.claude/skills/` copies of `pitch`/`research`/`postmortem`/`lint` (mirrored again
+under `.agents/skills/`) point at a `docs/` directory this repo does not have, and shadow the
+plugin's own skills of the same name. Where they disagree with section 12, section 12 wins.
+Removing them is an open decision, not something this file has settled.
+
+## 14) Skills
 
 Reusable workflows live in `.claude/skills/` and are invoked as slash commands:
 
