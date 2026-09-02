@@ -1,17 +1,17 @@
 # Constants
 
-Este diretório contém todos os dados estáticos centralizados do portfolio.
+This directory holds every centralized static dataset of the portfolio.
 
-## Arquivos
+## Files
 
 ### `academicExperiences.ts`
-Experiências acadêmicas (universidade, cursos, certificações).
+Academic experience (university, courses, certifications).
 
-**Uso:**
+**Usage:**
 ```typescript
 import { academicExperiences } from '@/constants';
 
-// Listar todas as experiências acadêmicas
+// List every academic experience
 academicExperiences.map(exp => (
   <div key={exp.institution}>
     <h3>{exp.degree} in {exp.field}</h3>
@@ -21,13 +21,13 @@ academicExperiences.map(exp => (
 ```
 
 ### `jobExperiences.ts`
-Experiências profissionais (empregos, freelance, contratos).
+Professional experience (jobs, freelance, contracts).
 
-**Uso:**
+**Usage:**
 ```typescript
 import { jobExperiences } from '@/constants';
 
-// Listar experiências de trabalho
+// List work experience
 jobExperiences.map(job => (
   <div key={job.company}>
     <h3>{job.position} at {job.company}</h3>
@@ -37,13 +37,13 @@ jobExperiences.map(job => (
 ```
 
 ### `languages.ts`
-Idiomas falados e níveis de proficiência.
+Spoken languages and proficiency levels.
 
-**Uso:**
+**Usage:**
 ```typescript
 import { languages } from '@/constants';
 
-// Mostrar idiomas
+// Show languages
 languages.map(lang => (
   <div key={lang.code}>
     <span>{lang.name}</span>
@@ -53,30 +53,30 @@ languages.map(lang => (
 ```
 
 ### `contacts.ts`
-Informações de contato e redes sociais.
+Contact details and social profiles.
 
-**Uso:**
+**Usage:**
 ```typescript
 import { contacts, primaryContacts, getContactByPlatform } from '@/constants';
 
-// Usar contatos primários (top 4)
+// Use the primary contacts (top 4)
 primaryContacts.map(contact => (
   <a href={contact.url} key={contact.platform}>
     {contact.label}
   </a>
 ));
 
-// Buscar contato específico
+// Look up a specific contact
 const github = getContactByPlatform('GitHub');
 ```
 
-## Como Adicionar Novos Dados
+## How to add new data
 
-1. Edite o arquivo correspondente
-2. Siga a interface TypeScript definida
-3. Os dados serão automaticamente tipados e validados
+1. Edit the matching file
+2. Follow the TypeScript interface it declares
+3. The data is typed and validated automatically
 
-## Exemplo Completo
+## Full example
 
 ```typescript
 import { 

@@ -5,7 +5,7 @@ import "./generate-sitemap.mjs";
 const start = Date.now();
 
 // Safety timer: force exit if build hangs
-typeof setTimeout(() => {
+setTimeout(() => {
   console.error("Build timeout — forcing exit");
   process.exit(1);
 }, 120_000);

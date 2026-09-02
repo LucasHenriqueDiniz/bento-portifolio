@@ -76,10 +76,10 @@ export const SteamCard = React.memo(function SteamCard({
     const key = game.appId;
     const currentType = currentImageType.get(key) || "hero";
 
-    // Se já tentamos todas as opções, retorna null
+    // Every option already tried, so there is nothing left to return
     if (currentType === "none") return null;
 
-    // Tentar em ordem: library_hero -> capsule -> header -> icon
+    // Try in order: library_hero -> capsule -> header -> icon
     if (
       currentType === "hero" &&
       game.imageUrl &&
@@ -114,10 +114,10 @@ export const SteamCard = React.memo(function SteamCard({
     const key = game.appId;
     const currentType = currentImageType.get(key) || "hero";
 
-    // Marcar erro para a URL atual
+    // Record the failure for the current URL
     setImageErrors((prev) => new Set(prev).add(`${key}-${currentType}`));
 
-    // Tentar próxima opção
+    // Fall through to the next option
     setCurrentImageType((prev) => {
       const next = new Map(prev);
       if (currentType === "hero") {

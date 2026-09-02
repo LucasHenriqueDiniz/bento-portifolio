@@ -1,8 +1,8 @@
 import { useDevMode } from "@/contexts/DevModeContext";
 
 /**
- * Hook que sobrescreve o estado de loading quando Dev Mode está ativo
- * Use este hook para envolver os resultados de queries do React Query
+ * Hook that overrides the loading state while Dev Mode is active.
+ * Use it to wrap React Query results.
  */
 export function useDevModeQuery<T>(queryResult: {
   data: T | undefined;

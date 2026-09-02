@@ -28,9 +28,11 @@ artifacts/
 
 ## 4) Core stack
 
-- pnpm workspaces
-- Node.js 18+
-- TypeScript (strict)
+- pnpm workspaces (`pnpm@11.24.0`, pinned in the root `packageManager` field)
+- Node.js `24.19.0`, pinned in `.nvmrc` — CI reads that file, so do not assume an older runtime
+- TypeScript. ⚠️ `strict` is **not** enabled in `tsconfig.base.json`; individual flags are, and
+  `strictFunctionTypes` and `noUnusedLocals` are explicitly `false`. Read the file before relying
+  on a strict-mode guarantee.
 - React + Vite + Tailwind
 - Cloudflare Pages Functions
 
@@ -91,17 +93,24 @@ All third-party calls live in `artifacts/portfolio/functions/api/[[path]].ts`.
 
 ## 10) Commands
 
-From repository root:
+From repository root — these are the scripts that actually exist in the root `package.json`:
 
 ```bash
 pnpm install
-pnpm dev
-pnpm dev:portfolio
-pnpm dev:api
-pnpm typecheck
-pnpm build
+pnpm dev              # runs the portfolio dev server
+pnpm typecheck        # typecheck:libs, then every artifact's own typecheck
+pnpm typecheck:libs   # tsc --build only
+pnpm build            # typecheck, then each package's build
+```
+
+The root has no `dev:portfolio` and no `dev:api`. Lint and test live in the portfolio package:
+
+```bash
+pnpm --filter @workspace/portfolio lint
 pnpm --filter @workspace/portfolio test
 ```
+
+Verify a command against `package.json` before running it; do not invent one.
 
 ## 11) PR / delivery checklist
 
