@@ -23,9 +23,10 @@ This is the only real dependency inversion in the repo. Everything else points t
 
 ## Why it matters beyond taste
 
-The repo's own written rule forbids it. `.claude/rules/architecture-rules.md` lists
-"Codigo duplicado entre frontend e backend (extrair para `lib/`)" as an anti-pattern and says the
-shared layer is where cross-cutting data lives. That `lib/` never existed:
+The repo's own written rule forbade it. `.claude/rules/architecture-rules.md` — since deleted, see
+`docs/decisions/0001-legacy-rules.md` — listed "Codigo duplicado entre frontend e backend (extrair
+para `lib/`)" as an anti-pattern and said the shared layer is where cross-cutting data lives. That
+`lib/` never existed:
 
 ```
 $ ls -d lib

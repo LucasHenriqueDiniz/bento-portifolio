@@ -1,5 +1,5 @@
 ---
-status: todo
+status: done
 kanban: 71840f06-b883-494c-87d6-0267ad8feb6b
 ---
 
