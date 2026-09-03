@@ -15,7 +15,7 @@ Maintain and evolve this personal **Bento-style portfolio monorepo** with small,
 1. Current code
 2. `package.json` scripts and workspace config
 3. This `CLAUDE.md`
-4. `.claude/rules/*` (detailed rules) and `.claude/skills/*` (reusable workflows)
+4. The `hexagram` plugin skills — the house style, installed per machine, not stored here (section 12)
 
 When in doubt, trust the code and scripts currently in the repository.
 
@@ -125,42 +125,42 @@ The conventions this repo is held to are **skills in the `hexagram` plugin**, no
 tree. They are installed per machine (user scope, from the `imgabrieldev/hexagram` marketplace),
 so a clone picks up whatever version the person cloning has installed — nothing here pins them:
 
-`architecture` · `naming` · `git` · `language` · `testing` · `clean-code` · `diagrams` ·
-`workflow` · `terraform` · `setup-machine` · `research` · `postmortem` · `lint`
+`architecture` · `board` · `clean-code` · `diagrams` · `git` · `init-project` · `language` ·
+`lint` · `naming` · `pitch` · `postmortem` · `research` · `setup-machine` · `terraform` ·
+`testing` · `workflow`
 
-**None of them is copied into `.claude/rules/`, and that is on purpose.** Copying a rule freezes
-it at the version that was copied, and the copy is what gets read from then on. Look for a rule in
-the plugin, not on disk — the absence of a local copy is not the absence of a standard.
+**None of them is copied into this tree, and that is on purpose.** Copying a rule freezes it at
+the version that was copied, and the copy is what gets read from then on. Look for a rule in the
+plugin, not on disk — the absence of a local copy is not the absence of a standard. There is no
+`.claude/rules/` and no `.claude/skills/` here, and that absence is the correct state.
 
-## 13) Legacy local rules — superseded, not authoritative
+## 13) Legacy local rules — retired
 
-⚠️ The files below predate the plugin above and are **not** the house style. They are still
-`@`-imported into context, so they are listed here for the reader who sees them arrive:
+The decision is closed: the four `.claude/rules/*.md` files and the `.claude/skills/` copies of
+`lint`/`pitch`/`postmortem`/`research` are **deleted**, and the `@`-imports that pulled the rules
+into every session are gone with them. `docs/decisions/0001-legacy-rules.md` records why. Section
+12 is now the only standard, which is what it always claimed to be.
 
-- @.claude/rules/architecture-rules.md
-- @.claude/rules/clean-code-rules.md
-- @.claude/rules/testing-rules.md
-- @.claude/rules/workflow-rules.md
-
-`architecture-rules.md` describes an `artifacts/api-server/` (Express) and a top-level `lib/`;
-neither exists in this tree, which runs Cloudflare Pages Functions instead. The `workflow-rules.md`
-loop and the `.claude/skills/` copies of `pitch`/`research`/`postmortem`/`lint` (mirrored again
-under `.agents/skills/`) point at a `docs/` directory this repo does not have, and shadow the
-plugin's own skills of the same name. Where they disagree with section 12, section 12 wins.
-Removing them is an open decision, not something this file has settled.
+⚠️ **One mirror survived.** `.agents/skills/` still holds byte-identical copies of the same four
+skills, for the agents that read that directory instead of `.claude/`. It was outside the scope of
+the retirement and was left deliberately — its survival is not a second decision, and it is still
+open. Two of those copies write to `docs/postmortem/` and `docs/research/`, neither of which
+exists in this tree.
 
 ## 14) Skills
 
-Reusable workflows live in `.claude/skills/` and are invoked as slash commands:
+Skills come from the `hexagram` plugin (section 12) and are invoked by name. Nothing in this repo
+defines a skill, so a clone with the plugin missing has none of these — that is expected:
 
-- `/lint` — run linters and formatters across the project
-- `/pitch` — create a new pitch document in `docs/pitches/`
-- `/postmortem` — move a completed pitch to postmortem with retrospective
-- `/research` — research a topic using web search and fetch
+- `lint` — detects the stack from the files present and reports per tool
+- `pitch` — create a pitch in `docs/pitches/`
+- `postmortem` — record what a finished piece of work cost to learn
+- `research` — research a topic and keep each source as its own file
+- `board` — project `docs/pitches/` and `docs/plans/` onto a kanban board
 
 ---
 
-Last updated: 2026-08-18
+Last updated: 2026-09-03
 
 ## Commit hook
 

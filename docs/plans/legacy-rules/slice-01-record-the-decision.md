@@ -1,12 +1,11 @@
 ---
-status: blocked
+status: done
 kanban: c04f695c-849c-4bd8-9a58-0250770f7ffc
 ---
 
-> **Blocked on the owner.** Rewrite or retire is a call about what this repo wants its own written
-> standard to be, and `CLAUDE.md` already records it as unsettled: *"Removing them is an open
-> decision, not something this file has settled."* Nobody but the owner can close it. Slice 2 cannot
-> start until this one does.
+> **Unblocked and closed.** The owner chose *retire* on 2026-09-03. The decision is recorded in
+> `docs/decisions/0001-legacy-rules.md`, which states `**Decision:** retire` and lists what that
+> ruled out. Slice 2 shipped in the same change.
 
 # Slice 1 — Record the rewrite-or-retire decision
 
