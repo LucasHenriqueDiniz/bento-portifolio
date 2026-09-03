@@ -62,6 +62,11 @@ pnpm-debug.log*
 /typings
 .cache/
 
+# The kanban board the `hexagram` board skill derives from docs/pitches and docs/plans.
+# Derived, so losing it costs one command -- and a tracked JSON board is a merge conflict
+# waiting to happen.
+.kanban.json
+
 # Replit (legacy)
 .local/
 .cursor/rules/nx-rules.mdc
