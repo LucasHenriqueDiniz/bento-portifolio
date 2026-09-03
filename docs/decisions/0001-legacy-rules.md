@@ -41,19 +41,37 @@ The owner said so.
 
 ## What is lost, stated plainly
 
-These files were the repo's own writing, not a copy of a plugin skill, so deleting them destroys
-content with no other home. Two things in them had no plugin equivalent and are recorded here
-rather than silently dropped:
+Less than an earlier draft of this record claimed. That draft named two things as having "no plugin
+equivalent"; read against the installed skill files, one is in the plugin verbatim and the other is
+in it in form. Line numbers below are from the `hexagram` skills as installed when this was written
+(`skills/<name>/SKILL.md`), so re-grep before trusting them:
 
-- **A concrete abbreviation table** (`stmt`→`statement`, `idx`→`index`, `resp`→`response`, …) and
-  explicit function/file size limits (soft 80 / hard 200 lines per function; soft 500 / hard 1500
-  per file). The `clean-code` skill states the principle; these were this repo's numbers.
-- **A four-layer test taxonomy** (pure utilities, hooks, components, endpoint E2E) with a
-  <5-second target for the lib+component loop.
+- **The abbreviation table and the size limits are already in the plugin, and with these same
+  numbers.** `clean-code/SKILL.md` sets soft 80 / hard 200 lines per function (lines 48–49) and soft
+  500 / hard 1500 per file (lines 59–60) — it does not merely "state the principle". Its
+  forbidden-abbreviation table (lines 16–30) is a strict superset of the deleted one: `stmt`, `ctx`,
+  `cnt`, `idx`, `cfg`, `resp`, `qty` and `ts` are all in it, plus `req`, `ph`, `ws`, `db2`/`db3` and
+  `kv`. Its "Allowed short names" (lines 36–38) likewise cover everything the deleted
+  `Abreviacoes permitidas` allowed, and add `ms`, `ip` and `U`. `clean-code-rules.md` was a
+  Portuguese translation of a subset of that skill — which is what the table above already says in
+  the `clean-code` row, and what this section used to contradict. Nothing here is lost.
+- **The test taxonomy's shape is the plugin's; only the layers were this repo's.**
+  `testing/SKILL.md` numbers Layers 1–4 at lines 12, 23, 37 and 45, and asks for a single-command
+  run in <5 seconds at line 161 — so neither the four-layer form nor the target was local. What
+  differed is what the layers held: the deleted file's were React-shaped (pure `src/lib` utilities →
+  hooks → components → endpoint E2E) against the plugin's hexagonal ones (domain → use case →
+  integration → E2E). *That* mapping is the one thing on this list with no plugin equivalent, and it
+  is a sentence long: here the four layers land as `artifacts/portfolio/src/lib` (7 test files),
+  `src/hooks` (12), `src/components` (3) and the Cloudflare Pages Functions under
+  `artifacts/portfolio/functions/api/` (3) — with no `application/` tier in between, because this
+  repo has none. One `vitest run` covers all 25 files, so the plugin's <5-second target is a single
+  command here and it already passes: 122 tests in 3.3s, measured 2026-09-03.
 
-If either turns out to be missed, it belongs in the plugin's `clean-code` or `testing` skill —
-where every repo gets it — not back in this tree. Section 12 explains why: a local copy freezes
-at the version copied, and the copy is what gets read from then on.
+So the honest total is one sentence, written above. Do not "restore" the first two to the plugin's
+`clean-code` or `testing` skill: it has them. And the layer mapping is about this tree, so it stays
+here rather than becoming a local copy of a rule — section 12 explains why, a copy freezes at the
+version copied and the copy is what gets read from then on. Finding less lost than the draft
+assumed makes *retire* the stronger call, not the weaker one.
 
 ## Not decided here
 
