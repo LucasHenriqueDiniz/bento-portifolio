@@ -28,7 +28,7 @@ that is what it takes to get under the ceiling.
 ## Done when
 
 ```
-cd artifacts/portfolio && pnpm test 2>&1 | tail -4 && find functions -name '*.ts' ! -name '*.test.ts' -exec wc -l {} + | awk '$1 > 200 && $2 != "total"'
+cd artifacts/portfolio && set -o pipefail && pnpm test 2>&1 | tail -5 && find functions -name '*.ts' ! -name '*.test.ts' -exec wc -l {} + | awk '$1 > 200 && $2 != "total"'
 ```
 
 prints 0 failed test files and then **nothing at all** — no file under `functions/` outside the

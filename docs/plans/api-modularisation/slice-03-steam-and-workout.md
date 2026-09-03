@@ -26,7 +26,7 @@ kanban: 195c524c-a2cd-498e-9781-75b762dcb9b0
 ## Done when
 
 ```
-cd artifacts/portfolio && pnpm test 2>&1 | tail -4 && wc -l 'functions/api/[[path]].ts'
+cd artifacts/portfolio && set -o pipefail && pnpm test 2>&1 | tail -5 && wc -l 'functions/api/[[path]].ts'
 ```
 
 prints 0 failed test files and a line count of 530 or less.

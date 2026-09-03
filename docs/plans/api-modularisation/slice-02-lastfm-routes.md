@@ -27,7 +27,7 @@ from `functions/api/routes/lastfm.ts`, registered in the table from slice 1. The
 ## Done when
 
 ```
-cd artifacts/portfolio && pnpm test 2>&1 | tail -4 && wc -l 'functions/api/[[path]].ts' functions/api/routes/lastfm.ts
+cd artifacts/portfolio && set -o pipefail && pnpm test 2>&1 | tail -5 && wc -l 'functions/api/[[path]].ts' functions/api/routes/lastfm.ts
 ```
 
 prints `Test Files` with 0 failed, `[[path]].ts` at 640 lines or less, and `lastfm.ts` at 200 or

@@ -14,10 +14,10 @@ seven in `artifacts/portfolio/public/.well-known/api-catalog` and one at
 ## Needs
 
 - Slice 1 merged. Editing the URLs before the rename lands points them at a 404.
-- 20 min. The full inventory is eight lines, already measured:
+- 20 min. The inventory outside `docs/` is eight lines, measured on this branch:
 
   ```
-  $ git grep -ni portifolio
+  $ git grep -ni portifolio -- ':!docs'
   artifacts/portfolio/public/.well-known/api-catalog:5,11,17,23,29,35,41
   artifacts/portfolio/src/constants/projects.ts:903
   ```
@@ -34,6 +34,15 @@ The local clone directory is still `bento-portifolio`. Renaming it is the owner'
 this repository, and is out of scope — but `git remote set-url` is in scope and is what the check
 below reads.
 
+## Design constraint
+
+`docs/` is out of the sweep, so the check excludes it with `-- ':!docs'`. Two reasons, both
+measurable: the pitch and slice 1 quote the misspelling as the evidence for doing the rename at all,
+and six other slices hardcode `cd /Users/maxter/dev/pessoal/bento-portifolio` in their own checks —
+the clone directory the constraint above puts out of scope. `git grep -ni portifolio` unscoped
+returns 29 lines across 10 files on this branch against 8 on `main`, so an unscoped check could
+never go quiet without rewriting the plan files this slice is written in.
+
 ## Tests
 
 - `pnpm test` and `pnpm run build` stay green — `projects.ts` is imported by the frontend and, after
@@ -43,10 +52,13 @@ below reads.
 ## Done when
 
 ```
-cd /Users/maxter/dev/pessoal/bento-portifolio && git remote -v | grep -c portifolio ; git grep -ni portifolio ; echo "grep exit=$?"
+cd /Users/maxter/dev/pessoal/bento-portifolio && git remote -v | grep -c portifolio ; git grep -ni portifolio -- ':!docs' ; echo "grep exit=$?"
 ```
 
 prints `0`, then no matching lines, then `grep exit=1`.
+
+Measured on this branch before the work: `2`, then the eight lines listed under Needs, then
+`grep exit=0`. The `2` is the fetch and push URLs of `origin`; `set-url` takes it to `0`.
 
 ## If stuck
 

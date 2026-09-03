@@ -38,7 +38,7 @@ which is exactly why they go first.
 ## Done when
 
 ```
-cd artifacts/portfolio && pnpm test 2>&1 | tail -4 && wc -l 'functions/api/[[path]].ts'
+cd artifacts/portfolio && set -o pipefail && pnpm test 2>&1 | tail -5 && wc -l 'functions/api/[[path]].ts'
 ```
 
 prints `Test Files 25 passed (25)` with a `Tests N passed (N)` line where N >= 122, and a line count

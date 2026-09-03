@@ -28,7 +28,7 @@ kanban: 23eac554-ff0d-4c94-84cc-fc4ab22f489b
 ## Done when
 
 ```
-cd artifacts/portfolio && pnpm test 2>&1 | tail -4 && wc -l 'functions/api/[[path]].ts' functions/api/routes/stats.ts
+cd artifacts/portfolio && set -o pipefail && pnpm test 2>&1 | tail -5 && wc -l 'functions/api/[[path]].ts' functions/api/routes/stats.ts
 ```
 
 prints 0 failed test files, `[[path]].ts` at 400 lines or less, and `stats.ts` at 200 or less.
