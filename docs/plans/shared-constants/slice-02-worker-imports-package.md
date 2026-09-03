@@ -30,10 +30,15 @@ the frontend's source tree.
 ## Done when
 
 ```
-cd /Users/maxter/dev/pessoal/bento-portifolio && grep -rn '\.\./\.\./src' artifacts/portfolio/functions ; echo "grep exit=$?" && (cd artifacts/portfolio && pnpm test 2>&1 | tail -4)
+cd /Users/maxter/dev/pessoal/bento-portifolio && ! grep -rn '\.\./\.\./src' artifacts/portfolio/functions && (cd artifacts/portfolio && set -o pipefail && pnpm test 2>&1 | tail -5)
 ```
 
-prints no matching lines, then `grep exit=1`, then a test tail with 0 failed test files.
+prints no matching lines, then a `Test Files` line with 0 failed, and exits 0. Today it prints the
+six imports in `functions/lib/markdown.ts` and stops there with exit 1, which is the failure this
+slice removes. Two things the earlier `; echo "grep exit=$?"` form got wrong, both measured on this
+branch: the gate exited 0 while all six imports were still in place, and `tail -4` cut off the
+`Test Files` line the criterion reads. `! grep` makes the surviving import the exit status, and
+`set -o pipefail` inside the subshell stops a red suite from exiting 0 through `tail`.
 
 ## If stuck
 

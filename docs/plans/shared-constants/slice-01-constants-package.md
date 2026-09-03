@@ -44,11 +44,14 @@ move only what the worker needs. `personSchema.ts` and the rest stay in
 ## Done when
 
 ```
-cd /Users/maxter/dev/pessoal/bento-portifolio && test -f artifacts/constants/package.json && node -e 'process.stdout.write(require("./artifacts/constants/package.json").name)' && pnpm run typecheck && (cd artifacts/portfolio && pnpm test 2>&1 | tail -4)
+cd /Users/maxter/dev/pessoal/bento-portifolio && test -f artifacts/constants/package.json && node -e 'process.stdout.write(require("./artifacts/constants/package.json").name)' && pnpm run typecheck && (cd artifacts/portfolio && set -o pipefail && pnpm test 2>&1 | tail -5)
 ```
 
-prints `@workspace/constants`, the typecheck exits 0, and the test tail shows 0 failed test files
-with `Tests N passed (N)` where N >= 122.
+prints `@workspace/constants`, the typecheck exits 0, and the test tail shows a `Test Files` line
+with 0 failed plus `Tests N passed (N)` where N >= 122. `tail -5`, not `tail -4`: on a green run
+vitest prints `Test Files`, `Tests`, `Start at`, `Duration` and a blank line, so `tail -4` cuts off
+the `Test Files` line this criterion reads. `set -o pipefail` inside the subshell, because
+`pnpm test 2>&1 | tail` otherwise takes its status from `tail` and a red suite exits 0.
 
 ## If stuck
 

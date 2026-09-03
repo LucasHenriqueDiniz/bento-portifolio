@@ -41,8 +41,11 @@ which is exactly why they go first.
 cd artifacts/portfolio && set -o pipefail && pnpm test 2>&1 | tail -5 && wc -l 'functions/api/[[path]].ts'
 ```
 
-prints `Test Files 25 passed (25)` with a `Tests N passed (N)` line where N >= 122, and a line count
-of 720 or less.
+prints a `Test Files` line with 0 failed and a `Tests N passed (N)` line where N >= 123, and a line
+count of 720 or less. The floor is 123, not 122: the suite is green today at 25 files / 122 tests, so
+122 is already true before any work, and the registry test the Tests section asks for is the 123rd.
+Do not pin the file count — this slice adds a test file, so a finished slice prints 26, and the
+absolute count keeps moving as slices 2 to 6 add their own.
 
 ## If stuck
 
