@@ -689,6 +689,30 @@ export const projects: Project[] = [
     ],
   },
   {
+    id: "tglinks",
+    name: "TG Links",
+    description:
+      "• Criei um diretório de grupos e canais públicos do Telegram em inglês e português, com rankings por membros e atividade\n" +
+      "• Dividi o projeto em três partes: site em Astro com SSR em Cloudflare Workers, API em um Worker separado e um coletor em Python com Telethon\n" +
+      "• Mantenho uma política de catálogo que recusa conteúdo adulto, com um monitor diário que confere o sitemap e as páginas indexáveis",
+    descriptionEn:
+      "• Built a directory of public Telegram groups and channels in English and Portuguese, ranked by members and activity\n" +
+      "• Split the project in three: an Astro site with SSR on Cloudflare Workers, an API on its own Worker and a Python collector built on Telethon\n" +
+      "• Keep a catalog policy that refuses adult content, with a daily monitor that checks the sitemap and the indexable pages",
+    techStack: ["Astro", "TypeScript", "Cloudflare Workers", "Python", "PostgreSQL"],
+    highlight: "Diretório de comunidades públicas do Telegram, em inglês e português",
+    highlightEn: "Directory of public Telegram communities, in English and Portuguese",
+    url: "https://tglinks.net/",
+    status: "workInProgress",
+    category: "website",
+    role: "Desenvolvedor solo",
+    roleEn: "Solo developer",
+    type: "Diretório",
+    typeEn: "Directory",
+    year: "2026",
+    priority: 11,
+  },
+  {
     id: "adsense-site-auditor",
     name: "AdSense Site Auditor",
     description:
