@@ -9,6 +9,8 @@ node_modules/
 .env
 .env.local
 .env.*.local
+# Local secrets for `wrangler pages dev`
+.dev.vars
 
 # Build Output
 dist/

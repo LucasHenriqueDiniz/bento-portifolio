@@ -104,6 +104,112 @@ const rateLimitDelayMs = (res: Response, attempt: number) => {
     : 1000 + attempt * 500;
 };
 
+// The last payload that carried real data, kept without expiry so a card shows what
+// was last true instead of going blank when the upstream fails or comes back empty.
+// `asStale` rewrites the fields that only make sense live ("playing now").
+async function withLastKnown<T>(
+  env: Env,
+  kvKey: string,
+  maxAgeSec: number,
+  produce: () => Promise<T>,
+  asStale: (last: T) => T = (last) => last
+): Promise<Response> {
+  try {
+    const fresh = await produce();
+    if (env.PORTFOLIO_CACHE) {
+      // A failed write of the fallback copy must not cost the visitor the fresh answer.
+      await env.PORTFOLIO_CACHE.put(kvKey, JSON.stringify(fresh)).catch(() => undefined);
+    }
+    return json(fresh, maxAgeSec);
+  } catch (error) {
+    const last = env.PORTFOLIO_CACHE ? await env.PORTFOLIO_CACHE.get(kvKey, { type: "text" }) : null;
+    if (last) return json(asStale(JSON.parse(last) as T), maxAgeSec);
+    throw error;
+  }
+}
+
+const LASTFM_PLACEHOLDER_ART = "2a96cbd8b46e442fc41c2b86b821562f";
+const KV_LAST_TRACK_KEY = "lastfm:last-track";
+
+const EMPTY_NOW_PLAYING = {
+  isPlaying: false,
+  timestamp: null,
+  track: null,
+  artist: null,
+  album: null,
+  albumArt: null,
+  trackUrl: null,
+};
+
+// Scrobbles from YouTube carry the video title as the track name, e.g.
+// "Evanescence - Tourniquet (Remastered 2023) - Official Visualizer", which iTunes
+// does not match verbatim. Bracketed tags and trailing video labels are dropped.
+const BRACKETED_TAG = /\s*[([][^)\]]*[)\]]/g;
+const TRAILING_VIDEO_LABEL = /\s+-\s+(?:official|lyrics?|audio|video|visuali[sz]er|remaster(?:ed)?|live|hd|4k)\b.*$/i;
+
+const itunesSearchTerm = (artist: string, track: string) => {
+  const title = track
+    .replace(BRACKETED_TAG, "")
+    .replace(TRAILING_VIDEO_LABEL, "")
+    .replace(/\s+-\s+/g, " ")
+    .trim();
+  return `${artist} ${title}`.trim();
+};
+
+async function fetchItunesArtwork(artist: string, track: string): Promise<string | null> {
+  try {
+    const term = encodeURIComponent(itunesSearchTerm(artist, track));
+    const res = await fetchWithTimeout(`https://itunes.apple.com/search?term=${term}&entity=song&limit=1`, {}, 4000);
+    if (!res.ok) return null;
+    const body = (await res.json()) as { results?: Array<{ artworkUrl100?: unknown }> };
+    const artwork = textOrNull(body?.results?.[0]?.artworkUrl100);
+    return artwork ? artwork.replace("100x100", "600x600") : null;
+  } catch {
+    return null;
+  }
+}
+
+const KV_LAST_STEAM_KEY = "steam:last-good";
+const STEAM_SPACEWAR_APP_ID = 480;
+const HYDRA_ICON_URL = "https://raw.githubusercontent.com/hydralauncher/hydra/refs/heads/main/resources/icon.png";
+
+interface SteamApiGame {
+  appid: number;
+  name?: string;
+  playtime_forever?: number;
+  rtime_last_played?: number;
+}
+
+// Newer games keep their header image under a hashed path that only the Store API
+// reports; the fixed `/steam/apps/{id}/header.jpg` answers 404 for them. Null means
+// the Store API had nothing, and the fixed path is the best guess left.
+async function fetchSteamHeaderImage(appId: number): Promise<string | null> {
+  try {
+    const res = await fetchWithTimeout(`https://store.steampowered.com/api/appdetails?appids=${appId}&filters=basic`, {}, 4000);
+    if (!res.ok) return null;
+    const body = (await res.json()) as Record<string, { data?: { header_image?: unknown } } | undefined>;
+    return textOrNull(body?.[String(appId)]?.data?.header_image);
+  } catch {
+    return null;
+  }
+}
+
+// Hours are lifetime totals; `lastPlayedAt` comes from the owned library, the only
+// Steam endpoint that reports a last launch time.
+const toSteamGame = (game: SteamApiGame, lastPlayedSec: number | undefined, headerUrl: string | null = null) => {
+  const name = String(game.name ?? "");
+  const isSpacewar = ["spacewar", "spacewars"].includes(name.toLowerCase()) || Number(game.appid) === STEAM_SPACEWAR_APP_ID;
+  return {
+    name,
+    hoursPlayed: Math.round((Number(game.playtime_forever ?? 0) / 60) * 10) / 10,
+    imageUrl: isSpacewar
+      ? HYDRA_ICON_URL
+      : headerUrl ?? `https://cdn.cloudflare.steamstatic.com/steam/apps/${game.appid}/header.jpg`,
+    appId: String(game.appid),
+    lastPlayedAt: lastPlayedSec ? lastPlayedSec * 1000 : null,
+  };
+};
+
 async function fetchJikanUserResource<T>(user: string, resource: "statistics" | "favorites", retries = 2): Promise<T> {
   for (let i = 0; i <= retries; i++) {
     const res = await fetchWithTimeout(`${JIKAN_BASE}/users/${user}/${resource}`, { headers: JIKAN_HEADERS });
@@ -241,44 +347,41 @@ export const onRequest: PagesFunction<Env> = async (context) => {
       return await cached(request, path, 30, env, async () => {
         const key = env.LASTFM_API_KEY ?? "";
         const user = env.LASTFM_USERNAME ?? "Amayacrab";
-        if (!key) return json({ isPlaying: false, track: null, artist: null, album: null, albumArt: null, trackUrl: null }, 30);
+        if (!key) return json(EMPTY_NOW_PLAYING, 30);
         const u = `https://ws.audioscrobbler.com/2.0/?method=user.getRecentTracks&user=${user}&api_key=${key}&format=json&limit=1`;
-        const r = await fetch(u);
-        const body = (await r.json()) as any;
-        const track = body?.recenttracks?.track?.[0];
-        let albumArt =
-          track?.image?.find((img: any) => img.size === "extralarge")?.["#text"] ||
-          track?.image?.find((img: any) => img.size === "large")?.["#text"] ||
-          null;
-        
-        // Fallback to iTunes if Last.fm returns placeholder image
-        if (!albumArt || albumArt.includes("2a96cbd8b46e442fc41c2b86b821562f")) {
-          const artist = track?.artist?.["#text"] ?? track?.artist ?? "";
-          const trackName = track?.name ?? "";
-          if (artist && trackName) {
-            try {
-              const itunesRes = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(artist + " " + trackName)}&entity=song&limit=1`);
-              const itunesData = (await itunesRes.json()) as any;
-              const artwork = itunesData?.results?.[0]?.artworkUrl100;
-              if (artwork) {
-                albumArt = artwork.replace("100x100", "600x600");
-              }
-            } catch { /* ignore iTunes fallback errors */ }
-          }
-        }
-        
-        const data = track
-          ? {
+        return withLastKnown(
+          env,
+          KV_LAST_TRACK_KEY,
+          30,
+          async () => {
+            const r = await fetchWithTimeout(u);
+            if (!r.ok) throw new Error(`last.fm recent tracks request failed (${r.status})`);
+            const body = (await r.json()) as any;
+            const track = body?.recenttracks?.track?.[0];
+            const trackName = textOrNull(track?.name);
+            if (!trackName) throw new Error("last.fm returned no recent track");
+
+            const artist = textOrNull(track.artist?.["#text"]) ?? textOrNull(track.artist);
+            const lastfmArt =
+              textOrNull(track.image?.find((img: any) => img.size === "extralarge")?.["#text"]) ??
+              textOrNull(track.image?.find((img: any) => img.size === "large")?.["#text"]);
+            const albumArt =
+              lastfmArt && !lastfmArt.includes(LASTFM_PLACEHOLDER_ART)
+                ? lastfmArt
+                : await fetchItunesArtwork(artist ?? "", trackName);
+
+            return {
               isPlaying: track["@attr"]?.nowplaying === "true",
               timestamp: track.date?.uts ? Number(track.date.uts) * 1000 : null,
-              track: track.name ?? null,
-              artist: track.artist?.["#text"] ?? track.artist ?? null,
-              album: track.album?.["#text"] ?? track.album ?? null,
+              track: trackName,
+              artist,
+              album: textOrNull(track.album?.["#text"]) ?? textOrNull(track.album),
               albumArt,
-              trackUrl: track.url ?? null,
-            }
-          : { isPlaying: false, timestamp: null, track: null, artist: null, album: null, albumArt: null, trackUrl: null };
-        return json(data, 30);
+              trackUrl: textOrNull(track.url),
+            };
+          },
+          (last) => ({ ...last, isPlaying: false })
+        );
       });
     }
 
@@ -332,35 +435,49 @@ export const onRequest: PagesFunction<Env> = async (context) => {
         const key = env.STEAM_API_KEY ?? "";
         const id = env.STEAM_ID ?? "";
         if (!key || !id) return json({ username: "unknown", avatarUrl: null, currentGame: null, totalGames: 0, recentGames: [] }, 60);
-        const [profileRes, recentRes, ownedRes] = await Promise.all([
-          fetch(`https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=${key}&steamids=${id}`),
-          fetch(`https://api.steampowered.com/IPlayerService/GetRecentlyPlayedGames/v0001/?key=${key}&steamid=${id}&count=5&format=json`),
-          fetch(`https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=${key}&steamid=${id}&include_appinfo=true&include_played_free_games=true&format=json`),
-        ]);
-        const profileJson = (await profileRes.json()) as any;
-        const recentJson = (await recentRes.json()) as any;
-        const ownedJson = (await ownedRes.json()) as any;
-        const player = profileJson?.response?.players?.[0];
-        const rawRecent = recentJson?.response?.games ?? [];
-        const recentGames = (Array.isArray(rawRecent) ? rawRecent : [rawRecent]).slice(0, 5).map((g: any) => {
-          const gameName = String(g.name ?? "").toLowerCase();
-          const isSpacewar = gameName === "spacewar" || gameName === "spacewars" || Number(g.appid) === 480;
-          return {
-            name: g.name,
-            hoursPlayed: Math.round((((g.playtime_2weeks ?? g.playtime_forever) ?? 0) / 60) * 10) / 10,
-            imageUrl: isSpacewar
-              ? "https://raw.githubusercontent.com/hydralauncher/hydra/refs/heads/main/resources/icon.png"
-              : `https://cdn.cloudflare.steamstatic.com/steam/apps/${g.appid}/header.jpg`,
-            appId: String(g.appid),
-          };
-        });
-        return json({
-          username: player?.personaname ?? "unknown",
-          avatarUrl: player?.avatarfull ?? null,
-          currentGame: player?.gameextrainfo ?? null,
-          totalGames: ownedJson?.response?.game_count ?? 0,
-          recentGames,
-        }, 120);
+        return withLastKnown(
+          env,
+          KV_LAST_STEAM_KEY,
+          120,
+          async () => {
+            const [profileRes, recentRes, ownedRes] = await Promise.all([
+              fetchWithTimeout(`https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=${key}&steamids=${id}`),
+              fetchWithTimeout(`https://api.steampowered.com/IPlayerService/GetRecentlyPlayedGames/v0001/?key=${key}&steamid=${id}&count=5&format=json`),
+              fetchWithTimeout(`https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=${key}&steamid=${id}&include_appinfo=true&include_played_free_games=true&format=json`),
+            ]);
+            if (!profileRes.ok || !recentRes.ok || !ownedRes.ok) {
+              throw new Error(`steam request failed (${profileRes.status}/${recentRes.status}/${ownedRes.status})`);
+            }
+            const profileJson = (await profileRes.json()) as any;
+            const recentJson = (await recentRes.json()) as any;
+            const ownedJson = (await ownedRes.json()) as any;
+            const player = profileJson?.response?.players?.[0];
+            const owned: SteamApiGame[] = Array.isArray(ownedJson?.response?.games) ? ownedJson.response.games : [];
+            const recent: SteamApiGame[] = Array.isArray(recentJson?.response?.games) ? recentJson.response.games : [];
+            const lastPlayedByApp = new Map(owned.map((g) => [String(g.appid), Number(g.rtime_last_played) || 0]));
+
+            // GetRecentlyPlayedGames only covers the last two weeks. Past that, the owned
+            // library ordered by last launch still says what was played last.
+            const lastPlayed = recent.length
+              ? recent
+              : owned
+                  .filter((g) => (lastPlayedByApp.get(String(g.appid)) ?? 0) > 0)
+                  .sort((a, b) => (lastPlayedByApp.get(String(b.appid)) ?? 0) - (lastPlayedByApp.get(String(a.appid)) ?? 0));
+            const picked = lastPlayed.slice(0, 5);
+            const headers = await Promise.all(picked.map((g) => fetchSteamHeaderImage(g.appid)));
+            const recentGames = picked.map((g, i) => toSteamGame(g, lastPlayedByApp.get(String(g.appid)), headers[i]));
+            if (!recentGames.length) throw new Error("steam returned no played games");
+
+            return {
+              username: player?.personaname ?? "unknown",
+              avatarUrl: player?.avatarfull ?? null,
+              currentGame: player?.gameextrainfo ?? null,
+              totalGames: ownedJson?.response?.game_count ?? owned.length,
+              recentGames,
+            };
+          },
+          (last) => ({ ...last, currentGame: null })
+        );
       });
     }
 

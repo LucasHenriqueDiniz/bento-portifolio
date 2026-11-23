@@ -222,6 +222,7 @@
   },
   "album": {
     "listening": "Ouvindo",
+    "lastPlayed": "Ouvi por último",
     "empty": "Nenhuma música tocando"
   }
 }
