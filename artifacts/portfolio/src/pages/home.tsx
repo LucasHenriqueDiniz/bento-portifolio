@@ -288,7 +288,9 @@ export default function Home() {
   const localizedFeaturedProjects = featuredProjects.map(p => ({
     id: p.id,
     name: p.name,
-    description: currentLang === "en" && p.descriptionEn ? p.descriptionEn : p.description,
+    // The one-line highlight: the description is a bulleted resume entry, which the card
+    // cut after three lines.
+    description: currentLang === "en" && p.highlightEn ? p.highlightEn : p.highlight,
     techStack: p.techStack,
     highlight: p.highlight,
     url: p.url,

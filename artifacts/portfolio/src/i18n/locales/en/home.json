@@ -185,6 +185,7 @@
     "pause": "Pause",
     "play": "Play",
     "goTo": "Go to",
+    "openSite": "Open site",
     "empty": {
       "title": "No projects yet",
       "subtitle": "Add featured projects...",

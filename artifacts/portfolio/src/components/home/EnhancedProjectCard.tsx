@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { useLocation } from "wouter";
 import { WidgetCard } from "@/components/WidgetCard";
 import { CardHeader } from "@/components/CardHeader";
-import { ExternalLink, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowRight, ChevronLeft, ChevronRight, Globe } from "lucide-react";
 
 export interface Project {
   id: string;
@@ -49,16 +49,6 @@ export function EnhancedProjectCard({
     setActiveIndex(0);
   }, [projects?.length]);
 
-  useEffect(() => {
-    if (!hasProjects || projectCount <= 1) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "ArrowLeft") { e.preventDefault(); goToPrev(); }
-      else if (e.key === "ArrowRight") { e.preventDefault(); goToNext(); }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [hasProjects, projectCount, activeIndex]);
-
   const goTo = useCallback((index: number, dir: number) => {
     if (!hasProjects) return;
     setDirection(dir);
@@ -76,6 +66,14 @@ export function EnhancedProjectCard({
     const timer = setTimeout(goToNext, AUTO_ADVANCE_MS);
     return () => clearTimeout(timer);
   }, [autoAdvances, goToNext]);
+
+  // Arrow keys only while the carousel has focus: a window listener used to take the
+  // arrows away from the whole page.
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (projectCount <= 1) return;
+    if (e.key === "ArrowLeft") { e.preventDefault(); goToPrev(); }
+    else if (e.key === "ArrowRight") { e.preventDefault(); goToNext(); }
+  };
 
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.changedTouches[0].screenX;
@@ -109,11 +107,12 @@ export function EnhancedProjectCard({
       onMouseLeave={() => setIsHovered(false)}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
+      onKeyDown={handleKeyDown}
       tabIndex={0}
       role="region"
       aria-roledescription="carousel"
       aria-label={t("project.featured")}
-      className="outline-none h-full"
+      className="outline-none h-full rounded-2xl focus-visible:ring-2 focus-visible:ring-brand"
     >
       <WidgetCard
         className="h-full rounded-2xl overflow-hidden bg-panel border border-base"
@@ -153,7 +152,14 @@ export function EnhancedProjectCard({
                 >
                     <div className="h-full grid grid-cols-2 gap-0 rounded-lg overflow-hidden border border-base">
                     <div className="p-2.5 flex flex-col justify-start gap-2">
-                      <h3 className="text-[13px] font-bold leading-tight text-main">{current.name}</h3>
+                      <h3 className="text-[13px] font-bold leading-tight text-main flex items-center gap-1.5">
+                        {current.name}
+                        {current.wip && (
+                          <span className="text-[8px] font-semibold uppercase tracking-wider px-1 py-0.5 rounded bg-field text-faint">
+                            {t("project.wip")}
+                          </span>
+                        )}
+                      </h3>
                       <p className="text-[10px] leading-snug line-clamp-3 text-sub">{current.description}</p>
                       <div className="flex flex-wrap gap-1 mt-auto">
                         {current.techStack.slice(0, 4).map(tech => (
@@ -184,6 +190,8 @@ export function EnhancedProjectCard({
                     <button
                       key={idx}
                       onClick={() => goTo(idx, idx > activeIndex ? 1 : -1)}
+                      aria-label={`${t("project.goTo")} ${idx + 1}`}
+                      aria-current={idx === activeIndex}
                       className="rounded-full transition-all duration-300"
                       style={{
                         width: idx === activeIndex ? 10 : 3,
@@ -199,13 +207,26 @@ export function EnhancedProjectCard({
             <div className="flex items-center gap-1">
               {hasProjects && projectCount > 1 && (
                 <div className="flex gap-0">
-                  <button onClick={goToPrev} className="p-0.5 rounded transition-all hover:bg-black/5 dark:hover:bg-white/5">
+                  <button onClick={goToPrev} aria-label={t("project.previous")} className="p-0.5 rounded transition-all hover:bg-black/5 dark:hover:bg-white/5">
                     <ChevronLeft size={12} className="text-faint" />
                   </button>
-                  <button onClick={goToNext} className="p-0.5 rounded transition-all hover:bg-black/5 dark:hover:bg-white/5">
+                  <button onClick={goToNext} aria-label={t("project.next")} className="p-0.5 rounded transition-all hover:bg-black/5 dark:hover:bg-white/5">
                     <ChevronRight size={12} className="text-faint" />
                   </button>
                 </div>
+              )}
+
+              {current?.url && (
+                <a
+                  href={current.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label={`${t("project.openSite")}: ${current.name}`}
+                  title={t("project.openSite")}
+                  className="p-1 rounded-md text-faint hover:text-main hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+                >
+                  <Globe size={11} />
+                </a>
               )}
 
               {current?.id && (
@@ -217,7 +238,7 @@ export function EnhancedProjectCard({
                   className="flex items-center gap-1 text-[10px] font-medium px-2 py-1 rounded-md text-white bg-brand hover:bg-brand-hover transition-colors"
                 >
                   {t("project.view")}
-                  <ExternalLink size={9} />
+                  <ArrowRight size={9} />
                 </motion.button>
               )}
             </div>
