@@ -6,14 +6,14 @@ import { fadeUpSoft } from "@/lib/animations";
 
 // Local photos, each paired with a playful caption
 const POLAROID_PHOTOS = [
-  "/photos/hana.jpg",
-  "/photos/hana-2.jpg",
-  "/photos/poca.jpg",
-  "/photos/jardim-botanico-curitiba.jpg",
-  "/photos/jardim-botanico-curitiba-2.jpg",
-  "/photos/jardim-botanico-curitiba-3.jpg",
-  "/photos/portugal.jpeg",
-  "/photos/portugal-2.jpeg",
+  "/photos/hana.webp",
+  "/photos/hana-2.webp",
+  "/photos/poca.webp",
+  "/photos/jardim-botanico-curitiba.webp",
+  "/photos/jardim-botanico-curitiba-2.webp",
+  "/photos/jardim-botanico-curitiba-3.webp",
+  "/photos/portugal.webp",
+  "/photos/portugal-2.webp",
 ];
 
 const POLAROID_CAPTIONS_PT = [

@@ -90,7 +90,7 @@ export const jobExperiences: JobExperience[] = [
     ],
     description: "• Automatizei fluxos administrativos e relacionados ao RH, reduzindo tarefas manuais repetitivas em rotinas internas\n• Desenvolvi e melhorei ferramentas e scripts internos para apoiar operações de TI, documentação e organização de processos\n• Apoiei troubleshooting, suporte a usuários, rotinas de sistemas e documentação técnica em ambiente institucional\n• Apliquei desenvolvimento de software, automação e análise de sistemas para melhorar a eficiência operacional",
     descriptionEn: "• Automated administrative and HR-related workflows, cutting repetitive manual work in internal routines\n• Built and improved internal tools and scripts supporting IT operations, documentation and process organization\n• Supported troubleshooting, user support, systems routines and technical documentation in an institutional environment\n• Applied software development, automation and systems analysis to improve operational efficiency",
-    icon: "/timeline/policia-federal.png",
+    icon: "/timeline/policia-federal.webp",
   },
   {
     id: "eng-futuro",
