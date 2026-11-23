@@ -353,8 +353,9 @@ export default function Home() {
             </motion.div>
 
             {/* ── Col 2 ── */}
-            {/* Weather: half-height (row-span-1) */}
-            <motion.div custom={3} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-2 lg:row-start-1 lg:row-span-1 h-auto lg:h-full">
+            {/* Weather: half-height (row-span-1). Its two faces are absolutely positioned for
+                the flip, so below lg, where the grid has no row height, it needs its own. */}
+            <motion.div custom={3} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-2 lg:row-start-1 lg:row-span-1 h-auto lg:h-full min-h-[110px] lg:min-h-0">
               <WeatherClockCard />
             </motion.div>
 
