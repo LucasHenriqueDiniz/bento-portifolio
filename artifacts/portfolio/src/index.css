@@ -463,6 +463,12 @@
 }
 
 /* ── CTA shimmer overlay ── */
+/* Featured-project progress bar: one animation per slide (see EnhancedProjectCard). */
+@keyframes project-progress {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
 @keyframes cta-shimmer-move {
   0%   { transform: translateX(-100%) skewX(-20deg); }
   100% { transform: translateX(200%) skewX(-20deg); }

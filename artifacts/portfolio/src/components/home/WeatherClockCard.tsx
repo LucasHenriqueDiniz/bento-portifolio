@@ -4,16 +4,14 @@ import { useTranslation } from "react-i18next";
 import { Card } from "@/components/Card";
 import { useFlipLock } from "@/hooks/useFlipLock";
 import { useBrasiliaWeather } from "@/hooks/useBrasiliaWeather";
+import { useClock } from "@/hooks/useClock";
 import { CardHeader } from "@/components/CardHeader";
 
-interface WeatherClockCardProps {
-  clock: { h: string; m: string; s: string };
-}
-
-export const WeatherClockCard = React.memo(function WeatherClockCard({
-  clock,
-}: WeatherClockCardProps) {
+// The clock ticks every second, so it lives here: owned by the page, each tick
+// re-rendered the whole home.
+export const WeatherClockCard = React.memo(function WeatherClockCard() {
   const { t } = useTranslation("home");
+  const clock = useClock("America/Sao_Paulo");
   const [flipAngle, setFlipAngle] = useState(0);
   const { isFlipping, runWithFlipLock } = useFlipLock(600);
   const weather = useBrasiliaWeather();
