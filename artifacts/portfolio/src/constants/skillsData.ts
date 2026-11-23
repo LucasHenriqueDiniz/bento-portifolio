@@ -12,6 +12,10 @@ export type SkillCategory =
   | 'tools'
   | 'other';
 
+/**
+ * The single list of skills: the resume shows it by category, and the home Tech Stack
+ * card shows the `featured` ones. Mark a skill featured to put it on the card.
+ */
 export interface SkillDataType {
   name: string;
   category: SkillCategory;
@@ -24,15 +28,17 @@ export const skillsData: SkillDataType[] = [
   { name: 'TypeScript', category: 'frontend', featured: true, order: 1 },
   { name: 'React', category: 'frontend', featured: true, order: 2 },
   { name: 'Next.js', category: 'frontend', featured: true, order: 3 },
-  { name: 'Tailwind CSS', category: 'frontend', order: 4 },
+  { name: 'Tailwind CSS', category: 'frontend', featured: true, order: 4 },
+  { name: 'Astro', category: 'frontend', featured: true, order: 4.5 },
   { name: 'Framer Motion', category: 'frontend', order: 5 },
   { name: 'Zustand', category: 'frontend', order: 6 },
   { name: 'Expo', category: 'frontend', order: 7 },
 
   // Backend
   { name: 'Node.js', category: 'backend', featured: true, order: 8 },
-  { name: 'Python', category: 'backend', order: 9 },
+  { name: 'Python', category: 'backend', featured: true, order: 9 },
   { name: 'Go', category: 'backend', featured: true, order: 10 },
+  { name: 'FastAPI', category: 'backend', featured: true, order: 10.5 },
   { name: 'Prisma', category: 'backend', order: 11 },
   { name: 'NestJS', category: 'backend', order: 12 },
   { name: 'Flask', category: 'backend', order: 13 },
@@ -54,15 +60,15 @@ export const skillsData: SkillDataType[] = [
 
   // Database
   { name: 'PostgreSQL', category: 'database', featured: true, order: 23 },
-  { name: 'Supabase', category: 'database', order: 24 },
+  { name: 'Supabase', category: 'database', featured: true, order: 24 },
   { name: 'Redis', category: 'database', order: 25 },
 
   // DevOps
   { name: 'Vercel', category: 'devops', order: 26 },
   { name: 'Docker', category: 'devops', order: 27 },
   { name: 'Vite', category: 'devops', order: 28 },
-  { name: 'AWS Lambda', category: 'devops', order: 29 },
-  { name: 'Cloudflare', category: 'devops', order: 30 },
+  { name: 'AWS Lambda', category: 'devops', featured: true, order: 29 },
+  { name: 'Cloudflare', category: 'devops', featured: true, order: 25.5 },
 
   // Design
   { name: 'Figma', category: 'design', order: 31 },

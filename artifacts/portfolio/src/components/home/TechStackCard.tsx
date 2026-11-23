@@ -1,149 +1,115 @@
 import React from "react";
 import { motion } from "framer-motion";
+import type { IconType } from "react-icons";
 import {
-  SiTypescript,
+  SiAstro,
+  SiCloudflare,
+  SiDocker,
+  SiFastapi,
+  SiGithubactions,
   SiGo,
-  SiPython,
-  SiReact,
   SiNextdotjs,
-  SiTailwindcss,
   SiNodedotjs,
   SiPostgresql,
+  SiPython,
+  SiReact,
   SiRedis,
-  SiDocker,
   SiSupabase,
-  SiFigma,
+  SiTailwindcss,
+  SiTypescript,
 } from "react-icons/si";
+import { FaAws } from "react-icons/fa";
 import { FiCode } from "react-icons/fi";
 import { Card } from "@/components/Card";
 import { CardHeader } from "@/components/CardHeader";
 import { fadeUpSoft } from "@/lib/animations";
+import { skillsData, type SkillCategory, type SkillDataType } from "@/constants/skillsData";
 
-const CARD =
-  "bg-panel border border-base rounded-2xl";
+const CARD = "bg-panel border border-base rounded-2xl";
 
-/**
- * Props for TechStackCard component
- * @interface TechStackCardProps
- * @property {boolean} isDark - Dark mode flag
- */
+// Columns of the card, each fed by skill categories in this order. The skills come from
+// skillsData (`featured: true`), the same list the resume reads, so the two agree.
+const COLUMNS: Array<{ title: string; accent: string; categories: SkillCategory[] }> = [
+  { title: "Frontend", accent: "#38bdf8", categories: ["frontend"] },
+  { title: "Backend", accent: "#5fa04e", categories: ["backend"] },
+  { title: "Infra & dados", accent: "#f38020", categories: ["database", "devops", "automation"] },
+];
+
+// Brand icon and colour per skill; anything not listed gets a generic code icon.
+const ICONS: Record<string, { icon: IconType; color: string | ((isDark: boolean) => string) }> = {
+  TypeScript: { icon: SiTypescript, color: "#3178c6" },
+  React: { icon: SiReact, color: "#61dafb" },
+  "Next.js": { icon: SiNextdotjs, color: (isDark) => (isDark ? "#eee" : "#111") },
+  "Tailwind CSS": { icon: SiTailwindcss, color: "#38bdf8" },
+  Astro: { icon: SiAstro, color: "#ff5d01" },
+  Python: { icon: SiPython, color: "#3572a5" },
+  Go: { icon: SiGo, color: "#00add8" },
+  "Node.js": { icon: SiNodedotjs, color: "#5fa04e" },
+  FastAPI: { icon: SiFastapi, color: "#009688" },
+  PostgreSQL: { icon: SiPostgresql, color: "#4169e1" },
+  Supabase: { icon: SiSupabase, color: "#3ecf8e" },
+  Redis: { icon: SiRedis, color: "#dc382d" },
+  Cloudflare: { icon: SiCloudflare, color: "#f38020" },
+  "AWS Lambda": { icon: FaAws, color: "#ff9900" },
+  "GitHub Actions": { icon: SiGithubactions, color: "#2088ff" },
+  Docker: { icon: SiDocker, color: "#2496ed" },
+};
+
+export const featuredColumns = (skills: SkillDataType[] = skillsData) =>
+  COLUMNS.map((column) => ({
+    ...column,
+    items: skills
+      .filter((skill) => skill.featured && column.categories.includes(skill.category))
+      .sort(
+        (a, b) =>
+          column.categories.indexOf(a.category) - column.categories.indexOf(b.category) ||
+          (a.order ?? 999) - (b.order ?? 999)
+      ),
+  }));
+
 interface TechStackCardProps {
   isDark: boolean;
 }
 
-/**
- * TechStackCard - Displays tech stack organized by categories
- * Shows languages, frontend, backend, and infrastructure tools with icons
- * @component
- * @param {TechStackCardProps} props - Component props
- * @returns {JSX.Element} Rendered component
- */
-export const TechStackCard = React.memo(function TechStackCard({
-  isDark,
-}: TechStackCardProps) {
-  const techGroups = [
-    {
-      group: "Frontend",
-      accent: "#38bdf8",
-      items: [
-        { icon: <SiReact size={14} />, name: "React", color: "#61dafb" },
-        {
-          icon: <SiNextdotjs size={14} />,
-          name: "Next.js",
-          color: isDark ? "#eee" : "#111",
-        },
-        {
-          icon: <SiTailwindcss size={14} />,
-          name: "Tailwind",
-          color: "#38bdf8",
-        },
-        {
-          icon: <SiTypescript size={14} />,
-          name: "TypeScript",
-          color: "#3178c6",
-        },
-      ],
-    },
-    {
-      group: "Backend",
-      accent: "#5fa04e",
-      items: [
-        { icon: <SiNodedotjs size={14} />, name: "Node.js", color: "#5fa04e" },
-        { icon: <SiGo size={14} />, name: "Go", color: "#00add8" },
-        { icon: <SiPython size={14} />, name: "Python", color: "#3572a5" },
-        {
-          icon: <SiPostgresql size={14} />,
-          name: "PostgreSQL",
-          color: "#4169e1",
-        },
-        { icon: <SiRedis size={14} />, name: "Redis", color: "#dc382d" },
-      ],
-    },
-    {
-      group: "DevOps",
-      accent: "#2496ed",
-      items: [
-        { icon: <SiDocker size={14} />, name: "Docker", color: "#2496ed" },
-        { icon: <SiSupabase size={14} />, name: "Supabase", color: "#3ecf8e" },
-        { icon: <SiFigma size={14} />, name: "Figma", color: "#a259ff" },
-      ],
-    },
-  ];
+/** The featured skills from skillsData, one band per group. */
+export const TechStackCard = React.memo(function TechStackCard({ isDark }: TechStackCardProps) {
+  const columns = featuredColumns();
 
   return (
-    <Card
-      className={`${CARD} p-3 h-full`}
-      glowColor="var(--accent-glow)"
-    >
-      <motion.div
-        custom={11}
-        variants={fadeUpSoft}
-        initial="hidden"
-        animate="show"
-        className="flex flex-col h-full gap-2"
-      >
+    <Card className={`${CARD} p-3 h-full`} glowColor="var(--accent-glow)">
+      <motion.div custom={11} variants={fadeUpSoft} initial="hidden" animate="show" className="flex flex-col h-full gap-2">
         <CardHeader icon={<FiCode size={10} />} title="Tech Stack" />
 
-        <div className="grid grid-cols-3 gap-2 flex-1 min-h-0">
-          {techGroups.map((group, groupIdx) => (
-            <div
-              key={group.group}
-              className="rounded-xl border border-base bg-field p-2 flex flex-col min-h-0"
-            >
-              <div className="mb-1.5 flex items-center justify-between">
-                <p className="text-[9px] font-bold uppercase tracking-wider text-faint inline-flex items-center gap-1">
-                  <span
-                    className="w-1.5 h-1.5 rounded-full"
-                    style={{ backgroundColor: group.accent }}
-                  />
-                  {group.group}
-                </p>
-                <span className="text-[8px] px-1 py-0.5 rounded-md bg-panel border border-base text-faint">
-                  {group.items.length}
-                </span>
-              </div>
-
-              <div className="space-y-1 overflow-hidden">
-                {group.items.map((tech, i) => (
-                  <motion.div
-                    key={tech.name}
-                    initial={{ opacity: 0, y: 3 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{
-                      delay: 0.08 + groupIdx * 0.08 + i * 0.03,
-                      duration: 0.24,
-                    }}
-                    className="flex items-center gap-1.5 px-1.5 py-1 rounded-md border border-transparent hover:border-base hover:bg-panel transition-colors"
-                  >
-                    <span style={{ color: tech.color }} className="shrink-0">
-                      {tech.icon}
-                    </span>
-                    <span className="text-[10px] font-medium text-main truncate">
-                      {tech.name}
-                    </span>
-                  </motion.div>
-                ))}
-              </div>
+        {/* One band per group, its label beside the skills: three narrow columns of
+            stacked rows only fit three skills each at 1440x900. */}
+        <div className="flex flex-col justify-evenly gap-1 flex-1 min-h-0">
+          {columns.map((column, columnIdx) => (
+            <div key={column.title} className="flex items-start gap-2 min-h-0">
+              <p className="w-[58px] shrink-0 pt-[3px] text-[9px] leading-[11px] font-bold uppercase tracking-wider text-faint flex items-start gap-1">
+                <span className="w-1.5 h-1.5 mt-[2px] rounded-full shrink-0" style={{ backgroundColor: column.accent }} />
+                {column.title}
+              </p>
+              <ul className="flex flex-wrap gap-[3px] min-w-0">
+                {column.items.map((skill, i) => {
+                  const brand = ICONS[skill.name];
+                  const Icon = brand?.icon ?? FiCode;
+                  const color = typeof brand?.color === "function" ? brand.color(isDark) : brand?.color;
+                  return (
+                    <motion.li
+                      key={skill.name}
+                      initial={{ opacity: 0, y: 3 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.08 + columnIdx * 0.08 + i * 0.03, duration: 0.24 }}
+                      className="flex items-center gap-[3px] px-1 py-[2px] rounded-md border border-base bg-field hover:bg-panel transition-colors"
+                    >
+                      <span style={{ color }} className="shrink-0">
+                        <Icon size={12} aria-hidden />
+                      </span>
+                      <span className="text-[10px] leading-[14px] font-medium text-main whitespace-nowrap">{skill.name}</span>
+                    </motion.li>
+                  );
+                })}
+              </ul>
             </div>
           ))}
         </div>
