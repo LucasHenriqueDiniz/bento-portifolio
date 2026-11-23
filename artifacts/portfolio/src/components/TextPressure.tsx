@@ -3,7 +3,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 interface TextPressureProps {
   text?: string;
   fontFamily?: string;
+  /** A font file, declared through @font-face. */
   fontUrl?: string;
+  /** A stylesheet that declares the font itself, such as the Google Fonts CSS API. */
+  fontStylesheet?: string;
   width?: boolean;
   weight?: boolean;
   italic?: boolean;
@@ -39,10 +42,26 @@ const debounce = <TArgs extends unknown[]>(func: (...args: TArgs) => void, delay
   };
 };
 
+// The original default, Compressa VF from a Cloudinary demo upload, answers 404 now, so
+// the letters stopped changing width. Roboto Flex (OFL) has the same two axes the effect
+// drives, 'wght' 100-1000 and 'wdth' 25-151, and Google Fonts serves it as a stylesheet
+// like the Inter the site already loads. It has no 'ital' axis; that setting is ignored.
+const ROBOTO_FLEX_STYLESHEET =
+  "https://fonts.googleapis.com/css2?family=Roboto+Flex:wdth,wght@25..151,100..1000&display=swap";
+
+const loadStylesheet = (href: string) => {
+  if (document.querySelector(`link[rel="stylesheet"][href="${href}"]`)) return;
+  const link = document.createElement("link");
+  link.rel = "stylesheet";
+  link.href = href;
+  document.head.appendChild(link);
+};
+
 export default function TextPressure({
   text = "Compressa",
-  fontFamily = "Compressa VF",
-  fontUrl = "https://res.cloudinary.com/dr6lvwubh/raw/upload/v1529908256/CompressaPRO-GX.woff2",
+  fontFamily = "Roboto Flex",
+  fontUrl,
+  fontStylesheet = fontUrl ? undefined : ROBOTO_FLEX_STYLESHEET,
   width = true,
   weight = true,
   italic = true,
@@ -174,14 +193,18 @@ export default function TextPressure({
     return () => cancelAnimationFrame(rafId);
   }, [width, weight, italic, alpha]);
 
+  useEffect(() => {
+    if (fontStylesheet) loadStylesheet(fontStylesheet);
+  }, [fontStylesheet]);
+
   const styleElement = useMemo(
     () => (
       <style>{`
-        @font-face {
+        ${fontUrl ? `@font-face {
           font-family: '${fontFamily}';
           src: url('${fontUrl}');
           font-style: normal;
-        }
+        }` : ""}
         .stroke span {
           position: relative;
           color: ${textColor};
