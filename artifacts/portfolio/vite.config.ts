@@ -12,7 +12,6 @@ const apiProxyTarget = process.env.API_PROXY_TARGET ?? "https://lucashdo.com";
 
 export default defineConfig({
   base: basePath,
-  assetsInclude: ["**/*.glb"],
   plugins: [
     react(),
     tailwindcss(),

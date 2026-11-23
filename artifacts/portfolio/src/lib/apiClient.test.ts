@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { getProjects, getVisitorCount, setBaseUrl } from "./apiClient";
+import { getTopArtists, getVisitorCount, setBaseUrl } from "./apiClient";
 
 function jsonResponse(body: unknown, init: { status?: number; contentType?: string } = {}) {
   return {
@@ -21,8 +21,8 @@ describe("apiClient", () => {
   });
 
   it("resolves with the parsed JSON body on success", async () => {
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(jsonResponse([{ id: "1" }])));
-    await expect(getProjects()).resolves.toEqual([{ id: "1" }]);
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(jsonResponse([{ name: "Evanescence" }])));
+    await expect(getTopArtists()).resolves.toEqual([{ name: "Evanescence" }]);
   });
 
   it("sends the request against the configured base URL", async () => {
@@ -40,7 +40,7 @@ describe("apiClient", () => {
 
   it("throws with the status and statusText when the response is not ok", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(jsonResponse(null, { status: 500 })));
-    await expect(getProjects()).rejects.toThrow("500 Error");
+    await expect(getTopArtists()).rejects.toThrow("500 Error");
   });
 
   it("throws a descriptive error when the response isn't JSON (e.g. dev server SPA fallback)", async () => {
@@ -48,11 +48,11 @@ describe("apiClient", () => {
       "fetch",
       vi.fn().mockResolvedValue(jsonResponse("<html></html>", { contentType: "text/html" })),
     );
-    await expect(getProjects()).rejects.toThrow(/Expected JSON from .* got "text\/html"/);
+    await expect(getTopArtists()).rejects.toThrow(/Expected JSON from .* got "text\/html"/);
   });
 
   it("defaults to a 'no content-type' message when the header is missing", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(jsonResponse("", { contentType: "" })));
-    await expect(getProjects()).rejects.toThrow(/no content-type/);
+    await expect(getTopArtists()).rejects.toThrow(/no content-type/);
   });
 });
