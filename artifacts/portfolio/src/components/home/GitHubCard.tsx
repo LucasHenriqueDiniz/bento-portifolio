@@ -11,7 +11,6 @@ const CARD =
   "bg-panel border border-base rounded-2xl";
 
 interface GitHubGridProps {
-  seed: number;
   contributionDays?: Array<{ date: string; count: number }>;
   inView: boolean;
   isDark: boolean;
@@ -20,7 +19,6 @@ interface GitHubGridProps {
 }
 
 const GitHubGrid = React.memo(function GitHubGrid({
-  seed,
   contributionDays,
   inView,
   isDark,
@@ -57,11 +55,10 @@ const GitHubGrid = React.memo(function GitHubGrid({
       return normalized;
     }
 
-    return Array.from({ length: WEEKS * DAYS }, (_, i) => {
-      const v = Math.abs(Math.sin(i * 9.1 + seed * 0.3) * 4) | 0;
-      return Math.min(Math.abs(Math.cos(i * 3.7)) > 0.5 ? v : 0, 4);
-    });
-  }, [contributionDays, seed]);
+    // No contribution data means an empty calendar. It used to draw a made-up pattern
+    // from sin/cos, which read as real activity.
+    return Array<number>(WEEKS * DAYS).fill(0);
+  }, [contributionDays]);
 
   const shades = isDark
     ? ["#1b1f24", "#0e4429", "#006d32", "#26a641", "#39d353"]
@@ -200,7 +197,6 @@ export const GitHubCard = React.memo(function GitHubCard({
           {/* GitHub Grid */}
           <div className="flex-1 min-h-0">
             <GitHubGrid
-              seed={stats?.totalCommitsThisYear ?? 539}
               contributionDays={stats?.contributionDays}
               inView={shouldAnimate}
               isDark={isDark}
