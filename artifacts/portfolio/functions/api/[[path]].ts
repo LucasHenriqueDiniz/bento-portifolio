@@ -49,6 +49,12 @@ const json = (data: unknown, maxAgeSec: number) =>
     },
   });
 
+// Routes refreshed more often than this skip the global KV copy and live in the
+// per-location edge cache only. Keeping a 30-second payload fresh in KV would cost up
+// to ~2,900 writes a day, and the free plan allows 1,000; the old way, serving the KV
+// copy for its full ten-minute life, left now-playing up to ten minutes behind.
+const KV_CACHE_MIN_TTL_SEC = 300;
+
 async function cached(
   request: Request,
   cacheKey: string,
@@ -56,8 +62,13 @@ async function cached(
   env: Env,
   producer: () => Promise<Response>
 ): Promise<Response> {
-  if (env.PORTFOLIO_CACHE) {
-    const kvCached = await env.PORTFOLIO_CACHE.get(cacheKey, { type: "text" });
+  const key = new Request(new URL(`https://cache.local/${cacheKey}`), { method: "GET" });
+  const hit = await caches.default.match(key);
+  if (hit) return hit;
+
+  const kv = ttlSec >= KV_CACHE_MIN_TTL_SEC ? env.PORTFOLIO_CACHE : undefined;
+  if (kv) {
+    const kvCached = await kv.get(cacheKey, { type: "text" });
     if (kvCached) {
       return new Response(kvCached, {
         headers: {
@@ -68,21 +79,25 @@ async function cached(
     }
   }
 
-  const key = new Request(new URL(`https://cache.local/${cacheKey}`), { method: "GET" });
-  const hit = await caches.default.match(key);
-  if (hit) return hit;
-
   const fresh = await producer();
   if (fresh.ok) {
     await caches.default.put(key, fresh.clone());
-    if (env.PORTFOLIO_CACHE) {
+    if (kv) {
       const text = await fresh.clone().text();
       if (text) {
-        await env.PORTFOLIO_CACHE.put(cacheKey, text, { expirationTtl: Math.max(ttlSec * 2, 600) });
+        await kv.put(cacheKey, text, { expirationTtl: Math.max(ttlSec * 2, 600) });
       }
     }
   }
   return fresh;
+}
+
+// Writes only when the value changed: a route refreshed every 30 seconds would
+// otherwise spend a KV write (1,000 a day on the free plan) on every refresh.
+async function putIfChanged(env: Env, key: string, value: string): Promise<void> {
+  if (!env.PORTFOLIO_CACHE) return;
+  const stored = await env.PORTFOLIO_CACHE.get(key, { type: "text" });
+  if (stored !== value) await env.PORTFOLIO_CACHE.put(key, value);
 }
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -116,10 +131,8 @@ async function withLastKnown<T>(
 ): Promise<Response> {
   try {
     const fresh = await produce();
-    if (env.PORTFOLIO_CACHE) {
-      // A failed write of the fallback copy must not cost the visitor the fresh answer.
-      await env.PORTFOLIO_CACHE.put(kvKey, JSON.stringify(fresh)).catch(() => undefined);
-    }
+    // A failed write of the fallback copy must not cost the visitor the fresh answer.
+    await putIfChanged(env, kvKey, JSON.stringify(fresh)).catch(() => undefined);
     return json(fresh, maxAgeSec);
   } catch (error) {
     const last = env.PORTFOLIO_CACHE ? await env.PORTFOLIO_CACHE.get(kvKey, { type: "text" }) : null;
@@ -201,6 +214,28 @@ async function rememberedArt(env: Env, track: string, artist: string | null): Pr
   }
 }
 
+const KV_LAST_WORKOUT_KEY = "lyfta:last-workout";
+
+const EMPTY_WORKOUT = {
+  date: null as string | null,
+  type: null as string | null,
+  duration: 0,
+  totalVolume: 0,
+  exercises: [] as unknown[],
+  weeklyStats: { workoutsThisWeek: 0, totalVolumeThisWeek: 0, avgDuration: 0, streak: 0 },
+};
+
+// Monday 00:00 of the week `now` falls in.
+const startOfWeek = (now: Date) => {
+  const monday = new Date(now);
+  const dayOfWeek = now.getDay();
+  monday.setDate(now.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
+  monday.setHours(0, 0, 0, 0);
+  return monday;
+};
+
+const isoDate = (date: Date) => date.toISOString().split("T")[0];
+
 const KV_LAST_STEAM_KEY = "steam:last-good";
 const STEAM_SPACEWAR_APP_ID = 480;
 const HYDRA_ICON_URL = "https://raw.githubusercontent.com/hydralauncher/hydra/refs/heads/main/resources/icon.png";
@@ -260,7 +295,7 @@ async function fetchJikanUserResource<T>(user: string, resource: "statistics" | 
 
 async function fetchJikanDetails(type: "anime" | "manga", id: number, retries = 2): Promise<any> {
   for (let i = 0; i <= retries; i++) {
-    const res = await fetch(`${JIKAN_BASE}/${type}/${id}`, { headers: JIKAN_HEADERS });
+    const res = await fetchWithTimeout(`${JIKAN_BASE}/${type}/${id}`, { headers: JIKAN_HEADERS });
     if (res.status === 429 || res.status === 403) {
       await delay(rateLimitDelayMs(res, i));
       continue;
@@ -517,79 +552,73 @@ export const onRequest: PagesFunction<Env> = async (context) => {
     if (path === "portfolio/workout") {
       return await cached(request, path, 300, env, async () => {
         const key = env.LYFTA_API_KEY ?? "";
-        if (!key) {
-          return json({
-            date: new Date(Date.now() - 86400000).toISOString().split("T")[0],
-            type: "Push",
-            duration: 60,
-            totalVolume: 8000,
-            exercises: [
-              { name: "Bench Press", sets: 4, reps: 8, weight: 100, exercise_image: "" },
-              { name: "Incline Press", sets: 3, reps: 10, weight: 36, exercise_image: "" },
-              { name: "Overhead Press", sets: 4, reps: 8, weight: 70, exercise_image: "" },
-            ],
-            weeklyStats: { workoutsThisWeek: 3, totalVolumeThisWeek: 25000, avgDuration: 60, streak: 5 },
-          }, 180);
-        }
-        const r = await fetch("https://my.lyfta.app/api/v1/workouts?limit=5&page=1", {
-          headers: { Authorization: `Bearer ${key}` },
-        });
-        const body = (await r.json()) as any;
-        const workouts = (Array.isArray(body) ? body : body?.workouts ?? []) as any[];
-        const w = workouts[0];
-        if (!w) throw new Error("no workouts");
-        const rawExercises = w.exercises ?? [];
-        const exercises = (Array.isArray(rawExercises) ? rawExercises : [rawExercises]).slice(0, 6).map((ex: any) => {
-          const setsArr: any[] = Array.isArray(ex.sets) ? ex.sets : [];
-          const sets = setsArr.length || Number(ex.sets_count ?? 3);
-          const weight = setsArr.length ? Math.max(...setsArr.map((s: any) => Number(s.weight ?? 0))) : Number(ex.weight ?? 0);
-          const reps = setsArr.length ? Math.max(...setsArr.map((s: any) => Number(s.reps ?? 0))) : Number(ex.reps ?? 10);
-          return {
-            name: ex.excercise_name ?? ex.exercise_name ?? ex.name ?? "Exercise",
-            sets,
-            reps,
-            weight,
-            exercise_image: ex.exercise_image ?? "",
-          };
-        });
-        const calcVolume = exercises.reduce((acc: number, ex: any) => acc + ex.sets * ex.reps * ex.weight, 0);
+        // Without a key there is no workout to show. This used to answer with a made-up
+        // "Push" session (bench press 100 kg), which the card displayed as real.
+        if (!key) return json(EMPTY_WORKOUT, 300);
+        return withLastKnown(
+          env,
+          KV_LAST_WORKOUT_KEY,
+          300,
+          async () => {
+            const r = await fetchWithTimeout("https://my.lyfta.app/api/v1/workouts?limit=5&page=1", {
+              headers: { Authorization: `Bearer ${key}` },
+            });
+            if (!r.ok) throw new Error(`lyfta workouts request failed (${r.status})`);
+            const body = (await r.json()) as any;
+            const workouts = (Array.isArray(body) ? body : body?.workouts ?? []) as any[];
+            const w = workouts[0];
+            if (!w) throw new Error("no workouts");
+            const rawExercises = w.exercises ?? [];
+            const exercises = (Array.isArray(rawExercises) ? rawExercises : [rawExercises]).slice(0, 6).map((ex: any) => {
+              const setsArr: any[] = Array.isArray(ex.sets) ? ex.sets : [];
+              const sets = setsArr.length || Number(ex.sets_count ?? 3);
+              const weight = setsArr.length ? Math.max(...setsArr.map((s: any) => Number(s.weight ?? 0))) : Number(ex.weight ?? 0);
+              const reps = setsArr.length ? Math.max(...setsArr.map((s: any) => Number(s.reps ?? 0))) : Number(ex.reps ?? 10);
+              return {
+                name: ex.excercise_name ?? ex.exercise_name ?? ex.name ?? "Exercise",
+                sets,
+                reps,
+                weight,
+                exercise_image: ex.exercise_image ?? "",
+              };
+            });
+            const calcVolume = exercises.reduce((acc: number, ex: any) => acc + ex.sets * ex.reps * ex.weight, 0);
 
-        // Calculate week boundaries (Monday to Sunday of current week)
-        const now = new Date();
-        const dayOfWeek = now.getDay();
-        const firstDay = new Date(now);
-        firstDay.setDate(now.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1)); // Monday
-        firstDay.setHours(0, 0, 0, 0);
+            // Monday to Sunday of the current week
+            const firstDay = startOfWeek(new Date());
+            const lastDay = new Date(firstDay);
+            lastDay.setDate(firstDay.getDate() + 6);
+            lastDay.setHours(23, 59, 59, 999);
 
-        const lastDay = new Date(firstDay);
-        lastDay.setDate(firstDay.getDate() + 6); // Sunday
-        lastDay.setHours(23, 59, 59, 999);
+            const weekWorkouts = workouts.filter((wo) => {
+              const woDate = new Date(wo.workout_perform_date ?? 0);
+              return woDate >= firstDay && woDate <= lastDay;
+            });
 
-        // Filter workouts from this week
-        const weekWorkouts = workouts.filter((wo) => {
-          const woDate = new Date(wo.workout_perform_date ?? 0);
-          return woDate >= firstDay && woDate <= lastDay;
-        });
+            const weekWorkoutCount = weekWorkouts.length;
+            const weekTotalVolume = weekWorkouts.reduce((a: number, wo: any) => a + Number(wo.total_volume ?? wo.totalLiftedWeight ?? 0), 0);
+            const weekAvgDuration = weekWorkoutCount > 0
+              ? Math.round(weekWorkouts.reduce((a: number, wo: any) => a + Number(wo.duration ?? 0), 0) / weekWorkoutCount)
+              : 0;
 
-        const weekWorkoutCount = weekWorkouts.length;
-        const weekTotalVolume = weekWorkouts.reduce((a: number, wo: any) => a + Number(wo.total_volume ?? wo.totalLiftedWeight ?? 0), 0);
-        const weekAvgDuration = weekWorkoutCount > 0
-          ? Math.round(weekWorkouts.reduce((a: number, wo: any) => a + Number(wo.duration ?? 0), 0) / weekWorkoutCount)
-          : 0;
-
-        return json({
-          date: (w.workout_perform_date ?? new Date().toISOString()).split(/[T ]/)[0],
-          type: w.title ?? "Workout",
-          duration: Number(w.duration ?? 60),
-          totalVolume: Number(w.total_volume ?? w.totalLiftedWeight ?? calcVolume),
-          exercises,
-          weeklyStats: {
-            workoutsThisWeek: weekWorkoutCount,
-            totalVolumeThisWeek: weekTotalVolume,
-            avgDuration: weekAvgDuration,
-            streak: 0,
+            return {
+              date: (w.workout_perform_date ?? new Date().toISOString()).split(/[T ]/)[0],
+              type: w.title ?? "Workout",
+              duration: Number(w.duration ?? 60),
+              totalVolume: Number(w.total_volume ?? w.totalLiftedWeight ?? calcVolume),
+              exercises,
+              weeklyStats: {
+                workoutsThisWeek: weekWorkoutCount,
+                totalVolumeThisWeek: weekTotalVolume,
+                avgDuration: weekAvgDuration,
+                streak: 0,
+              },
+            };
           },
-        }, 300);
+          // The stored week totals belong to the week they were counted in. When even the
+          // latest workout predates this Monday, nothing was trained this week.
+          (last) => (last.date < isoDate(startOfWeek(new Date())) ? { ...last, weeklyStats: EMPTY_WORKOUT.weeklyStats } : last)
+        );
       });
     }
 
@@ -709,50 +738,52 @@ export const onRequest: PagesFunction<Env> = async (context) => {
     if (path === "portfolio/mal") {
       const user = env.MAL_USERNAME ?? "Amayacrab";
 
+      // Cached like the other routes: it used to call jikan-edge on every request
+      // (~0.9 s each) and rewrite the KV fallback copy every time.
       try {
-        type JikanEdgeFavorite = { malId: number; title: string; url?: string; startYear?: number | null; imageUrl?: string | null };
-        const [statsJson, favsJson] = await Promise.all([
-          fetchJikanUserResource<{ data?: { anime?: { completed?: number; watching?: number; episodesWatched?: number | null }; manga?: { completed?: number; reading?: number; chaptersRead?: number | null } } }>(user, "statistics"),
-          fetchJikanUserResource<{ data?: { anime?: JikanEdgeFavorite[]; manga?: JikanEdgeFavorite[] } }>(user, "favorites"),
-        ]);
+        return await cached(request, path, 900, env, async () => {
+          type JikanEdgeFavorite = { malId: number; title: string; url?: string; startYear?: number | null; imageUrl?: string | null };
+          const [statsJson, favsJson] = await Promise.all([
+            fetchJikanUserResource<{ data?: { anime?: { completed?: number; watching?: number; episodesWatched?: number | null }; manga?: { completed?: number; reading?: number; chaptersRead?: number | null } } }>(user, "statistics"),
+            fetchJikanUserResource<{ data?: { anime?: JikanEdgeFavorite[]; manga?: JikanEdgeFavorite[] } }>(user, "favorites"),
+          ]);
 
-        const anime = statsJson.data?.anime;
-        const manga = statsJson.data?.manga;
-        const favAnime = Array.isArray(favsJson.data?.anime) ? favsJson.data?.anime : [];
-        const favManga = Array.isArray(favsJson.data?.manga) ? favsJson.data?.manga : [];
+          const anime = statsJson.data?.anime;
+          const manga = statsJson.data?.manga;
+          const favAnime = Array.isArray(favsJson.data?.anime) ? favsJson.data?.anime : [];
+          const favManga = Array.isArray(favsJson.data?.manga) ? favsJson.data?.manga : [];
 
-        // Return basic data only - details fetched separately via /mal/details
-        const toBasic = (type: "anime" | "manga") => (a: JikanEdgeFavorite) => ({
-          malId: a.malId,
-          title: a.title,
-          year: a.startYear ?? null,
-          imageUrl: a.imageUrl ?? null,
-          url: a.url ?? `https://myanimelist.net/${type}/${a.malId}`,
-        });
+          // Return basic data only - details fetched separately via /mal/details
+          const toBasic = (type: "anime" | "manga") => (a: JikanEdgeFavorite) => ({
+            malId: a.malId,
+            title: a.title,
+            year: a.startYear ?? null,
+            imageUrl: a.imageUrl ?? null,
+            url: a.url ?? `https://myanimelist.net/${type}/${a.malId}`,
+          });
 
-        const payload = {
-          animeStats: {
-            completed: anime?.completed ?? 0,
-            watching: anime?.watching ?? 0,
-            episodesWatched: anime?.episodesWatched ?? 0,
-          },
-          mangaStats: {
-            completed: manga?.completed ?? 0,
-            reading: manga?.reading ?? 0,
-            chaptersRead: manga?.chaptersRead ?? 0,
-          },
-          animeFavorites: favAnime.slice(0, 10).map(toBasic("anime")),
-          mangaFavorites: favManga.slice(0, 10).map(toBasic("manga")),
-        };
+          const payload = {
+            animeStats: {
+              completed: anime?.completed ?? 0,
+              watching: anime?.watching ?? 0,
+              episodesWatched: anime?.episodesWatched ?? 0,
+            },
+            mangaStats: {
+              completed: manga?.completed ?? 0,
+              reading: manga?.reading ?? 0,
+              chaptersRead: manga?.chaptersRead ?? 0,
+            },
+            animeFavorites: favAnime.slice(0, 10).map(toBasic("anime")),
+            mangaFavorites: favManga.slice(0, 10).map(toBasic("manga")),
+          };
 
-        if (payload.animeFavorites.length || payload.mangaFavorites.length) {
-          lastGoodMal = payload;
-          if (env.PORTFOLIO_CACHE) {
-            await env.PORTFOLIO_CACHE.put(KV_MAL_KEY, JSON.stringify(payload), { expirationTtl: 2592000 });
+          if (payload.animeFavorites.length || payload.mangaFavorites.length) {
+            lastGoodMal = payload;
+            await putIfChanged(env, KV_MAL_KEY, JSON.stringify(payload)).catch(() => undefined);
           }
-        }
 
-        return json(payload, 900);
+          return json(payload, 900);
+        });
       } catch {
         if (lastGoodMal) return json(lastGoodMal, 300);
         if (env.PORTFOLIO_CACHE) {
@@ -787,14 +818,14 @@ export const onRequest: PagesFunction<Env> = async (context) => {
       const cachedResults: Record<number, any> = {};
       
       if (env.PORTFOLIO_CACHE) {
-        for (let i = 0; i < ids.length; i++) {
-          const cached = await env.PORTFOLIO_CACHE.get(kvCacheKeys[i], { type: "text" });
-          if (cached) {
-            try {
-              cachedResults[ids[i]] = JSON.parse(cached);
-            } catch { /* ignore */ }
-          }
-        }
+        const kv = env.PORTFOLIO_CACHE;
+        const stored = await Promise.all(kvCacheKeys.map((key) => kv.get(key, { type: "text" })));
+        stored.forEach((value, i) => {
+          if (!value) return;
+          try {
+            cachedResults[ids[i]] = JSON.parse(value);
+          } catch { /* ignore */ }
+        });
       }
       
       // Fetch missing details with 1s delay between requests
