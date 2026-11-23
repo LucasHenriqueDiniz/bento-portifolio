@@ -20,6 +20,7 @@ export interface SteamGame {
   hoursPlayed: number;
   imageUrl?: string | null;
   appId: string;
+  lastPlayedAt?: number | null;
 }
 
 export interface SteamData {

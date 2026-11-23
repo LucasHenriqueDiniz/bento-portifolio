@@ -280,13 +280,6 @@ export default function Home() {
 
   const clock = useClock("America/Sao_Paulo");
 
-  const [steamIdx, setSteamIdx] = useState(0);
-
-  useEffect(() => {
-    const id = setInterval(() => setSteamIdx(i => (i + 1) % 3), 5000);
-    return () => clearInterval(id);
-  }, []);
-
   const { data: nowPlaying, isLoading: loadingNowPlaying } = useGetNowPlaying();
   const { data: topArtists, isLoading: loadingTopArtists } = useGetTopArtists();
   const { data: topTracks, isLoading: loadingTopTracks } = useGetTopTracks();
@@ -415,7 +408,7 @@ export default function Home() {
             </motion.div>
 
             <motion.div custom={14} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-5 lg:row-start-7 lg:row-span-2 h-auto lg:h-full min-h-[150px]">
-              <SteamCard steam={steamData as any} isLoading={loadingSteam} steamIdx={steamIdx} isDark={isDark} />
+              <SteamCard steam={steamData as any} isLoading={loadingSteam} isDark={isDark} />
             </motion.div>
 
             {/* ── Col 6 ── */}
