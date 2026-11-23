@@ -13,7 +13,6 @@ import {
   useGetStatsCached as useGetStats,
   useGetMalDataCached as useGetMalData,
 } from "@/hooks/usePortfolioQueries";
-import { useClock } from "@/hooks/useClock";
 import {
   WeatherClockCard,
   AlbumArtCard,
@@ -278,8 +277,6 @@ export default function Home() {
   const currentLang = i18n.language?.split("-")[0] || "pt";
   const { isDark, toggleTheme } = useTheme();
 
-  const clock = useClock("America/Sao_Paulo");
-
   const { data: nowPlaying, isLoading: loadingNowPlaying } = useGetNowPlaying();
   const { data: topArtists, isLoading: loadingTopArtists } = useGetTopArtists();
   const { data: topTracks, isLoading: loadingTopTracks } = useGetTopTracks();
@@ -356,7 +353,7 @@ export default function Home() {
             {/* ── Col 2 ── */}
             {/* Weather: half-height (row-span-1) */}
             <motion.div custom={3} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-2 lg:row-start-1 lg:row-span-1 h-auto lg:h-full">
-              <WeatherClockCard clock={clock} />
+              <WeatherClockCard />
             </motion.div>
 
             {/* Currently Working */}

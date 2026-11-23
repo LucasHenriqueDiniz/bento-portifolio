@@ -23,7 +23,6 @@ interface EnhancedProjectCardProps {
 }
 
 const AUTO_ADVANCE_MS = 7000;
-const PROGRESS_INTERVAL = 50;
 
 export function EnhancedProjectCard({
   projects,
@@ -39,7 +38,6 @@ export function EnhancedProjectCard({
 
   const [activeIndex, setActiveIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
-  const [progress, setProgress] = useState(0);
   const [direction, setDirection] = useState(1);
 
   const prefersReducedMotion = useMemo(() => {
@@ -49,7 +47,6 @@ export function EnhancedProjectCard({
 
   useEffect(() => {
     setActiveIndex(0);
-    setProgress(0);
   }, [projects?.length]);
 
   useEffect(() => {
@@ -62,30 +59,23 @@ export function EnhancedProjectCard({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [hasProjects, projectCount, activeIndex]);
 
-  useEffect(() => {
-    if (!hasProjects || projectCount <= 1 || isHovered) {
-      setProgress(0); return;
-    }
-    setProgress(0);
-    const startTime = Date.now();
-    const interval = setInterval(() => {
-      const elapsed = Date.now() - startTime;
-      const pct = Math.min((elapsed / AUTO_ADVANCE_MS) * 100, 100);
-      setProgress(pct);
-      if (elapsed >= AUTO_ADVANCE_MS) goToNext();
-    }, PROGRESS_INTERVAL);
-    return () => clearInterval(interval);
-  }, [activeIndex, isHovered, hasProjects, projectCount]);
-
   const goTo = useCallback((index: number, dir: number) => {
     if (!hasProjects) return;
     setDirection(dir);
     setActiveIndex(((index % projectCount) + projectCount) % projectCount);
-    setProgress(0);
   }, [hasProjects, projectCount]);
 
   const goToNext = useCallback(() => goTo(activeIndex + 1, 1), [activeIndex, goTo]);
   const goToPrev = useCallback(() => goTo(activeIndex - 1, -1), [activeIndex, goTo]);
+
+  // One timer per slide; the progress bar is a CSS animation of the same length, so
+  // the card renders when the slide changes, not 20 times a second to move the bar.
+  const autoAdvances = hasProjects && projectCount > 1 && !isHovered;
+  useEffect(() => {
+    if (!autoAdvances) return;
+    const timer = setTimeout(goToNext, AUTO_ADVANCE_MS);
+    return () => clearTimeout(timer);
+  }, [autoAdvances, goToNext]);
 
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.changedTouches[0].screenX;
@@ -235,12 +225,17 @@ export function EnhancedProjectCard({
 
           {hasProjects && projectCount > 1 && (
             <div className="w-full h-[2px] bg-field">
-              <motion.div
-                className="h-full"
-                style={{ backgroundColor: `var(--accent)` }}
-                animate={{ width: `${progress}%` }}
-                transition={{ duration: 0.05, ease: "linear" }}
-              />
+              {autoAdvances && (
+                <div
+                  key={activeIndex}
+                  data-testid="project-progress"
+                  className="h-full origin-left"
+                  style={{
+                    backgroundColor: `var(--accent)`,
+                    animation: `project-progress ${AUTO_ADVANCE_MS}ms linear forwards`,
+                  }}
+                />
+              )}
             </div>
           )}
         </div>
