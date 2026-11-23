@@ -98,18 +98,6 @@ export interface MalData {
   mangaFavorites: MalMediaItem[];
 }
 
-export interface ProjectApiItem {
-  id: string;
-  title: string;
-  description: string;
-  tags: string[];
-  imageUrl?: string | null;
-  githubUrl?: string | null;
-  liveUrl?: string | null;
-  featured: boolean;
-  year: number;
-}
-
 let baseUrl = "";
 
 export const setBaseUrl = (next?: string) => {
@@ -184,9 +172,6 @@ export const getMalDetails = (type: "anime" | "manga", ids: number[], options?: 
     `/api/portfolio/mal/details?type=${type}&ids=${ids.join(",")}`,
     options
   );
-
-export const getProjects = (options?: RequestInit) =>
-  fetchJson<ProjectApiItem[]>("/api/portfolio/projects", options);
 
 export interface VisitorCount {
   count: number;

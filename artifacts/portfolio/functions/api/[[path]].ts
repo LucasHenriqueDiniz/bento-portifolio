@@ -893,10 +893,6 @@ export const onRequest: PagesFunction<Env> = async (context) => {
       return json({ count: Number.isFinite(current) ? current : 0 }, 0);
     }
 
-    if (path === "portfolio/projects") {
-      return json([], 120);
-    }
-
     return new Response("Not found", { status: 404 });
   } catch {
     if (path === "portfolio/mal") {

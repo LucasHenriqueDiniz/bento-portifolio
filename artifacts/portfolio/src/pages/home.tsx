@@ -30,7 +30,7 @@ import {
   MachinesCard,
   ViewsCard,
 } from "@/components/home";
-import { BentoSection } from "@/components/BentoCard";
+import { BentoSection } from "@/components/BentoSection";
 import { Card } from "@/components/Card";
 import { CardGlowProvider } from "@/components/CardGlowContext";
 import { contacts, featuredProjects, personSchema } from "@/constants";

@@ -9,7 +9,6 @@ import {
   getLastWorkout,
   getStats,
   getMalData,
-  getProjects,
   getMachinesStatus,
   getVisitorCount,
   incrementVisitorCount,
@@ -222,21 +221,6 @@ export function useGetMachinesStatusCached() {
 
   const data = hasMachinesStatus(query.data) ? query.data : cached;
   usePersistOnSuccess("/api/portfolio/machines", hasMachinesStatus(data) ? data : undefined);
-
-  return { ...query, data };
-}
-
-export function useGetProjectsCached() {
-  const cached = getCache<Awaited<ReturnType<typeof getProjects>>>("/api/portfolio/projects");
-  const query = useQuery({
-    queryKey: ["/api/portfolio/projects"],
-    queryFn: ({ signal }) => getProjects({ signal }),
-    placeholderData: cached,
-    ...QUERY_STABILITY_OPTIONS,
-  });
-
-  const data = hasItems(query.data) ? query.data : cached;
-  usePersistOnSuccess("/api/portfolio/projects", hasItems(data) ? data : undefined);
 
   return { ...query, data };
 }
