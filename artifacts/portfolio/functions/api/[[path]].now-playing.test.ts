@@ -49,7 +49,20 @@ function makeKv(seed: Record<string, string> = {}) {
 const jsonResponse = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json" } });
 
-function stubUpstream({ lastfm, itunes }: { lastfm: () => Response; itunes?: () => Response }) {
+const DEEZER_COVER = "https://cdn-images.dzcdn.net/images/cover/56c02d37/1000x1000-000000-80-0-0.jpg";
+
+// What iTunes answers from Cloudflare's shared egress addresses when they are throttled.
+const itunesRateLimited = () => new Response("Rate limit has been exceeded for: itunes-apple-com|general", { status: 429 });
+
+function stubUpstream({
+  lastfm,
+  itunes,
+  deezer,
+}: {
+  lastfm: () => Response;
+  itunes?: () => Response;
+  deezer?: () => Response;
+}) {
   const calls: string[] = [];
   vi.stubGlobal(
     "fetch",
@@ -57,6 +70,7 @@ function stubUpstream({ lastfm, itunes }: { lastfm: () => Response; itunes?: () 
       calls.push(url);
       if (url.startsWith("https://ws.audioscrobbler.com")) return lastfm();
       if (url.startsWith("https://itunes.apple.com")) return (itunes ?? (() => jsonResponse({ results: [] })))();
+      if (url.startsWith("https://api.deezer.com")) return (deezer ?? (() => jsonResponse({ data: [], total: 0 })))();
       throw new Error(`unexpected fetch ${url}`);
     })
   );
@@ -97,6 +111,47 @@ describe("portfolio/now-playing", () => {
       album: null,
       albumArt: "https://is1-ssl.mzstatic.com/image/thumb/Music/600x600bb.jpg",
     });
+  });
+
+  it("falls back to Deezer, searching the band named in the title, when iTunes is throttled", async () => {
+    const calls = stubUpstream({
+      lastfm: () => jsonResponse(youtubeScrobble),
+      itunes: itunesRateLimited,
+      deezer: () => jsonResponse({ data: [{ album: { cover_xl: DEEZER_COVER } }], total: 1 }),
+    });
+
+    const body = (await (await request(makeKv())).json()) as NowPlayingBody;
+
+    const deezerCall = calls.find((url) => url.startsWith("https://api.deezer.com"))!;
+    expect(new URL(deezerCall).searchParams.get("q")).toBe("Evanescence Tourniquet");
+    expect(body.albumArt).toBe(DEEZER_COVER);
+  });
+
+  it("keeps the art already found for the same track instead of searching again", async () => {
+    const calls = stubUpstream({ lastfm: () => jsonResponse(youtubeScrobble), itunes: itunesRateLimited });
+    const kv = makeKv({
+      "lastfm:last-track": JSON.stringify({
+        track: "Evanescence - Tourniquet (Remastered 2023) - Official Visualizer",
+        artist: "Amy Lee",
+        albumArt: ARTWORK,
+      }),
+    });
+
+    const body = (await (await request(kv)).json()) as NowPlayingBody;
+
+    expect(body.albumArt).toBe(ARTWORK);
+    expect(calls.some((url) => url.startsWith("https://itunes.apple.com") || url.startsWith("https://api.deezer.com"))).toBe(false);
+  });
+
+  it("does not lend the art of a different track", async () => {
+    stubUpstream({ lastfm: () => jsonResponse(youtubeScrobble), itunes: itunesRateLimited });
+    const kv = makeKv({
+      "lastfm:last-track": JSON.stringify({ track: "Bring Me to Life", artist: "Evanescence", albumArt: ARTWORK }),
+    });
+
+    const body = (await (await request(kv)).json()) as NowPlayingBody;
+
+    expect(body.albumArt).toBeNull();
   });
 
   it("still answers with the track when no art exists anywhere", async () => {
