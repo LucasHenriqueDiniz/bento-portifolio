@@ -141,19 +141,25 @@ const EMPTY_NOW_PLAYING = {
   trackUrl: null,
 };
 
-// Scrobbles from YouTube carry the video title as the track name, e.g.
-// "Evanescence - Tourniquet (Remastered 2023) - Official Visualizer", which iTunes
-// does not match verbatim. Bracketed tags and trailing video labels are dropped.
+// Scrobbles from YouTube carry the video title as the track name and the channel as
+// the artist, e.g. "Evanescence - Tourniquet (Remastered 2023) - Official Visualizer"
+// by "Amy Lee". Bracketed tags and trailing video labels are dropped before searching.
 const BRACKETED_TAG = /\s*[([][^)\]]*[)\]]/g;
 const TRAILING_VIDEO_LABEL = /\s+-\s+(?:official|lyrics?|audio|video|visuali[sz]er|remaster(?:ed)?|live|hd|4k)\b.*$/i;
+const TITLE_DASH = /\s+-\s+/;
+const TITLE_DASHES = /\s+-\s+/g;
 
-const itunesSearchTerm = (artist: string, track: string) => {
-  const title = track
-    .replace(BRACKETED_TAG, "")
-    .replace(TRAILING_VIDEO_LABEL, "")
-    .replace(/\s+-\s+/g, " ")
-    .trim();
-  return `${artist} ${title}`.trim();
+const cleanTitle = (track: string) => track.replace(BRACKETED_TAG, "").replace(TRAILING_VIDEO_LABEL, "").trim();
+
+// iTunes matches loosely, so the scrobble artist can stay in front of the title.
+const itunesSearchTerm = (artist: string, track: string) =>
+  `${artist} ${cleanTitle(track).replace(TITLE_DASHES, " ")}`.trim();
+
+// Deezer requires every word to match, so a channel name finds nothing: a
+// "Band - Song" title supplies the band instead of the scrobble artist.
+const deezerSearchTerm = (artist: string, track: string) => {
+  const title = cleanTitle(track);
+  return TITLE_DASH.test(title) ? title.replace(TITLE_DASHES, " ") : `${artist} ${title}`.trim();
 };
 
 async function fetchItunesArtwork(artist: string, track: string): Promise<string | null> {
@@ -164,6 +170,32 @@ async function fetchItunesArtwork(artist: string, track: string): Promise<string
     const body = (await res.json()) as { results?: Array<{ artworkUrl100?: unknown }> };
     const artwork = textOrNull(body?.results?.[0]?.artworkUrl100);
     return artwork ? artwork.replace("100x100", "600x600") : null;
+  } catch {
+    return null;
+  }
+}
+
+async function fetchDeezerArtwork(artist: string, track: string): Promise<string | null> {
+  try {
+    const query = encodeURIComponent(deezerSearchTerm(artist, track));
+    const res = await fetchWithTimeout(`https://api.deezer.com/search?q=${query}&limit=1`, {}, 4000);
+    if (!res.ok) return null;
+    const body = (await res.json()) as { data?: Array<{ album?: { cover_xl?: unknown } }> };
+    return textOrNull(body?.data?.[0]?.album?.cover_xl);
+  } catch {
+    return null;
+  }
+}
+
+// iTunes rate-limits the egress addresses Cloudflare shares between tenants (403 and
+// 429 seen from the edge), so a lookup that worked once can fail on the next refresh.
+// Art already found for this same track is kept rather than searched for again.
+async function rememberedArt(env: Env, track: string, artist: string | null): Promise<string | null> {
+  const raw = env.PORTFOLIO_CACHE ? await env.PORTFOLIO_CACHE.get(KV_LAST_TRACK_KEY, { type: "text" }) : null;
+  if (!raw) return null;
+  try {
+    const last = JSON.parse(raw) as { track?: unknown; artist?: unknown; albumArt?: unknown };
+    return last.track === track && (last.artist ?? null) === artist ? textOrNull(last.albumArt) : null;
   } catch {
     return null;
   }
@@ -366,9 +398,10 @@ export const onRequest: PagesFunction<Env> = async (context) => {
               textOrNull(track.image?.find((img: any) => img.size === "extralarge")?.["#text"]) ??
               textOrNull(track.image?.find((img: any) => img.size === "large")?.["#text"]);
             const albumArt =
-              lastfmArt && !lastfmArt.includes(LASTFM_PLACEHOLDER_ART)
-                ? lastfmArt
-                : await fetchItunesArtwork(artist ?? "", trackName);
+              (lastfmArt && !lastfmArt.includes(LASTFM_PLACEHOLDER_ART) ? lastfmArt : null) ??
+              (await rememberedArt(env, trackName, artist)) ??
+              (await fetchItunesArtwork(artist ?? "", trackName)) ??
+              (await fetchDeezerArtwork(artist ?? "", trackName));
 
             return {
               isPlaying: track["@attr"]?.nowplaying === "true",
