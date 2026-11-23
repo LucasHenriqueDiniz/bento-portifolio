@@ -43,11 +43,11 @@ const ACCENT = "var(--accent)";
 const CARD = "bg-panel border border-base rounded-2xl";
 const LABEL = "text-[10px] font-semibold uppercase tracking-widest text-faint";
 const GALLERY_SLIDES = [
-  "/gallery/pingo-bored.webp",
-  "/gallery/bully.webp",
-  "/gallery/snake-babe.webp",
-  "/gallery/lili_bed.webp",
-  "/gallery/wip-school-entrance-background.webp",
+  "/gallery/thumbs/pingo-bored.webp",
+  "/gallery/thumbs/bully.webp",
+  "/gallery/thumbs/snake-babe.webp",
+  "/gallery/thumbs/lili_bed.webp",
+  "/gallery/thumbs/wip-school-entrance-background.webp",
 ];
 
 const fadeUp = {
