@@ -19,6 +19,7 @@ const ROUTE_SOURCES = {
   "/contact": ["src/pages/contact.tsx", "src/constants/contacts.ts"],
   "/gallery": ["src/pages/gallery.tsx", "src/components/gallery", "public/gallery"],
   "/donate": ["src/pages/donate.tsx"],
+  "/games/voxel-zombie": ["src/pages/voxel-game.tsx", "src/constants/voxelGame.ts", "public/games/voxel-zombie"],
 };
 const PROJECT_DETAIL_SOURCES = ["src/pages/project-detail.tsx", ...PROJECT_SOURCES];
 

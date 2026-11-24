@@ -70,7 +70,7 @@ describe("sitemap", () => {
   it("lists the static pages and one page per project", () => {
     const routes = listRoutes('{ id: "alpha" }, { id: "beta" }').map((r: { route: string }) => r.route);
 
-    expect(routes).toEqual(["/", "/projects", "/resume", "/contact", "/gallery", "/donate", "/projects/alpha", "/projects/beta"]);
+    expect(routes).toEqual(["/", "/projects", "/resume", "/contact", "/gallery", "/donate", "/games/voxel-zombie", "/projects/alpha", "/projects/beta"]);
   });
 
   it("writes lastmod only where a date is known", () => {

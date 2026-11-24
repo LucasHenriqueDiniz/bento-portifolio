@@ -20,6 +20,7 @@ const Resume = lazy(() => import("@/pages/resume"));
 const Donate = lazy(() => import("@/pages/donate"));
 const Contact = lazy(() => import("@/pages/contact"));
 const Gallery = lazy(() => import("@/pages/gallery"));
+const VoxelGame = lazy(() => import("@/pages/voxel-game"));
 const NotFound = lazy(() => import("@/pages/not-found"));
 
 function Router() {
@@ -42,6 +43,7 @@ function Router() {
             <Route path="/donate" component={Donate} />
             <Route path="/contact" component={Contact} />
             <Route path="/gallery" component={Gallery} />
+            <Route path="/games/voxel-zombie" component={VoxelGame} />
             <Route component={NotFound} />
           </Switch>
         </Suspense>

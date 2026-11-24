@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { ArrowUpRight } from "lucide-react";
 import { Card } from "@/components/Card";
+import { CAROUSEL_SLIDE_MS, CarouselProgress, useCarousel } from "@/components/CarouselProgress";
 
-const SLIDE_MS = 4200;
 const SLIDES = [
   "/gallery/thumbs/pingo-bored.webp",
   "/gallery/thumbs/bully.webp",
@@ -20,17 +20,17 @@ const SLIDES = [
 export function GalleryCard() {
   const { t } = useTranslation("home");
   const still = useReducedMotion() ?? false;
-  const [index, setIndex] = useState(0);
-
-  useEffect(() => {
-    if (still) return;
-    const timer = setInterval(() => setIndex((current) => (current + 1) % SLIDES.length), SLIDE_MS);
-    return () => clearInterval(timer);
-  }, [still]);
+  const [paused, setPaused] = useState(false);
+  const { index } = useCarousel(SLIDES.length, paused || still);
 
   return (
     <Card className="h-full overflow-hidden" glowColor="var(--accent-glow)">
-      <a href="/gallery" className="group relative block h-full overflow-hidden bg-[#181413]">
+      <a
+        href="/gallery"
+        onMouseEnter={() => setPaused(true)}
+        onMouseLeave={() => setPaused(false)}
+        className="group relative block h-full overflow-hidden bg-[#181413]"
+      >
         <AnimatePresence>
           <motion.img
             key={SLIDES[index]}
@@ -40,26 +40,14 @@ export function GalleryCard() {
             initial={{ opacity: 0, scale: 1.14 }}
             animate={{ opacity: 1, scale: 1.02 }}
             exit={{ opacity: 0 }}
-            transition={{ opacity: { duration: 0.9 }, scale: { duration: SLIDE_MS / 1000 + 1, ease: "linear" } }}
+            transition={{ opacity: { duration: 0.9 }, scale: { duration: CAROUSEL_SLIDE_MS / 1000 + 1, ease: "linear" } }}
           />
         </AnimatePresence>
         <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/35" />
 
         <div className="relative z-10 flex h-full flex-col justify-between p-3 text-white">
           <div>
-            <div className="flex gap-1" aria-hidden>
-              {SLIDES.map((slide, i) => (
-                <span key={slide} className="h-[3px] flex-1 overflow-hidden rounded-full bg-white/25">
-                  {i < index && <span className="block h-full bg-white/80" />}
-                  {i === index && !still && (
-                    <span
-                      className="block h-full origin-left rounded-full bg-white"
-                      style={{ animation: `project-progress ${SLIDE_MS}ms linear forwards` }}
-                    />
-                  )}
-                </span>
-              ))}
-            </div>
+            <CarouselProgress count={SLIDES.length} index={index} paused={paused} still={still} />
             <span className="mt-2 inline-block rounded-full border border-white/25 bg-black/35 px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.16em] text-white/90 backdrop-blur-sm">
               {t("galleryCta.label")}
             </span>
