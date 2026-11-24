@@ -609,3 +609,21 @@
     color: black !important;
   }
 }
+
+/* Album art drifting while the track plays. */
+@keyframes album-drift {
+  from { transform: scale(1.04); }
+  to { transform: scale(1.14) translate(-1.5%, -1.5%); }
+}
+.album-drift { animation: album-drift 18s ease-in-out infinite alternate; }
+
+/* A row of names sliding left, twice over so the loop has no seam. */
+@keyframes marquee-x {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.marquee-x { animation: marquee-x var(--marquee-dur, 40s) linear infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .album-drift, .marquee-x { animation: none; }
+}

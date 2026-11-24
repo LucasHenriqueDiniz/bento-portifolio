@@ -1,3 +1,4 @@
+import { fetchRecentCommits } from "../lib/github";
 import { fetchWowCharacter } from "../lib/wow";
 
 type Env = {
@@ -244,6 +245,7 @@ const startOfWeek = (now: Date) => {
 const isoDate = (date: Date) => date.toISOString().split("T")[0];
 
 const KV_LAST_WOW_KEY = "wow:last-character";
+const KV_LAST_COMMITS_KEY = "github:last-commits";
 const KV_LAST_STEAM_KEY = "steam:last-good";
 const STEAM_SPACEWAR_APP_ID = 480;
 const HYDRA_ICON_URL = "https://raw.githubusercontent.com/hydralauncher/hydra/refs/heads/main/resources/icon.png";
@@ -944,6 +946,17 @@ export const onRequest: PagesFunction<Env> = async (context) => {
           character: await fetchWowCharacter({ clientId, clientSecret }, region, slug),
         }));
       });
+    }
+
+    if (path === "portfolio/commits") {
+      return await cached(request, path, 600, env, async () =>
+        withLastKnown(env, KV_LAST_COMMITS_KEY, 600, async () => {
+          const commits = await fetchRecentCommits(env.GITHUB_USERNAME ?? "LucasHenriqueDiniz", env.GITHUB_PAT ?? "");
+          // An empty answer is not worth remembering over the last real one.
+          if (commits.length === 0) throw new Error("no public commits found");
+          return { commits };
+        })
+      );
     }
 
     if (path === "portfolio/visitors") {
