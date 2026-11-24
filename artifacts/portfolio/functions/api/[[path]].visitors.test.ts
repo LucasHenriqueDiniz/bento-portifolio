@@ -72,3 +72,66 @@ describe("portfolio/visitors", () => {
     expect(res.status).toBe(404);
   });
 });
+
+// A counters table with the two statements the route runs. `first` awaits before it
+// touches the value, so a read-then-write implementation would lose concurrent visits.
+function makeDbStub(initial?: number) {
+  const state = { value: initial as number | undefined };
+  const tick = () => new Promise((resolve) => setTimeout(resolve, 0));
+  return {
+    state,
+    prepare: (sql: string) => ({
+      bind: (...args: unknown[]) => ({
+        first: async () => {
+          await tick();
+          if (sql.startsWith("UPDATE")) {
+            if (state.value === undefined) return null;
+            state.value += 1;
+            return { value: state.value };
+          }
+          return state.value === undefined ? null : { value: state.value };
+        },
+        run: async () => {
+          await tick();
+          if (sql.startsWith("INSERT OR IGNORE") && state.value === undefined) state.value = args[1] as number;
+        },
+      }),
+    }),
+  };
+}
+
+const increment = (env: Record<string, unknown>) =>
+  onRequest(makeContext("https://x.test/api/portfolio/visitors/increment", env, "POST"));
+
+describe("portfolio/visitors on D1", () => {
+  it("counts every one of fifty visits that arrive at once", async () => {
+    const db = makeDbStub(100);
+    const env = { PORTFOLIO_DB: db, PORTFOLIO_CACHE: makeKvStub() };
+
+    const counts = await Promise.all(
+      Array.from({ length: 50 }, async () => ((await (await increment(env)).json()) as { count: number }).count)
+    );
+
+    expect(db.state.value).toBe(150);
+    expect(new Set(counts).size).toBe(50);
+  });
+
+  it("carries the KV total over on the first visit, then stops reading KV", async () => {
+    const db = makeDbStub();
+    const kv = makeKvStub({ "visitor-count": "860" });
+    const env = { PORTFOLIO_DB: db, PORTFOLIO_CACHE: kv };
+
+    await expect((await increment(env)).json()).resolves.toEqual({ count: 861 });
+    kv.store.set("visitor-count", "5");
+    await expect((await increment(env)).json()).resolves.toEqual({ count: 862 });
+    expect(kv.store.get("visitor-count")).toBe("5");
+  });
+
+  it("reads the total from D1, or from KV before the first visit is counted", async () => {
+    const read = async (env: Record<string, unknown>) =>
+      (await onRequest(makeContext("https://x.test/api/portfolio/visitors", env))).json();
+
+    await expect(read({ PORTFOLIO_DB: makeDbStub(900), PORTFOLIO_CACHE: makeKvStub({ "visitor-count": "860" }) })).resolves.toEqual({ count: 900 });
+    await expect(read({ PORTFOLIO_DB: makeDbStub(), PORTFOLIO_CACHE: makeKvStub({ "visitor-count": "860" }) })).resolves.toEqual({ count: 860 });
+  });
+});

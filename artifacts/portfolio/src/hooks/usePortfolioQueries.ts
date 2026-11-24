@@ -177,29 +177,52 @@ export function useGetMalDataCached() {
   return { ...query, data };
 }
 
+// Set once a visit has been counted in this tab. sessionStorage lasts until the tab
+// closes, so a reload shows the total without counting the same visit again.
+const VISIT_COUNTED_KEY = "portfolio:visit-counted";
+
+const visitAlreadyCounted = () => {
+  try {
+    return sessionStorage.getItem(VISIT_COUNTED_KEY) === "1";
+  } catch {
+    return false;
+  }
+};
+
+const markVisitCounted = () => {
+  try {
+    sessionStorage.setItem(VISIT_COUNTED_KEY, "1");
+  } catch {
+    // Storage unavailable (private mode): the next load counts again.
+  }
+};
+
 export function useVisitorCount() {
   const key = "/api/portfolio/visitors";
   const cached = getCache<number>(key);
   const [count, setCount] = useState<number | undefined>(cached);
-  const hasIncremented = useRef(false);
+  const hasRequested = useRef(false);
 
   useEffect(() => {
-    if (hasIncremented.current) return;
-    hasIncremented.current = true;
+    if (hasRequested.current) return;
+    hasRequested.current = true;
 
+    const show = (result: { count: number }) => {
+      setCount(result.count);
+      setCache(key, result.count);
+    };
+    const readOnly = () => getVisitorCount().then(show).catch((e) => console.warn("visitor count fallback failed:", e));
+
+    if (visitAlreadyCounted()) {
+      readOnly();
+      return;
+    }
     incrementVisitorCount()
       .then((result) => {
-        setCount(result.count);
-        setCache(key, result.count);
+        markVisitCounted();
+        show(result);
       })
-      .catch(() => {
-        getVisitorCount()
-          .then((result) => {
-            setCount(result.count);
-            setCache(key, result.count);
-          })
-          .catch((e) => console.warn("visitor count fallback failed:", e));
-      });
+      .catch(readOnly);
   }, []);
 
   return count;
