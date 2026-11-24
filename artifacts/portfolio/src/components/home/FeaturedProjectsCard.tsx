@@ -4,11 +4,22 @@ import { useTranslation } from "react-i18next";
 import { useLocation } from "wouter";
 import { ArrowRight, Globe } from "lucide-react";
 import { Card } from "@/components/Card";
-import type { Project } from "@/components/home/EnhancedProjectCard";
 
 const SLIDE_MS = 6000;
 
-interface FeaturedProjectsCardV2Props {
+export interface Project {
+  id: string;
+  name: string;
+  /** One line about the project, shown under its name. */
+  description: string;
+  techStack: string[];
+  highlight: string;
+  url?: string;
+  wip?: boolean;
+  image?: string;
+}
+
+interface FeaturedProjectsCardProps {
   projects: Project[];
 }
 
@@ -17,7 +28,7 @@ interface FeaturedProjectsCardV2Props {
  * dark veil that keeps the text readable, and slides cross-fade. A segmented bar shows
  * which project is playing; hovering pauses, arrow keys move while the card has focus.
  */
-export function FeaturedProjectsCardV2({ projects }: FeaturedProjectsCardV2Props) {
+export function FeaturedProjectsCard({ projects }: FeaturedProjectsCardProps) {
   const { t } = useTranslation("home");
   const [, setLocation] = useLocation();
   const still = useReducedMotion() ?? false;

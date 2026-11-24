@@ -1,205 +1,163 @@
-import React from "react";
-import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useTranslation } from "react-i18next";
-import { Dumbbell, TrendingUp } from "lucide-react";
-import { WidgetCard } from "@/components/WidgetCard";
-import { PortalTooltip } from "@/components/PortalTooltip";
-import CountUp from "@/components/CountUp";
+import { Dumbbell } from "lucide-react";
+import { Card } from "@/components/Card";
+import { Odometer } from "@/components/Odometer";
+import { formatTimeAgo } from "@/lib/dateFormatter";
+import { formatCount } from "@/lib/numberFormat";
+import type { WorkoutData } from "@/lib/apiClient";
 
-/**
- * Exercise data structure
- * @interface Exercise
- * @property {string} name - Exercise name
- * @property {number} sets - Number of sets
- * @property {number} reps - Number of reps per set
- * @property {number} weight - Weight in kg
- * @property {string} [exercise_image] - URL to exercise image
- */
-interface Exercise {
-  name: string;
-  sets: number;
-  reps: number;
-  weight: number;
-  exercise_image?: string | null;
-}
+const SCAN_MS = 2400;
 
-/**
- * Workout data from Lyfta API
- * @interface WorkoutData
- * @property {string} [type] - Workout type (e.g., "Push", "Pull", "Legs")
- * @property {number} [totalVolume] - Total volume in kg
- * @property {Object} [weeklyStats] - Weekly statistics
- * @property {number} [weeklyStats.streak] - Current streak in days
- * @property {number} [weeklyStats.workoutsThisWeek] - Workouts completed this week
- * @property {number} [duration] - Workout duration in minutes
- * @property {Exercise[]} [exercises] - List of exercises performed
- */
-interface WorkoutData {
-  type?: string;
-  totalVolume?: number;
-  weeklyStats?: {
-    streak?: number;
-    workoutsThisWeek?: number;
-  };
-  duration?: number;
-  exercises?: Exercise[];
-}
-
-/**
- * Props for WorkoutCard component
- * @interface WorkoutCardProps
- * @property {WorkoutData | undefined} workout - Last workout data
- * @property {boolean} isLoading - Loading state
- * @property {boolean} isDark - Dark mode flag
- */
 interface WorkoutCardProps {
   workout: WorkoutData | undefined;
-  isLoading: boolean;
-  isDark: boolean;
+  isLoading?: boolean;
 }
 
-function ExerciseTooltipContent({ exercise }: { exercise: Exercise }) {
-  const volume = exercise.sets * exercise.reps * exercise.weight;
-  return (
-    <div className="space-y-2">
-      {exercise.exercise_image && (
-        <img
-          src={exercise.exercise_image}
-          alt={exercise.name}
-          className="w-full h-24 rounded-lg object-cover bg-field/50"
-          onError={(e) => {
-            (e.target as HTMLImageElement).style.display = "none";
-          }}
-        />
-      )}
-      <div>
-        <p className="text-[12px] font-bold text-main leading-tight">
-          {exercise.name}
-        </p>
-        <p className="text-[11px] text-faint mt-1">
-          {exercise.sets}x{exercise.reps} @ {exercise.weight}kg
-        </p>
-      </div>
-      <div className="border-t border-base pt-2">
-        <div className="flex justify-between items-center">
-          <span className="text-[10px] text-faint">Volume total</span>
-          <span className="text-[12px] font-bold text-brand">{volume.toLocaleString()}kg</span>
-        </div>
-      </div>
-    </div>
-  );
-}
+const volumeOf = (ex: { sets: number; reps: number; weight: number }) => ex.sets * ex.reps * ex.weight;
 
 /**
- * WorkoutCard - Displays last workout data from Lyfta with exercises and stats
- * @component
- * @param {WorkoutCardProps} props - Component props
- * @returns {JSX.Element} Rendered component
+ * Last workout as a small chart: one bar per exercise, as tall as the volume it moved,
+ * with its load written under it. One bar is always in focus: left alone, the focus
+ * walks along the bars; hovering or focusing a bar takes it. The line under the chart
+ * names the exercise in focus, with its sets, reps and the load of the set. Bodyweight exercises carry no load, so they get a short
+ * dashed bar instead of none.
  */
-export const WorkoutCard = React.memo(function WorkoutCard({
-  workout,
-  isLoading,
-  isDark,
-}: WorkoutCardProps) {
-  const { t } = useTranslation("home");
-  const exercises = Array.isArray(workout?.exercises) ? workout.exercises : [];
-  const hasExercises = exercises.length > 0;
-  
-  return (
-    <WidgetCard
-      isLoading={isLoading}
-      error={!workout ? t("workout.error") : null}
-      loadingIcon={<Dumbbell size={28} className="text-brand" />}
-      emptyIcon={<Dumbbell size={24} className="text-faint" />}
-      className="h-full rounded-2xl overflow-hidden"
-      style={{
-        border: `1px solid var(--border-base)`,
-      }}
-      glowColor="var(--accent-glow)"
-    >
-      {workout && (
-        <div className="p-3 h-full flex flex-col gap-2 bg-panel">
-          {/* Header */}
-          <div className="flex items-center justify-between shrink-0">
-            <div className="inline-flex items-center gap-1.5">
-              <Dumbbell size={12} className="text-brand" />
-              <span className="text-[9px] font-semibold text-brand uppercase tracking-wider">{t("workout.title")}</span>
-            </div>
-            <span className={`text-[8px] px-1.5 py-0.5 rounded-full border ${isDark ? "bg-white/5 border-white/10 text-white/60" : "bg-field border-base text-faint"}`}>
-              {workout.type ?? "Workout"}
-            </span>
-          </div>
+export function WorkoutCard({ workout, isLoading = false }: WorkoutCardProps) {
+  const { t, i18n } = useTranslation("home");
+  const still = useReducedMotion() ?? false;
+  const [picked, setPicked] = useState<number | null>(null);
+  const [scan, setScan] = useState(0);
+  const exercises = workout?.exercises ?? [];
+  const count = exercises.length;
 
-          {/* Stats */}
-          <div className="grid grid-cols-2 gap-1.5 shrink-0">
-            {/* Total Volume */}
-            <div className={`rounded-lg p-2 border ${isDark ? "bg-white/4 border-white/10" : "bg-panel border-base"}`}>
-              <div className="flex items-start justify-between">
-                <p className="text-[14px] font-black leading-none text-main">
-                  <CountUp to={workout.totalVolume ?? 0} separator="," duration={1.4} />
-                </p>
-                <TrendingUp size={10} className="text-brand/70" />
-              </div>
-              <p className="text-[7px] uppercase tracking-wider mt-0.5 font-semibold text-faint">{t("workout.volume")}</p>
-            </div>
+  useEffect(() => {
+    if (picked !== null || still || count < 2) return;
+    const timer = setInterval(() => setScan((n) => (n + 1) % count), SCAN_MS);
+    return () => clearInterval(timer);
+  }, [picked, still, count]);
 
-            {/* Workouts This Week */}
-            <div className={`rounded-lg p-2 border ${isDark ? "bg-white/4 border-white/10" : "bg-panel border-base"}`}>
-              <p className="text-[14px] font-black leading-none text-main">
-                <CountUp to={workout.weeklyStats?.workoutsThisWeek ?? 0} duration={0.7} />
-              </p>
-              <p className="text-[7px] uppercase tracking-wider mt-0.5 font-semibold text-faint">{t("workout.thisWeek")}</p>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between mt-0.5 shrink-0">
-            <p className="text-[8px] uppercase tracking-[0.18em] font-semibold text-faint">{t("workout.exercises")}</p>
-            <p className="text-[8px] text-faint">{t("workout.items", { count: exercises.length })}</p>
-          </div>
-
-          <div className={`rounded-lg border ${isDark ? "border-white/10 bg-white/3" : "border-base bg-field/40"} p-1.5 flex-1 min-h-0`}>
-            {hasExercises ? (
-              <div className="h-full overflow-y-auto custom-scrollbar pr-1 space-y-1">
-                {exercises.map((ex, i) => (
-                  <PortalTooltip
-                    key={`${ex.name}-${i}`}
-                    content={<ExerciseTooltipContent exercise={ex} />}
-                    width={260}
-                    placement="right"
-                    offsetX={8}
-                  >
-                    <motion.div
-                      initial={{ opacity: 0, x: -6 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.08 + i * 0.03, duration: 0.24 }}
-                      className={`flex items-center justify-between gap-2 rounded-md px-1.5 py-1 cursor-pointer transition-colors ${
-                        isDark ? "hover:bg-white/5" : "hover:bg-panel"
-                      }`}
-                    >
-                      <div className="flex items-center gap-1.5 flex-1 min-w-0">
-                        <Dumbbell size={9} className="text-brand/45 shrink-0" />
-                        <p className="text-[10px] font-medium truncate text-sub">{ex.name}</p>
-                      </div>
-                      <div className="flex items-center gap-1 shrink-0">
-                        <span className={`text-[8px] font-semibold px-1.5 py-0.5 rounded-md ${isDark ? "bg-white/5 border border-white/10 text-white/65" : "bg-panel border border-base text-faint"}`}>
-                          {ex.sets}x{ex.reps}
-                        </span>
-                        <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded-md ${isDark ? "bg-brand/15 text-brand" : "bg-brand-subtle border border-brand/20 text-brand"}`}>
-                          {ex.weight}kg
-                        </span>
-                      </div>
-                    </motion.div>
-                  </PortalTooltip>
-                ))}
-              </div>
-            ) : (
-              <div className="h-full flex items-center justify-center">
-                <p className="text-[10px] text-faint">{t("workout.empty")}</p>
-              </div>
-            )}
-          </div>
+  if (!workout?.date || count === 0) {
+    return (
+      <Card className="h-full rounded-2xl bg-panel border border-base" glowColor="var(--accent-glow)">
+        <div className="h-full flex flex-col items-center justify-center gap-2">
+          <Dumbbell size={22} className={isLoading ? "text-brand animate-pulse" : "text-faint"} />
+          {!isLoading && <p className="text-[11px] text-faint">{t("workout.error")}</p>}
         </div>
-      )}
-    </WidgetCard>
+      </Card>
+    );
+  }
+
+  const active = picked ?? scan % count;
+  const shown = exercises[active];
+  const peak = Math.max(...exercises.map(volumeOf), 1);
+  // From the start of the workout's day, so "2 days ago" counts calendar days.
+  const ago = formatTimeAgo(new Date(`${workout.date}T00:00:00`).getTime(), i18n.language);
+
+  return (
+    <Card className="h-full rounded-2xl bg-panel border border-base" glowColor="var(--accent-glow)">
+      <div className="h-full p-3 flex flex-col">
+        <div className="flex items-center justify-between gap-2">
+          <span className="inline-flex items-center gap-1.5 text-[9px] font-semibold uppercase tracking-wider text-brand">
+            <Dumbbell size={11} />
+            {t("workout.title")}
+          </span>
+          <span className="text-[9px] text-faint whitespace-nowrap">{ago}</span>
+        </div>
+
+        <div className="mt-1.5 flex items-end justify-between gap-2">
+          <div className="min-w-0">
+            <p className="text-[11px] font-semibold leading-tight text-sub truncate">{workout.type}</p>
+            <p className="mt-0.5 flex items-baseline gap-1">
+              <Odometer
+                text={formatCount(workout.totalVolume, i18n.language)}
+                label={`${formatCount(workout.totalVolume, i18n.language)} kg`}
+                className="text-[24px] font-black leading-none tracking-tight text-main"
+              />
+              <span className="text-[10px] font-semibold text-faint">kg</span>
+            </p>
+          </div>
+          <p className="shrink-0 text-right text-[9px] leading-tight text-faint">
+            {workout.duration} min
+            <br />
+            {t("workout.items", { count })}
+          </p>
+        </div>
+
+        <div
+          className="relative mt-2 flex-1 min-h-[44px] flex items-stretch gap-1"
+          role="list"
+          aria-label={t("workout.exercises")}
+          onMouseLeave={() => setPicked(null)}
+        >
+          {/* A faint midline and baseline, so the bars read as a chart. */}
+          <span aria-hidden className="absolute inset-x-0 top-[calc(50%-7px)] border-t border-dashed border-base" />
+          <span aria-hidden className="absolute inset-x-0 bottom-[13px] border-t border-base" />
+          {exercises.map((ex, i) => {
+            const share = volumeOf(ex) / peak;
+            const bodyweight = ex.weight === 0;
+            const isActive = i === active;
+            return (
+              <button
+                key={`${ex.name}-${i}`}
+                type="button"
+                role="listitem"
+                aria-label={`${ex.name.trim()}: ${ex.sets}×${ex.reps}${bodyweight ? "" : ` · ${ex.weight} kg`}`}
+                aria-current={isActive}
+                onMouseEnter={() => setPicked(i)}
+                onFocus={() => setPicked(i)}
+                onBlur={() => setPicked(null)}
+                className="group relative flex-1 min-w-0 flex flex-col justify-end outline-none"
+              >
+                <span className="relative flex-1 min-h-0 flex items-end">
+                  <motion.span
+                    initial={{ scaleY: still ? 1 : 0 }}
+                    animate={{ scaleY: 1 }}
+                    transition={{ delay: 0.15 + i * 0.07, type: "spring", stiffness: 140, damping: 16 }}
+                    style={{
+                      height: bodyweight ? "18%" : `${Math.max(share * 100, 12)}%`,
+                      ...(bodyweight
+                        ? {}
+                        : { background: "linear-gradient(180deg, var(--accent) 0%, rgba(var(--accent-glow), 0.55) 100%)" }),
+                      boxShadow: isActive && !bodyweight ? "0 0 14px -2px rgba(var(--accent-glow), 0.75)" : undefined,
+                    }}
+                    className={`w-full origin-bottom rounded-t-[5px] transition-[opacity,box-shadow] duration-300 ${
+                      bodyweight ? "border border-b-0 border-dashed border-brand bg-brand-subtle" : ""
+                    } ${isActive ? "opacity-100" : "opacity-40"} group-focus-visible:ring-2 group-focus-visible:ring-brand`}
+                  />
+                </span>
+                <span
+                  className={`mt-[3px] h-[10px] text-center text-[8px] leading-[10px] tabular-nums transition-colors duration-300 ${
+                    isActive ? "font-bold text-brand" : "text-faint"
+                  }`}
+                >
+                  {bodyweight ? "–" : ex.weight}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="mt-1.5 h-[24px] border-t border-base pt-1.5 text-[10px] leading-tight overflow-hidden">
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.p
+              key={active}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: still ? 0 : 0.2 }}
+              className="flex items-center justify-between gap-2"
+            >
+              <span className="font-medium text-main truncate">{shown.name.trim()}</span>
+              <span className="shrink-0 font-semibold text-brand tabular-nums">
+                {shown.sets}×{shown.reps}
+                {shown.weight > 0 && ` · ${shown.weight} kg`}
+              </span>
+            </motion.p>
+          </AnimatePresence>
+        </div>
+      </div>
+    </Card>
   );
-});
+}

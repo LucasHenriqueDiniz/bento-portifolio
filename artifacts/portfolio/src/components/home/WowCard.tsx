@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { motion, useMotionValue, useReducedMotion, useSpring, useTransform } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { Swords } from "lucide-react";
 import { Card } from "@/components/Card";
@@ -27,31 +27,19 @@ const MOTES = [
   { left: "69%", size: 1.5, delay: 4.4, duration: 7 },
 ];
 
-interface WowSheetCardProps {
+interface WowCardProps {
   character: WowCharacter | null | undefined;
   sample?: boolean;
 }
 
 /**
- * The character as a page of the game's interface. The card tilts toward the pointer
- * and its layers move by different amounts (the light least, the character most), so
- * the flat render Blizzard serves reads as standing in front of the card. It is not a
- * real 3D model: the Battle.net API only serves this one picture of the character.
+ * A World of Warcraft: Forever character, as the scene Blizzard's armory builds: the
+ * backdrop of its race, a shadow on the ground and the render standing on it, under
+ * gold trim, with the level, the name, race and class, and the professions.
  */
-export function WowSheetCard({ character, sample = false }: WowSheetCardProps) {
+export function WowCard({ character, sample = false }: WowCardProps) {
   const { t } = useTranslation("home");
   const still = useReducedMotion();
-  // Pointer position over the card, -0.5 to 0.5 on each axis; springs ease it back.
-  const px = useSpring(useMotionValue(0), { stiffness: 160, damping: 18, mass: 0.6 });
-  const py = useSpring(useMotionValue(0), { stiffness: 160, damping: 18, mass: 0.6 });
-  const rotateY = useTransform(px, [-0.5, 0.5], [-9, 9]);
-  const rotateX = useTransform(py, [-0.5, 0.5], [7, -7]);
-  const lightX = useTransform(px, [-0.5, 0.5], [-10, 10]);
-  const figureX = useTransform(px, [-0.5, 0.5], [16, -16]);
-  const figureY = useTransform(py, [-0.5, 0.5], [8, -8]);
-  const textX = useTransform(px, [-0.5, 0.5], [5, -5]);
-  const backdropX = useTransform(px, [-0.5, 0.5], [6, -6]);
-  const backdropY = useTransform(py, [-0.5, 0.5], [4, -4]);
   // Not every race has a backdrop on Blizzard's server; without one the card keeps its
   // plain dark ground.
   const [backdropFailed, setBackdropFailed] = useState(false);
@@ -71,26 +59,12 @@ export function WowSheetCard({ character, sample = false }: WowSheetCardProps) {
   const backdrop = backdropFailed ? null : raceBackdropUrl(character.race);
   const armoryUrl = `https://worldofwarcraft.blizzard.com/forever/${character.region}/armory/character/${character.slug}`;
 
-  const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (still) return;
-    const rect = e.currentTarget.getBoundingClientRect();
-    px.set((e.clientX - rect.left) / rect.width - 0.5);
-    py.set((e.clientY - rect.top) / rect.height - 0.5);
-  };
-  const onLeave = () => {
-    px.set(0);
-    py.set(0);
-  };
-
   return (
     <Card className="h-full" glowColor="232, 197, 106" glowIntensity={1.2}>
-      <div className="h-full" style={{ perspective: 900, borderRadius: "inherit" }} onMouseMove={onMove} onMouseLeave={onLeave}>
-        <motion.div
+      <div className="h-full" style={{ borderRadius: "inherit" }}>
+        <div
           className="relative h-full overflow-hidden text-white"
           style={{
-            rotateX,
-            rotateY,
-            transformStyle: "preserve-3d",
             borderRadius: "inherit",
             background: "linear-gradient(135deg, #17120a 0%, #0b0d14 62%)",
             // Gold trim drawn inside the card's own corner radius.
@@ -107,7 +81,6 @@ export function WowSheetCard({ character, sample = false }: WowSheetCardProps) {
               animate={{ opacity: 1, scale: 1.06 }}
               transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
               className="pointer-events-none absolute inset-0 h-full w-full object-cover object-[60%_52%]"
-              style={{ x: backdropX, y: backdropY }}
             />
           )}
           {/* Darkens the left, where the text sits, and the edges. */}
@@ -116,7 +89,6 @@ export function WowSheetCard({ character, sample = false }: WowSheetCardProps) {
             aria-hidden
             className="absolute inset-0"
             style={{
-              x: lightX,
               borderRadius: "inherit",
               background: `radial-gradient(90% 110% at 76% 60%, rgba(${rgb},${backdrop ? 0.28 : 0.6}) 0%, rgba(${rgb},0.08) 42%, transparent 62%)`,
             }}
@@ -139,7 +111,7 @@ export function WowSheetCard({ character, sample = false }: WowSheetCardProps) {
           {/* Blizzard's render is a 1600x1200 canvas with the character small in its
               middle, so it is zoomed in on rather than fitted. */}
           {character.renderUrl && (
-            <motion.div className="pointer-events-none absolute inset-y-0 right-0 w-[50%]" style={{ x: figureX, y: figureY }}>
+            <div className="pointer-events-none absolute inset-y-0 right-0 w-[50%]">
               <img
                 src={SHADOW_URL}
                 alt=""
@@ -160,10 +132,10 @@ export function WowSheetCard({ character, sample = false }: WowSheetCardProps) {
                   style={{ filter: `drop-shadow(0 4px 6px rgba(0,0,0,0.75)) drop-shadow(0 0 7px rgba(${rgb},0.45))` }}
                 />
               </div>
-            </motion.div>
+            </div>
           )}
 
-          <motion.div className="relative h-full w-[56%] p-4 flex flex-col" style={{ x: textX }}>
+          <div className="relative h-full w-[56%] p-4 flex flex-col">
             <div className="flex items-center gap-2">
               <span className="inline-flex items-center gap-1.5 text-[9px] font-semibold uppercase tracking-[0.18em]" style={{ color: GOLD }}>
                 <Swords size={11} />
@@ -237,8 +209,8 @@ export function WowSheetCard({ character, sample = false }: WowSheetCardProps) {
                 </li>
               ))}
             </ul>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       </div>
     </Card>
   );

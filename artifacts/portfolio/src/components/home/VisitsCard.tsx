@@ -38,7 +38,7 @@ const BLIPS: Array<[number, number, number]> = [
   [1, 1, 0], [4, 0, 1.3], [7, 2, 2.1], [10, 1, 0.6], [2, 3, 3.2], [8, 4, 1.8], [5, 5, 2.7], [11, 4, 0.9], [0, 5, 3.9], [9, 0, 3.4],
 ];
 
-interface VisitsBoardCardProps {
+interface VisitsCardProps {
   count: number | undefined;
 }
 
@@ -47,7 +47,7 @@ interface VisitsBoardCardProps {
  * flips through digits and they settle from left to right. Behind it, a field of dots
  * where a few light up at random, one visitor at a time.
  */
-export function VisitsBoardCard({ count }: VisitsBoardCardProps) {
+export function VisitsCard({ count }: VisitsCardProps) {
   const { t, i18n } = useTranslation("home");
   const still = useReducedMotion() ?? false;
   const text = count === undefined ? null : formatCount(count, i18n.language);

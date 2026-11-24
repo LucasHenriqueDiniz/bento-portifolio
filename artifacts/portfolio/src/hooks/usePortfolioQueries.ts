@@ -10,6 +10,7 @@ import {
   getStats,
   getMalData,
   getMachinesStatus,
+  getWowCharacter,
   getVisitorCount,
   incrementVisitorCount,
 } from "@/lib/apiClient";
@@ -257,4 +258,26 @@ export function useGetMachinesStatusCached() {
   usePersistOnSuccess("/api/portfolio/machines", hasMachinesStatus(data) ? data : undefined);
 
   return { ...query, data };
+}
+
+/**
+ * The WoW character, or null when the API has none (no Battle.net credentials). The
+ * last character seen is kept, so the card does not blink back to its fallback while a
+ * visit loads.
+ */
+export function useGetWowCharacterCached() {
+  const key = "/api/portfolio/wow";
+  const cached = getCache<Awaited<ReturnType<typeof getWowCharacter>>>(key);
+  const query = useQuery({
+    queryKey: [key],
+    queryFn: ({ signal }) => getWowCharacter({ signal }),
+    placeholderData: cached,
+    ...QUERY_STABILITY_OPTIONS,
+  });
+
+  const fresh = query.data?.character ? query.data : undefined;
+  usePersistOnSuccess(key, fresh);
+  // An answer without a character is an answer: it clears what was remembered.
+  const character = query.data ? query.data.character : (cached?.character ?? null);
+  return { ...query, data: character };
 }

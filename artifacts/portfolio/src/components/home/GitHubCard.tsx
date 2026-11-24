@@ -1,237 +1,158 @@
-import React, { useMemo, useRef, useState, useEffect } from "react";
-import { motion, useInView } from "framer-motion";
+import { useMemo } from "react";
+import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { SiGithub } from "react-icons/si";
-import { WidgetCard } from "@/components/WidgetCard";
+import { Flame } from "lucide-react";
+import { Card } from "@/components/Card";
 import CountUp from "@/components/CountUp";
-import { fadeUpSoft } from "@/lib/animations";
-import { CardHeader } from "@/components/CardHeader";
+import { formatCount } from "@/lib/numberFormat";
 
-const CARD =
-  "bg-panel border border-base rounded-2xl";
+const WEEKS_SHOWN = 24;
 
-interface GitHubGridProps {
-  contributionDays?: Array<{ date: string; count: number }>;
-  inView: boolean;
-  isDark: boolean;
-  locale: string;
-  dayLabels: string[];
-}
-
-const GitHubGrid = React.memo(function GitHubGrid({
-  contributionDays,
-  inView,
-  isDark,
-  locale,
-  dayLabels,
-}: GitHubGridProps) {
-  const WEEKS = 52;
-  const DAYS = 7;
-  const MONTHS = useMemo(() => {
-    const formatter = new Intl.DateTimeFormat(locale, { month: "short" });
-    const now = new Date();
-
-    return Array.from({ length: 12 }, (_, i) => {
-      const d = new Date(now.getFullYear(), now.getMonth() - (11 - i), 1);
-      return formatter.format(d);
-    });
-  }, [locale]);
-
-  const cells = useMemo(() => {
-    if (contributionDays && contributionDays.length > 0) {
-      const normalized = contributionDays
-        .slice(-WEEKS * DAYS)
-        .map((d) => d.count)
-        .map((count) => {
-          if (count <= 0) return 0;
-          if (count <= 2) return 1;
-          if (count <= 5) return 2;
-          if (count <= 10) return 3;
-          return 4;
-        });
-      if (normalized.length < WEEKS * DAYS) {
-        return [...Array(WEEKS * DAYS - normalized.length).fill(0), ...normalized];
-      }
-      return normalized;
-    }
-
-    // No contribution data means an empty calendar. It used to draw a made-up pattern
-    // from sin/cos, which read as real activity.
-    return Array<number>(WEEKS * DAYS).fill(0);
-  }, [contributionDays]);
-
-  const shades = isDark
-    ? ["#1b1f24", "#0e4429", "#006d32", "#26a641", "#39d353"]
-    : ["#ebedf0", "#9be9a8", "#40c463", "#30a14e", "#216e39"];
-
-  return (
-    <div className={`w-full h-full rounded-lg border p-2 flex flex-col min-h-0 ${isDark ? "bg-white/3 border-white/8" : "bg-field border-base"}`}>
-      <div className={`pl-5 pr-0.5 pb-1 shrink-0 flex items-center text-[7px] font-semibold text-faint leading-none`}>
-        {MONTHS.map((month) => (
-          <span key={month} className="flex-1 min-w-0 truncate">
-            {month}
-          </span>
-        ))}
-      </div>
-
-      <div className="flex-1 min-h-0 flex gap-1.5">
-        <div className={`w-4 shrink-0 grid grid-rows-7 gap-[2px] text-[7px] text-faint leading-none`}>
-          {dayLabels.map((day, i) => (
-            <div key={i} className="flex items-center justify-end">
-              {day}
-            </div>
-          ))}
-        </div>
-
-        <div className="flex-1 min-h-0 flex gap-[2px]">
-          {Array.from({ length: WEEKS }).map((_, w) => (
-            <div key={w} className="flex flex-col gap-[2px] flex-1 min-w-0">
-              {Array.from({ length: DAYS }).map((_, d) => {
-                const idx = w * DAYS + d;
-                const delay = (w * DAYS + d) * 0.003; // stagger from top-left to bottom-right
-                return (
-                  <motion.div
-                    key={d}
-                    initial={{ opacity: 0, scale: 0.6 }}
-                    animate={inView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.6 }}
-                    transition={{
-                      delay,
-                      duration: 0.2,
-                      ease: "easeOut",
-                    }}
-                    style={{
-                      aspectRatio: "1",
-                      borderRadius: 2,
-                      backgroundColor: shades[cells[idx]],
-                    }}
-                  />
-                );
-              })}
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-});
-
-interface StatsData {
+interface GitHubStats {
+  githubContributions?: number;
+  githubRepos?: number;
   totalCommitsThisYear?: number;
   currentStreak?: number;
-  githubRepos?: number;
-  githubContributions?: number;
   longestStreak?: number;
   contributionDays?: Array<{ date: string; count: number }>;
+  topLanguages?: Array<{ name: string; percentage: number; color: string }>;
 }
 
 interface GitHubCardProps {
-  stats: StatsData | undefined;
-  loadingStats: boolean;
-  isDark: boolean;
+  stats: GitHubStats | undefined;
+  isLoading?: boolean;
 }
 
-export const GitHubCard = React.memo(function GitHubCard({
-  stats,
-  loadingStats,
-  isDark,
-}: GitHubCardProps) {
+// Opacity of the accent colour per activity level; level 0 is an empty cell.
+const LEVEL_OPACITY = [0, 0.3, 0.52, 0.76, 1];
+const levelOf = (count: number) => (count <= 0 ? 0 : count <= 2 ? 1 : count <= 5 ? 2 : count <= 10 ? 3 : 4);
+
+/**
+ * The API's days start on a Sunday, so slicing them in sevens gives calendar weeks: each
+ * column is a week and each row a weekday, as on GitHub. The last weeks are kept.
+ */
+export function lastWeeks(days: Array<{ date: string; count: number }>, weeks = WEEKS_SHOWN) {
+  const columns: Array<Array<{ date: string; count: number }>> = [];
+  for (let i = 0; i < days.length; i += 7) columns.push(days.slice(i, i + 7));
+  return columns.slice(-weeks);
+}
+
+/**
+ * GitHub activity with the contribution total as the headline, a calendar of the last
+ * weeks in the site's accent colour that fills in as a wave, and the languages as one
+ * stacked bar.
+ */
+export function GitHubCard({ stats, isLoading = false }: GitHubCardProps) {
   const { t, i18n } = useTranslation("home");
-  const currentLang = i18n.language?.split("-")[0] || "pt";
-  const locale = currentLang === "en" ? "en-US" : "pt-BR";
-  const dayLabels = ["", t("github.days.mon"), "", t("github.days.wed"), "", t("github.days.fri"), ""];
-  const githubRef = useRef<HTMLDivElement>(null);
-  const githubInView = useInView(githubRef, { amount: 0.1 });
-  const hasAnimatedRef = useRef(false);
-  const [shouldAnimate, setShouldAnimate] = useState(false);
+  const days = useMemo(() => stats?.contributionDays ?? [], [stats?.contributionDays]);
+  const columns = useMemo(() => lastWeeks(days), [days]);
+  const languages = stats?.topLanguages ?? [];
+  const today = days[days.length - 1]?.date;
+  const monthLabel = useMemo(() => new Intl.DateTimeFormat(i18n.language, { month: "short" }), [i18n.language]);
+  const dateLabel = useMemo(() => new Intl.DateTimeFormat(i18n.language, { day: "numeric", month: "short" }), [i18n.language]);
 
-  useEffect(() => {
-    if (githubInView && !hasAnimatedRef.current) {
-      hasAnimatedRef.current = true;
-      setShouldAnimate(true);
-    }
-  }, [githubInView]);
-
-  const contributions = stats?.githubContributions ?? 0;
-  const commits = stats?.totalCommitsThisYear ?? 0;
-  const repos = stats?.githubRepos ?? 0;
-  const streak = stats?.currentStreak ?? 0;
+  if (!stats || (!days.length && !stats.githubRepos)) {
+    return (
+      <Card className="h-full rounded-2xl bg-panel border border-base" glowColor="var(--accent-glow)">
+        <div className="h-full flex flex-col items-center justify-center gap-2">
+          <SiGithub size={22} className={isLoading ? "text-brand animate-pulse" : "text-faint"} />
+          {!isLoading && <p className="text-[11px] text-faint">{t("github.empty")}</p>}
+        </div>
+      </Card>
+    );
+  }
 
   return (
-    <WidgetCard
-      isLoading={loadingStats}
-      loadingIcon={<SiGithub size={28} className="text-brand" />}
-      className="h-full rounded-2xl overflow-hidden"
-      style={{
-        border: `1px solid var(--border-base)`,
-      }}
-      glowColor="var(--accent-glow)"
-    >
-      <motion.div
-        custom={9}
-        variants={fadeUpSoft}
-        initial="hidden"
-        animate="show"
-        className="p-3 h-full flex flex-col gap-2 bg-panel"
-      >
-        <div ref={githubRef} className="h-full flex flex-col gap-2">
-          {/* Header */}
-          <div className="flex items-center justify-between shrink-0">
-            <div className="inline-flex items-center gap-1.5">
-                <SiGithub size={12} className="text-brand" />
-                <span className="text-[9px] font-semibold uppercase tracking-wider text-brand">
-                  {t("github.title")}
-                </span>
-              </div>
-          </div>
+    <Card className="h-full rounded-2xl bg-panel border border-base" glowColor="var(--accent-glow)">
+      <div className="h-full p-3 flex gap-3">
+        <div className="w-[112px] shrink-0 flex flex-col">
+          <span className="inline-flex items-center gap-1.5 text-[9px] font-semibold uppercase tracking-wider text-brand">
+            <SiGithub size={11} />
+            {t("github.title")}
+          </span>
 
-          {/* Stats Grid */}
-          <div className={`rounded-lg p-2 border shrink-0 ${isDark ? "bg-white/3 border-white/8" : "bg-field border-base"}`}>
-            <div className="grid grid-cols-4 gap-2">
-              <StatItem label={t("github.repos")} value={repos} isDark={isDark} />
-              <StatItem label={t("github.contribs")} value={contributions} isDark={isDark} separator="," />
-              <StatItem label={t("github.commits")} value={commits} isDark={isDark} separator="," />
-              <StatItem label={t("github.streak")} value={streak} isDark={isDark} suffix={t("github.daysSuffix")} />
-            </div>
-          </div>
+          <p className="mt-2 text-[28px] font-black leading-none tracking-tight text-main tabular-nums">
+            <CountUp to={stats.githubContributions ?? 0} separator="." duration={1.4} />
+          </p>
+          <p className="mt-1 text-[9px] leading-tight text-faint">{t("github.contribsLastYear")}</p>
 
-          {/* GitHub Grid */}
-          <div className="flex-1 min-h-0">
-            <GitHubGrid
-              contributionDays={stats?.contributionDays}
-              inView={shouldAnimate}
-              isDark={isDark}
-              locale={locale}
-              dayLabels={dayLabels}
-            />
+          <div className="mt-auto space-y-1 text-[10px]">
+            <p className="flex items-center gap-1 text-sub">
+              <Flame size={11} className={stats.currentStreak ? "text-brand" : "text-faint"} />
+              <span className="font-bold text-main tabular-nums">{stats.currentStreak ?? 0}</span>
+              {t("github.streakDays", { count: stats.currentStreak ?? 0 })}
+              <span className="text-faint">· {t("github.best", { count: stats.longestStreak ?? 0 })}</span>
+            </p>
+            <p className="text-faint">
+              <span className="font-semibold text-sub tabular-nums">{formatCount(stats.totalCommitsThisYear ?? 0, i18n.language)}</span> {t("github.commits")}
+            </p>
+            <p className="text-faint">
+              <span className="font-semibold text-sub tabular-nums">{stats.githubRepos ?? 0}</span> {t("github.repos")}
+            </p>
           </div>
         </div>
-      </motion.div>
-    </WidgetCard>
-  );
-});
 
-function StatItem({
-  label,
-  value,
-  isDark,
-  separator,
-  suffix,
-}: {
-  label: string;
-  value: number;
-  isDark: boolean;
-  separator?: string;
-  suffix?: string;
-}) {
-  return (
-    <div className="min-w-0">
-      <p className="text-[7px] uppercase tracking-wider font-bold text-faint">
-        {label}
-      </p>
-      <p className="text-[13px] leading-none mt-0.5 font-black truncate text-main">
-        <CountUp to={value} duration={0.9} separator={separator ?? ""} />
-        {suffix ?? ""}
-      </p>
-    </div>
+        <div className="flex-1 min-w-0 flex flex-col">
+          {/* Month names over the column where each month starts. */}
+          <div className="flex gap-[2px] text-[8px] leading-none text-faint h-[10px]" aria-hidden>
+            {columns.map((week, w) => {
+              const month = week[0] ? new Date(`${week[0].date}T12:00:00`).getMonth() : -1;
+              const previous = columns[w - 1]?.[0] ? new Date(`${columns[w - 1][0].date}T12:00:00`).getMonth() : -1;
+              return (
+                <span key={week[0]?.date ?? w} className="flex-1 min-w-0 overflow-visible whitespace-nowrap">
+                  {w > 0 && month !== previous && week[0] ? monthLabel.format(new Date(`${week[0].date}T12:00:00`)).replace(".", "") : ""}
+                </span>
+              );
+            })}
+          </div>
+          <div className="mt-1 flex-1 min-h-0 flex items-start gap-[2px]" role="img" aria-label={t("github.calendar", { weeks: columns.length })}>
+            {columns.map((week, w) => (
+              <div key={week[0]?.date ?? w} className="flex-1 min-w-0 flex flex-col gap-[2px]">
+                {week.map((day) => {
+                  const level = levelOf(day.count);
+                  return (
+                    <span
+                      key={day.date}
+                      title={`${t("github.onDay", { count: day.count })} · ${dateLabel.format(new Date(`${day.date}T12:00:00`))}`}
+                      className={`gh-cell aspect-square rounded-[3px] ${day.date === today ? "gh-cell-today" : ""}`}
+                      style={{
+                        animationDelay: `${w * 22}ms`,
+                        backgroundColor: level ? `rgba(var(--accent-glow), ${LEVEL_OPACITY[level]})` : "var(--bg-field)",
+                      }}
+                    />
+                  );
+                })}
+              </div>
+            ))}
+          </div>
+
+          {languages.length > 0 && (
+            <div className="mt-2 shrink-0">
+              <div className="flex h-1.5 rounded-full overflow-hidden bg-field">
+                {languages.map((lang, i) => (
+                  <motion.span
+                    key={lang.name}
+                    title={`${lang.name} ${lang.percentage}%`}
+                    style={{ backgroundColor: lang.color }}
+                    initial={{ width: 0 }}
+                    animate={{ width: `${lang.percentage}%` }}
+                    transition={{ delay: 0.6 + i * 0.08, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+                  />
+                ))}
+              </div>
+              <p className="mt-1 flex gap-2.5 text-[9px] text-faint truncate">
+                {languages.slice(0, 3).map((lang) => (
+                  <span key={lang.name} className="inline-flex items-center gap-1">
+                    <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: lang.color }} />
+                    {lang.name} <span className="tabular-nums text-sub">{lang.percentage}%</span>
+                  </span>
+                ))}
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+    </Card>
   );
 }

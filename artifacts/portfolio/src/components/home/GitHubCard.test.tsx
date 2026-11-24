@@ -1,34 +1,44 @@
-import { beforeEach, describe, expect, it } from "vitest";
-import { render } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import i18n from "@/i18n";
-import { GitHubCard } from "./GitHubCard";
-
-const heatmapCells = (container: HTMLElement) =>
-  // jsdom drops aspect-ratio from inline styles; the 2 px radius marks a day cell.
-  [...container.querySelectorAll<HTMLElement>("div")].filter((el) => el.style.borderRadius === "2px");
+import { GitHubCard, lastWeeks } from "./GitHubCard";
 
 beforeEach(async () => {
   await i18n.changeLanguage("pt");
+  vi.useFakeTimers();
+});
+
+afterEach(() => {
+  vi.useRealTimers();
 });
 
 describe("GitHubCard", () => {
-  it("draws an empty calendar when there is no contribution data, not a made-up one", () => {
-    const { container } = render(
-      <GitHubCard stats={{ githubRepos: 82, githubContributions: 0, totalCommitsThisYear: 0 }} loadingStats={false} isDark={false} />
-    );
+  const days = Array.from({ length: 28 }, (_, i) => ({ date: `2026-11-${String(i + 1).padStart(2, "0")}`, count: i === 27 ? 8 : i % 3 }));
 
-    const cells = heatmapCells(container);
-    expect(cells).toHaveLength(364);
-    expect(new Set(cells.map((cell) => cell.style.backgroundColor))).toEqual(new Set(["rgb(235, 237, 240)"]));
+  it("cuts the days into calendar weeks and keeps the last ones", () => {
+    const weeks = lastWeeks(days, 2);
+
+    expect(weeks).toHaveLength(2);
+    expect(weeks[0].map((d) => d.date)).toEqual(["2026-11-15", "2026-11-16", "2026-11-17", "2026-11-18", "2026-11-19", "2026-11-20", "2026-11-21"]);
+    expect(weeks[1][6].date).toBe("2026-11-28");
   });
 
-  it("colours the days that had contributions", () => {
-    const contributionDays = Array.from({ length: 364 }, (_, i) => ({ date: `d${i}`, count: i === 363 ? 12 : 0 }));
+  it("draws one cell per day, says each day's count and marks today", () => {
     const { container } = render(
-      <GitHubCard stats={{ githubRepos: 82, contributionDays }} loadingStats={false} isDark={false} />
+      <GitHubCard stats={{ githubContributions: 4654, githubRepos: 82, currentStreak: 2, longestStreak: 23, contributionDays: days, topLanguages: [{ name: "TypeScript", percentage: 58, color: "#3178C6" }] }} />
     );
 
-    const colours = heatmapCells(container).map((cell) => cell.style.backgroundColor);
-    expect(colours.filter((c) => c !== "rgb(235, 237, 240)")).toEqual(["rgb(33, 110, 57)"]);
+    const cells = container.querySelectorAll(".gh-cell");
+    expect(cells).toHaveLength(28);
+    expect(container.querySelector(".gh-cell-today")).toHaveAttribute("title", "8 contribuições · 28 de nov.");
+    expect(cells[1]).toHaveAttribute("title", "1 contribuição · 2 de nov.");
+    expect(screen.getByText("recorde 23", { exact: false })).toBeInTheDocument();
+    expect(screen.getByText("TypeScript")).toBeInTheDocument();
+  });
+
+  it("says the data is unavailable when there is none", () => {
+    render(<GitHubCard stats={undefined} />);
+
+    expect(screen.getByText("Dados do GitHub indisponíveis")).toBeInTheDocument();
   });
 });

@@ -18,7 +18,7 @@ const LINES: Array<[number, boolean]> = [
  * to right. Hovering pulls the page up a little and straightens it; nothing follows the
  * pointer, so the sheet stays put. The whole card opens the résumé.
  */
-export function ResumeCardV2() {
+export function ResumeCard() {
   const { t, i18n } = useTranslation("home");
   const [, setLocation] = useLocation();
   const still = useReducedMotion() ?? false;

@@ -1,11 +1,10 @@
 import type { WowCharacter } from "@/lib/apiClient";
 
 /**
- * A recorded answer, for the /test page only, shown with a "sample" tag while the
- * Battle.net credentials are not configured. It is the owner's character as the API
- * served it on 2026-11-19 (taken from WeebProfile's wow_forever plugin), not live data.
+ * The owner's character as the Battle.net API served it on 2026-11-19 (recorded in
+ * WeebProfile's wow_forever plugin). A test fixture, never shown on the site.
  */
-export const WOW_SAMPLE: WowCharacter = {
+export const WOW_CHARACTER: WowCharacter = {
   region: "us",
   slug: "pequeno-ibuprofeno",
   name: "Pequeno",

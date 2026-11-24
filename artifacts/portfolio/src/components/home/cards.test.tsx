@@ -1,12 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import i18n from "@/i18n";
-import { AboutCardV2 } from "./AboutCardV2";
-import { FeaturedProjectsCardV2 } from "./FeaturedProjectsCardV2";
-import { ResumeCardV2 } from "./ResumeCardV2";
-import { VisitsCardV2 } from "./VisitsCardV2";
-import { WowSheetCard, raceBackdropUrl } from "./WowSheetCard";
-import { WOW_SAMPLE } from "./wowSample";
+import { AboutCard } from "./AboutCard";
+import { FeaturedProjectsCard } from "./FeaturedProjectsCard";
+import { ResumeCard } from "./ResumeCard";
+import { WowCard, raceBackdropUrl } from "./WowCard";
+import { WOW_CHARACTER } from "@/test/fixtures/wowCharacter";
 
 const { setLocation } = vi.hoisted(() => ({ setLocation: vi.fn() }));
 vi.mock("wouter", () => ({ useLocation: () => ["/test", setLocation] }));
@@ -21,26 +20,10 @@ beforeEach(async () => {
   setLocation.mockReset();
 });
 
-describe("VisitsCardV2", () => {
-  it("says the total for screen readers and rolls one strip per digit", () => {
-    const { container } = render(<VisitsCardV2 count={1864} />);
-
-    expect(screen.getByLabelText("1.864 visitas ao site")).toBeInTheDocument();
-    // Four digits, each a strip of 0-9; the thousands separator is not one.
-    expect(container.querySelectorAll("p[aria-label] > span.overflow-hidden")).toHaveLength(4);
-  });
-
-  it("shows a dash while the total has not arrived", () => {
-    render(<VisitsCardV2 count={undefined} />);
-
-    expect(screen.getByText("—")).toBeInTheDocument();
-  });
-});
-
-describe("AboutCardV2", () => {
+describe("AboutCard", () => {
   it("types the role out, and names it whole for screen readers from the start", () => {
     vi.useFakeTimers();
-    render(<AboutCardV2 />);
+    render(<AboutCard />);
     const role = screen.getByLabelText("Desenvolvedor full-stack");
     expect(role).toHaveTextContent("");
 
@@ -53,7 +36,7 @@ describe("AboutCardV2", () => {
   });
 
   it("links to the projects, the gallery and the four profiles", () => {
-    render(<AboutCardV2 />);
+    render(<AboutCard />);
 
     expect(screen.getByRole("link", { name: "codar" })).toHaveAttribute("href", "/projects");
     expect(screen.getByRole("link", { name: "desenhar" })).toHaveAttribute("href", "/gallery");
@@ -62,10 +45,10 @@ describe("AboutCardV2", () => {
   });
 });
 
-describe("FeaturedProjectsCardV2", () => {
+describe("FeaturedProjectsCard", () => {
   it("advances by itself, and with the arrow keys while it has focus", () => {
     vi.useFakeTimers();
-    render(<FeaturedProjectsCardV2 projects={projects} />);
+    render(<FeaturedProjectsCard projects={projects} />);
     const tab = (name: string) => screen.getByRole("tab", { name: `Ir para ${name}` });
     expect(tab("Project One")).toHaveAttribute("aria-selected", "true");
 
@@ -78,7 +61,7 @@ describe("FeaturedProjectsCardV2", () => {
   });
 
   it("opens the project page, links to its site and marks work in progress", () => {
-    render(<FeaturedProjectsCardV2 projects={projects} />);
+    render(<FeaturedProjectsCard projects={projects} />);
 
     expect(screen.getByText("WIP")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Abrir site: Project One" })).toHaveAttribute("href", "https://one.test/");
@@ -87,9 +70,9 @@ describe("FeaturedProjectsCardV2", () => {
   });
 });
 
-describe("ResumeCardV2", () => {
+describe("ResumeCard", () => {
   it("shows the current job on the sheet and opens the resume", () => {
-    render(<ResumeCardV2 />);
+    render(<ResumeCard />);
 
     expect(screen.getByText("Engenheiro de Software III · Appmax")).toBeInTheDocument();
     // The sheet rests in the card: it moves on hover through CSS only, and no inline
@@ -102,9 +85,9 @@ describe("ResumeCardV2", () => {
   });
 });
 
-describe("WowSheetCard", () => {
+describe("WowCard", () => {
   it("keeps to the character: no gear list", () => {
-    render(<WowSheetCard character={WOW_SAMPLE} />);
+    render(<WowCard character={WOW_CHARACTER} />);
 
     expect(screen.getByLabelText("Nível 31")).toHaveTextContent("31");
     expect(screen.getByText("Gnome Priest · Alliance")).toBeInTheDocument();
@@ -113,20 +96,20 @@ describe("WowSheetCard", () => {
   });
 
   it("builds the armory's scene: the race's backdrop, the ground shadow and the render", () => {
-    const { container } = render(<WowSheetCard character={WOW_SAMPLE} />);
+    const { container } = render(<WowCard character={WOW_CHARACTER} />);
 
     const sources = [...container.querySelectorAll("img")].map((img) => img.getAttribute("src"));
     expect(sources).toEqual([
       "https://render.worldofwarcraft.com/profile-backgrounds/v2/armory_bg_race_gnome.jpg",
       "https://render.worldofwarcraft.com/profile-foreground/foreground-shadow.png",
-      WOW_SAMPLE.renderUrl,
+      WOW_CHARACTER.renderUrl,
     ]);
     expect(raceBackdropUrl("Night Elf")).toBe("https://render.worldofwarcraft.com/profile-backgrounds/v2/armory_bg_race_night_elf.jpg");
     expect(raceBackdropUrl(null)).toBeNull();
   });
 
   it("drops the backdrop when Blizzard has none for the race", () => {
-    render(<WowSheetCard character={{ ...WOW_SAMPLE, race: "Blood Elf" }} />);
+    render(<WowCard character={{ ...WOW_CHARACTER, race: "Blood Elf" }} />);
 
     fireEvent.error(screen.getByTestId("wow-backdrop"));
 

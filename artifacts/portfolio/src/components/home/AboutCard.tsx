@@ -39,7 +39,7 @@ function useTyped(text: string, still: boolean, startDelayMs = 500, stepMs = 34)
  * The introduction: the avatar inside a slowly turning accent ring, the role typed out,
  * the text rising in line by line, and the social links popping in last.
  */
-export function AboutCardV2() {
+export function AboutCard() {
   const { t } = useTranslation("home");
   const still = useReducedMotion() ?? false;
   const { typed, done } = useTyped(t("about.role"), still);

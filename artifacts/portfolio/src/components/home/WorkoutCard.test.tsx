@@ -1,9 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import i18n from "@/i18n";
-import { WorkoutCardV2 } from "./WorkoutCardV2";
-import { WowCard } from "./WowCard";
-import { WOW_SAMPLE } from "./wowSample";
+import { WorkoutCard } from "./WorkoutCard";
 
 const workout = {
   date: "2026-11-22",
@@ -22,9 +20,9 @@ beforeEach(async () => {
   await i18n.changeLanguage("pt");
 });
 
-describe("WorkoutCardV2", () => {
+describe("WorkoutCard", () => {
   it("draws one bar per exercise, the tallest for the most volume moved", () => {
-    render(<WorkoutCardV2 workout={workout} />);
+    render(<WorkoutCard workout={workout} />);
 
     const bars = screen.getAllByRole("listitem");
     expect(bars.map((b) => b.getAttribute("aria-label"))).toEqual([
@@ -40,14 +38,14 @@ describe("WorkoutCardV2", () => {
   });
 
   it("writes each exercise's load under its bar", () => {
-    render(<WorkoutCardV2 workout={workout} />);
+    render(<WorkoutCard workout={workout} />);
 
     expect(screen.getAllByRole("listitem").map((bar) => bar.lastElementChild?.textContent)).toEqual(["–", "75", "26"]);
   });
 
   it("walks the focus along the bars when left alone", () => {
     vi.useFakeTimers();
-    render(<WorkoutCardV2 workout={workout} />);
+    render(<WorkoutCard workout={workout} />);
     const current = () => screen.getAllByRole("listitem").findIndex((bar) => bar.getAttribute("aria-current") === "true");
     expect(current()).toBe(0);
 
@@ -60,7 +58,7 @@ describe("WorkoutCardV2", () => {
 
   it("gives the focus to a hovered bar, holds it there, and names that exercise", () => {
     vi.useFakeTimers();
-    const { container } = render(<WorkoutCardV2 workout={workout} />);
+    const { container } = render(<WorkoutCard workout={workout} />);
     const bars = screen.getAllByRole("listitem");
 
     fireEvent.mouseEnter(bars[2]);
@@ -74,40 +72,29 @@ describe("WorkoutCardV2", () => {
   });
 
   it("says the workout is unavailable when there is none", () => {
-    render(<WorkoutCardV2 workout={{ ...workout, date: null as unknown as string, exercises: [] }} />);
+    render(<WorkoutCard workout={{ ...workout, date: null as unknown as string, exercises: [] }} />);
 
     expect(screen.getByText("Dados de treino indisponíveis")).toBeInTheDocument();
   });
-});
 
-describe("WowCard", () => {
-  it("shows the character, its strongest attributes and one dot per item", () => {
-    render(<WowCard character={WOW_SAMPLE} />);
+  it("names the exercise in focus with the load of the set, not the volume it adds up to", () => {
+    render(<WorkoutCard workout={{ ...workout, exercises: [workout.exercises[1]] }} />);
 
-    expect(screen.getByText("Pequeno Ibuprofeno")).toBeInTheDocument();
-    expect(screen.getByText("Nível 31 · Gnome Priest")).toBeInTheDocument();
-    // A priest: intellect and spirit, not strength.
-    expect(screen.getByText("Intellect")).toBeInTheDocument();
-    expect(screen.getByText("Spirit")).toBeInTheDocument();
-    expect(screen.queryByText("Strength")).not.toBeInTheDocument();
-    expect(screen.getByRole("list", { name: "Equipamento" }).children).toHaveLength(15);
-    expect(screen.getByRole("link")).toHaveAttribute(
-      "href",
-      "https://worldofwarcraft.blizzard.com/forever/us/armory/character/pequeno-ibuprofeno"
-    );
+    // 3 x 15 x 75 is 3,375 kg of volume; the line shows the 75 kg on the bar.
+    expect(screen.getByText("3×15 · 75 kg")).toBeInTheDocument();
   });
 
-  it("tags a recorded sample as one, and live data not", () => {
-    const { rerender } = render(<WowCard character={WOW_SAMPLE} sample />);
-    expect(screen.getByText("amostra")).toBeInTheDocument();
+  it("rolls the total in as an odometer and says it whole to screen readers", () => {
+    render(<WorkoutCard workout={workout} />);
 
-    rerender(<WowCard character={WOW_SAMPLE} />);
-    expect(screen.queryByText("amostra")).not.toBeInTheDocument();
+    const total = screen.getByRole("img", { name: "9.090 kg" });
+    // Four digits, each a strip of 0-9; the thousands separator stays still.
+    expect(total.querySelectorAll("span.overflow-hidden")).toHaveLength(4);
   });
 
-  it("says the character is unavailable when there is none", () => {
-    render(<WowCard character={null} />);
+  it("pulses its icon while loading instead of saying the data is missing", () => {
+    render(<WorkoutCard workout={undefined} isLoading />);
 
-    expect(screen.getByText("Personagem indisponível")).toBeInTheDocument();
+    expect(screen.queryByText("Dados de treino indisponíveis")).not.toBeInTheDocument();
   });
 });
