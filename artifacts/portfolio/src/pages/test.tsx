@@ -15,6 +15,9 @@ import { AboutCardV2 } from "@/components/test/AboutCardV2";
 import { FeaturedProjectsCardV2 } from "@/components/test/FeaturedProjectsCardV2";
 import { GitHubCardV2 } from "@/components/test/GitHubCardV2";
 import { ResumeCardV2 } from "@/components/test/ResumeCardV2";
+import { ResumeDeckCard } from "@/components/test/ResumeDeckCard";
+import { useHomeCell } from "@/components/test/useHomeCell";
+import { VisitsBoardCard } from "@/components/test/VisitsBoardCard";
 import { VisitsCardV2 } from "@/components/test/VisitsCardV2";
 import { WorkoutCardV2 } from "@/components/test/WorkoutCardV2";
 import { WorkoutStoriesCard } from "@/components/test/WorkoutStoriesCard";
@@ -22,21 +25,25 @@ import { WowCard } from "@/components/test/WowCard";
 import { WowSheetCard } from "@/components/test/WowSheetCard";
 import { WOW_SAMPLE } from "@/components/test/wowSample";
 
-// The cells these cards occupy on the home grid at 1440x900, so a redesign is judged at
-// the size it will really have.
-const ONE_COLUMN = { width: 232, height: 201 };
-const TWO_COLUMNS = { width: 469, height: 201 };
+// How many columns of the home grid a card spans; every card here is two rows tall.
+// The frame takes the size that cell has in this window, so a redesign is judged at the
+// size it will really have on this screen.
+const ONE_COLUMN = 1;
+const TWO_COLUMNS = 2;
 
 // Bumped by "replay all": every frame remounts its card, which plays its entrance again.
 const ReplayAll = createContext(0);
 
-function Frame({ label, size, children }: { label: string; size: { width: number; height: number }; children: React.ReactNode }) {
+function Frame({ label, size: columns, children }: { label: string; size: number; children: React.ReactNode }) {
+  const size = useHomeCell(columns, 2);
   const replayAll = useContext(ReplayAll);
   const [replay, setReplay] = useState(0);
   return (
     <figure className="flex flex-col gap-2 w-full" style={{ maxWidth: size.width }}>
       <figcaption className="flex items-center justify-between gap-2 text-[10px] font-semibold uppercase tracking-widest text-faint">
-        {label}
+        <span>
+          {label} <span className="font-normal normal-case tracking-normal opacity-70">{size.width}×{size.height}</span>
+        </span>
         <button
           type="button"
           onClick={() => setReplay((n) => n + 1)}
@@ -99,7 +106,7 @@ export default function TestPage() {
                 <div className="space-y-2">
                   <h1 className="text-lg font-black tracking-tight">Card sandbox</h1>
                   <p className="text-[12px] text-sub max-w-xl">
-                    Redesigns at the size of their cell on the home grid. Proposals first, what is live today last.
+                    Redesigns at the size their cell has on the home grid in this window. Proposals first, what is live today last.
                   </p>
                 </div>
                 <button
@@ -133,20 +140,32 @@ export default function TestPage() {
                 </Frame>
               </Section>
 
-              <Section title="About, visits and resume">
-                <Frame label="about · new" size={ONE_COLUMN}>
+              <Section title="About">
+                <Frame label="new" size={ONE_COLUMN}>
                   <AboutCardV2 />
                 </Frame>
-                <Frame label="visits · new" size={ONE_COLUMN}>
+              </Section>
+
+              <Section title="Visits">
+                <Frame label="new B · split-flap board" size={ONE_COLUMN}>
+                  <VisitsBoardCard count={visits} />
+                </Frame>
+                <Frame label="new A · odometer" size={ONE_COLUMN}>
                   <VisitsCardV2 count={visits} />
                 </Frame>
-                <Frame label="visits · current" size={ONE_COLUMN}>
+                <Frame label="current" size={ONE_COLUMN}>
                   <ViewsCard />
                 </Frame>
-                <Frame label="resume · new" size={ONE_COLUMN}>
+              </Section>
+
+              <Section title="Resume">
+                <Frame label="new B · career deck" size={ONE_COLUMN}>
+                  <ResumeDeckCard />
+                </Frame>
+                <Frame label="new A · paper" size={ONE_COLUMN}>
                   <ResumeCardV2 />
                 </Frame>
-                <Frame label="resume · current" size={ONE_COLUMN}>
+                <Frame label="current" size={ONE_COLUMN}>
                   <CVCard navigate={setLocation} isDark={isDark} />
                 </Frame>
               </Section>
