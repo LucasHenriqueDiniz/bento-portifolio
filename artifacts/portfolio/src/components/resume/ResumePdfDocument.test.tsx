@@ -2,6 +2,7 @@ import { pdf } from "@react-pdf/renderer";
 import { inflateSync } from "node:zlib";
 import { describe, expect, it } from "vitest";
 import { ResumePdfDocument } from "./ResumePdfDocument";
+import { resumeSkillLines } from "@/lib/resumeSkills";
 
 async function renderPdfBytes(lang: "en" | "pt") {
   const blob = await pdf(<ResumePdfDocument lang={lang} />).toBlob();
@@ -95,5 +96,20 @@ describe("ResumePdfDocument", () => {
     expect(enRuns).toContain("Software Engineer");
     expect(ptRuns).toContain("Engenheiro de Software");
     expect(ptRuns).not.toContain("Software Engineer");
+  });
+
+  it("lists the skills from skillsData, the same lines as the web resume", async () => {
+    const text = extractTextRuns(decompressStreams(await renderPdfBytes("en"))).join("");
+
+    for (const line of resumeSkillLines()) {
+      for (const skill of line.skills) expect(text).toContain(skill);
+    }
+  });
+
+  it("stays on two pages in both languages", async () => {
+    for (const lang of ["en", "pt"] as const) {
+      const pages = (await renderPdfBytes(lang)).toString("latin1").match(/\/Type\s*\/Page(?![s\w])/g) ?? [];
+      expect(pages.length, lang).toBeLessThanOrEqual(2);
+    }
   });
 });

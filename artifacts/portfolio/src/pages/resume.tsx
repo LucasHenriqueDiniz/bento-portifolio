@@ -9,6 +9,7 @@ import { useTheme } from "@/hooks/useTheme";
 import { useToast } from "@/hooks/use-toast";
 import { jobExperiences, academicExperiences, projects, certificates, languages, publications, formatPublicationSource, skillsData, ContactLinks } from "@/constants";
 import { formatDateRange } from "@/lib/dateFormatter";
+import { resumeSkillLines } from "@/lib/resumeSkills";
 
 type ResumeFormat = "visual" | "ats";
 
@@ -482,11 +483,9 @@ function ATSResume({ isDark = false }: { isDark?: boolean }) {
           {t('sections.skills')}
         </h2>
         <div className="space-y-1 text-[11px]">
-          <p><span className="font-semibold">{t('ats.skills.languages')}:</span> TypeScript, JavaScript, Python, Go, SQL</p>
-          <p><span className="font-semibold">{t('ats.skills.frontend')}:</span> React, Next.js, React Native, Expo, Tailwind CSS, Framer Motion</p>
-          <p><span className="font-semibold">{t('ats.skills.backend')}:</span> Node.js, NestJS, Prisma, REST APIs, WebSockets</p>
-          <p><span className="font-semibold">{t('ats.skills.database')}:</span> PostgreSQL, Supabase, Redis</p>
-          <p><span className="font-semibold">{t('ats.skills.devops')}:</span> AWS Lambda, Docker, Vercel, GitHub Actions</p>
+          {resumeSkillLines().map((line) => (
+            <p key={line.key}><span className="font-semibold">{t(`ats.skills.${line.key}`)}:</span> {line.skills.join(", ")}</p>
+          ))}
         </div>
       </section>
 
