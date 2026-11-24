@@ -1,12 +1,11 @@
 import React from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { SiSteam } from "react-icons/si";
 import { WidgetCard } from "@/components/WidgetCard";
+import { CarouselProgress, useCarousel } from "@/components/CarouselProgress";
 import { fadeUpSoft } from "@/lib/animations";
 import { formatTimeAgo } from "@/lib/dateFormatter";
-
-const CYCLE_MS = 5000;
 
 interface SteamGame {
   name: string;
@@ -35,17 +34,13 @@ interface SteamCardProps {
 export const SteamCard = React.memo(function SteamCard({ steam, isLoading }: SteamCardProps) {
   const { t, i18n } = useTranslation("home");
   const games = steam?.recentGames ?? [];
-  const [index, setIndex] = React.useState(0);
+  const still = useReducedMotion() ?? false;
+  const [paused, setPaused] = React.useState(false);
+  // The cycle lives here rather than in the page, so only this card re-renders on it.
+  const { index } = useCarousel(games.length, paused || still);
   const [failedImages, setFailedImages] = React.useState<ReadonlySet<string>>(() => new Set());
 
-  // The cycle lives here rather than in the page, so only this card re-renders on it.
-  React.useEffect(() => {
-    if (games.length < 2) return;
-    const id = setInterval(() => setIndex((i) => i + 1), CYCLE_MS);
-    return () => clearInterval(id);
-  }, [games.length]);
-
-  const game = games.length ? games[index % games.length] : undefined;
+  const game = games.length ? games[index] : undefined;
   const imageUrl = game?.imageUrl && !failedImages.has(game.appId) ? game.imageUrl : null;
   const ago = formatTimeAgo(game?.lastPlayedAt, i18n.language);
   const playingNow = Boolean(game && steam?.currentGame && steam.currentGame === game.name);
@@ -66,6 +61,8 @@ export const SteamCard = React.memo(function SteamCard({ steam, isLoading }: Ste
           variants={fadeUpSoft}
           initial="hidden"
           animate="show"
+          onMouseEnter={() => setPaused(true)}
+          onMouseLeave={() => setPaused(false)}
           className="w-full h-full relative rounded-2xl overflow-hidden"
         >
           <AnimatePresence>
@@ -119,24 +116,7 @@ export const SteamCard = React.memo(function SteamCard({ steam, isLoading }: Ste
           </AnimatePresence>
 
           <div className="absolute left-2.5 right-2.5 top-2.5 z-10 flex items-center gap-2">
-            {games.length > 1 && (
-              <div className="flex flex-1 gap-1" aria-hidden>
-                {games.map((entry, i) => {
-                  const active = i === index % games.length;
-                  return (
-                    <span key={entry.appId} className="h-[3px] flex-1 overflow-hidden rounded-full bg-white/25">
-                      {active && (
-                        <span
-                          key={index}
-                          className="block h-full origin-left rounded-full bg-white"
-                          style={{ animation: `project-progress ${CYCLE_MS}ms linear forwards` }}
-                        />
-                      )}
-                    </span>
-                  );
-                })}
-              </div>
-            )}
+            <CarouselProgress count={games.length} index={index} paused={paused} still={still} className="flex-1" />
             <span className="ml-auto shrink-0 rounded-full bg-black/55 backdrop-blur-sm border border-white/15 px-2 py-0.5 text-[9px] font-bold text-white tabular-nums">
               {steam?.totalGames ?? 0} {t("steam.games")}
             </span>

@@ -1,11 +1,10 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "wouter";
 import { ArrowRight, Globe } from "lucide-react";
 import { Card } from "@/components/Card";
-
-const SLIDE_MS = 6000;
+import { CAROUSEL_SLIDE_MS, CarouselProgress, useCarousel } from "@/components/CarouselProgress";
 
 export interface Project {
   id: string;
@@ -32,16 +31,9 @@ export function FeaturedProjectsCard({ projects }: FeaturedProjectsCardProps) {
   const { t } = useTranslation("home");
   const [, setLocation] = useLocation();
   const still = useReducedMotion() ?? false;
-  const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const count = projects.length;
-  const playing = count > 1 && !paused && !still;
-
-  useEffect(() => {
-    if (!playing) return;
-    const timer = setTimeout(() => setIndex((i) => (i + 1) % count), SLIDE_MS);
-    return () => clearTimeout(timer);
-  }, [playing, index, count]);
+  const { index, setIndex, move } = useCarousel(count, paused || still);
 
   if (count === 0) {
     return (
@@ -53,8 +45,7 @@ export function FeaturedProjectsCard({ projects }: FeaturedProjectsCardProps) {
     );
   }
 
-  const project = projects[index % count];
-  const move = (step: number) => setIndex((i) => (i + step + count) % count);
+  const project = projects[index];
 
   return (
     <Card className="h-full" glowColor="var(--accent-glow)">
@@ -91,7 +82,7 @@ export function FeaturedProjectsCard({ projects }: FeaturedProjectsCardProps) {
                 className="h-full w-full object-cover object-left-top"
                 initial={{ scale: 1.02, x: 0 }}
                 animate={still ? undefined : { scale: 1.14, x: -10 }}
-                transition={{ duration: SLIDE_MS / 1000 + 1, ease: "linear" }}
+                transition={{ duration: CAROUSEL_SLIDE_MS / 1000 + 1, ease: "linear" }}
               />
             )}
           </motion.div>
@@ -99,28 +90,15 @@ export function FeaturedProjectsCard({ projects }: FeaturedProjectsCardProps) {
         <div aria-hidden className="absolute inset-0 bg-gradient-to-r from-[#0d0f14] from-30% via-[#0d0f14]/55 via-55% to-transparent" />
 
         <div className="relative h-full p-3.5 flex flex-col">
-          <div className="flex gap-1" role="tablist" aria-label={t("project.featured")}>
-            {projects.map((p, i) => (
-              <button
-                key={p.id}
-                type="button"
-                role="tab"
-                aria-selected={i === index}
-                aria-label={`${t("project.goTo")} ${p.name}`}
-                onClick={() => setIndex(i)}
-                className="flex-1 h-[3px] rounded-full bg-white/25 overflow-hidden outline-none focus-visible:ring-2 focus-visible:ring-white"
-              >
-                {i < index && <span className="block h-full bg-white/70" />}
-                {i === index && (
-                  <span
-                    key={`${index}-${playing}`}
-                    className="block h-full bg-white origin-left"
-                    style={playing ? { animation: `project-progress ${SLIDE_MS}ms linear forwards` } : undefined}
-                  />
-                )}
-              </button>
-            ))}
-          </div>
+          <CarouselProgress
+            count={count}
+            index={index}
+            paused={paused}
+            still={still}
+            onSelect={setIndex}
+            label={t("project.featured")}
+            tabLabel={(i) => `${t("project.goTo")} ${projects[i].name}`}
+          />
 
           <p className="mt-2.5 text-[9px] font-semibold uppercase tracking-[0.18em] text-white/60">
             {t("project.featured")} · {index + 1}/{count}

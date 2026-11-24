@@ -1,14 +1,13 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { ExternalLink } from "lucide-react";
+import { Link } from "wouter";
+import { ArrowUpRight } from "lucide-react";
 import { Card } from "@/components/Card";
 import { CardHeader } from "@/components/CardHeader";
+import { voxelGame } from "@/constants/voxelGame";
 
-const PROJECT = {
-  name: "Koto By Pingo",
-  url: "https://koto-by-pingo.pages.dev/kana",
-  progress: 40,
-};
+// What is being built right now. It has its own page on the site, so the card links there.
+const PROJECT = { name: voxelGame.name, url: voxelGame.path, progress: voxelGame.progress };
 
 export const CurrentlyWorkingCard = React.memo(function CurrentlyWorkingCard() {
   const { t } = useTranslation("home");
@@ -27,17 +26,12 @@ export const CurrentlyWorkingCard = React.memo(function CurrentlyWorkingCard() {
 
         <div>
           <div className="flex items-baseline justify-between gap-2 mb-1.5">
-            <a
-              href={PROJECT.url}
-              target="_blank"
-              rel="noreferrer"
-              className="group inline-flex items-center gap-1 min-w-0"
-            >
+            <Link href={PROJECT.url} className="group inline-flex items-center gap-1 min-w-0">
               <h3 className="text-[14px] font-bold leading-tight tracking-tight text-main truncate group-hover:text-brand transition-colors">
                 {PROJECT.name}
               </h3>
-              <ExternalLink size={11} className="shrink-0 text-faint group-hover:text-brand transition-colors" />
-            </a>
+              <ArrowUpRight size={11} className="shrink-0 text-faint group-hover:text-brand transition-colors" />
+            </Link>
             <span className="shrink-0 text-[10px] font-medium tabular-nums text-faint">
               {PROJECT.progress}%
             </span>
