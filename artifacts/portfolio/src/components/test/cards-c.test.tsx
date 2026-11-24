@@ -92,6 +92,11 @@ describe("ResumeCardV2", () => {
     render(<ResumeCardV2 />);
 
     expect(screen.getByText("Engenheiro de Software III · Appmax")).toBeInTheDocument();
+    // The sheet rests in the card: it moves on hover through CSS only, and no inline
+    // transform follows the pointer.
+    const sheet = screen.getByTestId("resume-sheet");
+    fireEvent.mouseMove(sheet, { clientX: 5, clientY: 5 });
+    expect(sheet.style.transform).toBe("");
     fireEvent.click(screen.getByRole("button", { name: "Ver currículo completo" }));
     expect(setLocation).toHaveBeenCalledWith("/resume");
   });

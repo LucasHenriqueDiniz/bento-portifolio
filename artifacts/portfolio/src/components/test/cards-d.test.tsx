@@ -1,17 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import i18n from "@/i18n";
-import { jobExperiences } from "@/constants/jobExperiences";
-import { ResumeDeckCard } from "./ResumeDeckCard";
 import { VisitsBoardCard } from "./VisitsBoardCard";
 import { homeCellSize } from "./useHomeCell";
 
-const { setLocation } = vi.hoisted(() => ({ setLocation: vi.fn() }));
-vi.mock("wouter", () => ({ useLocation: () => ["/test", setLocation] }));
-
 beforeEach(async () => {
   await i18n.changeLanguage("pt");
-  setLocation.mockReset();
   vi.useFakeTimers();
 });
 
@@ -29,30 +23,6 @@ describe("homeCellSize", () => {
 
   it("keeps the smallest desktop cell below the breakpoint where the home stacks", () => {
     expect(homeCellSize(375, 812, 1, 2)).toEqual(homeCellSize(1024, 812, 1, 2));
-  });
-});
-
-describe("ResumeDeckCard", () => {
-  it("puts the current job on top and pages through the history", () => {
-    render(<ResumeDeckCard />);
-    expect(screen.getByText(`1/${jobExperiences.length}`)).toBeInTheDocument();
-    expect(screen.getByText(jobExperiences[0].institution)).toBeInTheDocument();
-
-    act(() => vi.advanceTimersByTime(3200));
-
-    expect(screen.getByText(`2/${jobExperiences.length}`)).toBeInTheDocument();
-  });
-
-  it("holds the deck while hovered and opens the resume on click", () => {
-    render(<ResumeDeckCard />);
-    const card = screen.getByRole("button", { name: "Ver currículo completo" });
-
-    fireEvent.mouseEnter(card);
-    act(() => vi.advanceTimersByTime(20000));
-    expect(screen.getByText(`1/${jobExperiences.length}`)).toBeInTheDocument();
-
-    fireEvent.click(card);
-    expect(setLocation).toHaveBeenCalledWith("/resume");
   });
 });
 

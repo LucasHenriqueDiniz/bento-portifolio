@@ -15,7 +15,6 @@ import { AboutCardV2 } from "@/components/test/AboutCardV2";
 import { FeaturedProjectsCardV2 } from "@/components/test/FeaturedProjectsCardV2";
 import { GitHubCardV2 } from "@/components/test/GitHubCardV2";
 import { ResumeCardV2 } from "@/components/test/ResumeCardV2";
-import { ResumeDeckCard } from "@/components/test/ResumeDeckCard";
 import { useHomeCell } from "@/components/test/useHomeCell";
 import { VisitsBoardCard } from "@/components/test/VisitsBoardCard";
 import { VisitsCardV2 } from "@/components/test/VisitsCardV2";
@@ -159,10 +158,7 @@ export default function TestPage() {
               </Section>
 
               <Section title="Resume">
-                <Frame label="new B · career deck" size={ONE_COLUMN}>
-                  <ResumeDeckCard />
-                </Frame>
-                <Frame label="new A · paper" size={ONE_COLUMN}>
+                <Frame label="new · paper" size={ONE_COLUMN}>
                   <ResumeCardV2 />
                 </Frame>
                 <Frame label="current" size={ONE_COLUMN}>
