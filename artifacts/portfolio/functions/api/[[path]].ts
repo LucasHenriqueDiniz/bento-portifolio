@@ -12,7 +12,6 @@ type Env = {
   GITHUB_PAT?: string;
   MAL_USERNAME?: string;
   PORTFOLIO_CACHE?: KVNamespace;
-  DAILY_INGEST_DB?: D1Database;
   PORTFOLIO_DB?: D1Database;
   BATTLENET_CLIENT_ID?: string;
   BATTLENET_CLIENT_SECRET?: string;
@@ -355,85 +354,7 @@ async function readVisits(db: D1Database, env: Env): Promise<number> {
   return row ? row.value : kvVisitorCount(env);
 }
 
-const DAILY_INGEST_STATS_URL = "https://daily-ingest.lucas-hdo.workers.dev/api/public/stats";
-
-const finiteOrNull = (value: unknown) =>
-  typeof value === "number" && Number.isFinite(value) ? value : null;
-
 const textOrNull = (value: unknown) => (typeof value === "string" && value ? value : null);
-
-// Telemetry rows are daily; a machine is "online" when its newest reading carries
-// today's date in the collector's timezone (same rule the daily-ingest worker uses).
-const SAO_PAULO_DATE_FMT = new Intl.DateTimeFormat("en-CA", {
-  timeZone: "America/Sao_Paulo",
-  year: "numeric",
-  month: "2-digit",
-  day: "2-digit",
-});
-
-interface MetricRow {
-  source: string;
-  entity: string;
-  metric: string;
-  value: number;
-  date: string;
-}
-
-// Every measurement is nullable, and a null means "unknown", never zero — the card
-// hides those lines instead of reporting a made-up value.
-const buildMachineStatus = (rows: MetricRow[]) => {
-  if (!rows.length) return null;
-  const value = (entity: string, metric: string) =>
-    finiteOrNull(rows.find((row) => row.entity === entity && row.metric === metric)?.value);
-  const disks = rows
-    .filter((row) => row.metric === "disk_used_pct" && finiteOrNull(row.value) !== null)
-    .map((row) => ({ name: row.entity, usedPct: row.value }))
-    .sort((a, b) => a.name.localeCompare(b.name));
-  return {
-    online: rows[0].date === SAO_PAULO_DATE_FMT.format(new Date()),
-    uptimeHours: value("host", "uptime_h"),
-    cpuPct: value("cpu", "cpu_used_pct"),
-    cpuTempC: value("cpu", "temp_c"),
-    ramPct: value("ram", "mem_used_pct"),
-    gpuPct: value("gpu", "gpu_used_pct"),
-    gpuTempC: value("gpu", "temp_c"),
-    disks,
-  };
-};
-
-const MACHINE_METRICS_SQL = `
-  SELECT source, entity, metric, value, date FROM metrics
-   WHERE (source = 'machine.stats'
-          AND date = (SELECT MAX(date) FROM metrics WHERE source = 'machine.stats'))
-      OR (source = 'server.stats'
-          AND date = (SELECT MAX(date) FROM metrics WHERE source = 'server.stats'))`;
-
-// When the D1 binding is absent (plain local dev), the public stats endpoint still
-// covers the server; the PC block is simply unknown there.
-const fetchServerFromPublicStats = async () => {
-  const res = await fetchWithTimeout(DAILY_INGEST_STATS_URL, {
-    headers: { Accept: "application/json" },
-  });
-  if (!res.ok) throw new Error(`daily-ingest stats request failed (${res.status})`);
-  const body = (await res.json()) as any;
-  return {
-    at: textOrNull(body?.at) ?? new Date().toISOString(),
-    pc: null,
-    server: {
-      online: body?.servidor?.online === true,
-      uptimeHours: finiteOrNull(body?.servidor?.noArHoras),
-      cpuPct: null,
-      cpuTempC: finiteOrNull(body?.servidor?.cpuTempC),
-      ramPct: finiteOrNull(body?.servidor?.ramPct),
-      gpuPct: null,
-      gpuTempC: null,
-      disks:
-        finiteOrNull(body?.servidor?.discoPct) !== null
-          ? [{ name: "root", usedPct: body.servidor.discoPct as number }]
-          : [],
-    },
-  };
-};
 
 export const onRequest: PagesFunction<Env> = async (context) => {
   const { request, env } = context;
@@ -906,32 +827,6 @@ export const onRequest: PagesFunction<Env> = async (context) => {
       // Merge cached + fresh results
       const finalResults: Record<number, any> = { ...cachedResults, ...results };
       return json(finalResults, 300);
-    }
-
-    if (path === "portfolio/machines") {
-      // Awaited so an upstream failure lands in the handler's catch as a 502 instead of
-      // rejecting the whole request.
-      return await cached(request, path, 300, env, async () => {
-        if (env.DAILY_INGEST_DB) {
-          // A D1 failure (missing table, binding misconfigured) downgrades to the
-          // public-stats fallback below instead of failing the whole request.
-          const rows = (await env.DAILY_INGEST_DB.prepare(MACHINE_METRICS_SQL)
-            .all()
-            .then((result) => result.results ?? [])
-            .catch(() => [])) as unknown as MetricRow[];
-          if (rows.length) {
-            return json(
-              {
-                at: new Date().toISOString(),
-                pc: buildMachineStatus(rows.filter((row) => row.source === "machine.stats")),
-                server: buildMachineStatus(rows.filter((row) => row.source === "server.stats")),
-              },
-              300
-            );
-          }
-        }
-        return json(await fetchServerFromPublicStats(), 300);
-      });
     }
 
     if (path === "portfolio/wow") {

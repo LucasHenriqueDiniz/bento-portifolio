@@ -6,12 +6,6 @@ pages_build_output_dir = "dist/public"
 binding = "PORTFOLIO_CACHE"
 id = "7148bef2a0a64d8398ad94a9a04ca4be"
 
-# Direct read of daily-ingest telemetry (PC + server). SELECTs only.
-[[d1_databases]]
-binding = "DAILY_INGEST_DB"
-database_name = "daily-ingest"
-database_id = "28f0e5fd-3e16-42d2-8108-f421645301d6"
-
 # The portfolio's own database: the visitor counter, which needs an atomic increment.
 [[d1_databases]]
 binding = "PORTFOLIO_DB"
