@@ -102,7 +102,9 @@
     "thisWeek": "Esta Semana",
     "exercises": "Exercícios",
     "items": "{{count}} itens",
-    "empty": "Sem exercícios registrados"
+    "empty": "Sem exercícios registrados",
+    "next": "Próximo exercício",
+    "bodyweight": "peso corporal"
   },
   "github": {
     "title": "GitHub",
@@ -115,7 +117,15 @@
       "mon": "seg",
       "wed": "qua",
       "fri": "sex"
-    }
+    },
+    "empty": "Dados do GitHub indisponíveis",
+    "contribsLastYear": "contribuições no último ano",
+    "streakDays_one": "dia",
+    "streakDays_other": "dias",
+    "best": "recorde {{count}}",
+    "calendar": "Contribuições das últimas {{weeks}} semanas",
+    "onDay_one": "{{count}} contribuição",
+    "onDay_other": "{{count}} contribuições"
   },
   "timeline": {
     "workTitle": "Experiência Profissional",
@@ -225,5 +235,14 @@
     "listening": "Ouvindo",
     "lastPlayed": "Ouvi por último",
     "empty": "Nenhuma música tocando"
+  },
+  "wow": {
+    "empty": "Personagem indisponível",
+    "sample": "amostra",
+    "level": "Nível {{level}}",
+    "gear": "Equipamento",
+    "openArmory": "abrir no arsenal",
+    "itemLevel": "Nível de item {{level}}",
+    "professions": "Profissões"
   }
 }

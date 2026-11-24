@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from 'react-i18next';
 import SiteHeader from "@/components/SiteHeader";
@@ -12,6 +12,8 @@ import {
   useGetLastWorkoutCached as useGetLastWorkout,
   useGetStatsCached as useGetStats,
   useGetMalDataCached as useGetMalData,
+  useGetWowCharacterCached as useGetWowCharacter,
+  useVisitorCount,
 } from "@/hooks/usePortfolioQueries";
 import {
   WeatherClockCard,
@@ -22,13 +24,15 @@ import {
   MyAnimeListCard,
   SteamCard,
   TopArtistsCard,
-  CVCard,
+  ResumeCard,
   TechStackCard,
   PolaroidStack,
-  EnhancedProjectCard,
+  FeaturedProjectsCard,
   CurrentlyWorkingCard,
   MachinesCard,
-  ViewsCard,
+  VisitsCard,
+  WowCard,
+  AboutCard,
 } from "@/components/home";
 import { BentoSection } from "@/components/BentoSection";
 import { Card } from "@/components/Card";
@@ -39,8 +43,6 @@ import { FiMail } from "react-icons/fi";
 import { Linkedin } from "lucide-react";
 
 const ACCENT = "var(--accent)";
-const CARD = "bg-panel border border-base rounded-2xl";
-const LABEL = "text-[10px] font-semibold uppercase tracking-widest text-faint";
 const GALLERY_SLIDES = [
   "/gallery/thumbs/pingo-bored.webp",
   "/gallery/thumbs/bully.webp",
@@ -273,7 +275,7 @@ function GalleryCTA() {
 
 /* ─── Home Page ───────────────────────────────────── */
 export default function Home() {
-  const { t, i18n } = useTranslation('home');
+  const { i18n } = useTranslation('home');
   const currentLang = i18n.language?.split("-")[0] || "pt";
   const { isDark, toggleTheme } = useTheme();
 
@@ -284,6 +286,8 @@ export default function Home() {
   const { data: workout, isLoading: loadingWorkout } = useGetLastWorkout();
   const { data: stats, isLoading: loadingStats } = useGetStats();
   const { data: malData, isLoading: loadingMal } = useGetMalData();
+  const { data: wowCharacter } = useGetWowCharacter();
+  const visits = useVisitorCount();
 
   const localizedFeaturedProjects = featuredProjects.map(p => ({
     id: p.id,
@@ -312,40 +316,12 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 lg:grid-rows-8 gap-2 h-auto lg:h-full">
 
             {/* ── Col 1 ── */}
-            <motion.div custom={0} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-1 lg:row-start-1 lg:row-span-2 h-auto lg:h-full">
-              <Card className={`${CARD} h-auto lg:h-full`} glowColor="var(--accent-glow)">
-                <div className="p-4 flex flex-col h-full min-h-[180px]">
-                  <div className="flex items-start justify-between mb-2">
-                    <p className={LABEL}>{t('about.label')}</p>
-                    <div className="flex gap-2 text-faint">
-                      <a href={contacts.find((c) => c.platform === "GitHub")?.url} target="_blank" rel="noreferrer" aria-label="GitHub" className="transition-all duration-200 hover:-translate-y-0.5 hover:scale-125 hover:text-main"><SiGithub size={12} /></a>
-                      <a href={contacts.find((c) => c.platform === "Instagram")?.url} target="_blank" rel="noreferrer" aria-label="Instagram" className="transition-all duration-200 hover:-translate-y-0.5 hover:scale-125 hover:text-[#E4405F]"><SiInstagram size={12} /></a>
-                      <a href={contacts.find((c) => c.platform === "LinkedIn")?.url} target="_blank" rel="noreferrer" aria-label="LinkedIn" className="transition-all duration-200 hover:-translate-y-0.5 hover:scale-125 hover:text-[#0A66C2]"><Linkedin size={12} /></a>
-                      <a href={contacts.find((c) => c.platform === "Email")?.url} aria-label="Email" className="transition-all duration-200 hover:-translate-y-0.5 hover:scale-125 hover:text-[#EA4335]"><FiMail size={12} /></a>
-                    </div>
-                  </div>
-                  <div className="flex gap-3 items-center mb-2">
-                    <div className="w-10 h-10 rounded-xl bg-field overflow-hidden shrink-0">
-                      <img src="/favicon.svg" alt="site icon" className="w-full h-full object-cover" />
-                    </div>
-                    <div>
-                      <p className="text-[13px] font-semibold leading-tight">{t('about.greeting')} <span className="text-brand">{t('about.name')}</span></p>
-                      <p className="text-[11px] text-faint mt-0.5">{t('about.role')}</p>
-                    </div>
-                  </div>
-                  <p className="text-[11px] text-sub leading-relaxed flex-1">
-                    {t('about.descriptionPrefix')}
-                    <a href="/projects" className="text-brand hover:underline">{t('about.codingLabel')}</a>
-                    {t('about.descriptionMiddle')}
-                    <a href="/gallery" className="text-brand hover:underline">{t('about.drawingLabel')}</a>
-                    {t('about.descriptionSuffix')}
-                  </p>
-                </div>
-              </Card>
+            <motion.div custom={0} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-1 lg:row-start-1 lg:row-span-2 h-auto lg:h-full min-h-[200px]">
+              <AboutCard />
             </motion.div>
 
-            <motion.div custom={1} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-1 lg:row-start-3 lg:row-span-2 h-auto lg:h-full">
-              <WorkoutCard workout={workout as any} isLoading={loadingWorkout} isDark={isDark} />
+            <motion.div custom={1} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-1 lg:row-start-3 lg:row-span-2 h-auto lg:h-full min-h-[200px]">
+              <WorkoutCard workout={workout} isLoading={loadingWorkout} />
             </motion.div>
 
             <motion.div custom={2} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-1 lg:row-start-5 lg:row-span-4 h-auto lg:h-full min-h-[200px]">
@@ -366,12 +342,12 @@ export default function Home() {
 
             {/* Site views */}
             <motion.div custom={21} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-2 lg:row-start-3 lg:row-span-2 h-auto lg:h-full min-h-[180px]">
-              <ViewsCard />
+              <VisitsCard count={visits} />
             </motion.div>
 
             {/* GitHub 2 cols wide */}
             <motion.div custom={5} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-2 lg:row-start-5 lg:col-span-2 lg:row-span-2 h-auto lg:h-full min-h-[200px]">
-              <GitHubCard stats={stats as any} loadingStats={loadingStats} isDark={isDark} />
+              <GitHubCard stats={stats} isLoading={loadingStats} />
             </motion.div>
 
             {/* MyAnimeList 2 cols wide */}
@@ -380,17 +356,19 @@ export default function Home() {
             </motion.div>
 
             {/* ── Col 3-4 ── */}
-            <motion.div custom={7} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-3 lg:row-start-1 lg:col-span-2 lg:row-span-2 h-auto lg:h-full min-h-[150px]">
-              <EnhancedProjectCard projects={localizedFeaturedProjects} isDark={isDark} />
+            <motion.div custom={7} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-3 lg:row-start-1 lg:col-span-2 lg:row-span-2 h-auto lg:h-full min-h-[200px]">
+              <FeaturedProjectsCard projects={localizedFeaturedProjects} />
             </motion.div>
 
-            <motion.div custom={8} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-3 lg:row-start-3 lg:col-span-2 lg:row-span-2 h-auto lg:h-full min-h-[150px]">
-              <TechStackCard isDark={isDark} />
+            <motion.div custom={8} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-3 lg:row-start-3 lg:col-span-2 lg:row-span-2 h-auto lg:h-full min-h-[200px]">
+              {/* The WoW character when the API has one; the tech stack until then (no
+                  Battle.net credentials, or the first load). */}
+              {wowCharacter ? <WowCard character={wowCharacter} /> : <TechStackCard isDark={isDark} />}
             </motion.div>
 
             {/* CV to the right */}
             <motion.div custom={9} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-4 lg:row-start-5 lg:row-span-2 h-auto lg:h-full min-h-[180px]">
-              <CVCard navigate={(p) => { window.location.href = p; }} isDark={isDark} />
+              <ResumeCard />
             </motion.div>
 
             {/* Gallery CTA — bottom right */}

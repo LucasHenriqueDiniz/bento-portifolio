@@ -207,3 +207,31 @@ export const getVisitorCount = (options?: RequestInit) =>
 
 export const incrementVisitorCount = (options?: RequestInit) =>
   fetchJson<VisitorCount>("/api/portfolio/visitors/increment", { ...options, method: "POST" });
+
+export interface WowItem {
+  slot: string;
+  name: string;
+  quality: string;
+  itemLevel: number | null;
+}
+
+export interface WowCharacter {
+  region: string;
+  slug: string;
+  name: string;
+  surname: string;
+  level: number;
+  race: string | null;
+  className: string | null;
+  faction: string | null;
+  guild: string | null;
+  averageItemLevel: number | null;
+  renderUrl: string | null;
+  avatarUrl: string | null;
+  equipment: WowItem[];
+  stats: Array<{ key: string; label: string; value: number }>;
+  professions: Array<{ name: string; value: number; max: number }>;
+}
+
+export const getWowCharacter = (options?: RequestInit) =>
+  fetchJson<{ character: WowCharacter | null }>("/api/portfolio/wow", options);

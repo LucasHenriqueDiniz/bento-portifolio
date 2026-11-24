@@ -463,7 +463,35 @@
 }
 
 /* ── CTA shimmer overlay ── */
-/* Featured-project progress bar: one animation per slide (see EnhancedProjectCard). */
+/* Visits board (VisitsCard): a tile's digit drops in like a flap; backdrop dots blink. */
+@keyframes flap-digit {
+  from { transform: perspective(60px) rotateX(-80deg); opacity: 0.4; }
+  to { transform: perspective(60px) rotateX(0); opacity: 1; }
+}
+.flap-digit { display: inline-block; transform-origin: 50% 0; animation: flap-digit 0.07s ease-out both; }
+@keyframes visit-blip {
+  0%, 70%, 100% { opacity: 0; transform: scale(0.6); }
+  78% { opacity: 1; transform: scale(1.5); box-shadow: 0 0 10px rgba(var(--accent-glow), 0.9); }
+  90% { opacity: 0.5; transform: scale(1); }
+}
+.visit-blip { opacity: 0; animation: visit-blip 5s ease-in-out infinite; }
+
+/* GitHub calendar (GitHubCard): cells pop in column by column; today's breathes. */
+@keyframes gh-cell-in {
+  from { opacity: 0; transform: scale(0.3); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes gh-cell-today {
+  0%, 100% { box-shadow: 0 0 0 1px rgba(var(--accent-glow), 0.9); }
+  50% { box-shadow: 0 0 0 1px rgba(var(--accent-glow), 0.9), 0 0 0 4px rgba(var(--accent-glow), 0.18); }
+}
+.gh-cell { animation: gh-cell-in 0.35s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.gh-cell-today { animation: gh-cell-in 0.35s cubic-bezier(0.22, 1, 0.36, 1) both, gh-cell-today 2.4s ease-in-out 1s infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .gh-cell, .gh-cell-today { animation: none; }
+}
+
+/* Featured-project progress bar: one animation per slide (see FeaturedProjectsCard). */
 @keyframes project-progress {
   from { transform: scaleX(0); }
   to { transform: scaleX(1); }
