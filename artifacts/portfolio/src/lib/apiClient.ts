@@ -235,3 +235,14 @@ export interface WowCharacter {
 
 export const getWowCharacter = (options?: RequestInit) =>
   fetchJson<{ character: WowCharacter | null }>("/api/portfolio/wow", options);
+
+export interface RecentCommit {
+  sha: string;
+  message: string;
+  repo: string;
+  url: string;
+  date: string;
+}
+
+export const getRecentCommits = (options?: RequestInit) =>
+  fetchJson<{ commits: RecentCommit[] }>("/api/portfolio/commits", options);

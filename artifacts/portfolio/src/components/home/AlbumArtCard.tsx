@@ -49,12 +49,12 @@ export const AlbumArtCard = memo(function AlbumArtCard({ nowPlaying, isLoading }
       glowColor="var(--accent-glow)"
     >
       {track && (
-        <motion.div custom={4} variants={fadeUpSoft} initial="hidden" animate="show" className="w-full h-full">
+        <motion.div custom={4} variants={fadeUpSoft} initial="hidden" animate="show" className="relative w-full h-full overflow-hidden">
           {art ? (
             <img
               src={art}
               alt={nowPlaying?.artist ? `${track} — ${nowPlaying.artist}` : track}
-              className="w-full h-full object-cover"
+              className={`w-full h-full object-cover ${nowPlaying?.isPlaying ? "album-drift" : ""}`}
               onError={() => setFailedArt(art)}
             />
           ) : (
@@ -65,14 +65,29 @@ export const AlbumArtCard = memo(function AlbumArtCard({ nowPlaying, isLoading }
               <SiLastdotfm size={48} className="text-white/25" aria-hidden />
             </div>
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
-          <div className="absolute bottom-3 left-3 right-3">
-            <div className="flex items-center gap-1 mb-0.5">
-              {nowPlaying?.isPlaying && <div className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse" />}
-              <p className="text-white/70 text-[9px] uppercase tracking-widest font-semibold">{status}</p>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/15 to-black/25" />
+
+          <span className="absolute left-2.5 top-2.5 flex h-6 w-6 items-center justify-center rounded-full bg-black/45 backdrop-blur-sm border border-white/15">
+            <SiLastdotfm size={11} className="text-white/90" aria-hidden />
+          </span>
+
+          <div className="absolute bottom-0 left-0 right-0 p-3">
+            <div className="flex items-center gap-1.5 mb-1">
+              {nowPlaying?.isPlaying && (
+                <span className="flex h-2.5 items-end gap-[2px]" aria-hidden>
+                  {[0.7, 1.1, 0.85].map((duration, bar) => (
+                    <span
+                      key={bar}
+                      className="eq-bar w-[2px] h-full rounded-full bg-[#ff4b41]"
+                      style={{ ["--dur" as string]: `${duration}s`, animationDelay: `${bar * 0.12}s` }}
+                    />
+                  ))}
+                </span>
+              )}
+              <p className="text-white/75 text-[9px] uppercase tracking-widest font-semibold">{status}</p>
             </div>
             <p className="text-white text-[13px] font-bold leading-tight truncate">{track}</p>
-            <p className="text-white/60 text-[11px] truncate">{nowPlaying?.artist}</p>
+            <p className="text-white/65 text-[11px] truncate">{nowPlaying?.artist}</p>
           </div>
         </motion.div>
       )}

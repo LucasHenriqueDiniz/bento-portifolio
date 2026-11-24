@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getCache, removeCache, setCache } from "@/lib/queryCache";
 import {
+  getRecentCommits,
   getNowPlaying,
   getTopArtists,
   getTopTracks,
@@ -280,4 +281,20 @@ export function useGetWowCharacterCached() {
   // An answer without a character is an answer: it clears what was remembered.
   const character = query.data ? query.data.character : (cached?.character ?? null);
   return { ...query, data: character };
+}
+
+/** The last public commits, with the ones seen before shown while the request runs or fails. */
+export function useGetRecentCommitsCached() {
+  const key = "/api/portfolio/commits";
+  const cached = getCache<Awaited<ReturnType<typeof getRecentCommits>>>(key);
+  const query = useQuery({
+    queryKey: [key],
+    queryFn: ({ signal }) => getRecentCommits({ signal }),
+    placeholderData: cached,
+    ...QUERY_STABILITY_OPTIONS,
+  });
+
+  const data = query.data?.commits?.length ? query.data : cached;
+  usePersistOnSuccess(key, data?.commits?.length ? data : undefined);
+  return { ...query, data: data?.commits ?? [] };
 }

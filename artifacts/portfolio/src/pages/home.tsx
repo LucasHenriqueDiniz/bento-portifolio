@@ -13,6 +13,7 @@ import {
   useGetStatsCached as useGetStats,
   useGetMalDataCached as useGetMalData,
   useGetWowCharacterCached as useGetWowCharacter,
+  useGetRecentCommitsCached,
   useVisitorCount,
 } from "@/hooks/usePortfolioQueries";
 import {
@@ -20,7 +21,9 @@ import {
   AlbumArtCard,
   WorkoutCard,
   GitHubCard,
-  TimelineCard,
+  ExperienceCard,
+  GalleryCard,
+  ProjectsCard,
   MyAnimeListCard,
   SteamCard,
   TopArtistsCard,
@@ -29,7 +32,7 @@ import {
   PolaroidStack,
   FeaturedProjectsCard,
   CurrentlyWorkingCard,
-  MachinesCard,
+  CommitsCard,
   VisitsCard,
   WowCard,
   AboutCard,
@@ -43,13 +46,6 @@ import { FiMail } from "react-icons/fi";
 import { Linkedin } from "lucide-react";
 
 const ACCENT = "var(--accent)";
-const GALLERY_SLIDES = [
-  "/gallery/thumbs/pingo-bored.webp",
-  "/gallery/thumbs/bully.webp",
-  "/gallery/thumbs/snake-babe.webp",
-  "/gallery/thumbs/lili_bed.webp",
-  "/gallery/thumbs/wip-school-entrance-background.webp",
-];
 
 const fadeUp = {
   hidden: { opacity: 0, y: 14 },
@@ -157,121 +153,6 @@ function SocialCard({ contact, isDark }: { contact: typeof contacts[number]; isD
 }
 
 /* ─── Projects CTA (col 6, rows 7-8) ───────────────── */
-function ProjectsCTA() {
-  const { t } = useTranslation("home");
-  const ctaRef = useRef<HTMLAnchorElement>(null);
-  const [mag, setMag] = useState({ x: 0, y: 0, rx: 0, ry: 0 });
-
-  const handleMove = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    if (!ctaRef.current) return;
-    const rect = ctaRef.current.getBoundingClientRect();
-    const px = (e.clientX - rect.left) / rect.width;
-    const py = (e.clientY - rect.top) / rect.height;
-    const dx = px - 0.5;
-    const dy = py - 0.5;
-    setMag({ x: dx * 8, y: dy * 8, rx: -dy * 2.2, ry: dx * 2.2 });
-  };
-
-  const resetMove = () => setMag({ x: 0, y: 0, rx: 0, ry: 0 });
-
-  return (
-    <Card className="h-full cta-shimmer" glowColor="255, 200, 100" glowIntensity={1.6}>
-      <motion.a
-        ref={ctaRef}
-        href="/projects"
-        whileHover={{ scale: 1.03 }}
-        whileTap={{ scale: 0.97 }}
-        animate={{ x: mag.x, y: mag.y, rotateX: mag.rx, rotateY: mag.ry }}
-        transition={{ type: "spring", stiffness: 260, damping: 22, mass: 0.7 }}
-        className="h-full relative overflow-hidden cursor-pointer flex flex-col items-center justify-center gap-2"
-        style={{ backgroundColor: ACCENT }}
-        onMouseMove={handleMove}
-        onMouseLeave={resetMove}
-      >
-        {/* shimmer overlay */}
-        <div className="absolute inset-0 cta-shimmer-overlay" />
-        <div className="absolute inset-0 opacity-[0.12]">
-          <div className="absolute inset-0" style={{
-            backgroundImage: "radial-gradient(circle at 1px 1px, rgba(255,255,255,0.5) 1px, transparent 0)",
-            backgroundSize: "16px 16px",
-          }} />
-        </div>
-        <div className="relative z-10 flex flex-col items-center gap-1.5">
-          <span className="w-8 h-8 rounded-full bg-white/15 flex items-center justify-center">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M7 17L17 7"/><path d="M7 7h10v10"/>
-            </svg>
-          </span>
-        <p className="text-[13px] font-black text-white tracking-tight">{t("projectsCta.title")}</p>
-        <p className="text-[9px] text-white/70">{t("projectsCta.subtitle")}</p>
-        </div>
-      </motion.a>
-    </Card>
-  );
-}
-
-function GalleryCTA() {
-  const { t } = useTranslation("home");
-  const [slideIndex, setSlideIndex] = useState(0);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setSlideIndex((prev) => (prev + 1) % GALLERY_SLIDES.length);
-    }, 2800);
-    return () => clearInterval(timer);
-  }, []);
-
-  return (
-    <Card className="h-full overflow-hidden" glowColor="var(--accent-glow)">
-      <motion.a
-        href="/gallery"
-        whileHover={{ scale: 1.01 }}
-        whileTap={{ scale: 0.97 }}
-        className="h-full relative overflow-hidden cursor-pointer block"
-      >
-        <div className="absolute inset-0 bg-[#181413]" />
-        <AnimatePresence mode="popLayout">
-          <motion.div
-            key={GALLERY_SLIDES[slideIndex]}
-            className="absolute inset-0"
-            initial={{ y: "100%" }}
-            animate={{ y: 0 }}
-            exit={{ opacity: 0 }}
-            transition={{
-              y: { duration: 0.6, ease: [0.32, 0.72, 0, 1] },
-              opacity: { duration: 0.25, delay: 0.6 },
-            }}
-          >
-            <img
-              src={GALLERY_SLIDES[slideIndex]}
-              alt="Gallery preview"
-              className="absolute inset-0 h-full w-full object-cover"
-            />
-          </motion.div>
-        </AnimatePresence>
-        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/45 to-black/20" />
-
-        <div className="relative z-10 h-full p-3 flex flex-col justify-between text-white">
-          <div className="flex items-center justify-between">
-            <span className="rounded-full border border-white/25 bg-black/35 px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.16em] text-white/90">
-              sketchbook
-            </span>
-            <div className="flex gap-1">
-              {GALLERY_SLIDES.map((slide, idx) => (
-                <span key={slide} className={`h-1.5 rounded-full transition-all ${idx === slideIndex ? "w-4 bg-white" : "w-1.5 bg-white/45"}`} />
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <p className="text-[14px] font-black tracking-tight">{t("galleryCta.title")}</p>
-            <p className="text-[10px] mt-0.5 text-white/80 max-w-[85%]">{t("galleryCta.subtitle")}</p>
-          </div>
-        </div>
-      </motion.a>
-    </Card>
-  );
-}
 
 /* ─── Home Page ───────────────────────────────────── */
 export default function Home() {
@@ -287,6 +168,7 @@ export default function Home() {
   const { data: stats, isLoading: loadingStats } = useGetStats();
   const { data: malData, isLoading: loadingMal } = useGetMalData();
   const { data: wowCharacter } = useGetWowCharacter();
+  const { data: recentCommits, isLoading: loadingCommits } = useGetRecentCommitsCached();
   const visits = useVisitorCount();
 
   const localizedFeaturedProjects = featuredProjects.map(p => ({
@@ -373,7 +255,7 @@ export default function Home() {
 
             {/* Gallery CTA — bottom right */}
             <motion.div custom={10} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-4 lg:row-start-7 lg:row-span-2 h-auto lg:h-full min-h-[180px]">
-              <GalleryCTA />
+              <GalleryCard />
             </motion.div>
 
             {/* ── Col 5 ── */}
@@ -382,7 +264,7 @@ export default function Home() {
             </motion.div>
 
             <motion.div custom={13} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-5 lg:row-start-3 lg:row-span-4 h-auto lg:h-full min-h-[200px]">
-              <TimelineCard isDark={isDark} />
+              <ExperienceCard />
             </motion.div>
 
             <motion.div custom={14} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-5 lg:row-start-7 lg:row-span-2 h-auto lg:h-full min-h-[150px]">
@@ -409,11 +291,11 @@ export default function Home() {
             </motion.div>
 
             <motion.div custom={18} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-6 lg:row-start-5 lg:row-span-2 h-auto lg:h-full min-h-[190px]">
-              <MachinesCard />
+              <CommitsCard commits={recentCommits} isLoading={loadingCommits} />
             </motion.div>
 
             <motion.div custom={20} variants={fadeUp} initial="hidden" animate="show" className="lg:col-start-6 lg:row-start-7 lg:row-span-2 h-auto lg:h-full min-h-[150px]">
-              <ProjectsCTA />
+              <ProjectsCard />
             </motion.div>
 
           </div>

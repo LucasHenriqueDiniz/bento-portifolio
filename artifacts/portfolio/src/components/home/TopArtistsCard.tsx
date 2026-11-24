@@ -1,12 +1,10 @@
-import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useEffect, useState } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { SiLastdotfm } from "react-icons/si";
 import { WidgetCard } from "@/components/WidgetCard";
-import { useFlipLock } from "@/hooks/useFlipLock";
-import CountUp from "@/components/CountUp";
 
-const ACCENT = "var(--accent)";
+type Tab = "artists" | "tracks";
 
 interface Artist {
   name: string;
@@ -30,216 +28,188 @@ interface TopArtistsCardProps {
   isDark: boolean;
 }
 
-async function fetchArtistImage(artist: string): Promise<string | undefined> {
+interface Row {
+  key: string;
+  title: string;
+  detail?: string;
+  url: string;
+  plays: number;
+  imageKey: string;
+}
+
+async function fetchCover(term: string): Promise<string | undefined> {
   try {
-    const albumRes = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(artist)}&entity=album&limit=1`);
-    const albumData = await albumRes.json();
-    return albumData.results?.[0]?.artworkUrl100?.replace("100x100", "300x300");
+    const res = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(term)}&entity=album&limit=1`);
+    const data = await res.json();
+    return data.results?.[0]?.artworkUrl100?.replace("100x100", "300x300");
   } catch {
     return undefined;
   }
 }
 
-export const TopArtistsCard = React.memo(function TopArtistsCard({
-  topArtists,
-  topTracks,
-  isLoading,
-  isDark,
-}: TopArtistsCardProps) {
-  const { t } = useTranslation("home");
-  const [flipped, setFlipped] = useState(false);
+const hueOf = (text: string) => {
+  let hash = 0;
+  for (let i = 0; i < text.length; i++) hash = text.charCodeAt(i) + ((hash << 5) - hash);
+  return Math.abs(hash % 360);
+};
+
+const initialsOf = (name: string) => {
+  const words = name.trim().split(/\s+/);
+  return (words.length >= 2 ? words[0][0] + words[1][0] : name.slice(0, 2)).toUpperCase();
+};
+
+/**
+ * The five artists and the five tracks played most on Last.fm in the last 90 days, a
+ * tab for each. Every row carries a bar of its plays against the first place.
+ */
+export const TopArtistsCard = React.memo(function TopArtistsCard({ topArtists, topTracks, isLoading }: TopArtistsCardProps) {
+  const { t, i18n } = useTranslation("home");
+  const still = useReducedMotion() ?? false;
+  const [tab, setTab] = useState<Tab>("artists");
   const [images, setImages] = useState<Record<string, string>>({});
-  const { isFlipping, runWithFlipLock } = useFlipLock(700);
 
   const artists = Array.isArray(topArtists) ? topArtists : [];
   const tracks = Array.isArray(topTracks) ? topTracks : [];
 
-  // Fetch images for artists
+  const artistRows: Row[] = artists.slice(0, 5).map((artist) => ({
+    key: artist.name,
+    title: artist.name,
+    url: artist.url,
+    plays: Number(artist.playcount) || 0,
+    imageKey: artist.name,
+  }));
+  const trackRows: Row[] = tracks.slice(0, 5).map((track) => ({
+    key: `${track.artist}-${track.name}`,
+    title: track.name,
+    detail: track.artist,
+    url: track.url,
+    plays: Number(track.playcount) || 0,
+    imageKey: `${track.artist} ${track.name}`,
+  }));
+
+  const wanted = [...artistRows, ...trackRows].map((row) => row.imageKey).join("|");
   useEffect(() => {
     let mounted = true;
-    artists.slice(0, 5).forEach(async (artist) => {
-      const img = await fetchArtistImage(artist.name);
-      if (img && mounted) setImages(prev => ({ ...prev, [artist.name]: img }));
+    wanted.split("|").filter(Boolean).forEach(async (term) => {
+      const cover = await fetchCover(term);
+      if (cover && mounted) setImages((prev) => ({ ...prev, [term]: cover }));
     });
-    return () => { mounted = false; };
-  }, [artists]);
+    return () => {
+      mounted = false;
+    };
+  }, [wanted]);
 
-  // Fetch images for tracks
-  useEffect(() => {
-    let mounted = true;
-    tracks.slice(0, 5).forEach(async (track) => {
-      const query = `${track.artist} ${track.name}`;
-      const img = await fetchArtistImage(query);
-      if (img && mounted) setImages(prev => ({ ...prev, [`${track.artist}-${track.name}`]: img }));
-    });
-    return () => { mounted = false; };
-  }, [tracks]);
-
-  const handleFlip = () => {
-    runWithFlipLock(() => setFlipped(f => !f));
-  };
-
-  function getGradientFromString(str: string): { from: string; to: string } {
-    let hash = 0;
-    for (let i = 0; i < str.length; i++) {
-      hash = str.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    const hue = Math.abs(hash % 360);
-    return { from: `hsl(${hue}, 75%, 55%)`, to: `hsl(${(hue + 40) % 360}, 75%, 45%)` };
-  }
-
-  function getInitials(name: string): string {
-    const words = name.trim().split(/\s+/);
-    if (words.length >= 2) return (words[0][0] + words[1][0]).toUpperCase();
-    return name.slice(0, 2).toUpperCase();
-  }
+  const rows = tab === "artists" ? artistRows : trackRows;
+  const top = Math.max(1, ...rows.map((row) => row.plays));
+  const number = new Intl.NumberFormat(i18n.language?.startsWith("en") ? "en-US" : "pt-BR");
 
   return (
     <WidgetCard
-      isLoading={isLoading && !flipped}
-      error={!flipped && artists.length === 0 ? t("artists.error") : null}
+      isLoading={isLoading}
+      error={artists.length === 0 && tracks.length === 0 ? t("artists.error") : null}
       loadingIcon={<SiLastdotfm size={28} className="text-brand" />}
       emptyIcon={<SiLastdotfm size={24} className="text-faint" />}
       emptyMessage={t("artists.empty")}
-      className="h-full cursor-pointer rounded-2xl overflow-hidden"
-      style={{
-        border: `1px solid var(--border-base)`,
-      }}
+      className="h-full rounded-2xl overflow-hidden bg-panel"
+      style={{ border: "1px solid var(--border-base)" }}
       glowColor="213, 16, 7"
-      onClick={handleFlip}
-      allowOverflow={true}
     >
-      <div
-        className="relative w-full h-full transition-transform duration-700"
-        style={{
-          transformStyle: "preserve-3d",
-          transform: flipped ? "rotateY(180deg)" : "rotateY(0deg)",
-        }}
-      >
-        {/* FRONT — Artists */}
-        <div
-          className="absolute inset-0 flex flex-col gap-2 p-3 bg-panel rounded-2xl"
-          style={{ backfaceVisibility: "hidden" }}
-        >
-          <div className="flex items-center justify-between shrink-0">
-            <div className="inline-flex items-center gap-1.5">
-              <SiLastdotfm size={12} className="text-brand" />
-              <span className="text-[9px] font-semibold text-brand uppercase tracking-wider">{t("artists.title")}</span>
-              <span className="text-[8px] text-faint ml-1">{t("artists.subtitle")}</span>
-            </div>
-            <button
-              onClick={(e) => { e.stopPropagation(); handleFlip(); }}
-              className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-field hover:bg-panel-hover transition-colors"
-            >
-              <span className="text-[8px] font-medium text-faint">{t("artists.flipTracks")}</span>
-              <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-faint">
-                <polyline points="9 18 15 12 9 6"></polyline>
-              </svg>
-            </button>
-          </div>
-
-          <div className="flex-1 flex flex-col justify-between">
-            {artists.slice(0, 5).map((artist, i) => {
-              const gradient = getGradientFromString(artist.name);
-              const initials = getInitials(artist.name);
-              const imgUrl = images[artist.name];
+      <div className="h-full flex flex-col p-3">
+        <div className="flex items-center justify-between gap-2 shrink-0">
+          <p className="flex items-center gap-1.5 text-[9px] font-semibold uppercase tracking-wider text-faint">
+            <SiLastdotfm size={12} className="text-brand" aria-hidden />
+            {t("artists.subtitle").replace(/^·\s*/, "")}
+          </p>
+          <div role="tablist" className="flex rounded-full bg-field p-0.5">
+            {(["artists", "tracks"] as const).map((id) => {
+              const selected = tab === id;
               return (
-                <a
-                  key={i}
-                  href={artist.url}
-                  target="_blank"
-                  rel="noreferrer"
-                  onClick={(e) => e.stopPropagation()}
-                  className="flex items-center gap-2 group hover:bg-panel-hover rounded-lg py-0.5 px-1 transition-colors"
+                <button
+                  key={id}
+                  type="button"
+                  role="tab"
+                  aria-selected={selected}
+                  onClick={() => setTab(id)}
+                  className="relative rounded-full px-2 py-0.5 text-[9px] font-semibold transition-colors"
+                  style={{ color: selected ? "var(--text-main)" : "var(--text-faint)" }}
                 >
-                  <span className="text-[10px] font-bold w-3.5 shrink-0 text-center tabular-nums" style={{ color: i === 0 ? ACCENT : isDark ? "#555" : "#bbb" }}>
-                    {i + 1}
-                  </span>
-                  <div className="w-6 h-6 rounded-full overflow-hidden shrink-0 flex items-center justify-center" style={{ background: imgUrl ? undefined : `linear-gradient(135deg, ${gradient.from}, ${gradient.to})`, border: imgUrl ? undefined : `1.5px solid ${gradient.from}30` }}>
-                    {imgUrl ? (
-                      <img src={imgUrl} alt={artist.name} className="w-full h-full object-cover" />
-                    ) : (
-                      <span className="text-[8px] font-bold text-white drop-shadow-sm">{initials}</span>
-                    )}
-                  </div>
-                  <div className="flex flex-col">
-                    <p className="text-[10px] font-semibold truncate text-main group-hover:text-brand transition-colors leading-tight">{artist.name}</p>
-                    <p className="text-[8px] text-faint inline-flex items-center gap-0.5 leading-tight">
-                      <CountUp to={Number(artist.playcount) || 0} separator="," duration={0.9} />
-                      <span>{t("artists.tracks")}</span>
-                    </p>
-                  </div>
-                </a>
+                  {selected && (
+                    <motion.span
+                      layoutId="top-artists-tab"
+                      className="absolute inset-0 rounded-full bg-panel border border-base"
+                      transition={{ type: "spring", stiffness: 420, damping: 34 }}
+                    />
+                  )}
+                  <span className="relative">{t(id === "artists" ? "artists.tabArtists" : "artists.tabTracks")}</span>
+                </button>
               );
             })}
           </div>
         </div>
 
-        {/* BACK — Tracks */}
-        <div
-          className="absolute inset-0 flex flex-col gap-2 p-3 bg-panel rounded-2xl"
-          style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
-        >
-          <div className="flex items-center justify-between shrink-0">
-            <div className="inline-flex items-center gap-1.5">
-              <SiLastdotfm size={12} className="text-brand" />
-              <span className="text-[9px] font-semibold text-brand uppercase tracking-wider">{t("artists.topTracks")}</span>
-              <span className="text-[8px] text-faint ml-1">{t("artists.subtitle")}</span>
-            </div>
-            <button
-              onClick={(e) => { e.stopPropagation(); handleFlip(); }}
-              className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-field hover:bg-panel-hover transition-colors"
-            >
-              <span className="text-[8px] font-medium text-faint">{t("artists.flipArtists")}</span>
-              <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-faint">
-                <polyline points="15 18 9 12 15 6"></polyline>
-              </svg>
-            </button>
+        {rows.length === 0 ? (
+          <div className="flex-1 flex items-center justify-center">
+            <span className="text-[10px] text-faint">{t(tab === "artists" ? "artists.empty" : "artists.noTracks")}</span>
           </div>
-
-          <div className="flex-1 flex flex-col justify-between">
-            {tracks.length === 0 ? (
-              <div className="flex-1 flex items-center justify-center">
-                 <span className="text-[10px] text-faint">{t("artists.noTracks")}</span>
-              </div>
-            ) : (
-              tracks.slice(0, 5).map((track, i) => {
-                const gradient = getGradientFromString(track.name + track.artist);
-                const initials = getInitials(track.name);
-                const imgUrl = images[`${track.artist}-${track.name}`];
-                return (
+        ) : (
+          <ol key={tab} className="mt-2 flex-1 min-h-0 flex flex-col justify-between">
+            {rows.map((row, i) => {
+              const cover = images[row.imageKey];
+              const hue = hueOf(row.title);
+              return (
+                <motion.li
+                  key={row.key}
+                  initial={still ? false : { opacity: 0, x: 8 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.05, duration: 0.3 }}
+                >
                   <a
-                    key={i}
-                    href={track.url}
+                    href={row.url}
                     target="_blank"
                     rel="noreferrer"
-                    onClick={(e) => e.stopPropagation()}
-                    className="flex items-center gap-2 group hover:bg-panel-hover rounded-lg py-0.5 px-1 transition-colors"
+                    className="group relative flex items-center gap-2 overflow-hidden rounded-lg px-1 py-1"
                   >
-                    <span className="text-[10px] font-bold w-3.5 shrink-0 text-center tabular-nums" style={{ color: i === 0 ? ACCENT : isDark ? "#555" : "#bbb" }}>
+                    {/* The row's plays against the first place. */}
+                    <motion.span
+                      aria-hidden
+                      className="absolute inset-y-0 left-0 origin-left rounded-lg"
+                      style={{
+                        width: `${Math.max(8, (row.plays / top) * 100)}%`,
+                        background: i === 0 ? "rgba(213, 16, 7, 0.16)" : "var(--bg-field)",
+                      }}
+                      initial={still ? false : { scaleX: 0 }}
+                      animate={{ scaleX: 1 }}
+                      transition={{ delay: 0.1 + i * 0.06, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+                    />
+                    <span
+                      className="relative w-3 shrink-0 text-center text-[10px] font-bold tabular-nums"
+                      style={{ color: i === 0 ? "var(--accent)" : "var(--text-faint)" }}
+                    >
                       {i + 1}
                     </span>
-                    <div className="w-6 h-6 rounded-lg overflow-hidden shrink-0 flex items-center justify-center" style={{ background: imgUrl ? undefined : `linear-gradient(135deg, ${gradient.from}, ${gradient.to})`, border: imgUrl ? undefined : `1.5px solid ${gradient.from}30` }}>
-                      {imgUrl ? (
-                        <img src={imgUrl} alt={track.name} className="w-full h-full object-cover" />
+                    <span
+                      className={`relative flex h-6 w-6 shrink-0 items-center justify-center overflow-hidden ${tab === "artists" ? "rounded-full" : "rounded-md"}`}
+                      style={cover ? undefined : { background: `linear-gradient(135deg, hsl(${hue}, 70%, 52%), hsl(${(hue + 40) % 360}, 70%, 42%))` }}
+                    >
+                      {cover ? (
+                        <img src={cover} alt="" loading="lazy" className="h-full w-full object-cover" />
                       ) : (
-                        <span className="text-[8px] font-bold text-white drop-shadow-sm">{initials}</span>
+                        <span className="text-[8px] font-bold text-white">{initialsOf(row.title)}</span>
                       )}
-                    </div>
-                    <div className="flex flex-col">
-                      <p className="text-[10px] font-semibold truncate text-main group-hover:text-brand transition-colors leading-tight">{track.name}</p>
-                      <p className="text-[8px] text-faint inline-flex items-center gap-0.5 leading-tight">
-                        <span>{track.artist} ·</span>
-                        <CountUp to={Number(track.playcount) || 0} separator="," duration={0.9} />
-                        <span>{t("artists.tracks")}</span>
-                      </p>
-                    </div>
+                    </span>
+                    <span className="relative min-w-0 flex-1">
+                      <span className="block truncate text-[10px] font-semibold leading-tight text-main transition-colors group-hover:text-brand">
+                        {row.title}
+                      </span>
+                      {row.detail && <span className="block truncate text-[8px] leading-tight text-faint">{row.detail}</span>}
+                    </span>
+                    <span className="relative shrink-0 text-[9px] font-semibold tabular-nums text-sub">{number.format(row.plays)}</span>
                   </a>
-                );
-              })
-            )}
-          </div>
-        </div>
+                </motion.li>
+              );
+            })}
+          </ol>
+        )}
       </div>
     </WidgetCard>
   );

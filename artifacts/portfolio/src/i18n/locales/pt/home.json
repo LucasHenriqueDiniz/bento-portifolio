@@ -22,11 +22,13 @@
   },
   "projectsCta": {
     "title": "Projetos",
-    "subtitle": "Ver todos os projetos"
+    "subtitle": "Ver todos os projetos",
+    "count": "projetos"
   },
   "galleryCta": {
     "title": "Galeria",
-    "subtitle": "Ver desenhos e artes"
+    "subtitle": "Ver desenhos e artes",
+    "label": "sketchbook"
   },
   "projectsPage": {
     "back": "Voltar",
@@ -134,7 +136,11 @@
     "flipEducation": "educação",
     "viewFullCV": "Ver CV Completo",
     "present": "Atual",
-    "certificates": "Certificações"
+    "certificates": "Certificações",
+    "tabWork": "Trabalho",
+    "tabEducation": "Educação",
+    "yearsShort": "{{count}}a",
+    "monthsShort": "{{count}}m"
   },
   "mal": {
     "anime": "Anime",
@@ -153,7 +159,8 @@
     "title": "Steam",
     "error": "Nenhum jogo recente",
     "hours": "h jogadas",
-    "games": "jogos"
+    "games": "jogos",
+    "playing": "Jogando agora"
   },
   "artists": {
     "title": "Top Artistas",
@@ -164,7 +171,10 @@
     "flipArtists": "artistas",
     "error": "Nenhum artista disponível",
     "empty": "Nenhum artista disponível",
-    "noTracks": "Sem músicas"
+    "noTracks": "Sem músicas",
+    "tabArtists": "Artistas",
+    "tabTracks": "Músicas",
+    "plays": "plays"
   },
   "cv": {
     "title": "CV Completo",
@@ -244,5 +254,10 @@
     "openArmory": "abrir no arsenal",
     "itemLevel": "Nível de item {{level}}",
     "professions": "Profissões"
+  },
+  "commits": {
+    "title": "Últimos commits",
+    "empty": "Sem commits para mostrar",
+    "open": "Abrir o commit {{sha}} no GitHub"
   }
 }

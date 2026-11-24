@@ -22,11 +22,13 @@
   },
   "projectsCta": {
     "title": "Projects",
-    "subtitle": "View all projects"
+    "subtitle": "View all projects",
+    "count": "projects"
   },
   "galleryCta": {
     "title": "Gallery",
-    "subtitle": "View drawings and art"
+    "subtitle": "View drawings and art",
+    "label": "sketchbook"
   },
   "projectsPage": {
     "back": "Back",
@@ -134,7 +136,11 @@
     "flipEducation": "education",
     "viewFullCV": "View Full CV",
     "present": "Present",
-    "certificates": "Certifications"
+    "certificates": "Certifications",
+    "tabWork": "Work",
+    "tabEducation": "Education",
+    "yearsShort": "{{count}}y",
+    "monthsShort": "{{count}}mo"
   },
   "mal": {
     "anime": "Anime",
@@ -153,7 +159,8 @@
     "title": "Steam",
     "error": "No recent games",
     "hours": "h played",
-    "games": "games"
+    "games": "games",
+    "playing": "Playing now"
   },
   "artists": {
     "title": "Top Artists",
@@ -164,7 +171,10 @@
     "flipArtists": "artists",
     "error": "No artists available",
     "empty": "No artists available",
-    "noTracks": "No tracks"
+    "noTracks": "No tracks",
+    "tabArtists": "Artists",
+    "tabTracks": "Tracks",
+    "plays": "plays"
   },
   "cv": {
     "title": "Full CV",
@@ -244,5 +254,10 @@
     "openArmory": "open in the armory",
     "itemLevel": "Item Level {{level}}",
     "professions": "Professions"
+  },
+  "commits": {
+    "title": "Latest commits",
+    "empty": "No commits to show",
+    "open": "Open commit {{sha}} on GitHub"
   }
 }
