@@ -100,11 +100,13 @@ describe("WowCard", () => {
 
     const sources = [...container.querySelectorAll("img")].map((img) => img.getAttribute("src"));
     expect(sources).toEqual([
-      "https://render.worldofwarcraft.com/profile-backgrounds/v2/armory_bg_race_gnome.jpg",
+      "/wow/backdrops/gnome.webp",
       "https://render.worldofwarcraft.com/profile-foreground/foreground-shadow.png",
       WOW_CHARACTER.renderUrl,
     ]);
-    expect(raceBackdropUrl("Night Elf")).toBe("https://render.worldofwarcraft.com/profile-backgrounds/v2/armory_bg_race_night_elf.jpg");
+    expect(raceBackdropUrl("Night Elf")).toBe("/wow/backdrops/night_elf.webp");
+    // A race without a local copy still asks Blizzard, and the card drops it on a 403.
+    expect(raceBackdropUrl("Blood Elf")).toBe("https://render.worldofwarcraft.com/profile-backgrounds/v2/armory_bg_race_blood_elf.jpg");
     expect(raceBackdropUrl(null)).toBeNull();
   });
 
