@@ -13,9 +13,17 @@ const FACTION_RGB: Record<string, string> = { Alliance: "52, 110, 230", Horde: "
 // pictures as flat planes; nothing in it is a 3D model.
 const RENDER_HOST = "https://render.worldofwarcraft.com";
 const SHADOW_URL = `${RENDER_HOST}/profile-foreground/foreground-shadow.png`;
-/** "Night Elf" -> armory_bg_race_night_elf.jpg, the naming the armory uses. */
-export const raceBackdropUrl = (race: string | null) =>
-  race ? `${RENDER_HOST}/profile-backgrounds/v2/armory_bg_race_${race.trim().toLowerCase().replace(/\s+/g, "_")}.jpg` : null;
+// Blizzard serves each backdrop at 2400x1860 (300-680 KB) for a card a few hundred pixels
+// wide, so the races it has are kept here at 960px as WebP (10-28 KB each).
+const LOCAL_BACKDROPS = new Set(["human", "dwarf", "night_elf", "gnome", "orc", "undead", "tauren", "troll"]);
+/** "Night Elf" -> night_elf: the local copy when there is one, Blizzard's file otherwise. */
+export const raceBackdropUrl = (race: string | null) => {
+  if (!race) return null;
+  const slug = race.trim().toLowerCase().replace(/\s+/g, "_");
+  return LOCAL_BACKDROPS.has(slug)
+    ? `/wow/backdrops/${slug}.webp`
+    : `${RENDER_HOST}/profile-backgrounds/v2/armory_bg_race_${slug}.jpg`;
+};
 
 // Dust motes drifting up through the faction light: position, size and timing each.
 const MOTES = [
