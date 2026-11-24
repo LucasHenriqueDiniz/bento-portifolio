@@ -3,10 +3,12 @@ import SiteHeader from "@/components/SiteHeader";
 import SEO from "@/components/SEO";
 import { CardGlowProvider } from "@/components/CardGlowContext";
 import { useTheme } from "@/hooks/useTheme";
-import { useGetLastWorkoutCached } from "@/hooks/usePortfolioQueries";
+import { useGetLastWorkoutCached, useGetStatsCached } from "@/hooks/usePortfolioQueries";
 import { getWowCharacter } from "@/lib/apiClient";
-import { WorkoutCard } from "@/components/home";
-import { TechStackCard } from "@/components/home";
+import { GitHubCard, TechStackCard, WorkoutCard } from "@/components/home";
+import { GitHubCardV2 } from "@/components/test/GitHubCardV2";
+import { WorkoutStoriesCard } from "@/components/test/WorkoutStoriesCard";
+import { WowSheetCard } from "@/components/test/WowSheetCard";
 import { WorkoutCardV2 } from "@/components/test/WorkoutCardV2";
 import { WowCard } from "@/components/test/WowCard";
 import { WOW_SAMPLE } from "@/components/test/wowSample";
@@ -31,6 +33,7 @@ function Frame({ label, size, children }: { label: string; size: { width: number
 export default function TestPage() {
   const { isDark, toggleTheme } = useTheme();
   const { data: workout, isLoading: loadingWorkout } = useGetLastWorkoutCached();
+  const { data: stats, isLoading: loadingStats } = useGetStatsCached();
   const wow = useQuery({ queryKey: ["/api/portfolio/wow"], queryFn: ({ signal }) => getWowCharacter({ signal }) });
   const live = wow.data?.character ?? null;
 
@@ -44,14 +47,17 @@ export default function TestPage() {
             <section className="space-y-3">
               <h1 className="text-lg font-black tracking-tight">Card sandbox</h1>
               <p className="text-[12px] text-sub max-w-xl">
-                Redesigns at the size of their cell on the home grid. Left is the proposal, right is what is live today.
+                Redesigns at the size of their cell on the home grid. Proposals first, what is live today last.
               </p>
             </section>
 
             <section className="space-y-3">
               <h2 className="text-[11px] font-bold uppercase tracking-widest text-sub">Workout</h2>
               <div className="flex flex-wrap gap-6">
-                <Frame label="new" size={ONE_COLUMN}>
+                <Frame label="new B · stories" size={ONE_COLUMN}>
+                  <WorkoutStoriesCard workout={workout} />
+                </Frame>
+                <Frame label="new A · bars" size={ONE_COLUMN}>
                   <WorkoutCardV2 workout={workout} />
                 </Frame>
                 <Frame label="current" size={ONE_COLUMN}>
@@ -63,11 +69,25 @@ export default function TestPage() {
             <section className="space-y-3">
               <h2 className="text-[11px] font-bold uppercase tracking-widest text-sub">WoW, in the Tech Stack cell</h2>
               <div className="flex flex-wrap gap-6">
-                <Frame label="new" size={TWO_COLUMNS}>
+                <Frame label="new B · character sheet" size={TWO_COLUMNS}>
+                  <WowSheetCard character={live ?? WOW_SAMPLE} sample={!live} />
+                </Frame>
+                <Frame label="new A · stats" size={TWO_COLUMNS}>
                   <WowCard character={live ?? WOW_SAMPLE} sample={!live} />
                 </Frame>
                 <Frame label="current" size={TWO_COLUMNS}>
                   <TechStackCard isDark={isDark} />
+                </Frame>
+              </div>
+            </section>
+            <section className="space-y-3">
+              <h2 className="text-[11px] font-bold uppercase tracking-widest text-sub">GitHub</h2>
+              <div className="flex flex-wrap gap-6">
+                <Frame label="new" size={TWO_COLUMNS}>
+                  <GitHubCardV2 stats={stats} />
+                </Frame>
+                <Frame label="current" size={TWO_COLUMNS}>
+                  <GitHubCard stats={stats as never} loadingStats={loadingStats} isDark={isDark} />
                 </Frame>
               </div>
             </section>

@@ -463,6 +463,21 @@
 }
 
 /* ── CTA shimmer overlay ── */
+/* GitHub calendar (GitHubCardV2): cells pop in column by column; today's breathes. */
+@keyframes gh-cell-in {
+  from { opacity: 0; transform: scale(0.3); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes gh-cell-today {
+  0%, 100% { box-shadow: 0 0 0 1px rgba(var(--accent-glow), 0.9); }
+  50% { box-shadow: 0 0 0 1px rgba(var(--accent-glow), 0.9), 0 0 0 4px rgba(var(--accent-glow), 0.18); }
+}
+.gh-cell { animation: gh-cell-in 0.35s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.gh-cell-today { animation: gh-cell-in 0.35s cubic-bezier(0.22, 1, 0.36, 1) both, gh-cell-today 2.4s ease-in-out 1s infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .gh-cell, .gh-cell-today { animation: none; }
+}
+
 /* Featured-project progress bar: one animation per slide (see EnhancedProjectCard). */
 @keyframes project-progress {
   from { transform: scaleX(0); }

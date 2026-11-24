@@ -102,7 +102,9 @@
     "thisWeek": "This Week",
     "exercises": "Exercises",
     "items": "{{count}} items",
-    "empty": "No exercises logged"
+    "empty": "No exercises logged",
+    "next": "Next exercise",
+    "bodyweight": "bodyweight"
   },
   "github": {
     "title": "GitHub",
@@ -115,7 +117,15 @@
       "mon": "mon",
       "wed": "wed",
       "fri": "fri"
-    }
+    },
+    "empty": "GitHub data unavailable",
+    "contribsLastYear": "contributions in the last year",
+    "streakDays_one": "day",
+    "streakDays_other": "days",
+    "best": "best {{count}}",
+    "calendar": "Contributions in the last {{weeks}} weeks",
+    "onDay_one": "{{count}} contribution",
+    "onDay_other": "{{count}} contributions"
   },
   "timeline": {
     "workTitle": "Work Experience",
@@ -231,6 +241,8 @@
     "sample": "sample",
     "level": "Level {{level}}",
     "gear": "Gear",
-    "openArmory": "open in the armory"
+    "openArmory": "open in the armory",
+    "itemLevel": "Item Level {{level}}",
+    "professions": "Professions"
   }
 }
