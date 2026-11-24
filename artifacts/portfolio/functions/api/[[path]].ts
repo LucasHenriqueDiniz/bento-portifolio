@@ -10,6 +10,7 @@ type Env = {
   MAL_USERNAME?: string;
   PORTFOLIO_CACHE?: KVNamespace;
   DAILY_INGEST_DB?: D1Database;
+  PORTFOLIO_DB?: D1Database;
 };
 
 const JIKAN_BASE = "https://jikan.lucashdo.com/v1";
@@ -308,6 +309,42 @@ async function fetchJikanDetails(type: "anime" | "manga", id: number, retries = 
 }
 
 const VISITOR_KEY = "visitor-count";
+const VISITOR_COUNTER = "visitors";
+
+const kvVisitorCount = async (env: Env) => {
+  const current = Number((await env.PORTFOLIO_CACHE?.get(VISITOR_KEY, { type: "text" })) ?? "0");
+  return Number.isFinite(current) ? current : 0;
+};
+
+// One statement adds the visit and reads the total, so two visits at once both count.
+// The KV version read the number, added one and wrote it back, and lost one of them.
+async function addVisit(db: D1Database, env: Env): Promise<number> {
+  const add = () =>
+    db
+      .prepare("UPDATE counters SET value = value + 1 WHERE name = ? RETURNING value")
+      .bind(VISITOR_COUNTER)
+      .first<{ value: number }>();
+
+  const added = await add();
+  if (added) return added.value;
+
+  // First visit on this database: carry over the total KV had, then count this one.
+  await db
+    .prepare("INSERT OR IGNORE INTO counters (name, value) VALUES (?, ?)")
+    .bind(VISITOR_COUNTER, await kvVisitorCount(env))
+    .run();
+  const seeded = await add();
+  if (!seeded) throw new Error("visitor counter row missing after seeding");
+  return seeded.value;
+}
+
+async function readVisits(db: D1Database, env: Env): Promise<number> {
+  const row = await db
+    .prepare("SELECT value FROM counters WHERE name = ?")
+    .bind(VISITOR_COUNTER)
+    .first<{ value: number }>();
+  return row ? row.value : kvVisitorCount(env);
+}
 
 const DAILY_INGEST_STATS_URL = "https://daily-ingest.lucas-hdo.workers.dev/api/public/stats";
 
@@ -395,9 +432,10 @@ export const onRequest: PagesFunction<Env> = async (context) => {
 
   if (request.method === "POST" && path === "portfolio/visitors/increment") {
     try {
+      if (env.PORTFOLIO_DB) return json({ count: await addVisit(env.PORTFOLIO_DB, env) }, 0);
+      // No database bound (plain local dev): the old, non-atomic KV counter.
       if (!env.PORTFOLIO_CACHE) return json({ count: 0 }, 0);
-      const current = Number((await env.PORTFOLIO_CACHE.get(VISITOR_KEY, { type: "text" })) ?? "0");
-      const count = Number.isFinite(current) ? current + 1 : 1;
+      const count = (await kvVisitorCount(env)) + 1;
       await env.PORTFOLIO_CACHE.put(VISITOR_KEY, String(count));
       return json({ count }, 0);
     } catch {
@@ -888,9 +926,8 @@ export const onRequest: PagesFunction<Env> = async (context) => {
     }
 
     if (path === "portfolio/visitors") {
-      if (!env.PORTFOLIO_CACHE) return json({ count: 0 }, 0);
-      const current = Number((await env.PORTFOLIO_CACHE.get(VISITOR_KEY, { type: "text" })) ?? "0");
-      return json({ count: Number.isFinite(current) ? current : 0 }, 0);
+      if (env.PORTFOLIO_DB) return json({ count: await readVisits(env.PORTFOLIO_DB, env) }, 0);
+      return json({ count: await kvVisitorCount(env) }, 0);
     }
 
     return new Response("Not found", { status: 404 });

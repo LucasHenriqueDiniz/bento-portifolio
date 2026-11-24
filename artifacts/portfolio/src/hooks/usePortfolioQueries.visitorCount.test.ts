@@ -12,6 +12,7 @@ import { useVisitorCount } from "./usePortfolioQueries";
 describe("useVisitorCount", () => {
   beforeEach(() => {
     localStorage.clear();
+    sessionStorage.clear();
     vi.mocked(incrementVisitorCount).mockReset();
     vi.mocked(getVisitorCount).mockReset();
   });
@@ -60,5 +61,33 @@ describe("useVisitorCount", () => {
     rerender();
 
     expect(incrementVisitorCount).toHaveBeenCalledTimes(1);
+  });
+
+  it("counts a visit once per tab session: a reload only reads the total", async () => {
+    vi.mocked(incrementVisitorCount).mockResolvedValue({ count: 10 });
+    vi.mocked(getVisitorCount).mockResolvedValue({ count: 12 });
+
+    const first = renderHook(() => useVisitorCount());
+    await waitFor(() => expect(first.result.current).toBe(10));
+    first.unmount();
+
+    const reload = renderHook(() => useVisitorCount());
+    await waitFor(() => expect(reload.result.current).toBe(12));
+
+    expect(incrementVisitorCount).toHaveBeenCalledTimes(1);
+    expect(getVisitorCount).toHaveBeenCalledTimes(1);
+  });
+
+  it("tries to count again on the next load when the increment failed", async () => {
+    vi.mocked(incrementVisitorCount).mockRejectedValueOnce(new Error("offline")).mockResolvedValue({ count: 4 });
+    vi.mocked(getVisitorCount).mockResolvedValue({ count: 3 });
+
+    const first = renderHook(() => useVisitorCount());
+    await waitFor(() => expect(first.result.current).toBe(3));
+    first.unmount();
+
+    const second = renderHook(() => useVisitorCount());
+    await waitFor(() => expect(second.result.current).toBe(4));
+    expect(incrementVisitorCount).toHaveBeenCalledTimes(2);
   });
 });
