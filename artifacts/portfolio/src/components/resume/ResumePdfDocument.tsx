@@ -13,6 +13,7 @@ import {
   type AcademicExperience,
 } from "@/constants";
 import { formatDateRange } from "@/lib/dateFormatter";
+import { resumeSkillLines } from "@/lib/resumeSkills";
 
 type Lang = "en" | "pt";
 
@@ -163,26 +164,12 @@ export function ResumePdfDocument({ lang }: { lang: Lang }) {
         ))}
 
         <Text style={styles.sectionTitle}>{t("sections.skills")}</Text>
-        <Text style={styles.skillLine}>
-          <Text style={styles.skillLabel}>{t("ats.skills.languages")}: </Text>
-          TypeScript, JavaScript, Python, Go, SQL
-        </Text>
-        <Text style={styles.skillLine}>
-          <Text style={styles.skillLabel}>{t("ats.skills.frontend")}: </Text>
-          React, Next.js, React Native, Expo, Tailwind CSS, Framer Motion
-        </Text>
-        <Text style={styles.skillLine}>
-          <Text style={styles.skillLabel}>{t("ats.skills.backend")}: </Text>
-          Node.js, NestJS, Prisma, REST APIs, WebSockets
-        </Text>
-        <Text style={styles.skillLine}>
-          <Text style={styles.skillLabel}>{t("ats.skills.database")}: </Text>
-          PostgreSQL, Supabase, Redis
-        </Text>
-        <Text style={styles.skillLine}>
-          <Text style={styles.skillLabel}>{t("ats.skills.devops")}: </Text>
-          AWS Lambda, Docker, Vercel, GitHub Actions
-        </Text>
+        {resumeSkillLines().map((line) => (
+          <Text key={line.key} style={styles.skillLine}>
+            <Text style={styles.skillLabel}>{t(`ats.skills.${line.key}`)}: </Text>
+            {line.skills.join(", ")}
+          </Text>
+        ))}
 
         <Text style={styles.sectionTitle}>{t("sections.education")}</Text>
         {activeEducation.map((edu) => (
