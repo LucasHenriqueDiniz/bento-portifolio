@@ -5,7 +5,7 @@ import { AboutCardV2 } from "./AboutCardV2";
 import { FeaturedProjectsCardV2 } from "./FeaturedProjectsCardV2";
 import { ResumeCardV2 } from "./ResumeCardV2";
 import { VisitsCardV2 } from "./VisitsCardV2";
-import { WowSheetCard } from "./WowSheetCard";
+import { WowSheetCard, raceBackdropUrl } from "./WowSheetCard";
 import { WOW_SAMPLE } from "./wowSample";
 
 const { setLocation } = vi.hoisted(() => ({ setLocation: vi.fn() }));
@@ -105,5 +105,27 @@ describe("WowSheetCard", () => {
     expect(screen.getByText("Gnome Priest · Alliance")).toBeInTheDocument();
     expect(screen.getByRole("list", { name: "Profissões" }).children).toHaveLength(3);
     expect(screen.queryByText("Enchanter's Cowl")).not.toBeInTheDocument();
+  });
+
+  it("builds the armory's scene: the race's backdrop, the ground shadow and the render", () => {
+    const { container } = render(<WowSheetCard character={WOW_SAMPLE} />);
+
+    const sources = [...container.querySelectorAll("img")].map((img) => img.getAttribute("src"));
+    expect(sources).toEqual([
+      "https://render.worldofwarcraft.com/profile-backgrounds/v2/armory_bg_race_gnome.jpg",
+      "https://render.worldofwarcraft.com/profile-foreground/foreground-shadow.png",
+      WOW_SAMPLE.renderUrl,
+    ]);
+    expect(raceBackdropUrl("Night Elf")).toBe("https://render.worldofwarcraft.com/profile-backgrounds/v2/armory_bg_race_night_elf.jpg");
+    expect(raceBackdropUrl(null)).toBeNull();
+  });
+
+  it("drops the backdrop when Blizzard has none for the race", () => {
+    render(<WowSheetCard character={{ ...WOW_SAMPLE, race: "Blood Elf" }} />);
+
+    fireEvent.error(screen.getByTestId("wow-backdrop"));
+
+    expect(screen.queryByTestId("wow-backdrop")).not.toBeInTheDocument();
+    expect(screen.getByText("Blood Elf Priest · Alliance")).toBeInTheDocument();
   });
 });

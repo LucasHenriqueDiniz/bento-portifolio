@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { motion, useMotionValue, useReducedMotion, useSpring, useTransform } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { Swords } from "lucide-react";
@@ -6,6 +7,15 @@ import type { WowCharacter } from "@/lib/apiClient";
 
 const GOLD = "#e8c56a";
 const FACTION_RGB: Record<string, string> = { Alliance: "52, 110, 230", Horde: "200, 40, 40" };
+
+// The scene Blizzard's own armory page builds: a backdrop of the character's race, a
+// shadow on the ground and the render standing on it. The page stacks these three
+// pictures as flat planes; nothing in it is a 3D model.
+const RENDER_HOST = "https://render.worldofwarcraft.com";
+const SHADOW_URL = `${RENDER_HOST}/profile-foreground/foreground-shadow.png`;
+/** "Night Elf" -> armory_bg_race_night_elf.jpg, the naming the armory uses. */
+export const raceBackdropUrl = (race: string | null) =>
+  race ? `${RENDER_HOST}/profile-backgrounds/v2/armory_bg_race_${race.trim().toLowerCase().replace(/\s+/g, "_")}.jpg` : null;
 
 // Dust motes drifting up through the faction light: position, size and timing each.
 const MOTES = [
@@ -40,6 +50,11 @@ export function WowSheetCard({ character, sample = false }: WowSheetCardProps) {
   const figureX = useTransform(px, [-0.5, 0.5], [16, -16]);
   const figureY = useTransform(py, [-0.5, 0.5], [8, -8]);
   const textX = useTransform(px, [-0.5, 0.5], [5, -5]);
+  const backdropX = useTransform(px, [-0.5, 0.5], [6, -6]);
+  const backdropY = useTransform(py, [-0.5, 0.5], [4, -4]);
+  // Not every race has a backdrop on Blizzard's server; without one the card keeps its
+  // plain dark ground.
+  const [backdropFailed, setBackdropFailed] = useState(false);
 
   if (!character) {
     return (
@@ -53,6 +68,7 @@ export function WowSheetCard({ character, sample = false }: WowSheetCardProps) {
   }
 
   const rgb = FACTION_RGB[character.faction ?? ""] ?? "224, 122, 95";
+  const backdrop = backdropFailed ? null : raceBackdropUrl(character.race);
   const armoryUrl = `https://worldofwarcraft.blizzard.com/forever/${character.region}/armory/character/${character.slug}`;
 
   const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -81,13 +97,28 @@ export function WowSheetCard({ character, sample = false }: WowSheetCardProps) {
             boxShadow: `inset 0 0 0 1px ${GOLD}66, inset 0 0 0 4px #0b0d14, inset 0 0 0 5px ${GOLD}26`,
           }}
         >
+          {backdrop && (
+            <motion.img
+              src={backdrop}
+              alt=""
+              data-testid="wow-backdrop"
+              onError={() => setBackdropFailed(true)}
+              initial={{ opacity: 0, scale: 1.12 }}
+              animate={{ opacity: 1, scale: 1.06 }}
+              transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
+              className="pointer-events-none absolute inset-0 h-full w-full object-cover object-[60%_52%]"
+              style={{ x: backdropX, y: backdropY }}
+            />
+          )}
+          {/* Darkens the left, where the text sits, and the edges. */}
+          <div aria-hidden className="absolute inset-0 bg-gradient-to-r from-[#0b0d14] from-10% via-[#0b0d14]/75 via-45% to-transparent" />
           <motion.div
             aria-hidden
             className="absolute inset-0"
             style={{
               x: lightX,
               borderRadius: "inherit",
-              background: `radial-gradient(110% 130% at 78% 55%, rgba(${rgb},0.6) 0%, rgba(${rgb},0.14) 40%, transparent 62%)`,
+              background: `radial-gradient(90% 110% at 76% 60%, rgba(${rgb},${backdrop ? 0.28 : 0.6}) 0%, rgba(${rgb},0.08) 42%, transparent 62%)`,
             }}
             animate={still ? undefined : { opacity: [0.75, 1, 0.75] }}
             transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
@@ -109,6 +140,13 @@ export function WowSheetCard({ character, sample = false }: WowSheetCardProps) {
               middle, so it is zoomed in on rather than fitted. */}
           {character.renderUrl && (
             <motion.div className="pointer-events-none absolute inset-y-0 right-0 w-[50%]" style={{ x: figureX, y: figureY }}>
+              <img
+                src={SHADOW_URL}
+                alt=""
+                aria-hidden
+                className="absolute left-1/2 bottom-[-9%] w-[86%] -translate-x-1/2 opacity-80"
+                onError={(e) => (e.currentTarget.style.display = "none")}
+              />
               {/* The zoom sits on its own element: the entrance animation owns the
                   image's transform and would overwrite it. */}
               <div className="absolute inset-0" style={{ transform: "scale(2.5)", transformOrigin: "50% 56%" }}>
