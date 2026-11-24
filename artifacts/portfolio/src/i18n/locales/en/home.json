@@ -220,21 +220,6 @@
     "label": "site visits",
     "live": "live"
   },
-  "machines": {
-    "pcTitle": "My PC",
-    "serverTitle": "Server",
-    "online": "online",
-    "offline": "offline",
-    "uptime": "up",
-    "cpu": "cpu",
-    "ram": "ram",
-    "gpu": "gpu",
-    "disk": "disk",
-    "lastReading": "reading from {{time}}",
-    "unavailable": "No reading right now",
-    "flipToServer": "server",
-    "flipToPc": "pc"
-  },
   "projects": {
     "stars": "stars"
   },
