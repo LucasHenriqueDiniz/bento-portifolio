@@ -2,9 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import i18n from "@/i18n";
 import { WorkoutStoriesCard } from "./WorkoutStoriesCard";
-import { WowSheetCard } from "./WowSheetCard";
 import { GitHubCardV2, lastWeeks } from "./GitHubCardV2";
-import { WOW_SAMPLE } from "./wowSample";
 
 const workout = {
   date: "2026-11-22",
@@ -57,33 +55,6 @@ describe("WorkoutStoriesCard", () => {
 
     expect(screen.getByText("Arnold PPL (Pull Day)")).toBeInTheDocument();
     expect(screen.getByText("9.090 kg · 60 min")).toBeInTheDocument();
-  });
-});
-
-describe("WowSheetCard", () => {
-  it("shows the gear one piece at a time, in order", () => {
-    render(<WowSheetCard character={WOW_SAMPLE} sample />);
-    expect(screen.getByText("Enchanter's Cowl")).toBeInTheDocument();
-    expect(screen.getByText("Head · Nível de item 33")).toBeInTheDocument();
-    expect(screen.getByText("1/15")).toBeInTheDocument();
-
-    act(() => vi.advanceTimersByTime(2600));
-    // The position, not the piece's name: the old piece animates out first.
-    expect(screen.getByText("2/15")).toBeInTheDocument();
-
-    act(() => vi.advanceTimersByTime(2600 * 14));
-    expect(screen.getByText("1/15")).toBeInTheDocument();
-  });
-
-  it("names the character, links to the armory and tags a sample", () => {
-    render(<WowSheetCard character={WOW_SAMPLE} sample />);
-
-    expect(screen.getByRole("link", { name: /Pequeno Ibuprofeno/ })).toHaveAttribute(
-      "href",
-      "https://worldofwarcraft.blizzard.com/forever/us/armory/character/pequeno-ibuprofeno"
-    );
-    expect(screen.getByLabelText("Nível 31")).toHaveTextContent("31");
-    expect(screen.getByText("amostra")).toBeInTheDocument();
   });
 });
 

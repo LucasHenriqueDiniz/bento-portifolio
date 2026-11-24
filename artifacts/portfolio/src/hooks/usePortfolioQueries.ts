@@ -197,6 +197,14 @@ const markVisitCounted = () => {
   }
 };
 
+const unmarkVisitCounted = () => {
+  try {
+    sessionStorage.removeItem(VISIT_COUNTED_KEY);
+  } catch {
+    // Nothing to undo.
+  }
+};
+
 export function useVisitorCount() {
   const key = "/api/portfolio/visitors";
   const cached = getCache<number>(key);
@@ -217,12 +225,15 @@ export function useVisitorCount() {
       readOnly();
       return;
     }
+    // Marked before the request, so a second card on the same page reads the total
+    // instead of counting the visit twice; unmarked again if the count did not land.
+    markVisitCounted();
     incrementVisitorCount()
-      .then((result) => {
-        markVisitCounted();
-        show(result);
-      })
-      .catch(readOnly);
+      .then(show)
+      .catch(() => {
+        unmarkVisitCounted();
+        return readOnly();
+      });
   }, []);
 
   return count;

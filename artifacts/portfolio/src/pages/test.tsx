@@ -1,16 +1,25 @@
+import { createContext, useContext, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
+import { useLocation } from "wouter";
+import { RotateCcw } from "lucide-react";
 import SiteHeader from "@/components/SiteHeader";
 import SEO from "@/components/SEO";
 import { CardGlowProvider } from "@/components/CardGlowContext";
 import { useTheme } from "@/hooks/useTheme";
-import { useGetLastWorkoutCached, useGetStatsCached } from "@/hooks/usePortfolioQueries";
+import { useGetLastWorkoutCached, useGetStatsCached, useVisitorCount } from "@/hooks/usePortfolioQueries";
 import { getWowCharacter } from "@/lib/apiClient";
-import { GitHubCard, TechStackCard, WorkoutCard } from "@/components/home";
+import { featuredProjects } from "@/constants";
+import { CVCard, EnhancedProjectCard, GitHubCard, TechStackCard, ViewsCard, WorkoutCard } from "@/components/home";
+import { AboutCardV2 } from "@/components/test/AboutCardV2";
+import { FeaturedProjectsCardV2 } from "@/components/test/FeaturedProjectsCardV2";
 import { GitHubCardV2 } from "@/components/test/GitHubCardV2";
-import { WorkoutStoriesCard } from "@/components/test/WorkoutStoriesCard";
-import { WowSheetCard } from "@/components/test/WowSheetCard";
+import { ResumeCardV2 } from "@/components/test/ResumeCardV2";
+import { VisitsCardV2 } from "@/components/test/VisitsCardV2";
 import { WorkoutCardV2 } from "@/components/test/WorkoutCardV2";
+import { WorkoutStoriesCard } from "@/components/test/WorkoutStoriesCard";
 import { WowCard } from "@/components/test/WowCard";
+import { WowSheetCard } from "@/components/test/WowSheetCard";
 import { WOW_SAMPLE } from "@/components/test/wowSample";
 
 // The cells these cards occupy on the home grid at 1440x900, so a redesign is judged at
@@ -18,24 +27,65 @@ import { WOW_SAMPLE } from "@/components/test/wowSample";
 const ONE_COLUMN = { width: 232, height: 201 };
 const TWO_COLUMNS = { width: 469, height: 201 };
 
+// Bumped by "replay all": every frame remounts its card, which plays its entrance again.
+const ReplayAll = createContext(0);
+
 function Frame({ label, size, children }: { label: string; size: { width: number; height: number }; children: React.ReactNode }) {
+  const replayAll = useContext(ReplayAll);
+  const [replay, setReplay] = useState(0);
   return (
     <figure className="flex flex-col gap-2 w-full" style={{ maxWidth: size.width }}>
-      <figcaption className="text-[10px] font-semibold uppercase tracking-widest text-faint">{label}</figcaption>
-      <div style={{ height: size.height }} className="w-full">
+      <figcaption className="flex items-center justify-between gap-2 text-[10px] font-semibold uppercase tracking-widest text-faint">
+        {label}
+        <button
+          type="button"
+          onClick={() => setReplay((n) => n + 1)}
+          aria-label={`Replay animation: ${label}`}
+          title="Replay animation"
+          className="inline-flex h-5 w-5 items-center justify-center rounded-md border border-base bg-panel text-faint transition-colors hover:border-brand hover:text-brand outline-none focus-visible:ring-2 focus-visible:ring-brand"
+        >
+          <RotateCcw size={11} />
+        </button>
+      </figcaption>
+      <div key={`${replayAll}-${replay}`} style={{ height: size.height }} className="w-full">
         {children}
       </div>
     </figure>
   );
 }
 
-/** Sandbox for card redesigns: each new card beside the one it would replace. */
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <section className="space-y-3">
+      <h2 className="text-[11px] font-bold uppercase tracking-widest text-sub">{title}</h2>
+      <div className="flex flex-wrap gap-6">{children}</div>
+    </section>
+  );
+}
+
+/** Sandbox for card redesigns: each proposal beside the card it would replace. */
 export default function TestPage() {
   const { isDark, toggleTheme } = useTheme();
+  const { i18n } = useTranslation();
+  const [, setLocation] = useLocation();
+  const [replayAll, setReplayAll] = useState(0);
   const { data: workout, isLoading: loadingWorkout } = useGetLastWorkoutCached();
   const { data: stats, isLoading: loadingStats } = useGetStatsCached();
+  const visits = useVisitorCount();
   const wow = useQuery({ queryKey: ["/api/portfolio/wow"], queryFn: ({ signal }) => getWowCharacter({ signal }) });
   const live = wow.data?.character ?? null;
+
+  const english = i18n.language.startsWith("en");
+  const projects = featuredProjects.map((p) => ({
+    id: p.id,
+    name: p.name,
+    description: english && p.highlightEn ? p.highlightEn : p.highlight,
+    techStack: p.techStack,
+    highlight: p.highlight,
+    url: p.url,
+    wip: p.status === "workInProgress",
+    image: p.image,
+  }));
 
   return (
     <>
@@ -43,32 +93,26 @@ export default function TestPage() {
       <div className={`min-h-screen bg-canvas text-main pt-14 transition-colors duration-300 ${isDark ? "dark" : ""}`}>
         <SiteHeader isDark={isDark} onToggleTheme={toggleTheme} />
         <CardGlowProvider>
-          <main className="mx-auto max-w-5xl px-4 py-8 space-y-10">
-            <section className="space-y-3">
-              <h1 className="text-lg font-black tracking-tight">Card sandbox</h1>
-              <p className="text-[12px] text-sub max-w-xl">
-                Redesigns at the size of their cell on the home grid. Proposals first, what is live today last.
-              </p>
-            </section>
+          <ReplayAll.Provider value={replayAll}>
+            <main className="mx-auto max-w-5xl px-4 py-8 space-y-10">
+              <section className="flex flex-wrap items-end justify-between gap-3">
+                <div className="space-y-2">
+                  <h1 className="text-lg font-black tracking-tight">Card sandbox</h1>
+                  <p className="text-[12px] text-sub max-w-xl">
+                    Redesigns at the size of their cell on the home grid. Proposals first, what is live today last.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setReplayAll((n) => n + 1)}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-base bg-panel px-3 py-1.5 text-[11px] font-semibold text-sub transition-colors hover:border-brand hover:text-brand outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                >
+                  <RotateCcw size={12} />
+                  Replay all animations
+                </button>
+              </section>
 
-            <section className="space-y-3">
-              <h2 className="text-[11px] font-bold uppercase tracking-widest text-sub">Workout</h2>
-              <div className="flex flex-wrap gap-6">
-                <Frame label="new B · stories" size={ONE_COLUMN}>
-                  <WorkoutStoriesCard workout={workout} />
-                </Frame>
-                <Frame label="new A · bars" size={ONE_COLUMN}>
-                  <WorkoutCardV2 workout={workout} />
-                </Frame>
-                <Frame label="current" size={ONE_COLUMN}>
-                  <WorkoutCard workout={workout as never} isLoading={loadingWorkout} isDark={isDark} />
-                </Frame>
-              </div>
-            </section>
-
-            <section className="space-y-3">
-              <h2 className="text-[11px] font-bold uppercase tracking-widest text-sub">WoW, in the Tech Stack cell</h2>
-              <div className="flex flex-wrap gap-6">
+              <Section title="WoW, in the Tech Stack cell">
                 <Frame label="new B · character sheet" size={TWO_COLUMNS}>
                   <WowSheetCard character={live ?? WOW_SAMPLE} sample={!live} />
                 </Frame>
@@ -78,20 +122,57 @@ export default function TestPage() {
                 <Frame label="current" size={TWO_COLUMNS}>
                   <TechStackCard isDark={isDark} />
                 </Frame>
-              </div>
-            </section>
-            <section className="space-y-3">
-              <h2 className="text-[11px] font-bold uppercase tracking-widest text-sub">GitHub</h2>
-              <div className="flex flex-wrap gap-6">
+              </Section>
+
+              <Section title="Featured project">
+                <Frame label="new" size={TWO_COLUMNS}>
+                  <FeaturedProjectsCardV2 projects={projects} />
+                </Frame>
+                <Frame label="current" size={TWO_COLUMNS}>
+                  <EnhancedProjectCard projects={projects} isDark={isDark} />
+                </Frame>
+              </Section>
+
+              <Section title="About, visits and resume">
+                <Frame label="about · new" size={ONE_COLUMN}>
+                  <AboutCardV2 />
+                </Frame>
+                <Frame label="visits · new" size={ONE_COLUMN}>
+                  <VisitsCardV2 count={visits} />
+                </Frame>
+                <Frame label="visits · current" size={ONE_COLUMN}>
+                  <ViewsCard />
+                </Frame>
+                <Frame label="resume · new" size={ONE_COLUMN}>
+                  <ResumeCardV2 />
+                </Frame>
+                <Frame label="resume · current" size={ONE_COLUMN}>
+                  <CVCard navigate={setLocation} isDark={isDark} />
+                </Frame>
+              </Section>
+
+              <Section title="Workout">
+                <Frame label="new B · stories" size={ONE_COLUMN}>
+                  <WorkoutStoriesCard workout={workout} />
+                </Frame>
+                <Frame label="new A · bars" size={ONE_COLUMN}>
+                  <WorkoutCardV2 workout={workout} />
+                </Frame>
+                <Frame label="current" size={ONE_COLUMN}>
+                  <WorkoutCard workout={workout as never} isLoading={loadingWorkout} isDark={isDark} />
+                </Frame>
+              </Section>
+
+              <Section title="GitHub">
                 <Frame label="new" size={TWO_COLUMNS}>
                   <GitHubCardV2 stats={stats} />
                 </Frame>
                 <Frame label="current" size={TWO_COLUMNS}>
                   <GitHubCard stats={stats as never} loadingStats={loadingStats} isDark={isDark} />
                 </Frame>
-              </div>
-            </section>
-          </main>
+              </Section>
+            </main>
+          </ReplayAll.Provider>
         </CardGlowProvider>
       </div>
     </>
