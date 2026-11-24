@@ -1,6 +1,6 @@
 import { spawn } from "child_process";
 import process from "process";
-import "./generate-sitemap.mjs";
+import { generateSitemap } from "./generate-sitemap.mjs";
 
 const start = Date.now();
 
@@ -18,6 +18,8 @@ const child = spawn("npx", ["vite", "build", "--config", "vite.config.ts"], {
 
 child.on("close", (code) => {
   if (code === 0) {
+    // After the build: Vite empties the output directory first.
+    generateSitemap();
     const duration = ((Date.now() - start) / 1000).toFixed(2);
     console.log(`Build completed in ${duration}s`);
   } else {
