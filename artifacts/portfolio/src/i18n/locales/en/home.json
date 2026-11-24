@@ -225,5 +225,12 @@
     "listening": "Listening",
     "lastPlayed": "Last played",
     "empty": "No music playing"
+  },
+  "wow": {
+    "empty": "Character unavailable",
+    "sample": "sample",
+    "level": "Level {{level}}",
+    "gear": "Gear",
+    "openArmory": "open in the armory"
   }
 }

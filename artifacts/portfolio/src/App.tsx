@@ -20,6 +20,7 @@ const Resume = lazy(() => import("@/pages/resume"));
 const Donate = lazy(() => import("@/pages/donate"));
 const Contact = lazy(() => import("@/pages/contact"));
 const Gallery = lazy(() => import("@/pages/gallery"));
+const TestPage = lazy(() => import("@/pages/test"));
 const NotFound = lazy(() => import("@/pages/not-found"));
 
 function Router() {
@@ -42,6 +43,7 @@ function Router() {
             <Route path="/donate" component={Donate} />
             <Route path="/contact" component={Contact} />
             <Route path="/gallery" component={Gallery} />
+            <Route path="/test" component={TestPage} />
             <Route component={NotFound} />
           </Switch>
         </Suspense>

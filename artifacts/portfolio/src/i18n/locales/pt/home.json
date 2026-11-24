@@ -225,5 +225,12 @@
     "listening": "Ouvindo",
     "lastPlayed": "Ouvi por último",
     "empty": "Nenhuma música tocando"
+  },
+  "wow": {
+    "empty": "Personagem indisponível",
+    "sample": "amostra",
+    "level": "Nível {{level}}",
+    "gear": "Equipamento",
+    "openArmory": "abrir no arsenal"
   }
 }

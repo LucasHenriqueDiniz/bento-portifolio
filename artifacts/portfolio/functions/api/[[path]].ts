@@ -1,3 +1,5 @@
+import { fetchWowCharacter } from "../lib/wow";
+
 type Env = {
   LASTFM_API_KEY?: string;
   LASTFM_USERNAME?: string;
@@ -11,6 +13,10 @@ type Env = {
   PORTFOLIO_CACHE?: KVNamespace;
   DAILY_INGEST_DB?: D1Database;
   PORTFOLIO_DB?: D1Database;
+  BATTLENET_CLIENT_ID?: string;
+  BATTLENET_CLIENT_SECRET?: string;
+  WOW_CHARACTER?: string;
+  WOW_REGION?: string;
 };
 
 const JIKAN_BASE = "https://jikan.lucashdo.com/v1";
@@ -237,6 +243,7 @@ const startOfWeek = (now: Date) => {
 
 const isoDate = (date: Date) => date.toISOString().split("T")[0];
 
+const KV_LAST_WOW_KEY = "wow:last-character";
 const KV_LAST_STEAM_KEY = "steam:last-good";
 const STEAM_SPACEWAR_APP_ID = 480;
 const HYDRA_ICON_URL = "https://raw.githubusercontent.com/hydralauncher/hydra/refs/heads/main/resources/icon.png";
@@ -922,6 +929,20 @@ export const onRequest: PagesFunction<Env> = async (context) => {
           }
         }
         return json(await fetchServerFromPublicStats(), 300);
+      });
+    }
+
+    if (path === "portfolio/wow") {
+      return await cached(request, path, 900, env, async () => {
+        const clientId = env.BATTLENET_CLIENT_ID ?? "";
+        const clientSecret = env.BATTLENET_CLIENT_SECRET ?? "";
+        // No application credentials: no character to show, and the card says so.
+        if (!clientId || !clientSecret) return json({ character: null }, 300);
+        const region = (env.WOW_REGION ?? "us").toLowerCase();
+        const slug = (env.WOW_CHARACTER ?? "pequeno-ibuprofeno").trim().toLowerCase().replace(/\s+/g, "-");
+        return withLastKnown(env, KV_LAST_WOW_KEY, 900, async () => ({
+          character: await fetchWowCharacter({ clientId, clientSecret }, region, slug),
+        }));
       });
     }
 
