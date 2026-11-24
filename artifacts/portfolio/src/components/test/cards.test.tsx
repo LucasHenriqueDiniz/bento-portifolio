@@ -1,5 +1,5 @@
-import { beforeEach, describe, expect, it } from "vitest";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import i18n from "@/i18n";
 import { WorkoutCardV2 } from "./WorkoutCardV2";
 import { WowCard } from "./WowCard";
@@ -32,22 +32,45 @@ describe("WorkoutCardV2", () => {
       "Seated Row: 3×15 · 75 kg",
       "Biceps Curl: 3×11 · 26 kg",
     ]);
-    const height = (bar: HTMLElement) => (bar.firstElementChild as HTMLElement).style.height;
+    const height = (bar: HTMLElement) => (bar.firstElementChild?.firstElementChild as HTMLElement).style.height;
     expect(height(bars[1])).toBe("100%");
     // 858 of 3375 kg; and a bodyweight exercise keeps a short bar instead of none.
     expect(parseFloat(height(bars[2]))).toBeCloseTo(25.42, 1);
     expect(height(bars[0])).toBe("18%");
   });
 
-  it("swaps the summary for an exercise while its bar is hovered", () => {
+  it("writes each exercise's load under its bar", () => {
     render(<WorkoutCardV2 workout={workout} />);
-    expect(screen.getByText("60 min · 3 itens")).toBeInTheDocument();
 
-    fireEvent.mouseEnter(screen.getAllByRole("listitem")[1]);
+    expect(screen.getAllByRole("listitem").map((bar) => bar.lastElementChild?.textContent)).toEqual(["–", "75", "26"]);
+  });
 
-    expect(screen.getByText("Seated Row")).toBeInTheDocument();
-    expect(screen.getByText("3×15 · 75 kg")).toBeInTheDocument();
-    expect(screen.queryByText("60 min · 3 itens")).not.toBeInTheDocument();
+  it("walks the focus along the bars when left alone", () => {
+    vi.useFakeTimers();
+    render(<WorkoutCardV2 workout={workout} />);
+    const current = () => screen.getAllByRole("listitem").findIndex((bar) => bar.getAttribute("aria-current") === "true");
+    expect(current()).toBe(0);
+
+    act(() => vi.advanceTimersByTime(2400));
+    expect(current()).toBe(1);
+    act(() => vi.advanceTimersByTime(2400 * 2));
+    expect(current()).toBe(0);
+    vi.useRealTimers();
+  });
+
+  it("gives the focus to a hovered bar, holds it there, and names that exercise", () => {
+    vi.useFakeTimers();
+    const { container } = render(<WorkoutCardV2 workout={workout} />);
+    const bars = screen.getAllByRole("listitem");
+
+    fireEvent.mouseEnter(bars[2]);
+    act(() => vi.advanceTimersByTime(10000));
+    expect(bars[2]).toHaveAttribute("aria-current", "true");
+
+    fireEvent.mouseLeave(container.querySelector('[role="list"]')!);
+    act(() => vi.advanceTimersByTime(2400));
+    expect(bars[2]).toHaveAttribute("aria-current", "false");
+    vi.useRealTimers();
   });
 
   it("says the workout is unavailable when there is none", () => {
