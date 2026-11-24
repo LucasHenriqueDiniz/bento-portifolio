@@ -4,7 +4,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 // @ts-expect-error plain .mjs build script, no type declarations
-import { lastCommitDate, listRoutes, renderSitemap } from "./generate-sitemap.mjs";
+import { ensureHistory, lastCommitDate, listRoutes, renderSitemap } from "./generate-sitemap.mjs";
 
 const git = (cwd: string, args: string[], date?: string) =>
   execFileSync("git", args, {
@@ -54,6 +54,17 @@ describe("sitemap", () => {
     git(shallow, ["clone", "-q", "--depth", "1", `file://${dir}`, "."]);
 
     expect(lastCommitDate(["home.tsx"], shallow)).toBeNull();
+  });
+
+  it("fetches the missing history of a shallow clone, after which the dates are right", () => {
+    const { dir, commit } = makeRepo();
+    commit("home.tsx", "2026-01-10");
+    commit("gallery.tsx", "2026-03-05");
+    const shallow = fs.mkdtempSync(path.join(os.tmpdir(), "sitemap-shallow-"));
+    git(shallow, ["clone", "-q", "--depth", "1", `file://${dir}`, "."]);
+
+    expect(ensureHistory(shallow)).toBe(true);
+    expect(lastCommitDate(["home.tsx"], shallow)).toBe("2026-01-10");
   });
 
   it("lists the static pages and one page per project", () => {

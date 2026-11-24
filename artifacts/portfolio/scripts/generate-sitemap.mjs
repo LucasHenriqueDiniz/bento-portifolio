@@ -33,12 +33,27 @@ export function listRoutes(projectsSource) {
 const git = (args, cwd) =>
   execFileSync("git", args, { cwd, encoding: "utf-8", stdio: ["ignore", "pipe", "ignore"] }).trim();
 
+const isShallow = (cwd) => git(["rev-parse", "--is-shallow-repository"], cwd) !== "false";
+
+// Hosted builds (Cloudflare Pages) clone only the latest commit. Fetching the rest of
+// the history lets the dates be read; when the fetch is not possible the clone stays
+// shallow and the sitemap goes out without lastmod.
+export function ensureHistory(cwd = root) {
+  try {
+    if (!isShallow(cwd)) return true;
+    execFileSync("git", ["fetch", "--quiet", "--unshallow"], { cwd, stdio: "ignore", timeout: 60_000 });
+    return !isShallow(cwd);
+  } catch {
+    return false;
+  }
+}
+
 // Date (YYYY-MM-DD) of the last commit touching the paths, or null when git cannot say:
 // no git, no history for the paths, or a shallow clone, where every file looks as if it
 // changed in the one commit that was fetched.
 export function lastCommitDate(paths, cwd = root) {
   try {
-    if (git(["rev-parse", "--is-shallow-repository"], cwd) !== "false") return null;
+    if (isShallow(cwd)) return null;
     const out = git(["log", "-1", "--format=%cs", "--", ...paths], cwd);
     return /^\d{4}-\d{2}-\d{2}$/.test(out) ? out : null;
   } catch {
@@ -67,6 +82,7 @@ ${urls}
  * a URL whose date git cannot tell gets no lastmod rather than an invented one.
  */
 export function generateSitemap(outFile = path.join(root, "dist/public/sitemap.xml")) {
+  if (!ensureHistory()) console.warn("sitemap: no git history available, writing it without lastmod");
   const projectsSource = readFileSync(path.join(root, "src/constants/projects.ts"), "utf-8");
   const entries = listRoutes(projectsSource).map(({ route, sources }) => ({
     route,
